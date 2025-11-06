@@ -23,7 +23,7 @@
     - Set up session management with httpOnly cookies
     - _Requirements: 1.1, 1.2, 1.5_
   
-  - [ ] 2.3 Create database schema and RLS policies
+  - [x] 2.3 Create database schema and RLS policies
     - Write SQL migration for users table with UUID primary key
     - Create competency_progress table with user_id foreign key
     - Create skills_progress table with SRS parameters
