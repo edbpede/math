@@ -137,7 +137,7 @@
     - _Requirements: 4.3, 8.4_
 
 - [ ] 7. Build mastery tracking and SRS system
-  - [ ] 7.1 Implement mastery calculation engine
+  - [x] 7.1 Implement mastery calculation engine
     - Create mastery score computation from recent performance
     - Add response speed weighting to mastery calculation
     - Implement hint usage penalty in mastery scoring
