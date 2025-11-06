@@ -1,0 +1,53 @@
+{
+  "app": {
+    "title": "Arithmetic Practice Portal",
+    "tagline": "Practice mathematics aligned with Fælles Mål"
+  },
+  "actions": {
+    "start": "Start practice",
+    "continue": "Continue",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "skip": "Skip",
+    "submit": "Submit",
+    "retry": "Retry",
+    "viewSolution": "View solution",
+    "export": "Export",
+    "import": "Import"
+  },
+  "status": {
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "saved": "Saved",
+    "error": "Error",
+    "success": "Success",
+    "online": "Online",
+    "offline": "Offline",
+    "syncing": "Syncing...",
+    "synced": "Synced"
+  },
+  "time": {
+    "seconds": "seconds",
+    "minutes": "minutes",
+    "hours": "hours",
+    "days": "days",
+    "weeks": "weeks",
+    "months": "months",
+    "ago": "ago",
+    "justNow": "just now"
+  },
+  "labels": {
+    "required": "required",
+    "optional": "optional",
+    "example": "example",
+    "help": "help",
+    "info": "information",
+    "warning": "warning"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "menu": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "practice": "Practice",
+    "progress": "Progress",
+    "settings": "Settings",
+    "help": "Help"
+  },
+  "breadcrumbs": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "practice": "Practice",
+    "settings": "Settings"
+  },
+  "gradeSelection": {
+    "title": "Select grade level",
+    "subtitle": "What grade are you in?",
+    "grades": {
+      "0-3": {
+        "label": "Grades 0-3",
+        "description": "Beginning mathematics and basic number sense"
+      },
+      "4-6": {
+        "label": "Grades 4-6",
+        "description": "Developing skills and middle school level"
+      },
+      "7-9": {
+        "label": "Grades 7-9",
+        "description": "Advanced mathematical thinking and upper school"
+      }
+    }
+  },
+  "competencySelection": {
+    "title": "Select area",
+    "subtitle": "What would you like to practice?",
+    "binding": "Binding content",
+    "advisory": "Advisory content",
+    "recommended": "Recommended for you"
+  }
+}

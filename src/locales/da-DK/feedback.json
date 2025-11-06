@@ -1,0 +1,46 @@
+{
+  "correct": {
+    "title": "Korrekt!",
+    "messages": [
+      "Godt klaret!",
+      "Fremragende!",
+      "Perfekt!",
+      "Rigtigt!",
+      "Fantastisk!",
+      "Du har forstået det!",
+      "Sådan!"
+    ],
+    "continue": "Fortsæt til næste opgave"
+  },
+  "incorrect": {
+    "title": "Ikke helt",
+    "messages": [
+      "Det var ikke det rigtige svar. Prøv igen!",
+      "Godt forsøg! Prøv en anden strategi.",
+      "Ikke helt rigtigt. Vil du have et hint?",
+      "Tæt på! Gennemgå dit svar og prøv igen."
+    ],
+    "showCorrect": "Det korrekte svar er: {{answer}}",
+    "tryAgain": "Prøv igen",
+    "getHelp": "Få hjælp",
+    "viewExplanation": "Vis forklaring"
+  },
+  "encouragement": {
+    "afterMistake": "Alle laver fejl - det er sådan vi lærer!",
+    "keepTrying": "Bliv ved med at prøve!",
+    "goodEffort": "God indsats!",
+    "improving": "Du bliver bedre!"
+  },
+  "mastery": {
+    "levelUp": "Mestringsniveau øget!",
+    "newBand": "Du har nået {{band}} niveau!",
+    "keepPracticing": "Fortsæt med at øve for at forbedre dit mestringsniveau",
+    "bands": {
+      "introduced": "Introduceret",
+      "developing": "Udviklende",
+      "progressing": "I fremgang",
+      "proficient": "Dygtig",
+      "mastered": "Mestret"
+    }
+  }
+}

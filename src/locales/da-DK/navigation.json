@@ -1,0 +1,41 @@
+{
+  "menu": {
+    "home": "Hjem",
+    "dashboard": "Oversigt",
+    "practice": "Øv",
+    "progress": "Fremskridt",
+    "settings": "Indstillinger",
+    "help": "Hjælp"
+  },
+  "breadcrumbs": {
+    "home": "Hjem",
+    "dashboard": "Oversigt",
+    "practice": "Øvelse",
+    "settings": "Indstillinger"
+  },
+  "gradeSelection": {
+    "title": "Vælg klassetrin",
+    "subtitle": "Hvilket klassetrin er du på?",
+    "grades": {
+      "0-3": {
+        "label": "0.-3. klasse",
+        "description": "Begyndermatematik og grundlæggende talforståelse"
+      },
+      "4-6": {
+        "label": "4.-6. klasse",
+        "description": "Udviklende færdigheder og mellemtrin"
+      },
+      "7-9": {
+        "label": "7.-9. klasse",
+        "description": "Avanceret matematisk tænkning og udskoling"
+      }
+    }
+  },
+  "competencySelection": {
+    "title": "Vælg område",
+    "subtitle": "Hvad vil du øve?",
+    "binding": "Bindende indhold",
+    "advisory": "Rådgivende indhold",
+    "recommended": "Anbefalet til dig"
+  }
+}

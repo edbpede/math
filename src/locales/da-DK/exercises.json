@@ -1,0 +1,48 @@
+{
+  "session": {
+    "title": "Øvelsessession",
+    "starting": "Starter session...",
+    "generating": "Genererer opgaver...",
+    "progress": "Opgave {{current}} af {{total}}",
+    "timeSpent": "Tid brugt: {{time}}",
+    "complete": "Session fuldført!",
+    "paused": "Session sat på pause",
+    "resume": "Genoptag session",
+    "quit": "Afslut session",
+    "confirmQuit": "Er du sikker på, at du vil afslutte? Dit fremskridt bliver gemt."
+  },
+  "exercise": {
+    "question": "Spørgsmål",
+    "yourAnswer": "Dit svar",
+    "placeholder": "Indtast dit svar...",
+    "checkAnswer": "Tjek svar",
+    "showHint": "Få et hint",
+    "showSolution": "Vis løsning",
+    "nextExercise": "Næste opgave",
+    "skipExercise": "Spring over",
+    "difficulty": "Sværhedsgrad: {{level}}",
+    "bindingContent": "Bindende indhold",
+    "advisoryContent": "Rådgivende indhold"
+  },
+  "hints": {
+    "title": "Hints",
+    "level1": "Generel strategi",
+    "level2": "Specifik teknik",
+    "level3": "Delvis løsning",
+    "level4": "Fuld løsning",
+    "using": "Bruger hints: {{count}}",
+    "noHintsYet": "Du har ikke brugt nogen hints endnu",
+    "keepVisible": "Tidligere hints forbliver synlige"
+  },
+  "solution": {
+    "title": "Løsning",
+    "steps": "Trin-for-trin løsning",
+    "correctAnswer": "Korrekt svar: {{answer}}",
+    "explanation": "Forklaring"
+  },
+  "validation": {
+    "checking": "Kontrollerer svar...",
+    "invalidFormat": "Ugyldigt format. Prøv venligst igen.",
+    "enterAnswer": "Indtast venligst et svar først."
+  }
+}

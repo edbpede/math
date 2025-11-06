@@ -1,0 +1,53 @@
+{
+  "app": {
+    "title": "Matematik Øvelses Portal",
+    "tagline": "Øv matematik tilpasset Fælles Mål"
+  },
+  "actions": {
+    "start": "Start øvelse",
+    "continue": "Fortsæt",
+    "cancel": "Annuller",
+    "save": "Gem",
+    "delete": "Slet",
+    "edit": "Rediger",
+    "close": "Luk",
+    "confirm": "Bekræft",
+    "back": "Tilbage",
+    "next": "Næste",
+    "skip": "Spring over",
+    "submit": "Indsend",
+    "retry": "Prøv igen",
+    "viewSolution": "Vis løsning",
+    "export": "Eksporter",
+    "import": "Importer"
+  },
+  "status": {
+    "loading": "Indlæser...",
+    "saving": "Gemmer...",
+    "saved": "Gemt",
+    "error": "Fejl",
+    "success": "Succes",
+    "online": "Online",
+    "offline": "Offline",
+    "syncing": "Synkroniserer...",
+    "synced": "Synkroniseret"
+  },
+  "time": {
+    "seconds": "sekunder",
+    "minutes": "minutter",
+    "hours": "timer",
+    "days": "dage",
+    "weeks": "uger",
+    "months": "måneder",
+    "ago": "siden",
+    "justNow": "lige nu"
+  },
+  "labels": {
+    "required": "påkrævet",
+    "optional": "valgfri",
+    "example": "eksempel",
+    "help": "hjælp",
+    "info": "information",
+    "warning": "advarsel"
+  }
+}

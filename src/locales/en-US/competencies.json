@@ -1,0 +1,59 @@
+{
+  "matematiske-kompetencer": {
+    "name": "Mathematical Competencies",
+    "description": "Development of general mathematical competencies and problem-solving abilities",
+    "skills": {
+      "tankegang": "Mathematical thinking",
+      "problemlosning": "Problem solving",
+      "modellering": "Modeling",
+      "resonnement": "Reasoning",
+      "repraesentation": "Representation and symbol manipulation",
+      "kommunikation": "Communication",
+      "hjaelpemidler": "Tools"
+    }
+  },
+  "tal-og-algebra": {
+    "name": "Numbers and Algebra",
+    "description": "Number sense, calculation, and algebraic thinking",
+    "skills": {
+      "tal": "Numbers and number systems",
+      "regning": "Calculation and number patterns",
+      "algebra": "Algebraic thinking",
+      "funktioner": "Functions and relationships"
+    }
+  },
+  "geometri-og-maling": {
+    "name": "Geometry and Measurement",
+    "description": "Geometric shapes, spatial understanding, and measurements",
+    "skills": {
+      "geometri": "Geometric properties",
+      "konstruktion": "Construction and transformation",
+      "maling": "Measurement and units",
+      "lokation": "Location and movement"
+    }
+  },
+  "statistik-og-sandsynlighed": {
+    "name": "Statistics and Probability",
+    "description": "Data analysis, statistics, and probability",
+    "skills": {
+      "data": "Data collection and processing",
+      "statistik": "Statistical measures",
+      "sandsynlighed": "Probability",
+      "kombinatorik": "Combinatorics"
+    }
+  },
+  "difficulty": {
+    "A": {
+      "label": "A - Introductory",
+      "description": "Introduction to new concepts"
+    },
+    "B": {
+      "label": "B - Developing",
+      "description": "Skill development"
+    },
+    "C": {
+      "label": "C - Advanced",
+      "description": "Advanced applications"
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "session": {
+    "title": "Practice session",
+    "starting": "Starting session...",
+    "generating": "Generating exercises...",
+    "progress": "Exercise {{current}} of {{total}}",
+    "timeSpent": "Time spent: {{time}}",
+    "complete": "Session complete!",
+    "paused": "Session paused",
+    "resume": "Resume session",
+    "quit": "End session",
+    "confirmQuit": "Are you sure you want to quit? Your progress will be saved."
+  },
+  "exercise": {
+    "question": "Question",
+    "yourAnswer": "Your answer",
+    "placeholder": "Enter your answer...",
+    "checkAnswer": "Check answer",
+    "showHint": "Get a hint",
+    "showSolution": "Show solution",
+    "nextExercise": "Next exercise",
+    "skipExercise": "Skip",
+    "difficulty": "Difficulty: {{level}}",
+    "bindingContent": "Binding content",
+    "advisoryContent": "Advisory content"
+  },
+  "hints": {
+    "title": "Hints",
+    "level1": "General strategy",
+    "level2": "Specific technique",
+    "level3": "Partial solution",
+    "level4": "Complete solution",
+    "using": "Using hints: {{count}}",
+    "noHintsYet": "You haven't used any hints yet",
+    "keepVisible": "Previous hints remain visible"
+  },
+  "solution": {
+    "title": "Solution",
+    "steps": "Step-by-step solution",
+    "correctAnswer": "Correct answer: {{answer}}",
+    "explanation": "Explanation"
+  },
+  "validation": {
+    "checking": "Checking answer...",
+    "invalidFormat": "Invalid format. Please try again.",
+    "enterAnswer": "Please enter an answer first."
+  }
+}

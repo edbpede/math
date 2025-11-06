@@ -1,0 +1,25 @@
+{
+  "general": {
+    "readCarefully": "Read the question carefully and identify what is being asked.",
+    "identifyKnown": "Figure out what you know and what you need to find.",
+    "drawDiagram": "Try drawing a diagram or illustration.",
+    "breakDown": "Break the problem down into smaller, more manageable parts.",
+    "checkWork": "Review your work to make sure it makes sense.",
+    "useEstimation": "Use estimation to check if your answer is reasonable."
+  },
+  "strategies": {
+    "addition": "Think of addition as putting groups together.",
+    "subtraction": "Subtraction means removing or finding the difference.",
+    "multiplication": "Multiplication is repeated addition.",
+    "division": "Division is splitting something into equal groups.",
+    "fractions": "Think of fractions as parts of a whole.",
+    "decimals": "Decimals are another way to show fractions.",
+    "patterns": "Look for patterns in the numbers.",
+    "workBackwards": "Try working backwards from the answer."
+  },
+  "common": {
+    "noHint": "No hint available for this exercise.",
+    "allHintsShown": "All hints are now shown.",
+    "hintProgress": "Hint {{current}} of {{total}}"
+  }
+}

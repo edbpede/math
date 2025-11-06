@@ -1,0 +1,46 @@
+{
+  "correct": {
+    "title": "Correct!",
+    "messages": [
+      "Well done!",
+      "Excellent!",
+      "Perfect!",
+      "Right!",
+      "Fantastic!",
+      "You've got it!",
+      "Great job!"
+    ],
+    "continue": "Continue to next exercise"
+  },
+  "incorrect": {
+    "title": "Not quite",
+    "messages": [
+      "That wasn't the right answer. Try again!",
+      "Good try! Try a different strategy.",
+      "Not quite right. Would you like a hint?",
+      "Close! Review your answer and try again."
+    ],
+    "showCorrect": "The correct answer is: {{answer}}",
+    "tryAgain": "Try again",
+    "getHelp": "Get help",
+    "viewExplanation": "View explanation"
+  },
+  "encouragement": {
+    "afterMistake": "Everyone makes mistakes - that's how we learn!",
+    "keepTrying": "Keep trying!",
+    "goodEffort": "Good effort!",
+    "improving": "You're getting better!"
+  },
+  "mastery": {
+    "levelUp": "Mastery level increased!",
+    "newBand": "You've reached {{band}} level!",
+    "keepPracticing": "Keep practicing to improve your mastery level",
+    "bands": {
+      "introduced": "Introduced",
+      "developing": "Developing",
+      "progressing": "Progressing",
+      "proficient": "Proficient",
+      "mastered": "Mastered"
+    }
+  }
+}

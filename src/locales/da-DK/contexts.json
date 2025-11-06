@@ -1,0 +1,29 @@
+{
+  "names": {
+    "male": ["Anders", "Benjamin", "Christian", "Daniel", "Emil", "Frederik", "Gustav", "Henrik", "Isaac", "Jakob", "Karl", "Lasse", "Mathias", "Noah", "Oliver", "Peter", "Rasmus", "Simon", "Tobias", "Victor"],
+    "female": ["Anna", "Caroline", "Diana", "Emma", "Freja", "Gitte", "Hannah", "Ida", "Josefine", "Karen", "Laura", "Marie", "Nanna", "Olivia", "Petra", "Rosa", "Sofie", "Thea", "Ulla", "Victoria"],
+    "neutral": ["Alex", "Charlie", "Kim", "Robin", "Sasha", "Taylor"]
+  },
+  "places": {
+    "cities": ["København", "Aarhus", "Odense", "Aalborg", "Esbjerg", "Randers", "Kolding", "Horsens", "Vejle", "Roskilde"],
+    "locations": ["skolen", "biblioteket", "parken", "butikken", "museet", "stranden", "Zoo", "bakkeriet", "boghandlen", "legepladsen"]
+  },
+  "currency": {
+    "symbol": "kr",
+    "name": "kroner",
+    "subunit": "øre"
+  },
+  "items": {
+    "food": ["æbler", "bananer", "kager", "brød", "mælk", "ost", "pølser", "kiks", "juice", "yoghurt"],
+    "school": ["blyanter", "bøger", "viskelædere", "penalhuse", "notesbøger", "linealer", "farver", "mapper", "skoletasker", "kridt"],
+    "toys": ["bolde", "dukkehuse", "biler", "puslespil", "byggeklodser", "tegnebøger", "spil", "figurer", "bamser", "springreb"],
+    "sports": ["fodbold", "badminton", "svømning", "cykling", "løb", "gymnastik", "håndbold", "tennis", "basketball", "skating"],
+    "nature": ["træer", "blomster", "fugle", "sten", "blade", "frø", "grene", "kogler", "sommerfugle", "snegle"]
+  },
+  "measurements": {
+    "length": ["meter", "centimeter", "kilometer", "millimeter"],
+    "weight": ["kilogram", "gram", "ton"],
+    "volume": ["liter", "milliliter", "deciliter"],
+    "time": ["sekunder", "minutter", "timer", "dage", "uger", "måneder", "år"]
+  }
+}

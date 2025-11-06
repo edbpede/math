@@ -42,7 +42,7 @@
     - _Requirements: 5.1, 12.2, 12.3, 12.4_
 
 - [ ] 3. Build internationalization (i18n) system
-  - [ ] 3.1 Create i18n infrastructure
+  - [x] 3.1 Create i18n infrastructure
     - Set up locale file structure (da-DK and en-US directories)
     - Create translation JSON files (common, auth, navigation, competencies, exercises, feedback, hints, contexts)
     - Build translation loader function with caching

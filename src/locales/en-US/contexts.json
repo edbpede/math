@@ -1,0 +1,29 @@
+{
+  "names": {
+    "male": ["Alex", "Benjamin", "Charlie", "Daniel", "Ethan", "Frank", "George", "Henry", "Isaac", "Jack", "Kevin", "Liam", "Michael", "Noah", "Oliver", "Peter", "Ryan", "Samuel", "Thomas", "William"],
+    "female": ["Alice", "Bella", "Charlotte", "Diana", "Emma", "Fiona", "Grace", "Hannah", "Isabella", "Julia", "Kate", "Laura", "Mia", "Nora", "Olivia", "Penny", "Rose", "Sophia", "Tara", "Victoria"],
+    "neutral": ["Alex", "Charlie", "Jordan", "Robin", "Sam", "Taylor"]
+  },
+  "places": {
+    "cities": ["Copenhagen", "Aarhus", "Odense", "Aalborg", "Esbjerg", "Randers", "Kolding", "Horsens", "Vejle", "Roskilde"],
+    "locations": ["school", "library", "park", "store", "museum", "beach", "zoo", "bakery", "bookstore", "playground"]
+  },
+  "currency": {
+    "symbol": "kr",
+    "name": "kroner",
+    "subunit": "øre"
+  },
+  "items": {
+    "food": ["apples", "bananas", "cakes", "bread", "milk", "cheese", "sausages", "cookies", "juice", "yogurt"],
+    "school": ["pencils", "books", "erasers", "pencil cases", "notebooks", "rulers", "crayons", "folders", "backpacks", "chalk"],
+    "toys": ["balls", "dollhouses", "cars", "puzzles", "building blocks", "coloring books", "games", "figurines", "teddy bears", "jump ropes"],
+    "sports": ["soccer", "badminton", "swimming", "cycling", "running", "gymnastics", "handball", "tennis", "basketball", "skating"],
+    "nature": ["trees", "flowers", "birds", "rocks", "leaves", "seeds", "branches", "cones", "butterflies", "snails"]
+  },
+  "measurements": {
+    "length": ["meters", "centimeters", "kilometers", "millimeters"],
+    "weight": ["kilograms", "grams", "tons"],
+    "volume": ["liters", "milliliters", "deciliters"],
+    "time": ["seconds", "minutes", "hours", "days", "weeks", "months", "years"]
+  }
+}

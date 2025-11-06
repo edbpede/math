@@ -10,8 +10,10 @@
   },
   "dependencies": {
     "@astrojs/solid-js": "^5.1.2",
+    "@nanostores/persistent": "^1.2.0",
     "@supabase/supabase-js": "^2.80.0",
     "astro": "^5.15.3",
+    "nanostores": "^1.0.1",
     "solid-js": "^1.9.10"
   },
   "devDependencies": {

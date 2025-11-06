@@ -1,0 +1,25 @@
+{
+  "general": {
+    "readCarefully": "Læs spørgsmålet omhyggeligt og identificer, hvad der bliver spurgt om.",
+    "identifyKnown": "Find ud af, hvad du ved, og hvad du skal finde.",
+    "drawDiagram": "Prøv at tegne et diagram eller en illustration.",
+    "breakDown": "Opdel problemet i mindre, mere håndterbare dele.",
+    "checkWork": "Gennemgå dit arbejde for at sikre, at det giver mening.",
+    "useEstimation": "Brug estimering til at kontrollere, om dit svar er rimeligt."
+  },
+  "strategies": {
+    "addition": "Tænk på addition som at samle grupper sammen.",
+    "subtraction": "Subtraktion betyder at fjerne eller finde forskellen.",
+    "multiplication": "Multiplikation er gentagen addition.",
+    "division": "Division er at dele noget i lige store grupper.",
+    "fractions": "Tænk på brøker som dele af en helhed.",
+    "decimals": "Decimaler er en anden måde at vise brøker på.",
+    "patterns": "Led efter mønstre i tallene.",
+    "workBackwards": "Prøv at arbejde baglæns fra svaret."
+  },
+  "common": {
+    "noHint": "Ingen hint tilgængeligt for denne opgave.",
+    "allHintsShown": "Alle hints er nu vist.",
+    "hintProgress": "Hint {{current}} af {{total}}"
+  }
+}

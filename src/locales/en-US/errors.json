@@ -1,0 +1,30 @@
+{
+  "network": {
+    "offline": "Cannot connect. Your answers are saved locally and will sync later.",
+    "timeout": "Request took too long. Please check your internet connection.",
+    "serverError": "There's a problem with the server. Try again in a bit.",
+    "connectionLost": "Connection lost. Working offline..."
+  },
+  "auth": {
+    "invalidUuid": "This practice number does not exist. Please check if you entered it correctly.",
+    "sessionExpired": "Your session has expired. Please log in again.",
+    "unauthorized": "You do not have permission to access this resource."
+  },
+  "exercise": {
+    "generationFailed": "Could not create exercise. Trying another...",
+    "templateNotFound": "Exercise template was not found.",
+    "validationError": "An error occurred while validating your answer."
+  },
+  "data": {
+    "loadFailed": "Could not load data. Try reloading the page.",
+    "saveFailed": "Could not save changes. Your data is saved locally.",
+    "syncFailed": "Synchronization failed. Will try again automatically.",
+    "corruptedData": "Data appears to be corrupted. Reloading from server..."
+  },
+  "general": {
+    "unexpected": "Something went wrong. Please try again.",
+    "notFound": "Page not found.",
+    "tryAgain": "Try again",
+    "contactSupport": "If the problem persists, contact support."
+  }
+}

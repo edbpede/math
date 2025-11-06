@@ -1,0 +1,30 @@
+{
+  "network": {
+    "offline": "Kan ikke oprette forbindelse. Dine svar gemmes lokalt og synkroniseres senere.",
+    "timeout": "Anmodningen tog for lang tid. Tjek venligst din internetforbindelse.",
+    "serverError": "Der er et problem med serveren. Prøv igen om lidt.",
+    "connectionLost": "Forbindelse mistet. Arbejder offline..."
+  },
+  "auth": {
+    "invalidUuid": "Dette øvelsesnummer findes ikke. Tjek venligst om du har indtastet det korrekt.",
+    "sessionExpired": "Din session er udløbet. Log venligst ind igen.",
+    "unauthorized": "Du har ikke tilladelse til at få adgang til denne ressource."
+  },
+  "exercise": {
+    "generationFailed": "Kunne ikke oprette opgave. Prøver en anden...",
+    "templateNotFound": "Opgaveskabelon blev ikke fundet.",
+    "validationError": "Der opstod en fejl ved validering af dit svar."
+  },
+  "data": {
+    "loadFailed": "Kunne ikke indlæse data. Prøv at genindlæse siden.",
+    "saveFailed": "Kunne ikke gemme ændringer. Dine data er gemt lokalt.",
+    "syncFailed": "Synkronisering mislykkedes. Vil prøve igen automatisk.",
+    "corruptedData": "Data ser ud til at være beskadiget. Genindlæser fra serveren..."
+  },
+  "general": {
+    "unexpected": "Noget gik galt. Prøv venligst igen.",
+    "notFound": "Siden blev ikke fundet.",
+    "tryAgain": "Prøv igen",
+    "contactSupport": "Hvis problemet fortsætter, kontakt support."
+  }
+}
