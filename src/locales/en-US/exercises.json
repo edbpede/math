@@ -44,5 +44,34 @@
     "checking": "Checking answer...",
     "invalidFormat": "Invalid format. Please try again.",
     "enterAnswer": "Please enter an answer first."
+  },
+  "templates": {
+    "tal-og-algebra": {
+      "addition": {
+        "name": "Addition",
+        "description": "Add numbers together"
+      },
+      "subtraction": {
+        "name": "Subtraction",
+        "description": "Subtract numbers"
+      },
+      "multiplication": {
+        "name": "Multiplication",
+        "description": "Multiply numbers"
+      },
+      "division": {
+        "name": "Division",
+        "description": "Divide numbers"
+      }
+    }
+  },
+  "feedback": {
+    "correct": "Correct!",
+    "incorrect": "Not quite right",
+    "tryAgain": "Try again",
+    "wellDone": "Well done!",
+    "keepGoing": "Keep up the good work!",
+    "almostThere": "Almost there!",
+    "goodEffort": "Good effort!"
   }
 }

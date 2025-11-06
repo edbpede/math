@@ -69,7 +69,7 @@
     - Document translation workflow for contributors
     - _Requirements: 10.1, 10.2, 10.3, 10.4_
 
-- [ ] 4. Implement exercise generation engine
+- [x] 4. Implement exercise generation engine
   - [x] 4.1 Build template registry system
     - Create template registry class with indexing by multiple criteria
     - Implement template registration function with validation
@@ -100,7 +100,7 @@
     - _Requirements: 3.6, 8.1_
 
 - [ ] 5. Create starter exercise templates for Tal og Algebra
-  - [ ] 5.1 Implement basic arithmetic templates (grades 0-3)
+  - [x] 5.1 Implement basic arithmetic templates (grades 0-3)
     - Create addition template (single and double digit)
     - Create subtraction template (single and double digit)
     - Create simple multiplication template (up to 10x10)

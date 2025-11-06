@@ -44,5 +44,34 @@
     "checking": "Kontrollerer svar...",
     "invalidFormat": "Ugyldigt format. Prøv venligst igen.",
     "enterAnswer": "Indtast venligst et svar først."
+  },
+  "templates": {
+    "tal-og-algebra": {
+      "addition": {
+        "name": "Addition",
+        "description": "Læg tal sammen"
+      },
+      "subtraction": {
+        "name": "Subtraktion",
+        "description": "Træk tal fra"
+      },
+      "multiplication": {
+        "name": "Multiplikation",
+        "description": "Gang tal"
+      },
+      "division": {
+        "name": "Division",
+        "description": "Del tal"
+      }
+    }
+  },
+  "feedback": {
+    "correct": "Rigtigt!",
+    "incorrect": "Ikke helt rigtigt",
+    "tryAgain": "Prøv igen",
+    "wellDone": "Godt klaret!",
+    "keepGoing": "Fortsæt det gode arbejde!",
+    "almostThere": "Næsten der!",
+    "goodEffort": "God indsats!"
   }
 }
