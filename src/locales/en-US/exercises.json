@@ -62,6 +62,22 @@
       "division": {
         "name": "Division",
         "description": "Divide numbers"
+      },
+      "fraction-representation": {
+        "name": "Fraction Representation",
+        "description": "Understand and recognize fractions visually"
+      },
+      "fraction-equivalence": {
+        "name": "Equivalent Fractions",
+        "description": "Find and create equivalent fractions"
+      },
+      "decimal-place-value": {
+        "name": "Decimal Place Value",
+        "description": "Understand decimals and their positions"
+      },
+      "fraction-decimal-conversion": {
+        "name": "Fraction/Decimal Conversion",
+        "description": "Convert between fractions and decimals"
       }
     }
   },

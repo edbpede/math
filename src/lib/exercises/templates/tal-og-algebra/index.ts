@@ -2,10 +2,10 @@
  * Tal og Algebra Exercise Templates
  * 
  * Exports and registration for all Tal og Algebra (Numbers and Algebra) templates
- * covering basic arithmetic operations for grades 0-3.
+ * covering basic arithmetic operations (grades 0-3), fractions and decimals (grades 4-6).
  * 
  * Competency Area: Tal og Algebra (Numbers and Algebra)
- * Skills Area: Regning (Calculation and number patterns)
+ * Skills Areas: Regning (Calculation), Brøker og procent (Fractions and percentages)
  */
 
 import { additionTemplates } from './addition';
@@ -16,6 +16,10 @@ import { numberComparisonTemplates } from './number-comparison';
 import { placeValueIdentificationTemplates } from './place-value-identification';
 import { numberOrderingTemplates } from './number-ordering';
 import { roundingTemplates } from './rounding';
+import { fractionRepresentationTemplates } from './fraction-representation';
+import { fractionEquivalenceTemplates } from './fraction-equivalence';
+import { decimalPlaceValueTemplates } from './decimal-place-value';
+import { fractionDecimalConversionTemplates } from './fraction-decimal-conversion';
 import { registerTemplate } from '../../template-registry';
 
 // Export all templates
@@ -27,6 +31,10 @@ export { numberComparisonTemplates } from './number-comparison';
 export { placeValueIdentificationTemplates } from './place-value-identification';
 export { numberOrderingTemplates } from './number-ordering';
 export { roundingTemplates } from './rounding';
+export { fractionRepresentationTemplates } from './fraction-representation';
+export { fractionEquivalenceTemplates } from './fraction-equivalence';
+export { decimalPlaceValueTemplates } from './decimal-place-value';
+export { fractionDecimalConversionTemplates } from './fraction-decimal-conversion';
 
 // Combine all templates
 export const talOgAlgebraTemplates = [
@@ -38,6 +46,10 @@ export const talOgAlgebraTemplates = [
   ...placeValueIdentificationTemplates,
   ...numberOrderingTemplates,
   ...roundingTemplates,
+  ...fractionRepresentationTemplates,
+  ...fractionEquivalenceTemplates,
+  ...decimalPlaceValueTemplates,
+  ...fractionDecimalConversionTemplates,
 ];
 
 /**

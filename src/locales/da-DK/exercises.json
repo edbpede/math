@@ -62,6 +62,22 @@
       "division": {
         "name": "Division",
         "description": "Del tal"
+      },
+      "fraction-representation": {
+        "name": "Brøkrepræsentation",
+        "description": "Forstå og genkende brøker visuelt"
+      },
+      "fraction-equivalence": {
+        "name": "Ækvivalente brøker",
+        "description": "Find og skab ækvivalente brøker"
+      },
+      "decimal-place-value": {
+        "name": "Decimalers stedværdi",
+        "description": "Forstå decimaltal og deres positioner"
+      },
+      "fraction-decimal-conversion": {
+        "name": "Brøk/decimal konvertering",
+        "description": "Konverter mellem brøker og decimaltal"
       }
     }
   },

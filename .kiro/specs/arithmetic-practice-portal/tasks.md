@@ -115,7 +115,7 @@
     - Create rounding template
     - _Requirements: 3.1, 3.2_
   
-  - [ ] 5.3 Build fraction and decimal templates (grades 4-6)
+  - [x] 5.3 Build fraction and decimal templates (grades 4-6)
     - Create fraction representation template
     - Create fraction equivalence template
     - Create decimal place value template
