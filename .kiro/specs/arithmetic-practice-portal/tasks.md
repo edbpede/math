@@ -57,7 +57,7 @@
     - Implement context rotation to ensure variety
     - _Requirements: 2.6, 3.3_
   
-  - [ ] 3.3 Add number and date formatting utilities
+  - [x] 3.3 Add number and date formatting utilities
     - Implement locale-aware number formatting (Danish: 1.234,56; English: 1,234.56)
     - Create date/time formatting functions per locale
     - Build answer normalization to accept both formats

@@ -61,6 +61,11 @@ export {
   getRandomContext,
   getRandomContexts,
   parseNumber,
+  normalizeAnswer,
+  compareAnswers,
+  detectNumberFormat,
+  parseNumberAuto,
+  getLocaleConfig,
 } from './utils';
 
 // Re-export context selector

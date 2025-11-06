@@ -116,6 +116,7 @@ describe('ContextSelector', () => {
       expect(currency).toEqual({
         symbol: 'kr',
         name: 'kroner',
+        subunit: 'øre',
       });
     });
 
@@ -204,6 +205,7 @@ describe('ContextSelector', () => {
       expect(currency).toEqual({
         symbol: 'kr',
         name: 'kroner',
+        subunit: 'øre',
       });
     });
   });

@@ -100,7 +100,12 @@ export function formatDate(
     return new Intl.DateTimeFormat(locale, formatOptions).format(date);
   } catch (error) {
     console.error('Failed to format date:', error);
-    return date.toISOString();
+    // Return a fallback string for invalid dates
+    try {
+      return date.toISOString();
+    } catch {
+      return 'Invalid Date';
+    }
   }
 }
 
@@ -226,4 +231,133 @@ export async function getRandomContexts(
   // Shuffle and take first 'count' items
   const shuffled = [...items].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, Math.min(count, shuffled.length));
+}
+
+/**
+ * Normalize a user answer to a standard format for comparison
+ *
+ * Handles:
+ * - Locale-specific number formats (Danish and English)
+ * - Whitespace trimming
+ * - Multiple separators
+ *
+ * @param answer - The user's answer string
+ * @param locale - Optional locale override
+ * @returns Normalized number or original string if not a number
+ */
+export function normalizeAnswer(answer: string, locale?: Locale): string | number {
+  const currentLocale = locale || $locale.get();
+  const trimmed = answer.trim();
+
+  // Try to parse as a number
+  const parsed = parseNumber(trimmed, currentLocale);
+
+  // If parsing succeeded (not NaN), return the number
+  if (!isNaN(parsed)) {
+    return parsed;
+  }
+
+  // Otherwise return the trimmed string (for text answers)
+  return trimmed.toLowerCase();
+}
+
+/**
+ * Compare two answers for equality, handling different formats
+ *
+ * @param userAnswer - The user's answer
+ * @param correctAnswer - The correct answer
+ * @param locale - Optional locale override
+ * @param tolerance - Optional tolerance for numeric comparisons (default: 0.01)
+ * @returns True if answers match within tolerance
+ */
+export function compareAnswers(
+  userAnswer: string,
+  correctAnswer: string | number,
+  locale?: Locale,
+  tolerance = 0.01
+): boolean {
+  const normalizedUser = normalizeAnswer(userAnswer, locale);
+  const normalizedCorrect =
+    typeof correctAnswer === 'string'
+      ? normalizeAnswer(correctAnswer, locale)
+      : correctAnswer;
+
+  // Both are numbers - compare with tolerance
+  if (typeof normalizedUser === 'number' && typeof normalizedCorrect === 'number') {
+    return Math.abs(normalizedUser - normalizedCorrect) <= tolerance;
+  }
+
+  // Both are strings - case-insensitive comparison
+  if (typeof normalizedUser === 'string' && typeof normalizedCorrect === 'string') {
+    return normalizedUser === normalizedCorrect;
+  }
+
+  // Mixed types - not equal
+  return false;
+}
+
+/**
+ * Detect the format of a number string (Danish or English)
+ *
+ * @param input - The number string to analyze
+ * @returns 'da-DK' if Danish format, 'en-US' if English format, null if ambiguous
+ */
+export function detectNumberFormat(input: string): Locale | null {
+  const trimmed = input.trim();
+
+  // If it has comma as decimal separator and period as thousands (Danish)
+  if (/\d\.\d{3}/.test(trimmed) && trimmed.includes(',')) {
+    return 'da-DK';
+  }
+
+  // If it has period as decimal separator and comma as thousands (English)
+  if (/\d,\d{3}/.test(trimmed) && trimmed.includes('.')) {
+    return 'en-US';
+  }
+
+  // Single separator cases
+  if (trimmed.includes(',') && !trimmed.includes('.')) {
+    // Could be Danish decimal or English thousands
+    // If comma is followed by 1-2 digits at the end, likely Danish decimal
+    if (/,\d{1,2}$/.test(trimmed)) {
+      return 'da-DK';
+    }
+    // If comma is followed by 3 digits and more digits, likely English thousands
+    if (/,\d{3}/.test(trimmed)) {
+      return 'en-US';
+    }
+  }
+
+  if (trimmed.includes('.') && !trimmed.includes(',')) {
+    // Could be English decimal or Danish thousands
+    // If period is followed by 1-2 digits at the end, likely English decimal
+    if (/\.\d{1,2}$/.test(trimmed)) {
+      return 'en-US';
+    }
+    // If period is followed by 3 digits and more digits, likely Danish thousands
+    if (/\.\d{3}/.test(trimmed)) {
+      return 'da-DK';
+    }
+  }
+
+  // Ambiguous or no separators
+  return null;
+}
+
+/**
+ * Parse a number string that might be in either Danish or English format
+ *
+ * Attempts to detect the format automatically and parse accordingly
+ *
+ * @param input - The number string to parse
+ * @param preferredLocale - Locale to prefer if format is ambiguous
+ * @returns Parsed number
+ */
+export function parseNumberAuto(
+  input: string,
+  preferredLocale?: Locale
+): number {
+  const detected = detectNumberFormat(input);
+  const locale = detected || preferredLocale || $locale.get();
+  return parseNumber(input, locale);
 }
