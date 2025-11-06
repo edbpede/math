@@ -17,6 +17,7 @@ import type { Hint } from '@/lib/exercises/types';
 import { createReactiveHintTracker } from '@/lib/exercises/hint-tracker';
 import { useStore } from '@nanostores/solid';
 import { $t } from '@/lib/i18n';
+import WorkedSolutionDisplay from './WorkedSolutionDisplay';
 
 export interface HintSystemProps {
   /** Array of hints for the current exercise (should have 4 levels) */
@@ -221,6 +222,13 @@ export default function HintSystem(props: HintSystemProps) {
                         <div class="text-xs text-gray-500">
                           Type: {hint.visualAid?.type}
                         </div>
+                      </div>
+                    </Show>
+
+                    {/* Worked solution (typically for level 4 hints) */}
+                    <Show when={hint.workedSolution}>
+                      <div class="worked-solution-wrapper mt-4">
+                        <WorkedSolutionDisplay solution={hint.workedSolution!} />
                       </div>
                     </Show>
                   </div>

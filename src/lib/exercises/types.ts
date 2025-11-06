@@ -50,10 +50,40 @@ export interface VisualAid {
   data: unknown;
 }
 
+/**
+ * Represents a single step in a worked solution
+ */
+export interface SolutionStep {
+  /** Description of what's happening in this step */
+  explanation: string;
+  /** Mathematical expression or calculation for this step */
+  expression: string;
+  /** Optional visual aid for this specific step */
+  visualAid?: VisualAid;
+}
+
+/**
+ * Represents a complete worked solution with step-by-step breakdown
+ *
+ * Requirements:
+ * - 4.3: Display complete worked solution with intermediate steps
+ * - 8.4: Provide worked solution at any time during or after exercise
+ */
+export interface WorkedSolution {
+  /** Array of steps showing the complete solution process */
+  steps: SolutionStep[];
+  /** Final answer statement */
+  finalAnswer: string;
+  /** Optional overall visual aid for the entire solution */
+  visualAid?: VisualAid;
+}
+
 export interface Hint {
   level: 1 | 2 | 3 | 4;
   text: string;
   visualAid?: VisualAid;
+  /** Worked solution (typically for level 4 hints) */
+  workedSolution?: WorkedSolution;
 }
 
 export interface ExerciseContext {
@@ -88,6 +118,16 @@ export interface ValidationResult {
   normalized?: string;
 }
 
+/**
+ * Hint generator function that can return either:
+ * - A string (simple text hint)
+ * - A Hint object (with optional workedSolution and visualAid)
+ */
+export type HintGenerator = (
+  params: Record<string, unknown>,
+  locale: string
+) => string | Omit<Hint, 'level'>;
+
 export interface ExerciseTemplate {
   id: string;
   name: string;
@@ -95,7 +135,7 @@ export interface ExerciseTemplate {
   parameters: ParameterConstraints;
   generate: (params: Record<string, unknown>, locale: string) => GenerationResult;
   validate: (userAnswer: string, correctAnswer: Answer) => ValidationResult;
-  hints: Array<(params: Record<string, unknown>, locale: string) => string>;
+  hints: HintGenerator[];
   contextType?: ContextType;
 }
 

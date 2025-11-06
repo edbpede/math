@@ -122,7 +122,7 @@
     - Create fraction/decimal conversion template
     - _Requirements: 3.1, 3.2_
 
-- [ ] 6. Implement progressive hint system
+- [x] 6. Implement progressive hint system
   - [x] 6.1 Create hint generation framework
     - Build hint level structure (4 progressive levels)
     - Implement hint generation function per template
@@ -130,7 +130,7 @@
     - Add hint usage tracking for mastery calculation
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
   
-  - [ ] 6.2 Add worked solution generator
+  - [x] 6.2 Add worked solution generator
     - Create step-by-step solution builder
     - Implement solution rendering with intermediate steps
     - Add visual aids for geometric and visual problems

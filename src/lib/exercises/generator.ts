@@ -138,11 +138,24 @@ export async function generateInstance(
     );
 
     // Generate hints using template hint functions
-    const hints: Hint[] = template.hints.map((hintFn, index) => ({
-      level: (index + 1) as 1 | 2 | 3 | 4,
-      text: hintFn(params, locale),
-      visualAid: generationResult.visualAid,
-    }));
+    const hints: Hint[] = template.hints.map((hintFn, index) => {
+      const hintResult = hintFn(params, locale);
+
+      // If hint function returns a string, create a simple Hint object
+      if (typeof hintResult === 'string') {
+        return {
+          level: (index + 1) as 1 | 2 | 3 | 4,
+          text: hintResult,
+          visualAid: generationResult.visualAid,
+        };
+      }
+
+      // If hint function returns a Hint object (without level), add the level
+      return {
+        level: (index + 1) as 1 | 2 | 3 | 4,
+        ...hintResult,
+      };
+    });
 
     // Generate distractors if requested
     let distractors: string[] | undefined;
@@ -411,8 +424,15 @@ export async function validateTemplate(
       
       for (let i = 0; i < template.hints.length; i++) {
         const hint = template.hints[i](params, 'da-DK');
-        if (!hint || hint.trim() === '') {
+        if (!hint) {
           throw new Error(`Hint level ${i + 1} is empty`);
+        }
+        // Check if hint is a string or an object
+        if (typeof hint === 'string' && hint.trim() === '') {
+          throw new Error(`Hint level ${i + 1} is empty`);
+        }
+        if (typeof hint === 'object' && (!hint.text || hint.text.trim() === '')) {
+          throw new Error(`Hint level ${i + 1} has empty text`);
         }
       }
     } catch (error) {

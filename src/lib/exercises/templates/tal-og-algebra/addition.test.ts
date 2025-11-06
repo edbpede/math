@@ -65,18 +65,25 @@ describe('Addition Templates', () => {
 
     it('should provide 4 hint levels', () => {
       expect(additionA.hints).toHaveLength(4);
-      
+
       const params = { a: 3, b: 5 };
       const hint1 = additionA.hints[0](params, 'da-DK');
       const hint2 = additionA.hints[1](params, 'da-DK');
       const hint3 = additionA.hints[2](params, 'da-DK');
       const hint4 = additionA.hints[3](params, 'da-DK');
-      
+
       expect(hint1).toBeTruthy();
       expect(hint2).toBeTruthy();
       expect(hint3).toBeTruthy();
       expect(hint4).toBeTruthy();
-      expect(hint4).toContain('8'); // Final hint should contain answer
+
+      // Level 4 hint now returns an object with workedSolution
+      expect(typeof hint4).toBe('object');
+      if (typeof hint4 === 'object') {
+        expect(hint4.text).toBeTruthy();
+        expect(hint4.workedSolution).toBeTruthy();
+        expect(hint4.workedSolution?.finalAnswer).toContain('8');
+      }
     });
 
     it('should generate hints in both Danish and English', () => {
@@ -168,7 +175,14 @@ describe('Addition Templates', () => {
       
       const params = { a: 37, b: 28 };
       const hint4 = additionC.hints[3](params, 'da-DK');
-      expect(hint4).toContain('65');
+
+      // Level 4 hint now returns an object with workedSolution
+      expect(typeof hint4).toBe('object');
+      if (typeof hint4 === 'object') {
+        expect(hint4.text).toBeTruthy();
+        expect(hint4.workedSolution).toBeTruthy();
+        expect(hint4.workedSolution?.finalAnswer).toContain('65');
+      }
     });
 
     it('should handle edge cases', () => {

@@ -15,6 +15,7 @@
 
 import type { ExerciseTemplate } from '../../types';
 import { validateAnswer } from '../../validator';
+import { generateAdditionSolution } from '../../solution-generator';
 
 /**
  * Addition Template - Difficulty A (Introductory)
@@ -92,15 +93,22 @@ export const additionA: ExerciseTemplate = {
       }
       return `If you count: ${a}, ${Array.from({ length: b }, (_, i) => a + i + 1).join(', ')}`;
     },
-    // Level 4: Complete solution
+    // Level 4: Complete worked solution
     (params, locale) => {
       const a = params.a as number;
       const b = params.b as number;
-      const answer = a + b;
+      const workedSolution = generateAdditionSolution(a, b, locale as 'da-DK' | 'en-US');
+
       if (locale === 'da-DK') {
-        return `${a} + ${b} = ${answer}`;
+        return {
+          text: 'Her er den komplette løsning trin for trin:',
+          workedSolution,
+        };
       }
-      return `${a} + ${b} = ${answer}`;
+      return {
+        text: 'Here is the complete step-by-step solution:',
+        workedSolution,
+      };
     },
   ],
   contextType: 'abstract',
@@ -238,15 +246,22 @@ export const additionB: ExerciseTemplate = {
       }
       return `${a} + ${b} = ...`;
     },
-    // Level 4: Complete solution
+    // Level 4: Complete worked solution
     (params, locale) => {
       const a = params.a as number;
       const b = params.b as number;
-      const answer = a + b;
+      const workedSolution = generateAdditionSolution(a, b, locale as 'da-DK' | 'en-US');
+
       if (locale === 'da-DK') {
-        return `${a} + ${b} = ${answer}`;
+        return {
+          text: 'Her er den komplette løsning trin for trin:',
+          workedSolution,
+        };
       }
-      return `${a} + ${b} = ${answer}`;
+      return {
+        text: 'Here is the complete step-by-step solution:',
+        workedSolution,
+      };
     },
   ],
   contextType: 'abstract',
@@ -349,15 +364,22 @@ export const additionC: ExerciseTemplate = {
       }
       return `Ones: ${aOnes} + ${bOnes} = ${totalOnes}\nTens: ${aTens} + ${bTens} = ${totalTens}\nAnswer: ${totalTens} tens + ${totalOnes} ones`;
     },
-    // Level 4: Complete solution
+    // Level 4: Complete worked solution
     (params, locale) => {
       const a = params.a as number;
       const b = params.b as number;
-      const answer = a + b;
+      const workedSolution = generateAdditionSolution(a, b, locale as 'da-DK' | 'en-US');
+
       if (locale === 'da-DK') {
-        return `${a} + ${b} = ${answer}`;
+        return {
+          text: 'Her er den komplette løsning trin for trin:',
+          workedSolution,
+        };
       }
-      return `${a} + ${b} = ${answer}`;
+      return {
+        text: 'Here is the complete step-by-step solution:',
+        workedSolution,
+      };
     },
   ],
   contextType: 'abstract',
