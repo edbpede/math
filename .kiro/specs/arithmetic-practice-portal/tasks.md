@@ -50,7 +50,7 @@
     - Add fallback logic (requested language → Danish)
     - _Requirements: 2.1, 2.2, 2.5_
   
-  - [ ] 3.2 Implement language-specific context pools
+  - [x] 3.2 Implement language-specific context pools
     - Create Danish context pool (names, places, currency, items)
     - Create English context pool with culturally appropriate content
     - Build context selection logic based on user locale

@@ -53,5 +53,15 @@ export {
   isTranslationsLoaded,
 } from './store';
 
-// Re-export utilities (to be created)
-export { formatNumber, formatDate, getContextPool } from './utils';
+// Re-export utilities
+export {
+  formatNumber,
+  formatDate,
+  getContextPool,
+  getRandomContext,
+  getRandomContexts,
+  parseNumber,
+} from './utils';
+
+// Re-export context selector
+export { ContextSelector, createContextSelector } from './context-selector';
