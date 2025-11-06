@@ -84,7 +84,7 @@
     - Add parameter relationship handling (dependent parameters)
     - _Requirements: 3.3, 11.2_
   
-  - [ ] 4.3 Implement exercise instance generator
+  - [x] 4.3 Implement exercise instance generator
     - Create instance generation function (template + seed → instance)
     - Build question text rendering with parameter substitution
     - Implement correct answer computation
