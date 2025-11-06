@@ -12,6 +12,10 @@ import { additionTemplates } from './addition';
 import { subtractionTemplates } from './subtraction';
 import { multiplicationTemplates } from './multiplication';
 import { divisionTemplates } from './division';
+import { numberComparisonTemplates } from './number-comparison';
+import { placeValueIdentificationTemplates } from './place-value-identification';
+import { numberOrderingTemplates } from './number-ordering';
+import { roundingTemplates } from './rounding';
 import { registerTemplate } from '../../template-registry';
 
 // Export all templates
@@ -19,6 +23,10 @@ export { additionTemplates } from './addition';
 export { subtractionTemplates } from './subtraction';
 export { multiplicationTemplates } from './multiplication';
 export { divisionTemplates } from './division';
+export { numberComparisonTemplates } from './number-comparison';
+export { placeValueIdentificationTemplates } from './place-value-identification';
+export { numberOrderingTemplates } from './number-ordering';
+export { roundingTemplates } from './rounding';
 
 // Combine all templates
 export const talOgAlgebraTemplates = [
@@ -26,6 +34,10 @@ export const talOgAlgebraTemplates = [
   ...subtractionTemplates,
   ...multiplicationTemplates,
   ...divisionTemplates,
+  ...numberComparisonTemplates,
+  ...placeValueIdentificationTemplates,
+  ...numberOrderingTemplates,
+  ...roundingTemplates,
 ];
 
 /**

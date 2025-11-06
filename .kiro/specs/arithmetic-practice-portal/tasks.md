@@ -108,7 +108,7 @@
     - Map templates to Tal og Algebra competency and skills areas
     - _Requirements: 3.1, 3.2, 3.5_
   
-  - [ ] 5.2 Implement place value and number sense templates
+  - [x] 5.2 Implement place value and number sense templates
     - Create number comparison template (greater/less than)
     - Create place value identification template
     - Create number ordering template
