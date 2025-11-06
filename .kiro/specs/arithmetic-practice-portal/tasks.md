@@ -63,7 +63,7 @@
     - Build answer normalization to accept both formats
     - _Requirements: 2.7_
   
-  - [ ] 3.4 Configure Weblate integration
+  - [x] 3.4 Configure Weblate integration
     - Set up Git-based Weblate synchronization
     - Create Weblate configuration for translation components
     - Document translation workflow for contributors

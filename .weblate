@@ -1,0 +1,49 @@
+# Weblate Configuration for Arithmetic Practice Portal
+#
+# This file configures Weblate's Git integration for collaborative translation management.
+# Weblate will use this configuration to automatically sync translations between the Git
+# repository and the Weblate platform.
+#
+# For more information on Weblate configuration, see:
+# https://docs.weblate.org/en/latest/admin/continuous.html
+
+[weblate]
+# Repository URL for Weblate to clone from
+url = https://github.com/edbpede/math
+
+# Branch to use for translations
+branch = main
+
+# Path to translation files (relative to repository root)
+filemask = src/locales/*/%(component)s.json
+
+# Template for new languages (Danish is the source language)
+template = src/locales/da-DK/%(component)s.json
+
+# File format for translation files
+file_format = json-nested
+
+# Add new language files automatically when creating a new language
+new_lang = add
+
+# Commit message template for translation updates from Weblate
+commit_message = "i18n: Update %(language)s translations for %(component)s\n\n%(translation_info)s"
+
+# Commit message for adding new translations
+add_message = "i18n: Add %(language)s translations for %(component)s"
+
+# Commit message for removing translations
+delete_message = "i18n: Remove %(language)s translations for %(component)s"
+
+# Merge style for incoming changes (rebase preferred for clean history)
+merge_style = rebase
+
+# Push changes back to the repository
+push_on_commit = yes
+
+# Set up a separate branch for Weblate commits (optional, but recommended)
+push_branch = weblate-translations
+
+# Author information for commits made by Weblate
+committer_name = Weblate
+committer_email = noreply@weblate.org

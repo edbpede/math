@@ -1,0 +1,209 @@
+# Weblate Component Configuration
+#
+# This file defines all translation components for the Arithmetic Practice Portal.
+# Each component represents a category of translations (common UI, auth, exercises, etc.).
+#
+# Danish (da-DK) is the source language, and English (en-US) is initially supported.
+# Additional languages can be added through the Weblate interface.
+#
+# Documentation: https://docs.weblate.org/en/latest/formats.html
+
+# Project information
+project:
+  name: Arithmetic Practice Portal
+  slug: arithmetic-practice-portal
+  web: https://github.com/edbpede/math
+
+# Common settings for all components
+defaults:
+  # File format (JSON with nested structure)
+  file_format: json-nested
+
+  # Source language (Danish)
+  source_language: da-DK
+
+  # Branch to use
+  branch: main
+
+  # Enable translation memory
+  translation_memory: true
+
+  # Enable glossary
+  use_glossary: true
+
+  # Enable automatic suggestions
+  suggestion_autoaccept: 0
+
+  # Check flags for quality assurance
+  check_flags:
+    - placeholders:{{.*?}}
+    - json-nested
+    - safe-html
+
+  # Enable translation propagation between components
+  allow_translation_propagation: true
+
+  # Merge style
+  merge_style: rebase
+
+  # Commit message template
+  commit_message: 'i18n: Update {{language}} translations for {{component}}'
+
+  # Add message template
+  add_message: 'i18n: Add {{language}} translations for {{component}}'
+
+  # Push to branch
+  push_branch: weblate-translations
+
+# Translation components
+components:
+  # Common UI strings (buttons, labels, status messages)
+  - name: Common UI
+    slug: common
+    filemask: src/locales/*/common.json
+    template: src/locales/da-DK/common.json
+    description: |
+      Common user interface strings including buttons, actions, status messages,
+      time units, and general labels used throughout the application.
+    context: |
+      This component contains the most frequently used strings in the application.
+      Maintain consistency with standard UI patterns and terminology.
+
+  # Authentication strings (UUID generation, login, session)
+  - name: Authentication
+    slug: auth
+    filemask: src/locales/*/auth.json
+    template: src/locales/da-DK/auth.json
+    description: |
+      Authentication-related strings for UUID generation, login, session management,
+      and account operations.
+    context: |
+      The platform uses anonymous UUID-based authentication. No personal data is collected.
+      Emphasize privacy and the importance of saving the practice number (UUID).
+
+  # Navigation strings (menu items, breadcrumbs, page titles)
+  - name: Navigation
+    slug: navigation
+    filemask: src/locales/*/navigation.json
+    template: src/locales/da-DK/navigation.json
+    description: |
+      Navigation menu items, page titles, breadcrumbs, and routing-related strings.
+    context: |
+      Keep navigation labels concise and clear. They appear in menus and headers.
+
+  # Competency area descriptions (Danish curriculum mapping)
+  - name: Competencies
+    slug: competencies
+    filemask: src/locales/*/competencies.json
+    template: src/locales/da-DK/competencies.json
+    description: |
+      Competency areas and skills areas aligned with Danish Fælles Mål curriculum.
+      Includes mathematical competencies, number algebra, geometry, and statistics.
+    context: |
+      These translations must accurately reflect mathematical concepts and curriculum standards.
+      Refer to the glossary for approved mathematical terminology.
+
+  # Exercise strings (questions, instructions, difficulty levels)
+  - name: Exercises
+    slug: exercises
+    filemask: src/locales/*/exercises.json
+    template: src/locales/da-DK/exercises.json
+    description: |
+      Exercise session strings including instructions, progress indicators,
+      difficulty levels, and session management.
+    context: |
+      These strings appear during practice sessions. Use encouraging, student-friendly language
+      appropriate for grades 0-9.
+
+  # Feedback messages (correct/incorrect, encouragement)
+  - name: Feedback
+    slug: feedback
+    filemask: src/locales/*/feedback.json
+    template: src/locales/da-DK/feedback.json
+    description: |
+      Feedback messages shown after answer submission, including positive reinforcement
+      for correct answers and gentle correction for incorrect answers.
+    context: |
+      Maintain a supportive, non-judgmental tone. Avoid negative language.
+      Feedback should encourage learning and build confidence.
+
+  # Hint system strings (hint levels, strategies)
+  - name: Hints
+    slug: hints
+    filemask: src/locales/*/hints.json
+    template: src/locales/da-DK/hints.json
+    description: |
+      Progressive hint system strings including hint level descriptions,
+      hint usage tracking, and solution presentation.
+    context: |
+      Hints are penalty-free and designed to guide students to solutions.
+      Use clear, pedagogical language that teaches problem-solving strategies.
+
+  # Context pools (names, places, scenarios for exercises)
+  - name: Contexts
+    slug: contexts
+    filemask: src/locales/*/contexts.json
+    template: src/locales/da-DK/contexts.json
+    description: |
+      Language-specific context pools including names, places, currency, and items
+      used to create culturally appropriate exercise scenarios.
+    context: |
+      These are the "building blocks" for word problems. Names and places should be
+      culturally appropriate for the target language. Maintain gender diversity in names.
+
+  # Error messages (validation errors, network errors)
+  - name: Errors
+    slug: errors
+    filemask: src/locales/*/errors.json
+    template: src/locales/da-DK/errors.json
+    description: |
+      Error messages for validation errors, network issues, and unexpected problems.
+    context: |
+      Error messages should be clear, actionable, and non-technical.
+      Always provide guidance on how to resolve the issue.
+
+# Language configuration
+languages:
+  - code: da-DK
+    name: Danish (Denmark)
+    direction: ltr
+    plural_forms: nplurals=2; plural=(n != 1)
+
+  - code: en-US
+    name: English (United States)
+    direction: ltr
+    plural_forms: nplurals=2; plural=(n != 1)
+
+# Workflow configuration
+workflow:
+  # Translation states
+  states:
+    - new
+    - needs-editing
+    - translated
+    - approved
+
+  # Require approval for translations
+  enable_review: true
+
+  # Auto-approve for certain roles
+  auto_approve:
+    - owner
+    - power-user
+
+# Addons to enable
+addons:
+  # Automatically add missing translations from source
+  - name: weblate.discovery.discovery
+
+  # Cleanup unused strings
+  - name: weblate.cleanup.generic
+
+  # Check for consistency
+  - name: weblate.consistency.consistency
+
+  # Update language files
+  - name: weblate.gettext.msgmerge
+
+  # Generate screenshots for context
+  - name: weblate.screenshots.screenshots
