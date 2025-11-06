@@ -21,7 +21,7 @@ inclusion: always
 
 ## Build System
 
-- **Package Manager**: npm
+- **Package Manager**: Bun
 - **Module System**: ES Modules (`"type": "module"`)
 - **JSX Runtime**: SolidJS (`jsxImportSource: "solid-js"`)
 - **Type Checking**: TypeScript strict mode with path aliases
@@ -30,11 +30,11 @@ inclusion: always
 
 Run all commands from the project root:
 
-- `npm install` - Install dependencies
-- `npm run dev` - Start development server at `localhost:4321`
-- `npm run build` - Build production site to `./dist/`
-- `npm run preview` - Preview production build locally
-- `npm run astro` - Run Astro CLI commands
+- `bun install` - Install dependencies
+- `bun run dev` - Start development server at `localhost:4321`
+- `bun run build` - Build production site to `./dist/`
+- `bun run preview` - Preview production build locally
+- `bun run astro` - Run Astro CLI commands
 
 ## Key Dependencies (to be added)
 
