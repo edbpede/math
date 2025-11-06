@@ -70,7 +70,7 @@
     - _Requirements: 10.1, 10.2, 10.3, 10.4_
 
 - [ ] 4. Implement exercise generation engine
-  - [ ] 4.1 Build template registry system
+  - [x] 4.1 Build template registry system
     - Create template registry class with indexing by multiple criteria
     - Implement template registration function with validation
     - Build template selection algorithm with filtering and weighting
