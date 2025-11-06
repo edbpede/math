@@ -19,7 +19,12 @@
   },
   "common": {
     "noHint": "Ingen hint tilgængeligt for denne opgave.",
-    "allHintsShown": "Alle hints er nu vist.",
-    "hintProgress": "Hint {{current}} af {{total}}"
+    "getHint": "Få et hint",
+    "getNextHint": "Få næste hint",
+    "allHintsShown": "Alle hints er nu vist",
+    "hintProgress": "Hint {{current}} af {{total}}",
+    "hintLevel": "Hint niveau",
+    "visualAid": "Visuel hjælp",
+    "revealedHints": "Viste hints"
   }
 }

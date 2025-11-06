@@ -19,7 +19,12 @@
   },
   "common": {
     "noHint": "No hint available for this exercise.",
-    "allHintsShown": "All hints are now shown.",
-    "hintProgress": "Hint {{current}} of {{total}}"
+    "getHint": "Get a Hint",
+    "getNextHint": "Get Next Hint",
+    "allHintsShown": "All hints are now shown",
+    "hintProgress": "Hint {{current}} of {{total}}",
+    "hintLevel": "Hint level",
+    "visualAid": "Visual aid",
+    "revealedHints": "Revealed hints"
   }
 }

@@ -99,7 +99,7 @@
     - Support multiple correct answer formats
     - _Requirements: 3.6, 8.1_
 
-- [ ] 5. Create starter exercise templates for Tal og Algebra
+- [x] 5. Create starter exercise templates for Tal og Algebra
   - [x] 5.1 Implement basic arithmetic templates (grades 0-3)
     - Create addition template (single and double digit)
     - Create subtraction template (single and double digit)
@@ -123,7 +123,7 @@
     - _Requirements: 3.1, 3.2_
 
 - [ ] 6. Implement progressive hint system
-  - [ ] 6.1 Create hint generation framework
+  - [x] 6.1 Create hint generation framework
     - Build hint level structure (4 progressive levels)
     - Implement hint generation function per template
     - Create hint display component with level progression
