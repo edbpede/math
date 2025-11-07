@@ -1,0 +1,271 @@
+---
+/**
+ * UUID Login Demo Page
+ *
+ * Test page for the UUIDLogin island component.
+ * Tests all features including real-time formatting, validation,
+ * "remember device", rate limiting, and accessibility.
+ */
+import UUIDLogin from '@/components/islands/UUIDLogin';
+import '@unocss/reset/tailwind.css';
+
+const title = 'UUID Login Demo';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="UUID Login Component Demo" />
+    <title>{title}</title>
+  </head>
+  <body class="bg-gray-50 min-h-screen py-8 px-4">
+    <div class="max-w-4xl mx-auto">
+      <header class="mb-8 text-center">
+        <h1 class="text-4xl font-bold text-gray-900 mb-2">{title}</h1>
+        <p class="text-gray-600">
+          Test page for the UUIDLogin island component
+        </p>
+      </header>
+
+      <main class="space-y-12">
+        {/* Test 1: Default Login Form */}
+        <section class="demo-section bg-white rounded-lg shadow-lg p-6">
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">
+            Test 1: Default Login Form
+          </h2>
+          <p class="text-gray-600 mb-6">
+            Standard login form with default redirect to /dashboard
+          </p>
+          <UUIDLogin client:load />
+        </section>
+
+        {/* Test 2: Custom Redirect URL */}
+        <section class="demo-section bg-white rounded-lg shadow-lg p-6">
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">
+            Test 2: Custom Redirect URL
+          </h2>
+          <p class="text-gray-600 mb-6">
+            Login form with custom redirect to /practice
+          </p>
+          <UUIDLogin redirectTo="/practice" client:load />
+        </section>
+
+        {/* Test 3: With Custom Styling */}
+        <section class="demo-section bg-white rounded-lg shadow-lg p-6">
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">
+            Test 3: With Custom Styling
+          </h2>
+          <p class="text-gray-600 mb-6">
+            Login form with custom CSS class for additional styling
+          </p>
+          <UUIDLogin class="p-6 bg-blue-50 rounded-lg" client:load />
+        </section>
+
+        {/* Testing Instructions */}
+        <section class="testing-instructions bg-blue-50 rounded-lg border-2 border-blue-300 p-6">
+          <h2 class="text-2xl font-bold text-blue-900 mb-4">
+            Testing Instructions
+          </h2>
+          <div class="space-y-4">
+            <div>
+              <h3 class="font-bold text-blue-900 mb-2">Features to Test:</h3>
+              <ul class="list-disc list-inside space-y-2 text-gray-700">
+                <li>Real-time UUID formatting as you type (XXXX-XXXX-XXXX-XXXX)</li>
+                <li>Input validation on blur (try entering invalid characters)</li>
+                <li>Form validation on submit (try submitting empty or invalid UUID)</li>
+                <li>"Remember this device" checkbox functionality</li>
+                <li>localStorage persistence (check after page reload)</li>
+                <li>Rate limiting after 5 failed attempts</li>
+                <li>Countdown timer display during rate limit</li>
+                <li>Error messages for different scenarios:
+                  <ul class="ml-6 mt-2 space-y-1">
+                    <li>• Invalid format</li>
+                    <li>• UUID not found (404)</li>
+                    <li>• Network errors</li>
+                  </ul>
+                </li>
+                <li>Loading state during API call</li>
+                <li>Button disabled states (empty input, rate limited)</li>
+                <li>Auto-fill from remembered UUID on page load</li>
+                <li>Paste handling (try pasting UUID with/without dashes)</li>
+                <li>Character limit enforcement (max 16 hex chars)</li>
+                <li>Case insensitivity (uppercase letters converted to lowercase)</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="font-bold text-blue-900 mb-2">Test Scenarios:</h3>
+              <div class="space-y-3 text-gray-700">
+                <div class="bg-white p-3 rounded border border-blue-200">
+                  <p class="font-medium mb-1">Scenario 1: Valid Login</p>
+                  <p class="text-sm">
+                    1. Generate a UUID using the UUID Generator demo page<br />
+                    2. Copy the UUID<br />
+                    3. Return to this page and paste it in the login form<br />
+                    4. Check "Remember this device"<br />
+                    5. Submit the form<br />
+                    6. Should redirect to dashboard (or show 404 if user doesn't exist yet)
+                  </p>
+                </div>
+
+                <div class="bg-white p-3 rounded border border-blue-200">
+                  <p class="font-medium mb-1">Scenario 2: Real-time Formatting</p>
+                  <p class="text-sm">
+                    1. Clear the input field<br />
+                    2. Type characters one by one: "1234567890abcdef"<br />
+                    3. Watch as dashes are automatically inserted: "1234-5678-90ab-cdef"<br />
+                    4. Try pasting "1234567890ABCDEF" (uppercase)<br />
+                    5. Should format and convert to lowercase
+                  </p>
+                </div>
+
+                <div class="bg-white p-3 rounded border border-blue-200">
+                  <p class="font-medium mb-1">Scenario 3: Validation Errors</p>
+                  <p class="text-sm">
+                    1. Enter invalid characters: "test-test-test-test"<br />
+                    2. Click outside the input (blur)<br />
+                    3. Should show "Invalid format" error<br />
+                    4. Try submitting with invalid format<br />
+                    5. Error message should persist
+                  </p>
+                </div>
+
+                <div class="bg-white p-3 rounded border border-blue-200">
+                  <p class="font-medium mb-1">Scenario 4: Rate Limiting</p>
+                  <p class="text-sm">
+                    1. Enter a non-existent UUID: "9999-9999-9999-9999"<br />
+                    2. Submit the form 5 times<br />
+                    3. After 5th attempt, should see rate limit message<br />
+                    4. Watch the countdown timer (60 seconds)<br />
+                    5. Submit button should be disabled<br />
+                    6. After countdown, should be able to retry
+                  </p>
+                </div>
+
+                <div class="bg-white p-3 rounded border border-blue-200">
+                  <p class="font-medium mb-1">Scenario 5: Remember Device</p>
+                  <p class="text-sm">
+                    1. Enter a UUID and check "Remember this device"<br />
+                    2. Attempt to login (success or fail doesn't matter for this test)<br />
+                    3. Reload the page<br />
+                    4. UUID should be pre-filled<br />
+                    5. Checkbox should be checked<br />
+                    6. Uncheck the box and login again<br />
+                    7. Reload the page - UUID should be cleared
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 class="font-bold text-blue-900 mb-2">Accessibility Testing:</h3>
+              <ul class="list-disc list-inside space-y-2 text-gray-700">
+                <li>Keyboard navigation: Tab through all form elements</li>
+                <li>Enter key should submit the form</li>
+                <li>Focus indicators should be visible on all interactive elements</li>
+                <li>Error messages should be announced by screen readers (aria-live)</li>
+                <li>All buttons meet 44×44px minimum touch target size</li>
+                <li>Color contrast meets WCAG 2.1 AA standards (4.5:1)</li>
+                <li>Form labels properly associated with inputs</li>
+                <li>ARIA attributes correctly set (aria-invalid, aria-describedby)</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="font-bold text-blue-900 mb-2">localStorage Inspection:</h3>
+              <p class="text-gray-700">
+                Open browser DevTools → Application/Storage → Local Storage<br />
+                Look for key: <code class="bg-gray-200 px-2 py-1 rounded">math-remember-uuid</code><br />
+                Value should contain the formatted UUID when "Remember this device" is checked
+              </p>
+            </div>
+
+            <div>
+              <h3 class="font-bold text-blue-900 mb-2">Network Inspection:</h3>
+              <p class="text-gray-700">
+                Open browser DevTools → Network tab<br />
+                Filter by: <code class="bg-gray-200 px-2 py-1 rounded">/api/auth/signin</code><br />
+                Check request body, response codes (200, 400, 404, 500), and Set-Cookie header
+              </p>
+            </div>
+
+            <div>
+              <h3 class="font-bold text-blue-900 mb-2">Expected Behaviors:</h3>
+              <ul class="list-disc list-inside space-y-2 text-gray-700">
+                <li>Input accepts only alphanumeric characters (0-9, a-f, A-F)</li>
+                <li>Dashes auto-inserted at positions 4, 8, and 12</li>
+                <li>Maximum length: 19 characters (16 hex + 3 dashes)</li>
+                <li>Submit button disabled when input is empty or during submission</li>
+                <li>Error messages clear when user starts typing again</li>
+                <li>Validation errors appear both on blur and on submit</li>
+                <li>Rate limit counter shows attempts remaining (5, 4, 3, 2, 1, 0)</li>
+                <li>Rate limit countdown updates every second</li>
+                <li>Successful login redirects to specified page</li>
+                <li>Session cookie set in response (httpOnly, secure, sameSite)</li>
+              </ul>
+            </div>
+
+            <div class="bg-orange-100 border border-orange-400 rounded p-4">
+              <h3 class="font-bold text-orange-900 mb-2">⚠️ Important Notes:</h3>
+              <ul class="list-disc list-inside space-y-2 text-orange-800">
+                <li>
+                  To test successful login, you need to first create a user using the UUID Generator
+                </li>
+                <li>
+                  The API will return 404 (UUID_NOT_FOUND) if the UUID doesn't exist in the database
+                </li>
+                <li>
+                  Rate limiting is enforced client-side for demo purposes (real implementation should also have server-side rate limiting)
+                </li>
+                <li>
+                  This is a demo page - actual production login page would be at a different route
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        {/* Quick Reference */}
+        <section class="quick-reference bg-green-50 rounded-lg border-2 border-green-300 p-6">
+          <h2 class="text-2xl font-bold text-green-900 mb-4">
+            Quick Reference: Valid Test UUIDs
+          </h2>
+          <p class="text-gray-700 mb-4">
+            Use these format examples for testing input validation:
+          </p>
+          <div class="space-y-2 font-mono text-sm">
+            <div class="bg-white p-2 rounded border border-green-300">
+              <span class="text-green-700 font-bold">Valid:</span> 1234-5678-90ab-cdef
+            </div>
+            <div class="bg-white p-2 rounded border border-green-300">
+              <span class="text-green-700 font-bold">Valid:</span> abcd-ef01-2345-6789
+            </div>
+            <div class="bg-white p-2 rounded border border-green-300">
+              <span class="text-green-700 font-bold">Valid (uppercase):</span> ABCD-EF01-2345-6789
+            </div>
+            <div class="bg-white p-2 rounded border border-red-300">
+              <span class="text-red-700 font-bold">Invalid:</span> test-test-test-test (non-hex)
+            </div>
+            <div class="bg-white p-2 rounded border border-red-300">
+              <span class="text-red-700 font-bold">Invalid:</span> 1234-5678 (too short)
+            </div>
+            <div class="bg-white p-2 rounded border border-red-300">
+              <span class="text-red-700 font-bold">Invalid:</span> 1234-5678-90ab-cdef-extra (too long)
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="mt-12 text-center text-gray-500 text-sm">
+        <p>UUID Login Component Demo • Development Only</p>
+        <p class="mt-2">
+          <a href="/demo-uuid" class="text-blue-600 hover:underline">
+            Need a UUID? Generate one here →
+          </a>
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>
