@@ -136,7 +136,7 @@
     - Add visual aids for geometric and visual problems
     - _Requirements: 4.3, 8.4_
 
-- [ ] 7. Build mastery tracking and SRS system
+- [x] 7. Build mastery tracking and SRS system
   - [x] 7.1 Implement mastery calculation engine
     - Create mastery score computation from recent performance
     - Add response speed weighting to mastery calculation
@@ -161,7 +161,7 @@
     - _Requirements: 5.6_
 
 - [ ] 8. Create core UI components with SolidJS
-  - [ ] 8.1 Build UUID generation and display component
+  - [x] 8.1 Build UUID generation and display component
     - Create UUIDGenerator island component
     - Implement copy to clipboard functionality
     - Add download as text file feature

@@ -1,0 +1,133 @@
+---
+/**
+ * UUID Generator Demo Page
+ *
+ * Test page for the UUIDGenerator island component.
+ * Tests all features including generation, copy, download, and QR code.
+ */
+import UUIDGenerator from '@/components/islands/UUIDGenerator';
+import '@unocss/reset/tailwind.css';
+
+const title = 'UUID Generator Demo';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="UUID Generator Component Demo" />
+    <title>{title}</title>
+  </head>
+  <body class="bg-gray-50 min-h-screen py-8 px-4">
+    <div class="max-w-4xl mx-auto">
+      <header class="mb-8 text-center">
+        <h1 class="text-4xl font-bold text-gray-900 mb-2">{title}</h1>
+        <p class="text-gray-600">
+          Test page for the UUIDGenerator island component
+        </p>
+      </header>
+
+      <main class="space-y-12">
+        {/* Test 1: Auto-generate (English, Grade 0-3) */}
+        <section class="demo-section bg-white rounded-lg shadow-lg p-6">
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">
+            Test 1: Auto-generate (English, Grade 0-3)
+          </h2>
+          <p class="text-gray-600 mb-6">
+            Component should automatically generate a UUID on mount
+          </p>
+          <UUIDGenerator
+            gradeRange="0-3"
+            locale="en-US"
+            autoGenerate={true}
+            onComplete={(uuid) => console.log('Generated UUID (Test 1):', uuid)}
+            client:load
+          />
+        </section>
+
+        {/* Test 2: Manual generation (Danish, Grade 4-6) */}
+        <section class="demo-section bg-white rounded-lg shadow-lg p-6">
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">
+            Test 2: Manual generation (Danish, Grade 4-6)
+          </h2>
+          <p class="text-gray-600 mb-6">
+            Component should display a button to manually trigger UUID generation
+          </p>
+          <UUIDGenerator
+            gradeRange="4-6"
+            locale="da-DK"
+            autoGenerate={false}
+            onComplete={(uuid) => console.log('Generated UUID (Test 2):', uuid)}
+            client:load
+          />
+        </section>
+
+        {/* Test 3: Grade 7-9 (English) */}
+        <section class="demo-section bg-white rounded-lg shadow-lg p-6">
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">
+            Test 3: Grade 7-9 (English)
+          </h2>
+          <p class="text-gray-600 mb-6">
+            Testing with older grade range
+          </p>
+          <UUIDGenerator
+            gradeRange="7-9"
+            locale="en-US"
+            autoGenerate={false}
+            onComplete={(uuid) => console.log('Generated UUID (Test 3):', uuid)}
+            client:load
+          />
+        </section>
+
+        {/* Testing Instructions */}
+        <section class="testing-instructions bg-blue-50 rounded-lg border-2 border-blue-300 p-6">
+          <h2 class="text-2xl font-bold text-blue-900 mb-4">
+            Testing Instructions
+          </h2>
+          <div class="space-y-4">
+            <div>
+              <h3 class="font-bold text-blue-900 mb-2">Features to Test:</h3>
+              <ul class="list-disc list-inside space-y-2 text-gray-700">
+                <li>Auto-generate on mount (Test 1)</li>
+                <li>Manual generation with button click (Test 2, 3)</li>
+                <li>UUID display in formatted style (XXXX-XXXX-XXXX-XXXX)</li>
+                <li>Copy to clipboard button (should show success feedback)</li>
+                <li>Download as text file (should download with date in filename)</li>
+                <li>QR code display (should show/hide on button click)</li>
+                <li>QR code scanning (use mobile device camera)</li>
+                <li>Locale switching (compare Test 1/3 vs Test 2 for translations)</li>
+                <li>Error handling (check browser console if API fails)</li>
+                <li>Loading state during generation</li>
+                <li>Keyboard navigation (Tab through all buttons)</li>
+                <li>Screen reader compatibility (test with assistive technology)</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-bold text-blue-900 mb-2">Expected Behaviors:</h3>
+              <ul class="list-disc list-inside space-y-2 text-gray-700">
+                <li>Copy button changes to checkmark for 2 seconds after copying</li>
+                <li>Downloaded file includes UUID, timestamp, and instructions</li>
+                <li>QR code is 256×256px and scannable with mobile devices</li>
+                <li>All buttons meet 44×44px minimum touch target size</li>
+                <li>Focus indicators visible on all interactive elements</li>
+                <li>Component is responsive on mobile and desktop</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-bold text-blue-900 mb-2">Browser Console:</h3>
+              <p class="text-gray-700">
+                Check the browser console for generated UUIDs and any errors.
+                Each test logs its UUID with a label (Test 1, Test 2, Test 3).
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="mt-12 text-center text-gray-500 text-sm">
+        <p>UUID Generator Component Demo • Development Only</p>
+      </footer>
+    </div>
+  </body>
+</html>
