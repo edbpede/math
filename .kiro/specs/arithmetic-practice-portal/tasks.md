@@ -145,7 +145,7 @@
     - Add time decay for older performance data
     - _Requirements: 5.2, 5.7_
   
-  - [ ] 7.2 Implement SuperMemo 2 spaced repetition algorithm
+  - [x] 7.2 Implement SuperMemo 2 spaced repetition algorithm
     - Create SRS parameter initialization (ease factor, interval, repetition count)
     - Implement interval calculation on correct answers (exponential growth)
     - Add interval reset logic on incorrect answers
