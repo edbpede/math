@@ -6,6 +6,7 @@
  */
 
 import { beforeEach, afterEach, vi } from 'vitest';
+import 'fake-indexeddb/auto';
 
 // Only set up browser-specific mocks if we're in a browser environment
 if (typeof window !== 'undefined') {

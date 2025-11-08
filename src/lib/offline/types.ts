@@ -110,3 +110,138 @@ export interface AssetManifest {
   assets: AssetManifestEntry[]
 }
 
+/**
+ * IndexedDB Storage Types
+ *
+ * Type definitions for offline data storage in IndexedDB.
+ * Requirement 6.2: Store exercise history and progress data in IndexedDB
+ */
+
+import type { ExerciseInstance } from '../exercises/types'
+import type { CompetencyProgress, SkillProgress, ExerciseAttempt } from '../mastery/types'
+
+/**
+ * Exercise cache entry for pre-generated exercise instances
+ */
+export interface ExerciseCacheEntry {
+  /** The cached exercise instance */
+  instance: ExerciseInstance
+  /** Timestamp when the exercise was generated and cached */
+  generatedAt: Date
+  /** Whether this exercise has been used (presented to user) */
+  used: boolean
+}
+
+/**
+ * Sync queue item types (discriminated union)
+ */
+export type SyncQueueItemType = 'exercise_complete' | 'progress_update' | 'session_end'
+
+/**
+ * Base sync queue item
+ */
+interface BaseSyncQueueItem {
+  /** Unique ID for the queue item (auto-generated) */
+  id?: number
+  /** Timestamp when item was added to queue */
+  timestamp: Date
+  /** Number of sync retry attempts */
+  retries: number
+}
+
+/**
+ * Exercise completion sync item
+ */
+export interface ExerciseCompleteSyncItem extends BaseSyncQueueItem {
+  type: 'exercise_complete'
+  data: ExerciseAttempt
+}
+
+/**
+ * Progress update sync item
+ */
+export interface ProgressUpdateSyncItem extends BaseSyncQueueItem {
+  type: 'progress_update'
+  data: {
+    competencyProgress?: CompetencyProgress[]
+    skillsProgress?: SkillProgress[]
+  }
+}
+
+/**
+ * Session end sync item
+ */
+export interface SessionEndSyncItem extends BaseSyncQueueItem {
+  type: 'session_end'
+  data: {
+    sessionId: string
+    endedAt: Date
+    totalExercises: number
+    correctCount: number
+    avgTimePerExerciseSeconds: number
+  }
+}
+
+/**
+ * Discriminated union of all sync queue item types
+ */
+export type SyncQueueItem = 
+  | ExerciseCompleteSyncItem 
+  | ProgressUpdateSyncItem 
+  | SessionEndSyncItem
+
+/**
+ * Progress cache types
+ */
+export type ProgressCacheType = 'competency' | 'skills' | 'history'
+
+/**
+ * Progress cache entry with expiration
+ */
+export interface ProgressCacheEntry {
+  /** The cached data (structure depends on cache type) */
+  data: unknown
+  /** Timestamp when data was cached */
+  cachedAt: Date
+  /** Timestamp when cache expires */
+  expiresAt: Date
+}
+
+/**
+ * User preference entry
+ */
+export interface PreferenceEntry {
+  /** Preference key */
+  key: string
+  /** Preference value */
+  value: unknown
+}
+
+/**
+ * IndexedDB database schema
+ *
+ * Defines the structure of the offline database with 4 object stores.
+ */
+export interface OfflineDatabase {
+  /** Exercise instance cache store */
+  exercises: {
+    key: string
+    value: ExerciseCacheEntry
+  }
+  /** Sync queue store for pending operations */
+  syncQueue: {
+    key: number
+    value: SyncQueueItem
+  }
+  /** Progress cache store */
+  progressCache: {
+    key: ProgressCacheType
+    value: ProgressCacheEntry
+  }
+  /** User preferences store */
+  preferences: {
+    key: string
+    value: PreferenceEntry
+  }
+}
+

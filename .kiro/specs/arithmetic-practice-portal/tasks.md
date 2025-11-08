@@ -256,7 +256,7 @@
     - Add exercise template caching
     - _Requirements: 6.1, 6.2_
   
-  - [ ] 10.2 Build IndexedDB storage layer
+  - [x] 10.2 Build IndexedDB storage layer
     - Create IndexedDB wrapper with typed stores
     - Implement exercise instance cache store
     - Build sync queue store for pending updates
