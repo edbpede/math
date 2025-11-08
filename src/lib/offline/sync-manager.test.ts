@@ -136,7 +136,8 @@ describe('SyncManager', () => {
       // The manager defaults to true when navigator is not available
       const status = syncManager.getOnlineStatus()
       // Status should be a boolean value (true or false)
-      expect([true, false]).toContain(status)
+      expect(status).toBeTypeOf('boolean')
+      expect(status === true || status === false).toBe(true)
     })
 
     it('should report syncing status', () => {
@@ -207,22 +208,49 @@ describe('SyncManager', () => {
     })
 
     it('should throw error when offline', async () => {
-      // Mock offline state
-      Object.defineProperty(navigator, 'onLine', {
-        writable: true,
-        value: false,
-      })
+      // Mock offline state - need to trigger the offline event handler
+      if (typeof window !== 'undefined') {
+        Object.defineProperty(navigator, 'onLine', {
+          writable: true,
+          configurable: true,
+          value: false,
+        })
+        // Trigger offline event to update sync manager state
+        window.dispatchEvent(new Event('offline'))
+      } else {
+        // In Node environment, manually set offline state via the private property
+        // This is a test-only workaround
+        ;(syncManager as any).isOnline = false
+      }
 
       await expect(syncManager.manualSync()).rejects.toThrow('Cannot sync while offline')
 
       // Restore online state
-      Object.defineProperty(navigator, 'onLine', {
-        writable: true,
-        value: true,
-      })
+      if (typeof window !== 'undefined') {
+        Object.defineProperty(navigator, 'onLine', {
+          writable: true,
+          configurable: true,
+          value: true,
+        })
+        window.dispatchEvent(new Event('online'))
+      } else {
+        ;(syncManager as any).isOnline = true
+      }
     })
 
     it('should return 0 when queue is empty', async () => {
+      // Ensure online state for this test
+      if (typeof window !== 'undefined') {
+        Object.defineProperty(navigator, 'onLine', {
+          writable: true,
+          configurable: true,
+          value: true,
+        })
+        window.dispatchEvent(new Event('online'))
+      } else {
+        ;(syncManager as any).isOnline = true
+      }
+      
       ;(offlineStorage.getSyncQueueCount as any).mockResolvedValue(0)
 
       const count = await syncManager.manualSync()

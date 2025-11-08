@@ -222,9 +222,12 @@ export class OfflineStorage {
   async getUnusedExercises(limit?: number): Promise<ExerciseInstance[]> {
     try {
       const db = await this.getDB()
-      const index = db.transaction('exercises').objectStore('exercises').index('used')
-      const entries = await index.getAll(IDBKeyRange.only(false), limit)
-      return entries.map(entry => entry.instance)
+      const store = db.transaction('exercises').objectStore('exercises')
+      // Get all entries and filter because fake-indexeddb may not support boolean keys in IDBKeyRange
+      const allEntries = await store.getAll()
+      const unusedEntries = allEntries.filter(entry => entry.used === false)
+      const limitedEntries = limit ? unusedEntries.slice(0, limit) : unusedEntries
+      return limitedEntries.map(entry => entry.instance)
     } catch (error) {
       throw new StorageError(
         'Failed to get unused exercises',

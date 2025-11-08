@@ -284,7 +284,12 @@ function getEndOfWeek(date: Date): Date {
  */
 export function formatReviewDate(date: Date): string {
   const now = new Date();
-  const diffMs = date.getTime() - now.getTime();
+  
+  // Use calendar days instead of 24-hour periods for more intuitive formatting
+  // Normalize both dates to midnight in UTC for accurate day comparison
+  const nowUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  const targetUTC = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  const diffMs = targetUTC.getTime() - nowUTC.getTime();
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
   if (diffDays < 0) {

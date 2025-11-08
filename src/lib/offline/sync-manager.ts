@@ -85,7 +85,10 @@ export class SyncManager {
 
   constructor(config: Partial<SyncManagerConfig> = {}) {
     this.config = { ...DEFAULT_CONFIG, ...config }
-    this.isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true
+    // Ensure isOnline is always a boolean, defaulting to true if navigator is unavailable
+    this.isOnline = typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean' 
+      ? navigator.onLine 
+      : true
     this.isSyncing = false
   }
 
@@ -116,7 +119,10 @@ export class SyncManager {
     }
 
     // Check initial connection status
-    this.isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true
+    // Ensure isOnline is always a boolean, defaulting to true if navigator is unavailable
+    this.isOnline = typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean'
+      ? navigator.onLine
+      : true
     console.log('[SyncManager] Initial connection status:', this.isOnline ? 'online' : 'offline')
 
     // Emit network change event

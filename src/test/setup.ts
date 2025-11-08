@@ -8,6 +8,10 @@
 import { beforeEach, afterEach, vi } from 'vitest';
 import 'fake-indexeddb/auto';
 
+// Mock environment variables for tests (must be done before any imports that use them)
+vi.stubEnv('PUBLIC_SUPABASE_URL', 'https://test.supabase.co');
+vi.stubEnv('PUBLIC_SUPABASE_ANON_KEY', 'test-anon-key');
+
 // Only set up browser-specific mocks if we're in a browser environment
 if (typeof window !== 'undefined') {
   // Import browser testing utilities only when needed

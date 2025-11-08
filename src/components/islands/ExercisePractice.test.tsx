@@ -30,49 +30,48 @@ import { render, screen, fireEvent, waitFor } from '@solidjs/testing-library';
 import ExercisePractice, { type ExercisePracticeProps, type ExerciseAttempt } from './ExercisePractice';
 import type { ExerciseInstance, Hint } from '@/lib/exercises/types';
 
-// Create translation function
-const createTranslationFunction = () => (key: string, params?: Record<string, string>) => {
-  const translations: Record<string, string> = {
-    'exercises.session.title': 'Practice session',
-    'exercises.session.progress': `Exercise ${params?.current || '1'} of ${params?.total || '1'}`,
-    'exercises.session.complete': 'Complete Session',
-    'exercises.session.confirmQuit': 'Are you sure you want to skip? This will count as incorrect.',
-    'exercises.exercise.question': 'Question',
-    'exercises.exercise.yourAnswer': 'Your answer',
-    'exercises.exercise.placeholder': 'Enter your answer...',
-    'exercises.exercise.checkAnswer': 'Check answer',
-    'exercises.exercise.nextExercise': 'Next Exercise',
-    'exercises.exercise.skipExercise': 'Skip',
-    'exercises.exercise.difficulty': `Difficulty: ${params?.level || 'A'}`,
-    'exercises.exercise.bindingContent': 'Binding content',
-    'exercises.validation.checking': 'Checking...',
-    'feedback.correct.title': 'Correct!',
-    'feedback.correct.messages': JSON.stringify(['Well done!', 'Excellent!', 'Perfect!']),
-    'feedback.incorrect.title': 'Not quite',
-    'feedback.incorrect.messages': JSON.stringify(['Try again!', 'Good try!', 'Keep trying!']),
-    'feedback.incorrect.showCorrect': `The correct answer is: ${params?.answer || '42'}`,
-    'feedback.incorrect.tryAgain': 'Try again',
-    'common.actions.confirm': 'Confirm',
-    'common.actions.cancel': 'Cancel',
-    'errors.exercise.notFound': 'Exercise not found',
+// Mock i18n with Nanostores (must define function inside mock since mocks are hoisted)
+vi.mock('@/lib/i18n', () => {
+  const createTranslationFunction = () => (key: string, params?: Record<string, string>) => {
+    const translations: Record<string, string> = {
+      'exercises.session.title': 'Practice session',
+      'exercises.session.progress': `Exercise ${params?.current || '1'} of ${params?.total || '1'}`,
+      'exercises.session.complete': 'Complete Session',
+      'exercises.session.confirmQuit': 'Are you sure you want to skip? This will count as incorrect.',
+      'exercises.exercise.question': 'Question',
+      'exercises.exercise.yourAnswer': 'Your answer',
+      'exercises.exercise.placeholder': 'Enter your answer...',
+      'exercises.exercise.checkAnswer': 'Check answer',
+      'exercises.exercise.nextExercise': 'Next Exercise',
+      'exercises.exercise.skipExercise': 'Skip',
+      'exercises.exercise.difficulty': `Difficulty: ${params?.level || 'A'}`,
+      'exercises.exercise.bindingContent': 'Binding content',
+      'exercises.validation.checking': 'Checking...',
+      'feedback.correct.title': 'Correct!',
+      'feedback.correct.messages': JSON.stringify(['Well done!', 'Excellent!', 'Perfect!']),
+      'feedback.incorrect.title': 'Not quite',
+      'feedback.incorrect.messages': JSON.stringify(['Try again!', 'Good try!', 'Keep trying!']),
+      'feedback.incorrect.showCorrect': `The correct answer is: ${params?.answer || '42'}`,
+      'feedback.incorrect.tryAgain': 'Try again',
+      'common.actions.confirm': 'Confirm',
+      'common.actions.cancel': 'Cancel',
+      'errors.exercise.notFound': 'Exercise not found',
+    };
+    
+    const value = translations[key] || key;
+    
+    // Parse JSON arrays
+    if (value.startsWith('[') && value.endsWith(']')) {
+      try {
+        return JSON.parse(value);
+      } catch {
+        return value;
+      }
+    }
+    
+    return value;
   };
   
-  const value = translations[key] || key;
-  
-  // Parse JSON arrays
-  if (value.startsWith('[') && value.endsWith(']')) {
-    try {
-      return JSON.parse(value);
-    } catch {
-      return value;
-    }
-  }
-  
-  return value;
-};
-
-// Mock i18n with Nanostores
-vi.mock('@/lib/i18n', () => {
   const tFunc = createTranslationFunction();
   return {
     $t: {
@@ -88,7 +87,20 @@ vi.mock('@/lib/i18n', () => {
 // Mock useStore from Nanostores
 vi.mock('@nanostores/solid', () => ({
   useStore: (store: any) => {
-    return () => createTranslationFunction();
+    // Return a function that returns the translation function
+    return () => (key: string, params?: Record<string, string>) => {
+      const translations: Record<string, string> = {
+        'exercises.session.title': 'Practice session',
+        'exercises.session.progress': `Exercise ${params?.current || '1'} of ${params?.total || '1'}`,
+        'exercises.exercise.question': 'Question',
+        'exercises.exercise.yourAnswer': 'Your answer',
+        'exercises.exercise.placeholder': 'Enter your answer...',
+        'exercises.exercise.checkAnswer': 'Check answer',
+        'feedback.correct.title': 'Correct!',
+        'feedback.incorrect.title': 'Not quite',
+      };
+      return translations[key] || key;
+    };
   },
 }));
 

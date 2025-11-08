@@ -103,6 +103,7 @@ describe('throttle', () => {
   });
 
   it('should include trailing edge call', () => {
+    vi.useFakeTimers();
     const fn = vi.fn();
     const throttled = throttle(fn, 100);
 
@@ -112,14 +113,18 @@ describe('throttle', () => {
     vi.advanceTimersByTime(50);
     throttled('third');
 
-    // First call executed immediately
-    expect(fn).toHaveBeenCalledTimes(1);
-    expect(fn).toHaveBeenCalledWith('first');
-
-    // Trailing call after delay
-    vi.advanceTimersByTime(100);
+    // First call executed immediately, second's trailing call executed at t=100
+    // After throttled('third'), we should have 2 calls: 'first' and 'second'
     expect(fn).toHaveBeenCalledTimes(2);
+    expect(fn).toHaveBeenNthCalledWith(1, 'first');
+    expect(fn).toHaveBeenNthCalledWith(2, 'second');
+
+    // Trailing call for 'third' after remaining delay
+    vi.advanceTimersByTime(100);
+    expect(fn).toHaveBeenCalledTimes(3);
     expect(fn).toHaveBeenLastCalledWith('third');
+    
+    vi.useRealTimers();
   });
 
   it('should pass arguments correctly', () => {

@@ -39,16 +39,20 @@ describe('memoize', () => {
     const fn = vi.fn((n: number) => n * 2);
     const memoized = memoize(fn, { maxSize: 2 });
 
-    memoized(1);
-    memoized(2);
-    memoized(3); // Should evict entry for 1
+    memoized(1); // Cache: ["1"]
+    memoized(2); // Cache: ["1", "2"]
+    memoized(3); // Cache: ["2", "3"] (1 evicted, 3 added)
 
     fn.mockClear();
 
-    memoized(1); // Should recompute
-    memoized(2); // Should be cached
+    // After mockClear, cache still has ["2", "3"]
+    memoized(1); // Cache miss - adds 1, evicts 2: ["3", "1"], fn called 1x
+    memoized(2); // Cache miss - adds 2, evicts 3: ["1", "2"], fn called 2x
 
-    expect(fn).toHaveBeenCalledTimes(1);
+    // Both 1 and 2 need to recompute because:
+    // - 1 was evicted when 3 was added
+    // - 2 was evicted when 1 was added back (cache was ["3", "1"], 2 not present)
+    expect(fn).toHaveBeenCalledTimes(2);
   });
 
   it('should allow custom key serializer', () => {

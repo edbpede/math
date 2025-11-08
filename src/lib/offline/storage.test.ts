@@ -109,7 +109,7 @@ describe('OfflineStorage', () => {
       
       const unused = await storage.getUnusedExercises()
       expect(unused).toHaveLength(2)
-      expect(unused.map(e => e.instance.id).sort()).toEqual(['ex-1', 'ex-3'])
+      expect(unused.map(e => e.id).sort()).toEqual(['ex-1', 'ex-3'])
     })
 
     it('should mark exercise as used', async () => {

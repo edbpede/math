@@ -66,15 +66,16 @@ export function validateAnswer(
   correctAnswer: Answer,
   options: ValidationOptions = {}
 ): ValidationResult {
-  // SECURITY: Detect malicious input patterns before processing
-  if (detectMaliciousInput(userAnswer)) {
+  // SECURITY: Sanitize user input first (defense-in-depth)
+  // This removes HTML tags, script content, and dangerous characters
+  const sanitized = sanitizeAnswer(userAnswer);
+
+  // SECURITY: Detect malicious input patterns in sanitized input
+  // Check sanitized input to catch any remaining malicious patterns
+  if (detectMaliciousInput(sanitized)) {
     console.warn('Malicious input pattern detected in answer:', userAnswer.substring(0, 50));
     return { correct: false, normalized: '' };
   }
-
-  // SECURITY: Sanitize user input (defense-in-depth)
-  // This removes HTML tags, script content, and dangerous characters
-  const sanitized = sanitizeAnswer(userAnswer);
 
   // Check if sanitization removed all content
   if (sanitized === '') {
