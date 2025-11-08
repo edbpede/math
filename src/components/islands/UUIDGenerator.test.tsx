@@ -4,7 +4,7 @@
  * Tests for the UUIDGenerator component to ensure correct UUID generation,
  * save functionality (copy, download, QR code), and accessibility.
  *
- * @vitest-environment jsdom
+ * @vitest-environment happy-dom
  */
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';

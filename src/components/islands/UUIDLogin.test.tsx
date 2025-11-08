@@ -5,7 +5,7 @@
  * real-time formatting, validation, "remember device" functionality,
  * rate limiting, and accessibility.
  *
- * @vitest-environment jsdom
+ * @vitest-environment happy-dom
  */
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';

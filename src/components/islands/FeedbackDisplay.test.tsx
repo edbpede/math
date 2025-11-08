@@ -13,7 +13,7 @@
  * For now, these tests are skipped pending proper SolidJS test environment setup.
  * The component follows SolidJS patterns and TypeScript ensures type safety.
  *
- * @vitest-environment jsdom
+ * @vitest-environment happy-dom
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';

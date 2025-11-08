@@ -8,21 +8,41 @@
 
 import { beforeEach, afterEach, vi } from 'vitest';
 
+// Import browser testing utilities (these are safe to import in all environments)
+// The actual usage is conditional on browser environment
+// Note: solid-js/web is mocked in setup-solidjs-client.ts to use client build
+import { cleanup } from '@solidjs/testing-library';
+import '@testing-library/jest-dom/vitest';
+
 // Only execute browser setup if we're in a browser environment
 if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-  // Import browser testing utilities
-  // These imports are evaluated at module load time, but the code inside
-  // the conditional only runs in browser environments where they're needed.
-  // In node environments, this entire block is skipped.
-  const { cleanup } = await import('@solidjs/testing-library');
-  await import('@testing-library/jest-dom/vitest');
-
   // Cleanup after each test to prevent test pollution
   // This must be registered synchronously during module evaluation
   afterEach(() => {
     cleanup();
     vi.clearAllMocks();
   });
+
+  // Configure SolidJS to run in client mode (not SSR)
+  // This prevents "Client-only API called on the server side" errors
+  // SolidJS checks for SSR mode by looking at the environment
+  if (typeof process !== 'undefined') {
+    process.env.SOLID_SSR = 'false';
+  }
+  
+  // Set global flags to indicate client-side rendering
+  (globalThis as any).__SOLID_SSR__ = false;
+  
+  // Ensure window is properly set up for SolidJS
+  if (typeof window !== 'undefined') {
+    (window as any).__SOLID_SSR__ = false;
+    // Mock the server-side detection that SolidJS uses
+    Object.defineProperty(window, '__SOLID_SSR__', {
+      value: false,
+      writable: false,
+      configurable: true,
+    });
+  }
 
   // Mock browser APIs that aren't available in jsdom/happy-dom
 
