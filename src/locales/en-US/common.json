@@ -50,6 +50,11 @@
     "info": "information",
     "warning": "warning"
   },
+  "offline": {
+    "message": "You're working offline",
+    "description": "Your answers are saved locally and will sync when you come back online.",
+    "dismiss": "Close"
+  },
   "language": {
     "selector": {
       "title": "Choose language",

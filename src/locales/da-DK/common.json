@@ -50,6 +50,11 @@
     "info": "information",
     "warning": "advarsel"
   },
+  "offline": {
+    "message": "Du arbejder offline",
+    "description": "Dine svar gemmes lokalt og synkroniseres når du kommer online igen.",
+    "dismiss": "Luk"
+  },
   "language": {
     "selector": {
       "title": "Vælg sprog",

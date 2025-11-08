@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && bun run scripts/generate-cache-manifest.ts",
     "preview": "astro preview",
     "astro": "astro",
     "test": "vitest",
@@ -12,13 +12,15 @@
     "test:run": "vitest run",
     "validate-translations": "bun run scripts/validate-translations.ts",
     "validate-translations:locale": "bun run scripts/validate-translations.ts --locale=",
-    "validate-translations:component": "bun run scripts/validate-translations.ts --component="
+    "validate-translations:component": "bun run scripts/validate-translations.ts --component=",
+    "sw:clear": "bun run scripts/uninstall-sw.ts"
   },
   "dependencies": {
     "@astrojs/solid-js": "^5.1.2",
     "@nanostores/persistent": "^1.2.0",
     "@supabase/supabase-js": "^2.80.0",
     "astro": "^5.15.3",
+    "idb": "^8.0.3",
     "nanostores": "^1.0.1",
     "qrcode": "^1.5.4",
     "solid-js": "^1.9.10"

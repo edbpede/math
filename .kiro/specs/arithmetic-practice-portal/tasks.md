@@ -210,7 +210,7 @@
     - Display review schedule with upcoming priorities
     - _Requirements: 5.7, 15.1_
 
-- [ ] 9. Create Astro pages and layouts
+- [x] 9. Create Astro pages and layouts
   - [x] 9.1 Build main layout with navigation
     - Create MainLayout.astro with header and footer
     - Implement navigation menu with i18n support
@@ -249,7 +249,7 @@
     - _Requirements: 9.1, 9.2_
 
 - [ ] 10. Implement offline functionality with service worker
-  - [ ] 10.1 Set up service worker infrastructure
+  - [x] 10.1 Set up service worker infrastructure
     - Create service worker registration in main app
     - Implement cache versioning strategy
     - Build static asset caching (HTML, CSS, JS, fonts)

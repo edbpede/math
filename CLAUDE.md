@@ -127,6 +127,75 @@ import {
 } from '@/lib/supabase/progress'
 ```
 
+### Offline Functionality & Service Worker
+
+Progressive Web App (PWA) capabilities with service worker for offline practice.
+
+**Key components**:
+- [public/sw.js](public/sw.js) - Service worker implementation with caching strategies
+- [src/lib/offline/](src/lib/offline/) - Service worker registration, cache utilities, types
+- [src/components/islands/OfflineIndicator.tsx](src/components/islands/OfflineIndicator.tsx) - UI indicator for offline status
+
+**Service worker features**:
+- Cache-first strategy for static assets (HTML, CSS, JS, fonts)
+- Network-first strategy for API calls (fresh data when online)
+- Stale-while-revalidate for exercise templates (balance speed and freshness)
+- Automatic cache versioning and cleanup
+- Pre-caching of critical assets during installation
+
+**Cache configuration**:
+```typescript
+import { CACHE_VERSION, CACHE_CONFIG } from '@/lib/offline/cache-config'
+
+// Current cache version (increment to invalidate all caches)
+CACHE_VERSION // 1
+
+// Cache names
+CACHE_CONFIG.caches.static    // 'math-v1-static'
+CACHE_CONFIG.caches.templates // 'math-v1-templates'
+CACHE_CONFIG.caches.runtime   // 'math-v1-runtime'
+```
+
+**Service worker registration**:
+- Automatically registered in production builds (disabled in development)
+- Registered in [src/components/layouts/MainLayout.astro](src/components/layouts/MainLayout.astro)
+- Status available via `$swStatus` Nanostore for UI integration
+
+**Cache versioning**:
+1. Increment `CACHE_VERSION` in [src/lib/offline/cache-config.ts](src/lib/offline/cache-config.ts)
+2. Old caches automatically deleted on service worker activation
+3. Build script generates asset manifest: `bun run build`
+
+**Development utilities**:
+```bash
+# Clear service worker and caches (shows manual instructions)
+bun run sw:clear
+
+# Programmatic uninstall (in browser console)
+import { uninstallServiceWorker } from '@/lib/offline/uninstall-sw'
+await uninstallServiceWorker()
+```
+
+**Debugging offline functionality**:
+1. Chrome DevTools > Application > Service Workers
+2. Check "Update on reload" to bypass cache during development
+3. Use "Offline" checkbox to simulate offline mode
+4. View cached resources in "Cache Storage" section
+
+**Cache manifest generation**:
+- Automatically runs after build: `bun run build`
+- Scans dist/ directory and generates `cache-manifest.json`
+- Identifies critical assets (< 200KB) for pre-caching
+- Manual run: `bun run scripts/generate-cache-manifest.ts`
+
+**Offline indicator**:
+- Yellow banner appears when browser goes offline
+- Informs users their answers are saved locally
+- Dismissible but reappears if user goes offline again
+- Uses browser online/offline events for detection
+
+See [Requirements 6.1, 6.2](.kiro/specs/arithmetic-practice-portal/requirements.md) for full offline requirements.
+
 ### TypeScript Path Aliases
 
 Configure in [tsconfig.json](tsconfig.json):

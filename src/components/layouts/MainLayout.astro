@@ -14,6 +14,7 @@
 import { $t, getCurrentLocale } from '@/lib/i18n'
 import Header from '@/components/static/Header.astro'
 import Footer from '@/components/static/Footer.astro'
+import OfflineIndicator from '@/components/islands/OfflineIndicator'
 
 interface Props {
   /** Page title (will be appended to site title) */
@@ -68,9 +69,43 @@ const metaDescription = description || defaultDescription
     
     {/* PWA manifest (to be added in task 10.4) */}
     {/* <link rel="manifest" href="/manifest.json" /> */}
+    
+    {/* Service worker registration (production only) */}
+    <script>
+      if ('serviceWorker' in navigator && import.meta.env.PROD) {
+        window.addEventListener('load', async () => {
+          try {
+            const registration = await navigator.serviceWorker.register('/sw.js', {
+              scope: '/'
+            });
+            console.log('[SW] Service worker registered successfully');
+
+            // Listen for updates
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              if (newWorker) {
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    console.log('[SW] New version available - refresh to update');
+                    // Could show update notification here
+                  }
+                });
+              }
+            });
+          } catch (error) {
+            console.error('[SW] Registration failed:', error);
+          }
+        });
+      } else if (import.meta.env.DEV) {
+        console.log('[SW] Service worker disabled in development mode');
+      }
+    </script>
   </head>
   
   <body class="h-full flex flex-col bg-gray-50 text-gray-900">
+    {/* Offline status indicator */}
+    <OfflineIndicator client:load />
+    
     {/* Header with navigation */}
     {!hideNav && <Header currentPath={currentPath} />}
     
