@@ -28,8 +28,12 @@
 import type { APIRoute } from 'astro'
 import { updateUser } from '@/lib/auth/service'
 import { validatePreferences } from '@/lib/types/preferences'
+import { createSecurityHeaders } from '@/lib/security'
 
 export const POST: APIRoute = async ({ request }) => {
+  // Determine if in development mode (for security header configuration)
+  const isDevelopment = import.meta.env.DEV
+
   try {
     // Parse request body
     const body = await request.json()
@@ -37,6 +41,10 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Validate required fields
     if (!userId) {
+      const headers = createSecurityHeaders(isDevelopment, {
+        'Content-Type': 'application/json',
+      })
+
       return new Response(
         JSON.stringify({
           success: false,
@@ -45,14 +53,16 @@ export const POST: APIRoute = async ({ request }) => {
         }),
         {
           status: 400,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers,
         }
       )
     }
 
     if (!preferences) {
+      const headers = createSecurityHeaders(isDevelopment, {
+        'Content-Type': 'application/json',
+      })
+
       return new Response(
         JSON.stringify({
           success: false,
@@ -61,15 +71,17 @@ export const POST: APIRoute = async ({ request }) => {
         }),
         {
           status: 400,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers,
         }
       )
     }
 
     // Validate preferences structure
     if (!validatePreferences(preferences)) {
+      const headers = createSecurityHeaders(isDevelopment, {
+        'Content-Type': 'application/json',
+      })
+
       return new Response(
         JSON.stringify({
           success: false,
@@ -78,9 +90,7 @@ export const POST: APIRoute = async ({ request }) => {
         }),
         {
           status: 400,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers,
         }
       )
     }
@@ -91,6 +101,10 @@ export const POST: APIRoute = async ({ request }) => {
     })
 
     if (!result.success) {
+      const headers = createSecurityHeaders(isDevelopment, {
+        'Content-Type': 'application/json',
+      })
+
       return new Response(
         JSON.stringify({
           success: false,
@@ -99,14 +113,16 @@ export const POST: APIRoute = async ({ request }) => {
         }),
         {
           status: 500,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers,
         }
       )
     }
 
     // Return updated preferences
+    const headers = createSecurityHeaders(isDevelopment, {
+      'Content-Type': 'application/json',
+    })
+
     return new Response(
       JSON.stringify({
         success: true,
@@ -114,13 +130,15 @@ export const POST: APIRoute = async ({ request }) => {
       }),
       {
         status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
       }
     )
   } catch (error) {
     console.error('Error in /api/preferences/update:', error)
+    const headers = createSecurityHeaders(isDevelopment, {
+      'Content-Type': 'application/json',
+    })
+
     return new Response(
       JSON.stringify({
         success: false,
@@ -129,9 +147,7 @@ export const POST: APIRoute = async ({ request }) => {
       }),
       {
         status: 500,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
       }
     )
   }

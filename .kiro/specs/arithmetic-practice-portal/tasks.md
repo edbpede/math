@@ -316,7 +316,7 @@
     - Display remaining attempts to user
     - _Requirements: 1.5, 7.4_
   
-  - [ ] 12.2 Configure security headers
+  - [x] 12.2 Configure security headers
     - Set Content Security Policy headers
     - Add Secure and HttpOnly flags to cookies
     - Configure SameSite: Strict for CSRF protection

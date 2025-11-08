@@ -29,10 +29,14 @@ import {
   createSessionCookie,
 } from '../../../lib/auth/session'
 import { rateLimiter } from '../../../lib/auth/rate-limiter'
+import { createSecurityHeaders } from '../../../lib/security'
 
 // IMPORTANT: This API route requires server-side rendering
 // Add `export const prerender = false` when deploying with an adapter
 export const POST: APIRoute = async ({ request, clientAddress }) => {
+  // Determine if in development mode (for security header configuration)
+  const isDevelopment = import.meta.env.DEV
+
   try {
     // Extract client IP address for rate limiting
     // Priority: clientAddress (Astro native) > x-forwarded-for (proxy) > unknown
@@ -44,6 +48,11 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     // Check rate limit before processing request (Requirement 7.4)
     const rateLimit = rateLimiter.check(ip)
     if (!rateLimit.allowed) {
+      const headers = createSecurityHeaders(isDevelopment, {
+        'Content-Type': 'application/json',
+        'Retry-After': rateLimit.retryAfter.toString(),
+      })
+
       return new Response(
         JSON.stringify({
           success: false,
@@ -54,10 +63,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
         }),
         {
           status: 429,
-          headers: {
-            'Content-Type': 'application/json',
-            'Retry-After': rateLimit.retryAfter.toString(),
-          },
+          headers,
         }
       )
     }
@@ -68,6 +74,10 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
     // Validate UUID is provided
     if (!uuid || typeof uuid !== 'string') {
+      const headers = createSecurityHeaders(isDevelopment, {
+        'Content-Type': 'application/json',
+      })
+
       return new Response(
         JSON.stringify({
           success: false,
@@ -76,9 +86,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
         }),
         {
           status: 400,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers,
         }
       )
     }
@@ -95,12 +103,13 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
       // Return appropriate status codes
       const statusCode = result.code === 'UUID_NOT_FOUND' ? 404 : 400
+      const headers = createSecurityHeaders(isDevelopment, {
+        'Content-Type': 'application/json',
+      })
 
       return new Response(JSON.stringify(result), {
         status: statusCode,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
       })
     }
 
@@ -110,11 +119,14 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       result.data.formattedUUID
     )
 
-    // Determine if in development mode
-    const isDevelopment = import.meta.env.DEV
-
     // Create session cookie
     const cookieHeader = createSessionCookie(token, isDevelopment)
+
+    // Create response headers with security headers
+    const headers = createSecurityHeaders(isDevelopment, {
+      'Content-Type': 'application/json',
+      'Set-Cookie': cookieHeader,
+    })
 
     // Return success with user data
     return new Response(
@@ -130,14 +142,15 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       }),
       {
         status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'Set-Cookie': cookieHeader,
-        },
+        headers,
       }
     )
   } catch (error) {
     console.error('Error in /api/auth/signin:', error)
+    const headers = createSecurityHeaders(isDevelopment, {
+      'Content-Type': 'application/json',
+    })
+
     return new Response(
       JSON.stringify({
         success: false,
@@ -146,9 +159,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       }),
       {
         status: 500,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
       }
     )
   }

@@ -24,13 +24,21 @@
 
 import type { APIRoute } from 'astro'
 import { getUserByUUID } from '@/lib/auth/service'
+import { createSecurityHeaders } from '@/lib/security'
 
 export const GET: APIRoute = async ({ url }) => {
+  // Determine if in development mode (for security header configuration)
+  const isDevelopment = import.meta.env.DEV
+
   try {
     // Get userId from query params
     const userId = url.searchParams.get('userId')
 
     if (!userId) {
+      const headers = createSecurityHeaders(isDevelopment, {
+        'Content-Type': 'application/json',
+      })
+
       return new Response(
         JSON.stringify({
           success: false,
@@ -39,9 +47,7 @@ export const GET: APIRoute = async ({ url }) => {
         }),
         {
           status: 400,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers,
         }
       )
     }
@@ -50,6 +56,10 @@ export const GET: APIRoute = async ({ url }) => {
     const result = await getUserByUUID(userId)
 
     if (!result.success || !result.data) {
+      const headers = createSecurityHeaders(isDevelopment, {
+        'Content-Type': 'application/json',
+      })
+
       return new Response(
         JSON.stringify({
           success: false,
@@ -58,14 +68,16 @@ export const GET: APIRoute = async ({ url }) => {
         }),
         {
           status: 404,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers,
         }
       )
     }
 
     // Return preferences
+    const headers = createSecurityHeaders(isDevelopment, {
+      'Content-Type': 'application/json',
+    })
+
     return new Response(
       JSON.stringify({
         success: true,
@@ -73,13 +85,15 @@ export const GET: APIRoute = async ({ url }) => {
       }),
       {
         status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
       }
     )
   } catch (error) {
     console.error('Error in /api/preferences/get:', error)
+    const headers = createSecurityHeaders(isDevelopment, {
+      'Content-Type': 'application/json',
+    })
+
     return new Response(
       JSON.stringify({
         success: false,
@@ -88,9 +102,7 @@ export const GET: APIRoute = async ({ url }) => {
       }),
       {
         status: 500,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
       }
     )
   }

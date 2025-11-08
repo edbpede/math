@@ -27,10 +27,14 @@ import {
   createSessionToken,
   createSessionCookie,
 } from '../../../lib/auth/session'
+import { createSecurityHeaders } from '../../../lib/security'
 
 // IMPORTANT: This API route requires server-side rendering
 // Add `export const prerender = false` when deploying with an adapter
 export const POST: APIRoute = async ({ request }) => {
+  // Determine if in development mode (for security header configuration)
+  const isDevelopment = import.meta.env.DEV
+
   try {
     // Parse request body
     const body = await request.json()
@@ -38,6 +42,10 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Validate gradeRange
     if (!gradeRange || !['0-3', '4-6', '7-9'].includes(gradeRange)) {
+      const headers = createSecurityHeaders(isDevelopment, {
+        'Content-Type': 'application/json',
+      })
+
       return new Response(
         JSON.stringify({
           success: false,
@@ -46,15 +54,17 @@ export const POST: APIRoute = async ({ request }) => {
         }),
         {
           status: 400,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers,
         }
       )
     }
 
     // Validate locale
     if (locale && !['da-DK', 'en-US'].includes(locale)) {
+      const headers = createSecurityHeaders(isDevelopment, {
+        'Content-Type': 'application/json',
+      })
+
       return new Response(
         JSON.stringify({
           success: false,
@@ -63,9 +73,7 @@ export const POST: APIRoute = async ({ request }) => {
         }),
         {
           status: 400,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers,
         }
       )
     }
@@ -74,22 +82,27 @@ export const POST: APIRoute = async ({ request }) => {
     const result = await createUser(gradeRange, locale)
 
     if (!result.success) {
+      const headers = createSecurityHeaders(isDevelopment, {
+        'Content-Type': 'application/json',
+      })
+
       return new Response(JSON.stringify(result), {
         status: 500,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
       })
     }
 
     // Create session token
     const token = createSessionToken(result.data.user.id, result.data.formattedUUID)
 
-    // Determine if in development mode
-    const isDevelopment = import.meta.env.DEV
-
     // Create session cookie
     const cookieHeader = createSessionCookie(token, isDevelopment)
+
+    // Create response headers with security headers
+    const headers = createSecurityHeaders(isDevelopment, {
+      'Content-Type': 'application/json',
+      'Set-Cookie': cookieHeader,
+    })
 
     // Return success with user data and UUID
     return new Response(
@@ -106,14 +119,15 @@ export const POST: APIRoute = async ({ request }) => {
       }),
       {
         status: 201,
-        headers: {
-          'Content-Type': 'application/json',
-          'Set-Cookie': cookieHeader,
-        },
+        headers,
       }
     )
   } catch (error) {
     console.error('Error in /api/auth/generate:', error)
+    const headers = createSecurityHeaders(isDevelopment, {
+      'Content-Type': 'application/json',
+    })
+
     return new Response(
       JSON.stringify({
         success: false,
@@ -122,9 +136,7 @@ export const POST: APIRoute = async ({ request }) => {
       }),
       {
         status: 500,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
       }
     )
   }

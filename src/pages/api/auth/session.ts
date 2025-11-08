@@ -30,10 +30,14 @@ import {
   createSessionCookie,
 } from '../../../lib/auth/session'
 import { getUserByUUID } from '../../../lib/auth/service'
+import { createSecurityHeaders } from '../../../lib/security'
 
 // IMPORTANT: This API route requires server-side rendering
 // Add `export const prerender = false` when deploying with an adapter
 export const GET: APIRoute = async ({ request }) => {
+  // Determine if in development mode (for security header configuration)
+  const isDevelopment = import.meta.env.DEV
+
   try {
     // Get cookie header
     const cookieHeader = request.headers.get('cookie')
@@ -42,6 +46,10 @@ export const GET: APIRoute = async ({ request }) => {
     const token = getSessionFromCookie(cookieHeader)
 
     if (!token) {
+      const headers = createSecurityHeaders(isDevelopment, {
+        'Content-Type': 'application/json',
+      })
+
       return new Response(
         JSON.stringify({
           success: true,
@@ -49,9 +57,7 @@ export const GET: APIRoute = async ({ request }) => {
         }),
         {
           status: 200,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers,
         }
       )
     }
@@ -60,6 +66,10 @@ export const GET: APIRoute = async ({ request }) => {
     const session = validateSessionToken(token)
 
     if (!session) {
+      const headers = createSecurityHeaders(isDevelopment, {
+        'Content-Type': 'application/json',
+      })
+
       return new Response(
         JSON.stringify({
           success: true,
@@ -67,9 +77,7 @@ export const GET: APIRoute = async ({ request }) => {
         }),
         {
           status: 200,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers,
         }
       )
     }
@@ -78,6 +86,10 @@ export const GET: APIRoute = async ({ request }) => {
     const result = await getUserByUUID(session.userId)
 
     if (!result.success || !result.data) {
+      const headers = createSecurityHeaders(isDevelopment, {
+        'Content-Type': 'application/json',
+      })
+
       return new Response(
         JSON.stringify({
           success: true,
@@ -85,24 +97,24 @@ export const GET: APIRoute = async ({ request }) => {
         }),
         {
           status: 200,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers,
         }
       )
     }
 
     // Check if session should be refreshed
-    const headers: Record<string, string> = {
+    const baseHeaders: Record<string, string> = {
       'Content-Type': 'application/json',
     }
 
     if (shouldRefreshSession(session)) {
       // Create new session token
       const newToken = createSessionToken(session.userId, session.uuid)
-      const isDevelopment = import.meta.env.DEV
-      headers['Set-Cookie'] = createSessionCookie(newToken, isDevelopment)
+      baseHeaders['Set-Cookie'] = createSessionCookie(newToken, isDevelopment)
     }
+
+    // Add security headers
+    const headers = createSecurityHeaders(isDevelopment, baseHeaders)
 
     // Return authenticated response with user data
     return new Response(
@@ -124,6 +136,10 @@ export const GET: APIRoute = async ({ request }) => {
     )
   } catch (error) {
     console.error('Error in /api/auth/session:', error)
+    const headers = createSecurityHeaders(isDevelopment, {
+      'Content-Type': 'application/json',
+    })
+
     return new Response(
       JSON.stringify({
         success: false,
@@ -132,9 +148,7 @@ export const GET: APIRoute = async ({ request }) => {
       }),
       {
         status: 500,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
       }
     )
   }
