@@ -16,10 +16,10 @@
  *
  * Sets httpOnly session cookie on success.
  *
- * Rate limiting should be applied to this endpoint to prevent brute force attacks.
- * See Requirement 7.4 - 5 attempts per minute per IP.
+ * Rate limiting: 5 failed attempts per minute per IP address (server-side).
+ * Returns 429 (Too Many Requests) when limit is exceeded.
  *
- * @see Requirements 1.4, 1.5
+ * @see Requirements 1.4, 1.5, 7.4
  */
 
 import type { APIRoute } from 'astro'
@@ -28,11 +28,40 @@ import {
   createSessionToken,
   createSessionCookie,
 } from '../../../lib/auth/session'
+import { rateLimiter } from '../../../lib/auth/rate-limiter'
 
 // IMPORTANT: This API route requires server-side rendering
 // Add `export const prerender = false` when deploying with an adapter
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, clientAddress }) => {
   try {
+    // Extract client IP address for rate limiting
+    // Priority: clientAddress (Astro native) > x-forwarded-for (proxy) > unknown
+    const ip =
+      clientAddress ||
+      request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+      'unknown'
+
+    // Check rate limit before processing request (Requirement 7.4)
+    const rateLimit = rateLimiter.check(ip)
+    if (!rateLimit.allowed) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Too many login attempts. Please try again later.',
+          code: 'RATE_LIMIT_EXCEEDED',
+          retryAfter: rateLimit.retryAfter,
+          resetAt: rateLimit.resetAt,
+        }),
+        {
+          status: 429,
+          headers: {
+            'Content-Type': 'application/json',
+            'Retry-After': rateLimit.retryAfter.toString(),
+          },
+        }
+      )
+    }
+
     // Parse request body
     const body = await request.json()
     const { uuid } = body
@@ -61,6 +90,9 @@ export const POST: APIRoute = async ({ request }) => {
     const result = await signInWithUUID(trimmedUUID)
 
     if (!result.success) {
+      // Record failed attempt for rate limiting (Requirement 7.4)
+      rateLimiter.record(ip)
+
       // Return appropriate status codes
       const statusCode = result.code === 'UUID_NOT_FOUND' ? 404 : 400
 

@@ -603,6 +603,75 @@ describe.skip('UUIDLogin', () => {
         expect(button.disabled).toBe(true);
       });
     });
+
+    it('should handle server-side 429 rate limit response', async () => {
+      const retryAfter = 60;
+      const resetAt = Date.now() + retryAfter * 1000;
+
+      (global.fetch as any).mockResolvedValue({
+        ok: false,
+        status: 429,
+        json: async () => ({
+          success: false,
+          error: 'Too many login attempts. Please try again later.',
+          code: 'RATE_LIMIT_EXCEEDED',
+          retryAfter,
+          resetAt,
+        }),
+      });
+
+      render(() => <UUIDLogin />);
+
+      const input = screen.getByLabelText(/your practice number/i);
+      const form = screen.getByRole('form');
+      const button = screen.getByRole('button', { name: /log in/i }) as HTMLButtonElement;
+
+      // Submit login attempt
+      fireEvent.input(input, { target: { value: '1234-5678-90ab-cdef' } });
+      fireEvent.submit(form);
+
+      // Should display rate limit message with countdown
+      await waitFor(() => {
+        expect(screen.getByText(/too many attempts/i)).toBeTruthy();
+        expect(screen.getByText(/wait.*seconds/i)).toBeTruthy();
+      });
+
+      // Should disable submit button
+      await waitFor(() => {
+        expect(button.disabled).toBe(true);
+      });
+    });
+
+    it('should sync client rate limit with server 429 response', async () => {
+      const retryAfter = 45;
+      const resetAt = Date.now() + retryAfter * 1000;
+
+      (global.fetch as any).mockResolvedValue({
+        ok: false,
+        status: 429,
+        json: async () => ({
+          success: false,
+          error: 'Too many login attempts. Please try again later.',
+          code: 'RATE_LIMIT_EXCEEDED',
+          retryAfter,
+          resetAt,
+        }),
+      });
+
+      render(() => <UUIDLogin />);
+
+      const input = screen.getByLabelText(/your practice number/i);
+      const form = screen.getByRole('form');
+
+      // Submit login attempt that triggers server rate limit
+      fireEvent.input(input, { target: { value: '1234-5678-90ab-cdef' } });
+      fireEvent.submit(form);
+
+      // Should display server-provided countdown time
+      await waitFor(() => {
+        expect(screen.getByText(/wait.*45.*seconds/i)).toBeTruthy();
+      });
+    });
   });
 
   describe('accessibility', () => {

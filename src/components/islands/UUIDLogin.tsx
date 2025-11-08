@@ -4,10 +4,15 @@
  * SolidJS island component for UUID-based login with anonymous authentication.
  * Features real-time formatting, validation, "remember device", and rate limiting.
  *
+ * Rate Limiting (Defense in Depth):
+ * - Client-side: Immediate UX feedback, prevents unnecessary API calls
+ * - Server-side: IP-based enforcement, prevents brute force attacks
+ * - Syncs with server on 429 responses for consistent experience
+ *
  * Requirements:
  * - 1.4: UUID entry for returning users with validation
  * - 15.3: Cross-device "Remember this device" option
- * - 7.4: Rate limiting display (5 attempts per minute)
+ * - 7.4: Rate limiting (5 attempts per minute per IP)
  */
 
 import { createSignal, Show, onMount } from 'solid-js';
@@ -46,6 +51,8 @@ interface SignInErrorResponse {
   success: false;
   error: string;
   code: string;
+  retryAfter?: number; // Seconds until rate limit resets (server-side)
+  resetAt?: number; // Timestamp when rate limit resets (ms since epoch)
 }
 
 type SignInResponse = SignInSuccessResponse | SignInErrorResponse;
@@ -249,6 +256,27 @@ export default function UUIDLogin(props: UUIDLoginProps) {
       });
 
       const data: SignInResponse = await response.json();
+
+      // Handle server-side rate limiting (429 Too Many Requests)
+      if (response.status === 429) {
+        // Sync with server-provided rate limit info
+        const resetAt = data.resetAt || Date.now() + (data.retryAfter || 60) * 1000;
+        const remainingSeconds = data.retryAfter || Math.ceil((resetAt - Date.now()) / 1000);
+
+        // Update local rate limit state to match server
+        setRateLimitResetTime(resetAt);
+        setAttemptCount(MAX_ATTEMPTS); // Set to max since server blocked us
+
+        setState({
+          status: 'rateLimited',
+          remainingSeconds,
+          attemptsRemaining: 0,
+        });
+
+        // Start countdown timer
+        startRateLimitCountdown();
+        return;
+      }
 
       if (!data.success) {
         // Record failed attempt for rate limiting
