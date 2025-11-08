@@ -23,7 +23,9 @@
     "showCorrect": "Det korrekte svar er: {{answer}}",
     "tryAgain": "Prøv igen",
     "getHelp": "Få hjælp",
-    "viewExplanation": "Vis forklaring"
+    "viewExplanation": "Vis forklaring",
+    "viewSolution": "Vis løsning",
+    "hideSolution": "Skjul løsning"
   },
   "encouragement": {
     "afterMistake": "Alle laver fejl - det er sådan vi lærer!",

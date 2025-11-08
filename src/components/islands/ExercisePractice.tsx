@@ -21,6 +21,7 @@ import { useStore } from '@nanostores/solid';
 import { $t } from '@/lib/i18n';
 import type { ExerciseInstance } from '@/lib/exercises/types';
 import HintSystem from './HintSystem';
+import FeedbackDisplay from './FeedbackDisplay';
 
 /**
  * Exercise attempt data for logging
@@ -430,110 +431,28 @@ export default function ExercisePractice(props: ExercisePracticeProps) {
             </form>
             
             {/* Feedback Display */}
-            <Show when={hasSubmitted}>
-              <div
-                class="feedback-section mb-6 p-6 rounded-lg border-2 transition-all duration-300 animate-slide-in"
-                classList={{
-                  'bg-green-50 border-green-400': isCorrect,
-                  'bg-orange-50 border-orange-400': isIncorrect,
-                }}
-                role="alert"
-                aria-live="polite"
-              >
-                <div class="flex items-start gap-4">
-                  {/* Icon */}
-                  <div class="flex-shrink-0">
-                    <Show
-                      when={isCorrect}
-                      fallback={
-                        <svg
-                          class="w-8 h-8 text-orange-600"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          aria-hidden="true"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                          />
-                        </svg>
-                      }
-                    >
-                      <svg
-                        class="w-8 h-8 text-green-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                    </Show>
-                  </div>
-                  
-                  {/* Feedback content */}
-                  <div class="flex-1">
-                    <h4
-                      class="text-lg font-bold mb-2"
-                      classList={{
-                        'text-green-900': isCorrect,
-                        'text-orange-900': isIncorrect,
-                      }}
-                    >
-                      {state.status === 'correct' ? t()('feedback.correct.title') : t()('feedback.incorrect.title')}
-                    </h4>
-                    <p
-                      class="text-base mb-3"
-                      classList={{
-                        'text-green-800': isCorrect,
-                        'text-orange-800': isIncorrect,
-                      }}
-                    >
-                      {state.status === 'correct' ? state.message : state.message}
-                    </p>
-                    
-                    <Show when={isIncorrect && 'correctAnswer' in state}>
-                      <p class="text-base font-semibold text-orange-900 mt-2">
-                        {t()('feedback.incorrect.showCorrect', { answer: state.correctAnswer })}
-                      </p>
-                    </Show>
-                  </div>
-                </div>
-                
-                {/* Action buttons */}
-                <div class="mt-6 flex gap-3 flex-wrap">
-                  <Show
-                    when={isCorrect}
-                    fallback={
-                      <button
-                        onClick={handleTryAgain}
-                        class="px-6 py-3 bg-orange-600 text-white font-semibold rounded-lg hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all"
-                        style={{ 'min-width': '44px', 'min-height': '44px' }}
-                      >
-                        {t()('feedback.incorrect.tryAgain')}
-                      </button>
-                    }
-                  >
-                    <button
-                      onClick={handleNext}
-                      class="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all"
-                      style={{ 'min-width': '44px', 'min-height': '44px' }}
-                    >
-                      {isLastExercise()
-                        ? t()('exercises.session.complete')
-                        : t()('exercises.exercise.nextExercise')}
-                    </button>
-                  </Show>
-                </div>
-              </div>
+            <Show when={hasSubmitted && state.status === 'correct'}>
+              <FeedbackDisplay
+                isCorrect={true}
+                message={state.message}
+                correctAnswer={String(ex().correctAnswer.value)}
+                userAnswer={answer()}
+                workedSolution={ex().workedSolution}
+                visualAid={ex().visualAid}
+                onContinue={handleNext}
+              />
+            </Show>
+            
+            <Show when={hasSubmitted && state.status === 'incorrect'}>
+              <FeedbackDisplay
+                isCorrect={false}
+                message={state.message}
+                correctAnswer={'correctAnswer' in state ? state.correctAnswer : String(ex().correctAnswer.value)}
+                userAnswer={answer()}
+                workedSolution={ex().workedSolution}
+                visualAid={ex().visualAid}
+                onTryAgain={handleTryAgain}
+              />
             </Show>
             
             {/* Hint System */}

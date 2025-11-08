@@ -104,6 +104,10 @@ export interface ExerciseInstance {
   metadata: TemplateMetadata;
   context: ExerciseContext;
   seed: number;
+  /** Optional worked solution for this exercise (shown on demand) */
+  workedSolution?: WorkedSolution;
+  /** Optional visual aid for the exercise (shown in feedback when relevant) */
+  visualAid?: VisualAid;
 }
 
 export interface GenerationResult {

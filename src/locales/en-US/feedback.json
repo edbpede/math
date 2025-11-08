@@ -23,7 +23,9 @@
     "showCorrect": "The correct answer is: {{answer}}",
     "tryAgain": "Try again",
     "getHelp": "Get help",
-    "viewExplanation": "View explanation"
+    "viewExplanation": "View explanation",
+    "viewSolution": "View Solution",
+    "hideSolution": "Hide Solution"
   },
   "encouragement": {
     "afterMistake": "Everyone makes mistakes - that's how we learn!",
