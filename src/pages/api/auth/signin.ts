@@ -30,6 +30,7 @@ import {
 } from '../../../lib/auth/session'
 import { rateLimiter } from '../../../lib/auth/rate-limiter'
 import { createSecurityHeaders } from '../../../lib/security'
+import { signInPayloadSchema, sanitizeUUID } from '../../../lib/validation'
 
 // IMPORTANT: This API route requires server-side rendering
 // Add `export const prerender = false` when deploying with an adapter
@@ -70,19 +71,25 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
     // Parse request body
     const body = await request.json()
-    const { uuid } = body
 
-    // Validate UUID is provided
-    if (!uuid || typeof uuid !== 'string') {
+    // Validate and sanitize input with Zod schema
+    const validationResult = signInPayloadSchema.safeParse(body)
+
+    if (!validationResult.success) {
       const headers = createSecurityHeaders(isDevelopment, {
         'Content-Type': 'application/json',
       })
 
+      // Format Zod errors into readable message
+      const errorMessage = validationResult.error.errors
+        .map((err) => `${err.path.join('.')}: ${err.message}`)
+        .join(', ')
+
       return new Response(
         JSON.stringify({
           success: false,
-          error: 'UUID is required',
-          code: 'UUID_REQUIRED',
+          error: errorMessage || 'Invalid input',
+          code: 'VALIDATION_ERROR',
         }),
         {
           status: 400,
@@ -91,11 +98,14 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       )
     }
 
-    // Trim whitespace
-    const trimmedUUID = uuid.trim()
+    // Extract validated and sanitized UUID
+    const { uuid } = validationResult.data
+
+    // Additional sanitization layer (defense-in-depth)
+    const sanitizedUUID = sanitizeUUID(uuid)
 
     // Sign in with UUID
-    const result = await signInWithUUID(trimmedUUID)
+    const result = await signInWithUUID(sanitizedUUID)
 
     if (!result.success) {
       // Record failed attempt for rate limiting (Requirement 7.4)

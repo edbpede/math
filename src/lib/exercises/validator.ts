@@ -8,14 +8,21 @@
  * - Locale-aware number parsing
  * - Mathematical equivalence checking
  *
+ * Security:
+ * - All user input is sanitized before parsing to prevent injection attacks
+ * - No code execution possible from user input
+ * - Defense-in-depth approach: sanitization + parsing validation + framework auto-escaping
+ *
  * Requirements:
  * - 3.6: Validate answers against correct solutions including mathematical equivalences
+ * - 7.5: Input validation and sanitization to prevent XSS and injection attacks
  * - 8.1: Validation must complete within 1 second (target <10ms)
  */
 
 import type { Answer, ValidationResult } from './types';
 import type { Locale } from '../i18n/types';
 import { parseNumber, parseNumberAuto } from '../i18n/utils';
+import { sanitizeAnswer, detectMaliciousInput } from '../validation/sanitizer';
 
 /**
  * Options for answer validation
@@ -59,9 +66,18 @@ export function validateAnswer(
   correctAnswer: Answer,
   options: ValidationOptions = {}
 ): ValidationResult {
-  const trimmed = userAnswer.trim();
-  
-  if (trimmed === '') {
+  // SECURITY: Detect malicious input patterns before processing
+  if (detectMaliciousInput(userAnswer)) {
+    console.warn('Malicious input pattern detected in answer:', userAnswer.substring(0, 50));
+    return { correct: false, normalized: '' };
+  }
+
+  // SECURITY: Sanitize user input (defense-in-depth)
+  // This removes HTML tags, script content, and dangerous characters
+  const sanitized = sanitizeAnswer(userAnswer);
+
+  // Check if sanitization removed all content
+  if (sanitized === '') {
     return { correct: false, normalized: '' };
   }
 
@@ -72,17 +88,17 @@ export function validateAnswer(
 
   // Parse the correct answer to a comparable format
   const correctValue = parseAnswerValue(correctAnswer.value);
-  
+
   if (correctValue === null) {
     console.warn('Failed to parse correct answer:', correctAnswer.value);
-    return { correct: false, normalized: trimmed };
+    return { correct: false, normalized: sanitized };
   }
 
-  // Parse the user's answer
-  const userValue = parseUserAnswer(trimmed, options.locale);
-  
+  // Parse the user's answer (using sanitized input)
+  const userValue = parseUserAnswer(sanitized, options.locale);
+
   if (userValue === null) {
-    return { correct: false, normalized: trimmed };
+    return { correct: false, normalized: sanitized };
   }
 
   // Check if user answer matches correct answer

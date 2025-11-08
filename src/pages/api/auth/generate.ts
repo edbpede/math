@@ -28,6 +28,7 @@ import {
   createSessionCookie,
 } from '../../../lib/auth/session'
 import { createSecurityHeaders } from '../../../lib/security'
+import { generateUUIDPayloadSchema } from '../../../lib/validation'
 
 // IMPORTANT: This API route requires server-side rendering
 // Add `export const prerender = false` when deploying with an adapter
@@ -38,19 +39,25 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     // Parse request body
     const body = await request.json()
-    const { gradeRange, locale = 'da-DK' } = body
 
-    // Validate gradeRange
-    if (!gradeRange || !['0-3', '4-6', '7-9'].includes(gradeRange)) {
+    // Validate input with Zod schema
+    const validationResult = generateUUIDPayloadSchema.safeParse(body)
+
+    if (!validationResult.success) {
       const headers = createSecurityHeaders(isDevelopment, {
         'Content-Type': 'application/json',
       })
 
+      // Format Zod errors into readable message
+      const errorMessage = validationResult.error.errors
+        .map((err) => `${err.path.join('.')}: ${err.message}`)
+        .join(', ')
+
       return new Response(
         JSON.stringify({
           success: false,
-          error: 'Invalid grade range. Must be 0-3, 4-6, or 7-9',
-          code: 'INVALID_GRADE_RANGE',
+          error: errorMessage || 'Invalid input',
+          code: 'VALIDATION_ERROR',
         }),
         {
           status: 400,
@@ -59,26 +66,10 @@ export const POST: APIRoute = async ({ request }) => {
       )
     }
 
-    // Validate locale
-    if (locale && !['da-DK', 'en-US'].includes(locale)) {
-      const headers = createSecurityHeaders(isDevelopment, {
-        'Content-Type': 'application/json',
-      })
+    // Extract validated data (gradeRange required, locale defaults to 'da-DK')
+    const { gradeRange, locale } = validationResult.data
 
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: 'Invalid locale. Must be da-DK or en-US',
-          code: 'INVALID_LOCALE',
-        }),
-        {
-          status: 400,
-          headers,
-        }
-      )
-    }
-
-    // Create user
+    // Create user with validated inputs
     const result = await createUser(gradeRange, locale)
 
     if (!result.success) {

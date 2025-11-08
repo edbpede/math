@@ -519,17 +519,168 @@ describe('Answer Validation System', () => {
   describe('performance', () => {
     it('should validate answers in under 10ms', () => {
       const start = performance.now();
-      
+
       for (let i = 0; i < 1000; i++) {
         validateAnswer('42', { value: 42 });
         validateAnswer('1/2', { value: 0.5 });
         validateAnswer('3.14', { value: Math.PI });
       }
-      
+
       const end = performance.now();
       const avgTime = (end - start) / 3000;
-      
+
       expect(avgTime).toBeLessThan(10);
+    });
+  });
+
+  describe('security: XSS prevention', () => {
+    it('should reject script tag attempts', () => {
+      const malicious = '<script>alert("XSS")</script>';
+      const result = validateAnswer(malicious, { value: 42 });
+      expect(result.correct).toBe(false);
+      expect(result.normalized).not.toContain('<script>');
+    });
+
+    it('should reject HTML tag attempts', () => {
+      const htmlAttempts = [
+        '<b>42</b>',
+        '<img src=x onerror=alert("XSS")>',
+        '<iframe src="evil.com"></iframe>',
+        '42<div>evil</div>',
+      ];
+
+      htmlAttempts.forEach((input) => {
+        const result = validateAnswer(input, { value: 42 });
+        expect(result.normalized).not.toContain('<');
+        expect(result.normalized).not.toContain('>');
+      });
+    });
+
+    it('should reject javascript: protocol', () => {
+      const result = validateAnswer('javascript:alert("XSS")', { value: 42 });
+      expect(result.correct).toBe(false);
+      expect(result.normalized).toBe('');
+    });
+
+    it('should reject event handler attempts', () => {
+      const eventHandlers = [
+        'onclick=alert("XSS")',
+        'onerror=steal()',
+        'onload=malicious()',
+      ];
+
+      eventHandlers.forEach((input) => {
+        const result = validateAnswer(input, { value: 42 });
+        expect(result.correct).toBe(false);
+        expect(result.normalized).not.toContain('on');
+      });
+    });
+
+    it('should sanitize answer but preserve valid math', () => {
+      const result = validateAnswer('42<script>evil()</script>', { value: 42 });
+      expect(result.correct).toBe(true);
+      expect(result.normalized).toBe('42');
+    });
+  });
+
+  describe('security: injection prevention', () => {
+    it('should reject SQL injection attempts', () => {
+      const sqlInjection = [
+        "'; DROP TABLE users; --",
+        "1' OR '1'='1",
+        "admin'--",
+      ];
+
+      sqlInjection.forEach((input) => {
+        const result = validateAnswer(input, { value: 42 });
+        expect(result.correct).toBe(false);
+      });
+    });
+
+    it('should reject command injection attempts', () => {
+      const commandInjection = [
+        '42; ls -la',
+        '42 && rm -rf /',
+        '42 | cat /etc/passwd',
+      ];
+
+      commandInjection.forEach((input) => {
+        const result = validateAnswer(input, { value: 42 });
+        // Sanitizer removes dangerous characters
+        expect(result.normalized).not.toContain(';');
+        expect(result.normalized).not.toContain('&');
+        expect(result.normalized).not.toContain('|');
+      });
+    });
+  });
+
+  describe('security: malicious pattern detection', () => {
+    it('should detect and reject document/window access attempts', () => {
+      const domAccess = [
+        'document.cookie',
+        'window.location',
+        'document.getElementById',
+      ];
+
+      domAccess.forEach((input) => {
+        const result = validateAnswer(input, { value: 42 });
+        expect(result.correct).toBe(false);
+        expect(result.normalized).toBe('');
+      });
+    });
+
+    it('should detect and reject eval attempts', () => {
+      const result = validateAnswer('eval(alert("XSS"))', { value: 42 });
+      expect(result.correct).toBe(false);
+      expect(result.normalized).toBe('');
+    });
+
+    it('should detect and reject import attempts', () => {
+      const result = validateAnswer('import { malicious } from "evil"', { value: 42 });
+      expect(result.correct).toBe(false);
+      expect(result.normalized).toBe('');
+    });
+  });
+
+  describe('security: input sanitization', () => {
+    it('should preserve valid numeric characters', () => {
+      const valid = ['42', '3.14', '1/2', '50%', '-7', '(3+5)'];
+
+      valid.forEach((input) => {
+        const result = validateAnswer(input, { value: parseFloat(input) || 42 });
+        expect(result.normalized).toBeTruthy();
+      });
+    });
+
+    it('should remove HTML entities while preserving numbers', () => {
+      const result = validateAnswer('&lt;42&gt;', { value: 42 });
+      // Entities are not converted, just stripped
+      expect(result.normalized).not.toContain('&');
+      expect(result.normalized).not.toContain(';');
+    });
+
+    it('should handle data: URL attempts', () => {
+      const result = validateAnswer('data:text/html,<script>alert()</script>', { value: 42 });
+      expect(result.correct).toBe(false);
+      expect(result.normalized).not.toContain('data:');
+    });
+  });
+
+  describe('security: DoS prevention', () => {
+    it('should handle extremely long inputs without crashing', () => {
+      const longInput = '9'.repeat(10000);
+      expect(() => {
+        validateAnswer(longInput, { value: 42 });
+      }).not.toThrow();
+    });
+
+    it('should process long inputs in reasonable time', () => {
+      const longInput = '9'.repeat(1000);
+      const start = performance.now();
+      validateAnswer(longInput, { value: 999 });
+      const end = performance.now();
+
+      expect(end - start).toBeLessThan(100); // Should be much faster
     });
   });
 });

@@ -27,8 +27,8 @@
 
 import type { APIRoute } from 'astro'
 import { updateUser } from '@/lib/auth/service'
-import { validatePreferences } from '@/lib/types/preferences'
 import { createSecurityHeaders } from '@/lib/security'
+import { partialPreferencesSchema } from '@/lib/validation'
 
 export const POST: APIRoute = async ({ request }) => {
   // Determine if in development mode (for security header configuration)
@@ -39,8 +39,8 @@ export const POST: APIRoute = async ({ request }) => {
     const body = await request.json()
     const { userId, preferences } = body
 
-    // Validate required fields
-    if (!userId) {
+    // Validate userId
+    if (!userId || typeof userId !== 'string') {
       const headers = createSecurityHeaders(isDevelopment, {
         'Content-Type': 'application/json',
       })
@@ -48,8 +48,8 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(
         JSON.stringify({
           success: false,
-          error: 'Missing userId',
-          code: 'MISSING_USER_ID',
+          error: 'Missing or invalid userId',
+          code: 'INVALID_USER_ID',
         }),
         {
           status: 400,
@@ -58,34 +58,23 @@ export const POST: APIRoute = async ({ request }) => {
       )
     }
 
-    if (!preferences) {
+    // Validate preferences with Zod schema
+    const validationResult = partialPreferencesSchema.safeParse(preferences)
+
+    if (!validationResult.success) {
       const headers = createSecurityHeaders(isDevelopment, {
         'Content-Type': 'application/json',
       })
 
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: 'Missing preferences',
-          code: 'MISSING_PREFERENCES',
-        }),
-        {
-          status: 400,
-          headers,
-        }
-      )
-    }
-
-    // Validate preferences structure
-    if (!validatePreferences(preferences)) {
-      const headers = createSecurityHeaders(isDevelopment, {
-        'Content-Type': 'application/json',
-      })
+      // Format Zod errors into readable message
+      const errorMessage = validationResult.error.errors
+        .map((err) => `${err.path.join('.')}: ${err.message}`)
+        .join(', ')
 
       return new Response(
         JSON.stringify({
           success: false,
-          error: 'Invalid preferences format',
+          error: errorMessage || 'Invalid preferences format',
           code: 'INVALID_PREFERENCES',
         }),
         {
@@ -95,9 +84,12 @@ export const POST: APIRoute = async ({ request }) => {
       )
     }
 
-    // Update user preferences in Supabase
+    // Extract validated preferences
+    const validatedPreferences = validationResult.data
+
+    // Update user preferences in Supabase with validated data
     const result = await updateUser(userId, {
-      preferences,
+      preferences: validatedPreferences,
     })
 
     if (!result.success) {
