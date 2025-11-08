@@ -1,0 +1,402 @@
+{
+  "version": "2025-11-08T12:59:48.056Z",
+  "generatedAt": "2025-11-08T12:59:48.056Z",
+  "assets": [
+    {
+      "path": "/_astro/_commonjsHelpers.gnU0ypJ3.js",
+      "size": 611,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/auth.Bs-kKy4E.js",
+      "size": 1243,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/auth.HVp6IZyE.js",
+      "size": 1277,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/browser.JCROvEip.js",
+      "size": 25404,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/client.B6JBqYZn.js",
+      "size": 991,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/client.D0X2hLWc.js",
+      "size": 169693,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/common.cBz8hZqT.js",
+      "size": 4073,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/common.DdIz3n71.js",
+      "size": 4012,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/competencies.D0vbV592.js",
+      "size": 1445,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/competencies.DdIfjZOw.js",
+      "size": 1410,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/contexts.BWTsIbiN.js",
+      "size": 4712,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/contexts.OqJEuN6e.js",
+      "size": 4798,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/dashboard.BjX_ZPSR.css",
+      "size": 48050,
+      "type": "text/css",
+      "critical": true
+    },
+    {
+      "path": "/_astro/errors.CYNC8t1X.js",
+      "size": 1256,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/errors.DeIckTYf.js",
+      "size": 1323,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/exercises.-HbE34H0.js",
+      "size": 3773,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/exercises.BZJtwYKu.js",
+      "size": 3731,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/feedback.B3J2n9gt.js",
+      "size": 1100,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/feedback.DnPELs-0.js",
+      "size": 1125,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/hints.BlcneRBO.js",
+      "size": 1255,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/hints.CqJ8wUWo.js",
+      "size": 1221,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/InstallPrompt.BJI68reE.js",
+      "size": 5930,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/LanguageSelector.CEwAVsog.js",
+      "size": 4880,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/MobileNav.i5RMfPg4.js",
+      "size": 6702,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/navigation.B2nT99uy.js",
+      "size": 1044,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/navigation.Btn6WB7J.js",
+      "size": 1060,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/network-status.DoHBKZOl.js",
+      "size": 21386,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/OfflineIndicator.BVEjZfwG.js",
+      "size": 1172,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/PracticeSessionWrapper.zOSExXAl.js",
+      "size": 63713,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/progress.isgvytKC.js",
+      "size": 5602,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/ProgressDashboard.C-2xROOJ.js",
+      "size": 16538,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/service.DU7FcLOF.js",
+      "size": 1753,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/SettingsForm.BMVxzCC5.js",
+      "size": 10423,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/store.BH8NtN2R.js",
+      "size": 7529,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/store.D7pQqe3Y.js",
+      "size": 22383,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/SyncStatus.DQCU0LMz.js",
+      "size": 3721,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/SyncStatusIndicator.CVyWyO0k.js",
+      "size": 5489,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/uuid.BUVVKM1U.js",
+      "size": 402,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/UUIDGenerator.pYBpdJ8l.js",
+      "size": 11053,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/UUIDLogin.CVi4A-jh.js",
+      "size": 8480,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/UUIDManagement.BsuxJ5dB.js",
+      "size": 11459,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/favicon.svg",
+      "size": 749,
+      "type": "image/svg+xml",
+      "critical": true
+    },
+    {
+      "path": "/index.html",
+      "size": 16668,
+      "type": "text/html",
+      "critical": true
+    },
+    {
+      "path": "/cache-manifest.json",
+      "size": 9169,
+      "type": "application/json",
+      "critical": false
+    },
+    {
+      "path": "/dashboard/index.html",
+      "size": 275,
+      "type": "text/html",
+      "critical": false
+    },
+    {
+      "path": "/demo-login/index.html",
+      "size": 23009,
+      "type": "text/html",
+      "critical": false
+    },
+    {
+      "path": "/demo-uuid/index.html",
+      "size": 12792,
+      "type": "text/html",
+      "critical": false
+    },
+    {
+      "path": "/icons/apple-touch-icon.png",
+      "size": 2565,
+      "type": "image/png",
+      "critical": false
+    },
+    {
+      "path": "/icons/icon-128x128.png",
+      "size": 1699,
+      "type": "image/png",
+      "critical": false
+    },
+    {
+      "path": "/icons/icon-144x144.png",
+      "size": 1942,
+      "type": "image/png",
+      "critical": false
+    },
+    {
+      "path": "/icons/icon-152x152.png",
+      "size": 2083,
+      "type": "image/png",
+      "critical": false
+    },
+    {
+      "path": "/icons/icon-192x192.png",
+      "size": 2763,
+      "type": "image/png",
+      "critical": false
+    },
+    {
+      "path": "/icons/icon-384x384.png",
+      "size": 6113,
+      "type": "image/png",
+      "critical": false
+    },
+    {
+      "path": "/icons/icon-512x512.png",
+      "size": 9227,
+      "type": "image/png",
+      "critical": false
+    },
+    {
+      "path": "/icons/icon-72x72.png",
+      "size": 917,
+      "type": "image/png",
+      "critical": false
+    },
+    {
+      "path": "/icons/icon-96x96.png",
+      "size": 1261,
+      "type": "image/png",
+      "critical": false
+    },
+    {
+      "path": "/icons/icon-base.svg",
+      "size": 749,
+      "type": "image/svg+xml",
+      "critical": false
+    },
+    {
+      "path": "/icons/icon-maskable-192x192.png",
+      "size": 2724,
+      "type": "image/png",
+      "critical": false
+    },
+    {
+      "path": "/icons/icon-maskable-512x512.png",
+      "size": 11864,
+      "type": "image/png",
+      "critical": false
+    },
+    {
+      "path": "/manifest.json",
+      "size": 2063,
+      "type": "application/json",
+      "critical": false
+    },
+    {
+      "path": "/practice/geometri-og-maling/index.html",
+      "size": 293,
+      "type": "text/html",
+      "critical": false
+    },
+    {
+      "path": "/practice/matematiske-kompetencer/index.html",
+      "size": 298,
+      "type": "text/html",
+      "critical": false
+    },
+    {
+      "path": "/practice/statistik-og-sandsynlighed/index.html",
+      "size": 301,
+      "type": "text/html",
+      "critical": false
+    },
+    {
+      "path": "/practice/tal-og-algebra/index.html",
+      "size": 289,
+      "type": "text/html",
+      "critical": false
+    },
+    {
+      "path": "/settings/index.html",
+      "size": 299,
+      "type": "text/html",
+      "critical": false
+    },
+    {
+      "path": "/sw.js",
+      "size": 7656,
+      "type": "application/javascript",
+      "critical": false
+    }
+  ]
+}
