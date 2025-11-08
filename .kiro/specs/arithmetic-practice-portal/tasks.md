@@ -211,7 +211,7 @@
     - _Requirements: 5.7, 15.1_
 
 - [ ] 9. Create Astro pages and layouts
-  - [ ] 9.1 Build main layout with navigation
+  - [x] 9.1 Build main layout with navigation
     - Create MainLayout.astro with header and footer
     - Implement navigation menu with i18n support
     - Add language selector integration

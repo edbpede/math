@@ -22,12 +22,14 @@ if (typeof window !== 'undefined') {
   // Mock browser APIs that aren't available in jsdom/happy-dom
 
   // Clipboard API
-  Object.assign(navigator, {
-  clipboard: {
-    writeText: vi.fn().mockResolvedValue(undefined),
-    readText: vi.fn().mockResolvedValue(''),
-  },
-});
+  Object.defineProperty(navigator, 'clipboard', {
+    value: {
+      writeText: vi.fn().mockResolvedValue(undefined),
+      readText: vi.fn().mockResolvedValue(''),
+    },
+    writable: true,
+    configurable: true,
+  });
 
 // FileReader API (for QR code generation)
 global.FileReader = class FileReader {

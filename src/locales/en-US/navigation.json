@@ -7,6 +7,7 @@
     "settings": "Settings",
     "help": "Help"
   },
+  "skipToMain": "Skip to main content",
   "breadcrumbs": {
     "home": "Home",
     "dashboard": "Dashboard",
@@ -37,5 +38,13 @@
     "binding": "Binding content",
     "advisory": "Advisory content",
     "recommended": "Recommended for you"
+  },
+  "footer": {
+    "copyright": "© {{year}} Arithmetic Practice Portal. All rights reserved.",
+    "links": {
+      "privacy": "Privacy",
+      "help": "Help",
+      "about": "About"
+    }
   }
 }

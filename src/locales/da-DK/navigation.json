@@ -7,6 +7,7 @@
     "settings": "Indstillinger",
     "help": "Hjælp"
   },
+  "skipToMain": "Spring til hovedindhold",
   "breadcrumbs": {
     "home": "Hjem",
     "dashboard": "Oversigt",
@@ -37,5 +38,13 @@
     "binding": "Bindende indhold",
     "advisory": "Rådgivende indhold",
     "recommended": "Anbefalet til dig"
+  },
+  "footer": {
+    "copyright": "© {{year}} Matematik Øvelses Portal. Alle rettigheder forbeholdes.",
+    "links": {
+      "privacy": "Privatliv",
+      "help": "Hjælp",
+      "about": "Om"
+    }
   }
 }

@@ -1,0 +1,172 @@
+---
+/**
+ * Header Component
+ * 
+ * Main site header with navigation menu, language selector, and mobile hamburger.
+ * Static on desktop (scrolls with content), sticky on mobile for easy access.
+ * 
+ * Requirements:
+ * - 2.1: Language selector accessible from all pages
+ * - 9.1: Keyboard navigation and skip links for accessibility
+ * - 9.4: Semantic HTML with ARIA landmarks
+ */
+
+import { $t, getCurrentLocale } from '@/lib/i18n'
+import LanguageSelector from '@/components/islands/LanguageSelector'
+import MobileNav from '@/components/islands/MobileNav'
+
+interface Props {
+  /** Current page path for active nav state */
+  currentPath?: string
+}
+
+const { currentPath } = Astro.props
+const locale = await getCurrentLocale()
+const translations = await $t.get()
+
+// Navigation items from i18n
+const navItems = [
+  { label: translations('navigation.menu.home'), href: '/' },
+  { label: translations('navigation.menu.dashboard'), href: '/dashboard' },
+  { label: translations('navigation.menu.practice'), href: '/practice' },
+  { label: translations('navigation.menu.progress'), href: '/progress' },
+  { label: translations('navigation.menu.settings'), href: '/settings' },
+  { label: translations('navigation.menu.help'), href: '/help' },
+]
+
+// Determine active nav item
+const isActive = (href: string) => {
+  const path = currentPath || Astro.url.pathname
+  if (href === '/') {
+    return path === '/'
+  }
+  return path.startsWith(href)
+}
+---
+
+<header
+  class="header bg-white border-b border-gray-200 md:static sticky top-0 z-sticky safe-top"
+  role="banner"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    {/* Skip to main content link for accessibility */}
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-tooltip focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-lg focus:shadow-lg"
+    >
+      {translations('navigation.skipToMain') || 'Skip to main content'}
+    </a>
+
+    <div class="flex items-center justify-between h-16">
+      {/* Logo and brand */}
+      <div class="flex items-center gap-4">
+        {/* Mobile hamburger button */}
+        <button
+          type="button"
+          class="md:hidden touch-target p-2 rounded-lg hover:bg-gray-100 focus-visible-ring"
+          aria-label="Open navigation menu"
+          aria-expanded="false"
+          onclick="window.dispatchEvent(new Event('mobile-nav:open'))"
+        >
+          {/* Hamburger icon */}
+          <svg
+            class="w-6 h-6 text-gray-600"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          </svg>
+        </button>
+
+        {/* App title/logo */}
+        <a
+          href="/"
+          class="flex items-center gap-2 text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors focus-visible-ring rounded-lg px-2 py-1"
+        >
+          {/* Math icon */}
+          <svg
+            class="w-8 h-8 text-blue-600"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+            />
+          </svg>
+          <span class="hidden sm:inline">{translations('common.app.title')}</span>
+        </a>
+      </div>
+
+      {/* Desktop navigation */}
+      <nav class="hidden md:block" aria-label="Main navigation" role="navigation">
+        <ul class="flex items-center gap-1">
+          {navItems.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class={`
+                  px-4 py-2 rounded-lg text-sm font-medium transition-colors
+                  focus-visible-ring
+                  ${isActive(item.href)
+                    ? 'bg-blue-50 text-blue-700'
+                    : 'text-gray-700 hover:bg-gray-100'
+                  }
+                `}
+                aria-current={isActive(item.href) ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      {/* Language selector (compact on desktop) */}
+      <div class="hidden md:block">
+        <LanguageSelector client:load variant="compact" layout="horizontal" />
+      </div>
+    </div>
+  </div>
+</header>
+
+{/* Mobile navigation drawer */}
+<MobileNav client:load currentPath={currentPath} />
+
+<style>
+  /* Screen reader only utility */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .focus\:not-sr-only:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0.5rem 1rem;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+</style>
+
