@@ -9,10 +9,12 @@ import{d as Ke,c as N,g,a as x,i as s,b,e as c,t as v,f as z,h as K,S as w,F as 
                       rounded-lg border-2 px-4 py-3 text-sm font-medium
                       transition-all duration-200
                       focus:outline-none focus:ring-4 focus:ring-blue-300
+                      touch-target
                       ${a().theme===t.value?"border-blue-500 bg-blue-50 text-blue-700":"border-gray-200 bg-white text-gray-700 hover:border-blue-300"}
                     `,n=a().theme===t.value;return d!==i.e&&z(r,i.e=d),n!==i.t&&ie(r,"aria-pressed",i.t=n),i},{e:void 0,t:void 0}),re(),r})()})),s(Z,()=>l()("settings.display.fontSize.label")),s(ee,()=>l()("settings.display.fontSize.description")),s(xe,b(U,{each:ue,children:t=>(()=>{var r=g(ne);return r.$$click=()=>{p({fontSize:t.value}),$()},s(r,()=>l()(t.labelKey)),c(i=>{var d=`
                       rounded-lg border-2 px-4 py-3 text-sm font-medium
                       transition-all duration-200
                       focus:outline-none focus:ring-4 focus:ring-blue-300
+                      touch-target
                       ${a().fontSize===t.value?"border-blue-500 bg-blue-50 text-blue-700":"border-gray-200 bg-white text-gray-700 hover:border-blue-300"}
                     `,n=a().fontSize===t.value;return d!==i.e&&z(r,i.e=d),n!==i.t&&ie(r,"aria-pressed",i.t=n),i},{e:void 0,t:void 0}),re(),r})()})),G.addEventListener("change",t=>{p({dyslexiaFont:t.currentTarget.checked}),$()}),s(se,()=>l()("settings.display.dyslexiaFont.label")),s(ye,()=>l()("settings.display.dyslexiaFont.description")),M.addEventListener("change",t=>{p({highContrast:t.currentTarget.checked}),$()}),s(le,()=>l()("settings.display.highContrast.label")),s(Se,()=>l()("settings.display.highContrast.description")),s(o,b(w,{get when(){return oe()},get children(){var t=g(He);return s(t,()=>l()("settings.display.autoSave")),t}}),ze,we),c(()=>z(o,`settings-form ${e.class||""}`)),c(()=>K(G,"checked",a().dyslexiaFont)),c(()=>K(M,"checked",a().highContrast)),o})()}Ke(["click"]);export{Ye as default};

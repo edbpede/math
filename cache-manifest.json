@@ -1,6 +1,6 @@
 {
-  "version": "2025-11-08T14:47:57.211Z",
-  "generatedAt": "2025-11-08T14:47:57.211Z",
+  "version": "2025-11-08T15:15:05.410Z",
+  "generatedAt": "2025-11-08T15:15:05.410Z",
   "assets": [
     {
       "path": "/_astro/_commonjsHelpers.gnU0ypJ3.js",
@@ -75,14 +75,14 @@
       "critical": true
     },
     {
-      "path": "/_astro/dashboard.BMrHQ15I.css",
-      "size": 48100,
+      "path": "/_astro/dashboard.CTHo95h8.css",
+      "size": 8180,
       "type": "text/css",
       "critical": true
     },
     {
-      "path": "/_astro/dashboard.CTHo95h8.css",
-      "size": 8180,
+      "path": "/_astro/dashboard.Dby0jRIT.css",
+      "size": 48102,
       "type": "text/css",
       "critical": true
     },
@@ -141,8 +141,8 @@
       "critical": true
     },
     {
-      "path": "/_astro/InstallPrompt.knPv1R9N.js",
-      "size": 6163,
+      "path": "/_astro/InstallPrompt.D1PeEIa2.js",
+      "size": 6202,
       "type": "application/javascript",
       "critical": true
     },
@@ -183,8 +183,8 @@
       "critical": true
     },
     {
-      "path": "/_astro/PracticeSessionWrapper.CcLDY5gE.js",
-      "size": 73843,
+      "path": "/_astro/PracticeSessionWrapper.D5GqLnQ5.js",
+      "size": 73787,
       "type": "application/javascript",
       "critical": true
     },
@@ -207,8 +207,8 @@
       "critical": true
     },
     {
-      "path": "/_astro/SettingsForm.D5YoWlO_.js",
-      "size": 9799,
+      "path": "/_astro/SettingsForm.A8B8--TZ.js",
+      "size": 9869,
       "type": "application/javascript",
       "critical": true
     },
@@ -255,8 +255,8 @@
       "critical": true
     },
     {
-      "path": "/_astro/UUIDManagement.DTvnljzY.js",
-      "size": 11696,
+      "path": "/_astro/UUIDManagement.BnqjeNbA.js",
+      "size": 11787,
       "type": "application/javascript",
       "critical": true
     },
