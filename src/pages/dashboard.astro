@@ -1,0 +1,85 @@
+---
+/**
+ * Dashboard Page
+ *
+ * Main dashboard displaying user progress overview, SRS-based practice
+ * recommendations, competency area navigation, and quick continue option.
+ *
+ * Requirements:
+ * - 15.1: Retrieve and display complete progress data (mastery, history, preferences)
+ * - 5.7: Visual mastery display with color coding
+ *
+ * Task: 9.3
+ */
+
+import MainLayout from '@/components/layouts/MainLayout.astro'
+import ProgressDashboard from '@/components/islands/ProgressDashboard'
+import { $t, initI18n } from '@/lib/i18n'
+import { fetchActiveSession } from '@/lib/supabase/progress'
+
+// Check authentication - redirect if not authenticated
+const user = Astro.locals.user
+if (!user) {
+  return Astro.redirect('/login')
+}
+
+// Initialize i18n with user's preferred locale
+await initI18n(user.locale)
+
+// Get translations
+const t = await $t.get()
+
+// Check for active session (for quick continue functionality)
+let activeSession = null
+try {
+  activeSession = await fetchActiveSession(user.id)
+} catch (error) {
+  // Silently fail - active session is optional
+  console.error('Failed to fetch active session:', error)
+}
+
+// Page metadata
+const title = t('progress.dashboard.pageTitle')
+const description = t('progress.dashboard.pageDescription')
+---
+
+<MainLayout
+  title={title}
+  description={description}
+  currentPath="/dashboard"
+>
+  <div class="min-h-screen bg-gray-50">
+    <!-- Quick Continue Section (if active session exists) -->
+    {activeSession && (
+      <div class="bg-blue-600 text-white shadow-md">
+        <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+          <div class="flex flex-col items-center justify-between gap-4 sm:flex-row">
+            <div>
+              <p class="text-sm font-medium opacity-90">
+                {t('progress.quickContinue.label')}
+              </p>
+              <p class="mt-1 text-lg font-semibold">
+                {t('progress.quickContinue.message', {
+                  competency: activeSession.competencyAreaId
+                })}
+              </p>
+            </div>
+            <a
+              href={`/practice/${activeSession.competencyAreaId}`}
+              class="min-w-[200px] rounded-lg bg-white px-6 py-3 text-center text-base font-semibold text-blue-600 shadow-md transition-all duration-200 hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600 active:bg-gray-200"
+            >
+              {t('progress.quickContinue.button')}
+            </a>
+          </div>
+        </div>
+      </div>
+    )}
+
+    <!-- Main Dashboard Content -->
+    <ProgressDashboard
+      userId={user.id}
+      gradeRange={user.gradeRange}
+      client:load
+    />
+  </div>
+</MainLayout>

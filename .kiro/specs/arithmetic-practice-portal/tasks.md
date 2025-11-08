@@ -226,7 +226,7 @@
     - Integrate language auto-detection
     - _Requirements: 14.1_
   
-  - [ ] 9.3 Build dashboard page
+  - [x] 9.3 Build dashboard page
     - Create dashboard.astro with progress overview
     - Add personalized welcome message
     - Implement recommended practice section (SRS-based)

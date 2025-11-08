@@ -87,5 +87,72 @@
         "description": "Øv hvor som helst, også uden internetforbindelse"
       }
     }
+  },
+  "progress": {
+    "dashboard": {
+      "pageTitle": "Min Fremgang",
+      "pageDescription": "Følg din fremgang og øv med personlige anbefalinger",
+      "title": "Min Fremgangsoversigt",
+      "subtitle": "Følg din mestringsniveau på tværs af alle kompetenceområder"
+    },
+    "loading": {
+      "progress": "Indlæser din fremgang...",
+      "reviews": "Indlæser gennemgangsplan..."
+    },
+    "sections": {
+      "streak": "Øvelsesrækkefølge",
+      "competencies": "Kompetenceområder",
+      "skills": "Færdighedsoversigt",
+      "reviews": "Gennemgangsplan"
+    },
+    "streak": {
+      "current": "{{count}} dages række",
+      "noStreak": "Start din række i dag!",
+      "lastPracticed": "Sidst øvet {{date}}",
+      "keepItGoing": "Øv i dag for at fortsætte din række!",
+      "practiceToday": "Start med at øve i dag for at begynde din række!"
+    },
+    "competencyCard": {
+      "notPracticedYet": "Ikke øvet endnu",
+      "attemptsLabel": "Forsøg",
+      "successRateLabel": "Succesrate",
+      "lastPracticedLabel": "Sidst øvet",
+      "hideSkills": "Skjul færdigheder",
+      "viewSkills": "Vis færdigheder"
+    },
+    "skillsBreakdown": {
+      "noSkillsYet": "Ingen færdigheder øvet i dette område endnu",
+      "nextReview": "Næste gennemgang: {{date}}"
+    },
+    "empty": {
+      "noCompetencies": "Ingen fremgang endnu",
+      "startPracticing": "Start med at øve for at følge din fremgang"
+    },
+    "reviews": {
+      "title": "Gennemgangsplan",
+      "noReviews": "Ingen gennemgange planlagt - godt gået!",
+      "overdue": "Forsinkede Gennemgange",
+      "dueToday": "Skal Gennemgås I Dag",
+      "dueThisWeek": "Skal Gennemgås Denne Uge",
+      "practiceNow": "Øv Nu",
+      "overdueBy": "Forsinket med {{days}} dage",
+      "dueOn": "Skal gennemgås {{date}}"
+    },
+    "masteryLevels": {
+      "introduced": "Introduceret",
+      "developing": "Under Udvikling",
+      "progressing": "Fremskridt",
+      "proficient": "Dygtig",
+      "mastered": "Mestret"
+    },
+    "errors": {
+      "loadFailed": "Kunne ikke indlæse fremgangsdata",
+      "tryAgain": "Prøv Igen"
+    },
+    "quickContinue": {
+      "label": "Fortsæt hvor du slap",
+      "message": "Du har en aktiv øvelsessession i {{competency}}",
+      "button": "Fortsæt Øvelse"
+    }
   }
 }

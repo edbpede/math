@@ -87,5 +87,72 @@
         "description": "Practice anywhere, even without an internet connection"
       }
     }
+  },
+  "progress": {
+    "dashboard": {
+      "pageTitle": "My Progress",
+      "pageDescription": "Track your mastery progress and practice with personalized recommendations",
+      "title": "My Progress Dashboard",
+      "subtitle": "Track your mastery across all competency areas"
+    },
+    "loading": {
+      "progress": "Loading your progress...",
+      "reviews": "Loading review schedule..."
+    },
+    "sections": {
+      "streak": "Practice Streak",
+      "competencies": "Competency Areas",
+      "skills": "Skills Breakdown",
+      "reviews": "Review Schedule"
+    },
+    "streak": {
+      "current": "{{count}} day streak",
+      "noStreak": "Start your streak today!",
+      "lastPracticed": "Last practiced {{date}}",
+      "keepItGoing": "Practice today to keep your streak going!",
+      "practiceToday": "Start practicing today to begin your streak!"
+    },
+    "competencyCard": {
+      "notPracticedYet": "Not practiced yet",
+      "attemptsLabel": "Attempts",
+      "successRateLabel": "Success Rate",
+      "lastPracticedLabel": "Last practiced",
+      "hideSkills": "Hide skills",
+      "viewSkills": "View skills"
+    },
+    "skillsBreakdown": {
+      "noSkillsYet": "No skills practiced in this area yet",
+      "nextReview": "Next review: {{date}}"
+    },
+    "empty": {
+      "noCompetencies": "No progress yet",
+      "startPracticing": "Start practicing to track your progress"
+    },
+    "reviews": {
+      "title": "Review Schedule",
+      "noReviews": "No reviews scheduled - great job!",
+      "overdue": "Overdue Reviews",
+      "dueToday": "Due Today",
+      "dueThisWeek": "Due This Week",
+      "practiceNow": "Practice Now",
+      "overdueBy": "Overdue by {{days}} days",
+      "dueOn": "Due on {{date}}"
+    },
+    "masteryLevels": {
+      "introduced": "Introduced",
+      "developing": "Developing",
+      "progressing": "Progressing",
+      "proficient": "Proficient",
+      "mastered": "Mastered"
+    },
+    "errors": {
+      "loadFailed": "Failed to load progress data",
+      "tryAgain": "Try Again"
+    },
+    "quickContinue": {
+      "label": "Continue where you left off",
+      "message": "You have an active practice session in {{competency}}",
+      "button": "Continue Practicing"
+    }
   }
 }
