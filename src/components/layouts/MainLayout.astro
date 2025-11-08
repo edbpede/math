@@ -15,6 +15,7 @@ import { $t, getCurrentLocale } from '@/lib/i18n'
 import Header from '@/components/static/Header.astro'
 import Footer from '@/components/static/Footer.astro'
 import OfflineIndicator from '@/components/islands/OfflineIndicator'
+import SyncStatusIndicator from '@/components/islands/SyncStatusIndicator'
 
 interface Props {
   /** Page title (will be appended to site title) */
@@ -120,6 +121,9 @@ const metaDescription = description || defaultDescription
     
     {/* Footer */}
     {!hideNav && <Footer />}
+    
+    {/* Sync status indicator (floating) */}
+    <SyncStatusIndicator client:idle />
     
     {/* Global styles and utilities */}
     <style is:global>

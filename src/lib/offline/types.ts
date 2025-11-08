@@ -163,6 +163,7 @@ export interface ExerciseCompleteSyncItem extends BaseSyncQueueItem {
 export interface ProgressUpdateSyncItem extends BaseSyncQueueItem {
   type: 'progress_update'
   data: {
+    userId: string
     competencyProgress?: CompetencyProgress[]
     skillsProgress?: SkillProgress[]
   }

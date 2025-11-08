@@ -1,0 +1,61 @@
+{
+  "status": {
+    "online": "Online",
+    "offline": "Offline",
+    "syncing": "Syncing...",
+    "synced": "Synced",
+    "pending": "Pending sync",
+    "error": "Sync error",
+    "idle": "Ready"
+  },
+  "messages": {
+    "connectionLost": "Connection lost. Working offline...",
+    "connectionRestored": "Connection restored. Syncing data...",
+    "syncStarted": "Sync started",
+    "syncSuccess": "Sync completed: {count} items",
+    "syncFailed": "Sync failed. Will retry automatically.",
+    "queueFull": "Sync queue is full. Contact support if this persists.",
+    "offlineMode": "Offline mode: Your answers are saved locally"
+  },
+  "ui": {
+    "manualSync": "Sync now",
+    "clearQueue": "Clear queue",
+    "viewLogs": "View logs",
+    "queueCount": "{count} pending",
+    "lastSync": "Last synced: {time}",
+    "neverSynced": "Never synced",
+    "syncNow": "Sync",
+    "retrySync": "Retry",
+    "syncInProgress": "Syncing...",
+    "justNow": "Just now",
+    "minutesAgo": "{minutes} minute{s} ago",
+    "hoursAgo": "{hours} hour{s} ago",
+    "daysAgo": "{days} day{s} ago"
+  },
+  "settings": {
+    "title": "Sync Settings",
+    "description": "Manage offline sync and data queue",
+    "queueStatus": "Queue Status",
+    "itemsInQueue": "Items in queue: {count}",
+    "oldestItem": "Oldest item: {time}",
+    "autoSync": "Auto-sync",
+    "autoSyncDescription": "Automatically sync when connection is restored",
+    "clearQueueTitle": "Clear Sync Queue",
+    "clearQueueDescription": "This will delete all pending sync operations. Your data will not be uploaded to the server.",
+    "clearQueueConfirm": "Are you sure you want to clear the queue? This action cannot be undone.",
+    "clearQueueButton": "Clear Queue",
+    "clearQueueSuccess": "Sync queue cleared",
+    "viewLogs": "View sync logs",
+    "lastSyncTime": "Last sync: {time}",
+    "syncLogs": "Sync Logs",
+    "noLogs": "No logs yet"
+  },
+  "errors": {
+    "cannotSyncOffline": "Cannot sync while offline",
+    "syncFailed": "Sync failed",
+    "queueAddFailed": "Could not add to sync queue",
+    "unknownError": "Unknown sync error",
+    "tooManyRetries": "Too many failed attempts. Item removed from queue."
+  }
+}
+

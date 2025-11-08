@@ -1,0 +1,61 @@
+{
+  "status": {
+    "online": "Online",
+    "offline": "Offline",
+    "syncing": "Synkroniserer...",
+    "synced": "Synkroniseret",
+    "pending": "Afventer synkronisering",
+    "error": "Synkroniseringsfejl",
+    "idle": "Klar"
+  },
+  "messages": {
+    "connectionLost": "Forbindelse mistet. Arbejder offline...",
+    "connectionRestored": "Forbindelse genoprettet. Synkroniserer data...",
+    "syncStarted": "Synkronisering startet",
+    "syncSuccess": "Synkronisering gennemført: {count} elementer",
+    "syncFailed": "Synkronisering mislykkedes. Vil prøve igen automatisk.",
+    "queueFull": "Synkroniseringskø er fuld. Kontakt support hvis dette fortsætter.",
+    "offlineMode": "Offline-tilstand: Dine svar gemmes lokalt"
+  },
+  "ui": {
+    "manualSync": "Synkroniser nu",
+    "clearQueue": "Ryd kø",
+    "viewLogs": "Vis logfiler",
+    "queueCount": "{count} ventende",
+    "lastSync": "Sidst synkroniseret: {time}",
+    "neverSynced": "Aldrig synkroniseret",
+    "syncNow": "Synkroniser",
+    "retrySync": "Prøv igen",
+    "syncInProgress": "Synkroniserer...",
+    "justNow": "Lige nu",
+    "minutesAgo": "{minutes} minut{s} siden",
+    "hoursAgo": "{hours} time{s} siden",
+    "daysAgo": "{days} dag{e} siden"
+  },
+  "settings": {
+    "title": "Synkroniseringsindstillinger",
+    "description": "Administrer offline-synkronisering og datakø",
+    "queueStatus": "Køstatus",
+    "itemsInQueue": "Elementer i kø: {count}",
+    "oldestItem": "Ældste element: {time}",
+    "autoSync": "Automatisk synkronisering",
+    "autoSyncDescription": "Synkroniser automatisk når forbindelsen genoprettes",
+    "clearQueueTitle": "Ryd synkroniseringskø",
+    "clearQueueDescription": "Dette vil slette alle ventende synkroniseringsoperationer. Dine data vil ikke blive uploadet til serveren.",
+    "clearQueueConfirm": "Er du sikker på, at du vil rydde køen? Denne handling kan ikke fortrydes.",
+    "clearQueueButton": "Ryd kø",
+    "clearQueueSuccess": "Synkroniseringskø ryddet",
+    "viewLogs": "Vis synkroniseringslogfiler",
+    "lastSyncTime": "Sidste synkronisering: {time}",
+    "syncLogs": "Synkroniseringslogfiler",
+    "noLogs": "Ingen logfiler endnu"
+  },
+  "errors": {
+    "cannotSyncOffline": "Kan ikke synkronisere mens offline",
+    "syncFailed": "Synkronisering mislykkedes",
+    "queueAddFailed": "Kunne ikke tilføje til synkroniseringskø",
+    "unknownError": "Ukendt synkroniseringsfejl",
+    "tooManyRetries": "For mange fejlede forsøg. Element fjernet fra kø."
+  }
+}
+
