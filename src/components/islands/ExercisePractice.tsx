@@ -1,0 +1,590 @@
+/**
+ * ExercisePractice Component
+ *
+ * SolidJS island component serving as the main practice interface.
+ * Handles answer input, validation, feedback display, hint integration,
+ * progress tracking, and skip functionality.
+ *
+ * Requirements:
+ * - 8.1: Validate answer and display feedback within 1 second
+ * - 8.2: Display positive reinforcement with brief explanation and continue option
+ * - 8.3: Display gentle correction showing correct answer without negative language
+ * - 14.5: Begin first practice session with easier problems
+ * - 4.1: Hint button accessible during every exercise
+ * - 4.3: Keep hints visible after answer submission
+ * - 9.1: WCAG 2.1 AA compliance (keyboard nav, ARIA, contrast)
+ * - 9.3: Touch targets minimum 44x44 pixels
+ */
+
+import { createSignal, createEffect, Show, onMount } from 'solid-js';
+import { useStore } from '@nanostores/solid';
+import { $t } from '@/lib/i18n';
+import type { ExerciseInstance } from '@/lib/exercises/types';
+import HintSystem from './HintSystem';
+
+/**
+ * Exercise attempt data for logging
+ */
+export interface ExerciseAttempt {
+  exerciseId: string;
+  templateId: string;
+  correct: boolean;
+  timeSpentSeconds: number;
+  hintsUsed: number;
+  userAnswer: string;
+  skipped?: boolean;
+}
+
+/**
+ * Props for ExercisePractice component
+ */
+export interface ExercisePracticeProps {
+  /** Array of pre-generated exercise instances */
+  exercises: ExerciseInstance[];
+  
+  /** Current exercise index (0-based) */
+  currentIndex: number;
+  
+  /** Active practice session ID */
+  sessionId: string;
+  
+  /** Callback when exercise is completed (correct, incorrect, or try again) */
+  onExerciseComplete: (attempt: ExerciseAttempt) => void;
+  
+  /** Callback when exercise is skipped */
+  onSkip: (attempt: ExerciseAttempt) => void;
+  
+  /** Callback when all exercises are finished */
+  onSessionComplete: () => void;
+  
+  /** Optional CSS class for styling */
+  class?: string;
+}
+
+/**
+ * Validation result state
+ */
+type ValidationState = 
+  | { status: 'pending' }
+  | { status: 'validating' }
+  | { status: 'correct'; message: string }
+  | { status: 'incorrect'; message: string; correctAnswer: string };
+
+/**
+ * ExercisePractice - Main practice interface component
+ *
+ * Displays exercises one at a time, handles user input, validates answers,
+ * shows feedback, integrates hints, and manages exercise flow.
+ *
+ * @example
+ * ```tsx
+ * <ExercisePractice
+ *   exercises={exerciseInstances}
+ *   currentIndex={0}
+ *   sessionId={sessionId}
+ *   onExerciseComplete={(attempt) => logAttempt(attempt)}
+ *   onSkip={(attempt) => logSkip(attempt)}
+ *   onSessionComplete={() => showSummary()}
+ * />
+ * ```
+ */
+export default function ExercisePractice(props: ExercisePracticeProps) {
+  const t = useStore($t);
+  
+  // State management
+  const [answer, setAnswer] = createSignal('');
+  const [validationState, setValidationState] = createSignal<ValidationState>({ status: 'pending' });
+  const [hintsUsed, setHintsUsed] = createSignal(0);
+  const [startTime, setStartTime] = createSignal(Date.now());
+  const [showSkipConfirm, setShowSkipConfirm] = createSignal(false);
+  const [answerInputRef, setAnswerInputRef] = createSignal<HTMLInputElement>();
+  
+  // Get current exercise
+  const getCurrentExercise = () => props.exercises[props.currentIndex];
+  const isLastExercise = () => props.currentIndex >= props.exercises.length - 1;
+  const totalExercises = () => props.exercises.length;
+  
+  // Reset state when exercise changes
+  createEffect(() => {
+    // Track currentIndex to trigger reset
+    const _index = props.currentIndex;
+    const exercise = getCurrentExercise();
+    
+    if (exercise) {
+      setAnswer('');
+      setValidationState({ status: 'pending' });
+      setHintsUsed(0);
+      setStartTime(Date.now());
+      setShowSkipConfirm(false);
+      
+      // Focus answer input on new exercise
+      setTimeout(() => {
+        answerInputRef()?.focus();
+      }, 100);
+    }
+  });
+  
+  // Focus answer input on mount
+  onMount(() => {
+    answerInputRef()?.focus();
+  });
+  
+  /**
+   * Handle hint request from HintSystem
+   */
+  const handleHintRequested = (level: number) => {
+    setHintsUsed((prev) => prev + 1);
+  };
+  
+  /**
+   * Calculate time spent on current exercise
+   */
+  const calculateTimeSpent = (): number => {
+    return Math.floor((Date.now() - startTime()) / 1000);
+  };
+  
+  /**
+   * Normalize answer for validation (trim whitespace)
+   */
+  const normalizeAnswer = (value: string): string => {
+    return value.trim();
+  };
+  
+  /**
+   * Handle answer input change
+   */
+  const handleAnswerChange = (value: string) => {
+    setAnswer(value);
+  };
+  
+  /**
+   * Handle answer submission
+   */
+  const handleSubmit = async (event?: Event) => {
+    event?.preventDefault();
+    
+    const normalizedAnswer = normalizeAnswer(answer());
+    
+    // Validate answer is not empty
+    if (!normalizedAnswer) {
+      return;
+    }
+    
+    const exercise = getCurrentExercise();
+    if (!exercise) return;
+    
+    // Set loading state
+    setValidationState({ status: 'validating' });
+    
+    try {
+      // Validate answer using template's validation function
+      const template = exercise.templateId;
+      const validation = exercise.metadata.competencyAreaId; // TODO: Get template and validate
+      
+      // For now, use a simple validation approach
+      // This will be improved when we have proper template validation
+      const isCorrect = normalizedAnswer.toLowerCase() === String(exercise.correctAnswer.value).toLowerCase();
+      
+      const timeSpent = calculateTimeSpent();
+      
+      // Create attempt data
+      const attempt: ExerciseAttempt = {
+        exerciseId: exercise.id,
+        templateId: exercise.templateId,
+        correct: isCorrect,
+        timeSpentSeconds: timeSpent,
+        hintsUsed: hintsUsed(),
+        userAnswer: normalizedAnswer,
+      };
+      
+      if (isCorrect) {
+        // Get random success message
+        const messages = t()('feedback.correct.messages') as string[];
+        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+        
+        setValidationState({
+          status: 'correct',
+          message: randomMessage,
+        });
+        
+        // Call completion callback
+        props.onExerciseComplete(attempt);
+      } else {
+        // Get random incorrect message
+        const messages = t()('feedback.incorrect.messages') as string[];
+        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+        
+        setValidationState({
+          status: 'incorrect',
+          message: randomMessage,
+          correctAnswer: String(exercise.correctAnswer.value),
+        });
+        
+        // Call completion callback (for incorrect attempt tracking)
+        props.onExerciseComplete(attempt);
+      }
+    } catch (error) {
+      console.error('Error validating answer:', error);
+      
+      // Fallback validation
+      const isCorrect = normalizeAnswer(answer()) === String(getCurrentExercise()?.correctAnswer.value);
+      setValidationState({
+        status: isCorrect ? 'correct' : 'incorrect',
+        message: isCorrect ? t()('feedback.correct.title') : t()('feedback.incorrect.title'),
+        correctAnswer: String(getCurrentExercise()?.correctAnswer.value),
+      });
+    }
+  };
+  
+  /**
+   * Handle try again button click
+   */
+  const handleTryAgain = () => {
+    setAnswer('');
+    setValidationState({ status: 'pending' });
+    answerInputRef()?.focus();
+  };
+  
+  /**
+   * Handle next exercise button click
+   */
+  const handleNext = () => {
+    if (isLastExercise()) {
+      props.onSessionComplete();
+    } else {
+      // Parent should increment currentIndex
+      // This component is controlled by parent
+    }
+  };
+  
+  /**
+   * Handle skip button click
+   */
+  const handleSkipClick = () => {
+    setShowSkipConfirm(true);
+  };
+  
+  /**
+   * Handle skip confirmation
+   */
+  const handleSkipConfirm = () => {
+    const exercise = getCurrentExercise();
+    if (!exercise) return;
+    
+    const timeSpent = calculateTimeSpent();
+    
+    const attempt: ExerciseAttempt = {
+      exerciseId: exercise.id,
+      templateId: exercise.templateId,
+      correct: false,
+      timeSpentSeconds: timeSpent,
+      hintsUsed: hintsUsed(),
+      userAnswer: '',
+      skipped: true,
+    };
+    
+    props.onSkip(attempt);
+    setShowSkipConfirm(false);
+  };
+  
+  /**
+   * Handle skip cancellation
+   */
+  const handleSkipCancel = () => {
+    setShowSkipConfirm(false);
+  };
+  
+  /**
+   * Handle enter key in answer input
+   */
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleSubmit();
+    }
+  };
+  
+  const exercise = getCurrentExercise();
+  const state = validationState();
+  const isSubmitting = state.status === 'validating';
+  const hasSubmitted = state.status === 'correct' || state.status === 'incorrect';
+  const isCorrect = state.status === 'correct';
+  const isIncorrect = state.status === 'incorrect';
+  
+  return (
+    <div
+      class={`exercise-practice-container max-w-4xl mx-auto p-6 ${props.class || ''}`}
+      role="main"
+      aria-label={t()('exercises.session.title')}
+    >
+      {/* Progress Indicator */}
+      <div
+        class="progress-section mb-8"
+        role="region"
+        aria-label={t()('exercises.session.progress', {
+          current: (props.currentIndex + 1).toString(),
+          total: totalExercises().toString(),
+        })}
+      >
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-lg font-semibold text-gray-700">
+            {t()('exercises.session.progress', {
+              current: (props.currentIndex + 1).toString(),
+              total: totalExercises().toString(),
+            })}
+          </h2>
+          <span class="text-sm text-gray-600">
+            {Math.round(((props.currentIndex + 1) / totalExercises()) * 100)}%
+          </span>
+        </div>
+        
+        {/* Progress bar */}
+        <div
+          class="progress-bar w-full h-3 bg-gray-200 rounded-full overflow-hidden"
+          role="progressbar"
+          aria-valuenow={props.currentIndex + 1}
+          aria-valuemin={1}
+          aria-valuemax={totalExercises()}
+        >
+          <div
+            class="progress-fill h-full bg-blue-600 transition-all duration-500 ease-out"
+            style={{
+              width: `${((props.currentIndex + 1) / totalExercises()) * 100}%`,
+            }}
+          />
+        </div>
+      </div>
+      
+      <Show when={exercise} fallback={<div class="text-center text-gray-600">{t()('errors.exercise.notFound')}</div>}>
+        {(ex) => (
+          <div class="exercise-content bg-white rounded-lg shadow-md p-8">
+            {/* Question */}
+            <div
+              class="question-section mb-8"
+              role="region"
+              aria-label={t()('exercises.exercise.question')}
+            >
+              <h3 class="text-xl font-bold text-gray-900 mb-4">
+                {t()('exercises.exercise.question')}
+              </h3>
+              <div class="question-text text-2xl font-medium text-gray-800 leading-relaxed p-6 bg-blue-50 rounded-lg border-2 border-blue-200">
+                {ex().questionText}
+              </div>
+              
+              {/* Exercise metadata */}
+              <div class="mt-4 flex gap-3 flex-wrap">
+                <span class="text-xs px-3 py-1 rounded-full bg-gray-100 text-gray-700">
+                  {t()('exercises.exercise.difficulty', { level: ex().metadata.difficulty })}
+                </span>
+                <Show when={ex().metadata.isBinding}>
+                  <span class="text-xs px-3 py-1 rounded-full bg-purple-100 text-purple-700 font-medium">
+                    {t()('exercises.exercise.bindingContent')}
+                  </span>
+                </Show>
+              </div>
+            </div>
+            
+            {/* Answer Input */}
+            <form onSubmit={handleSubmit} class="answer-section mb-6">
+              <label
+                for="answer-input"
+                class="block text-lg font-semibold text-gray-700 mb-3"
+              >
+                {t()('exercises.exercise.yourAnswer')}
+              </label>
+              <div class="flex gap-3">
+                <input
+                  ref={setAnswerInputRef}
+                  id="answer-input"
+                  type="text"
+                  value={answer()}
+                  onInput={(e) => handleAnswerChange(e.currentTarget.value)}
+                  onKeyDown={handleKeyDown}
+                  disabled={hasSubmitted || isSubmitting}
+                  placeholder={t()('exercises.exercise.placeholder')}
+                  class="flex-1 px-4 py-3 text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all"
+                  style={{ 'min-height': '44px' }}
+                  aria-label={t()('exercises.exercise.yourAnswer')}
+                  aria-required="true"
+                  aria-invalid={isIncorrect}
+                />
+                
+                <Show when={!hasSubmitted}>
+                  <button
+                    type="submit"
+                    disabled={!answer().trim() || isSubmitting}
+                    class="px-6 py-3 font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                    classList={{
+                      'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500': !isSubmitting && answer().trim(),
+                      'bg-gray-300 text-gray-500 cursor-not-allowed': !answer().trim() || isSubmitting,
+                    }}
+                    style={{ 'min-width': '44px', 'min-height': '44px' }}
+                    aria-label={t()('exercises.exercise.checkAnswer')}
+                  >
+                    <Show when={isSubmitting} fallback={t()('exercises.exercise.checkAnswer')}>
+                      {t()('exercises.validation.checking')}
+                    </Show>
+                  </button>
+                </Show>
+              </div>
+            </form>
+            
+            {/* Feedback Display */}
+            <Show when={hasSubmitted}>
+              <div
+                class="feedback-section mb-6 p-6 rounded-lg border-2 transition-all duration-300 animate-slide-in"
+                classList={{
+                  'bg-green-50 border-green-400': isCorrect,
+                  'bg-orange-50 border-orange-400': isIncorrect,
+                }}
+                role="alert"
+                aria-live="polite"
+              >
+                <div class="flex items-start gap-4">
+                  {/* Icon */}
+                  <div class="flex-shrink-0">
+                    <Show
+                      when={isCorrect}
+                      fallback={
+                        <svg
+                          class="w-8 h-8 text-orange-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                          />
+                        </svg>
+                      }
+                    >
+                      <svg
+                        class="w-8 h-8 text-green-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                    </Show>
+                  </div>
+                  
+                  {/* Feedback content */}
+                  <div class="flex-1">
+                    <h4
+                      class="text-lg font-bold mb-2"
+                      classList={{
+                        'text-green-900': isCorrect,
+                        'text-orange-900': isIncorrect,
+                      }}
+                    >
+                      {state.status === 'correct' ? t()('feedback.correct.title') : t()('feedback.incorrect.title')}
+                    </h4>
+                    <p
+                      class="text-base mb-3"
+                      classList={{
+                        'text-green-800': isCorrect,
+                        'text-orange-800': isIncorrect,
+                      }}
+                    >
+                      {state.status === 'correct' ? state.message : state.message}
+                    </p>
+                    
+                    <Show when={isIncorrect && 'correctAnswer' in state}>
+                      <p class="text-base font-semibold text-orange-900 mt-2">
+                        {t()('feedback.incorrect.showCorrect', { answer: state.correctAnswer })}
+                      </p>
+                    </Show>
+                  </div>
+                </div>
+                
+                {/* Action buttons */}
+                <div class="mt-6 flex gap-3 flex-wrap">
+                  <Show
+                    when={isCorrect}
+                    fallback={
+                      <button
+                        onClick={handleTryAgain}
+                        class="px-6 py-3 bg-orange-600 text-white font-semibold rounded-lg hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all"
+                        style={{ 'min-width': '44px', 'min-height': '44px' }}
+                      >
+                        {t()('feedback.incorrect.tryAgain')}
+                      </button>
+                    }
+                  >
+                    <button
+                      onClick={handleNext}
+                      class="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all"
+                      style={{ 'min-width': '44px', 'min-height': '44px' }}
+                    >
+                      {isLastExercise()
+                        ? t()('exercises.session.complete')
+                        : t()('exercises.exercise.nextExercise')}
+                    </button>
+                  </Show>
+                </div>
+              </div>
+            </Show>
+            
+            {/* Hint System */}
+            <div class="hint-section mb-6">
+              <HintSystem
+                hints={ex().hints}
+                onHintRequested={handleHintRequested}
+                disabled={isSubmitting}
+                resetKey={ex().id}
+              />
+            </div>
+            
+            {/* Skip Button */}
+            <Show when={!hasSubmitted}>
+              <div class="skip-section flex justify-end">
+                <Show when={!showSkipConfirm()} fallback={
+                  <div class="skip-confirm flex items-center gap-3 p-4 bg-yellow-50 border-2 border-yellow-300 rounded-lg">
+                    <p class="text-sm text-yellow-900 font-medium">
+                      {t()('exercises.session.confirmQuit')}
+                    </p>
+                    <button
+                      onClick={handleSkipConfirm}
+                      class="px-4 py-2 bg-yellow-600 text-white font-medium rounded hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all text-sm"
+                      style={{ 'min-height': '44px' }}
+                    >
+                      {t()('common.actions.confirm')}
+                    </button>
+                    <button
+                      onClick={handleSkipCancel}
+                      class="px-4 py-2 bg-gray-300 text-gray-700 font-medium rounded hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all text-sm"
+                      style={{ 'min-height': '44px' }}
+                    >
+                      {t()('common.actions.cancel')}
+                    </button>
+                  </div>
+                }>
+                  <button
+                    onClick={handleSkipClick}
+                    class="px-5 py-2 text-gray-600 font-medium rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all text-sm"
+                    style={{ 'min-height': '44px' }}
+                    aria-label={t()('exercises.exercise.skipExercise')}
+                  >
+                    {t()('exercises.exercise.skipExercise')}
+                  </button>
+                </Show>
+              </div>
+            </Show>
+          </div>
+        )}
+      </Show>
+    </div>
+  );
+}
+

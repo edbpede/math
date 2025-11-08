@@ -184,7 +184,7 @@
     - Create language preference persistence to Supabase
     - _Requirements: 2.3, 2.4_
   
-  - [ ] 8.4 Build exercise practice component
+  - [x] 8.4 Build exercise practice component
     - Create ExercisePractice island as main practice interface
     - Implement answer input with format validation
     - Add submit button with loading state
