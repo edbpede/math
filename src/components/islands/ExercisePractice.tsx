@@ -484,8 +484,7 @@ export default function ExercisePractice(props: ExercisePracticeProps) {
                   onKeyDown={handleKeyDown}
                   disabled={hasSubmitted || isSubmitting}
                   placeholder={t()('exercises.exercise.placeholder')}
-                  class="flex-1 px-4 py-3 text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all"
-                  style={{ 'min-height': '44px' }}
+                  class="flex-1 px-4 py-3 text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all touch-target"
                   aria-label={t()('exercises.exercise.yourAnswer')}
                   aria-required="true"
                   aria-invalid={isIncorrect}
@@ -495,12 +494,11 @@ export default function ExercisePractice(props: ExercisePracticeProps) {
                   <button
                     type="submit"
                     disabled={!answer().trim() || isSubmitting}
-                    class="px-6 py-3 font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                    class="px-6 py-3 font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 touch-target"
                     classList={{
                       'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500': !isSubmitting && answer().trim(),
                       'bg-gray-300 text-gray-500 cursor-not-allowed': !answer().trim() || isSubmitting,
                     }}
-                    style={{ 'min-width': '44px', 'min-height': '44px' }}
                     aria-label={t()('exercises.exercise.checkAnswer')}
                   >
                     <Show when={isSubmitting} fallback={t()('exercises.exercise.checkAnswer')}>
@@ -557,15 +555,13 @@ export default function ExercisePractice(props: ExercisePracticeProps) {
                     </p>
                     <button
                       onClick={handleSkipConfirm}
-                      class="px-4 py-2 bg-yellow-600 text-white font-medium rounded hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all text-sm"
-                      style={{ 'min-height': '44px' }}
+                      class="px-4 py-2 bg-yellow-600 text-white font-medium rounded hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all text-sm touch-target"
                     >
                       {t()('common.actions.confirm')}
                     </button>
                     <button
                       onClick={handleSkipCancel}
-                      class="px-4 py-2 bg-gray-300 text-gray-700 font-medium rounded hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all text-sm"
-                      style={{ 'min-height': '44px' }}
+                      class="px-4 py-2 bg-gray-300 text-gray-700 font-medium rounded hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all text-sm touch-target"
                     >
                       {t()('common.actions.cancel')}
                     </button>
@@ -573,8 +569,7 @@ export default function ExercisePractice(props: ExercisePracticeProps) {
                 }>
                   <button
                     onClick={handleSkipClick}
-                    class="px-5 py-2 text-gray-600 font-medium rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all text-sm"
-                    style={{ 'min-height': '44px' }}
+                    class="px-5 py-2 text-gray-600 font-medium rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all text-sm touch-target"
                     aria-label={t()('exercises.exercise.skipExercise')}
                   >
                     {t()('exercises.exercise.skipExercise')}

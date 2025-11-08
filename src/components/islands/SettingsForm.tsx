@@ -322,6 +322,7 @@ export default function SettingsForm(props: SettingsFormProps) {
                       rounded-lg border-2 px-4 py-3 text-sm font-medium
                       transition-all duration-200
                       focus:outline-none focus:ring-4 focus:ring-blue-300
+                      touch-target
                       ${
                         preferences().theme === option.value
                           ? 'border-blue-500 bg-blue-50 text-blue-700'
@@ -358,6 +359,7 @@ export default function SettingsForm(props: SettingsFormProps) {
                       rounded-lg border-2 px-4 py-3 text-sm font-medium
                       transition-all duration-200
                       focus:outline-none focus:ring-4 focus:ring-blue-300
+                      touch-target
                       ${
                         preferences().fontSize === option.value
                           ? 'border-blue-500 bg-blue-50 text-blue-700'

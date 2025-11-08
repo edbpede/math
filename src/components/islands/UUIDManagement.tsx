@@ -246,7 +246,7 @@ export default function UUIDManagement(props: UUIDManagementProps) {
             <button
               type="button"
               onClick={() => setShowUUID(!showUUID())}
-              class="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-blue-300"
+              class="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-blue-300 touch-target"
               aria-label={showUUID() ? t()('settings.uuid.hide') : t()('settings.uuid.show')}
             >
               {showUUID() ? t()('settings.uuid.hide') : t()('settings.uuid.show')}
@@ -260,7 +260,7 @@ export default function UUIDManagement(props: UUIDManagementProps) {
           <button
             type="button"
             onClick={copyToClipboard}
-            class="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-blue-300"
+            class="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-blue-300 touch-target"
             aria-label={t()('settings.uuid.copy')}
           >
             <Show
@@ -291,7 +291,7 @@ export default function UUIDManagement(props: UUIDManagementProps) {
           <button
             type="button"
             onClick={exportAsFile}
-            class="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-blue-300"
+            class="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-blue-300 touch-target"
             aria-label={t()('settings.uuid.export')}
           >
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -309,7 +309,7 @@ export default function UUIDManagement(props: UUIDManagementProps) {
           <button
             type="button"
             onClick={toggleQRCode}
-            class="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-blue-300"
+            class="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-blue-300 touch-target"
             aria-label={showQR() ? t()('settings.uuid.hideQR') : t()('settings.uuid.showQR')}
             aria-expanded={showQR()}
             disabled={state().status === 'loading-qr'}
@@ -371,7 +371,7 @@ export default function UUIDManagement(props: UUIDManagementProps) {
           <button
             type="button"
             onClick={() => setShowDeleteModal(true)}
-            class="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300"
+            class="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 touch-target"
           >
             {t()('settings.deleteAccount.button')}
           </button>
@@ -422,7 +422,7 @@ export default function UUIDManagement(props: UUIDManagementProps) {
                 type="button"
                 onClick={() => setShowDeleteModal(false)}
                 disabled={state().status === 'deleting'}
-                class="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-300 disabled:opacity-50"
+                class="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-300 disabled:opacity-50 touch-target"
               >
                 {t()('settings.deleteAccount.confirm.cancelButton')}
               </button>
@@ -430,7 +430,7 @@ export default function UUIDManagement(props: UUIDManagementProps) {
                 type="button"
                 onClick={handleDeleteAccount}
                 disabled={state().status === 'deleting'}
-                class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 disabled:opacity-50"
+                class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 disabled:opacity-50 touch-target"
               >
                 <Show when={state().status === 'deleting'}>
                   <div class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />

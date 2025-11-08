@@ -244,7 +244,7 @@ export default function InstallPrompt() {
             <button
               type="button"
               onClick={handleDismiss}
-              class="flex-shrink-0 p-1 text-gray-400 hover:text-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 touch-target"
               aria-label={t()('common.actions.close')}
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -298,7 +298,7 @@ export default function InstallPrompt() {
               type="button"
               onClick={handleInstall}
               disabled={isInstalling()}
-              class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed touch-target"
             >
               <Show
                 when={!isInstalling()}
@@ -330,7 +330,7 @@ export default function InstallPrompt() {
             <button
               type="button"
               onClick={handleDismiss}
-              class="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+              class="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 touch-target"
             >
               {t()('pwa.install.dismiss')}
             </button>

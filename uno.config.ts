@@ -48,12 +48,18 @@ export default defineConfig({
 
   shortcuts: {
     // Common component patterns
-    'btn-primary': 'px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed',
-    'btn-secondary': 'px-6 py-3 bg-white text-gray-700 border-2 border-gray-300 rounded-lg font-medium hover:border-blue-400 hover:bg-blue-50 active:bg-blue-100 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed',
-    'btn-ghost': 'px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 active:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors',
+    'btn-primary': 'px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-target',
+    'btn-secondary': 'px-6 py-3 bg-white text-gray-700 border-2 border-gray-300 rounded-lg font-medium hover:border-blue-400 hover:bg-blue-50 active:bg-blue-100 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-target',
+    'btn-ghost': 'px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 active:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors touch-target',
 
-    // Touch-friendly targets (44x44px minimum per WCAG)
+    // Touch-friendly targets (44x44px minimum per WCAG 2.1 AA - Requirement 9.3)
     'touch-target': 'min-w-44px min-h-44px',
+    'touch-target-generous': 'min-w-48px min-h-48px p-3',
+    'touch-spacing': 'gap-2',
+    
+    // Interactive elements with touch targets
+    'btn-icon': 'touch-target flex items-center justify-center rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2',
+    'link-touch': 'touch-target inline-flex items-center',
 
     // Focus indicators for accessibility
     'focus-visible-ring': 'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-300',
