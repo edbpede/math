@@ -43,6 +43,10 @@ export default function InstallPrompt() {
 
   // Check if user previously dismissed the prompt
   const isDismissed = (): boolean => {
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+      return false
+    }
+    
     try {
       const dismissed = localStorage.getItem(INSTALL_DISMISSED_KEY)
       if (!dismissed) return false
@@ -60,6 +64,10 @@ export default function InstallPrompt() {
 
   // Check if app is already installed
   const checkInstallStatus = () => {
+    if (typeof window === 'undefined') {
+      return
+    }
+    
     // Check if running in standalone mode (installed)
     const isStandalone = 
       window.matchMedia('(display-mode: standalone)').matches ||
@@ -128,11 +136,13 @@ export default function InstallPrompt() {
 
   // Handle dismiss button click
   const handleDismiss = () => {
-    try {
-      // Store dismissal time in localStorage
-      localStorage.setItem(INSTALL_DISMISSED_KEY, Date.now().toString())
-    } catch (error) {
-      console.error('[InstallPrompt] Failed to save dismissal:', error)
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      try {
+        // Store dismissal time in localStorage
+        localStorage.setItem(INSTALL_DISMISSED_KEY, Date.now().toString())
+      } catch (error) {
+        console.error('[InstallPrompt] Failed to save dismissal:', error)
+      }
     }
     
     setShowPrompt(false)
@@ -141,6 +151,10 @@ export default function InstallPrompt() {
 
   // Setup event listeners
   onMount(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+    
     checkInstallStatus()
     
     // Listen for beforeinstallprompt event
@@ -154,8 +168,10 @@ export default function InstallPrompt() {
 
   // Cleanup
   onCleanup(() => {
-    window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
-    window.removeEventListener('appinstalled', handleAppInstalled)
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+      window.removeEventListener('appinstalled', handleAppInstalled)
+    }
   })
 
   return (

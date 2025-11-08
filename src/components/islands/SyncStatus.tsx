@@ -47,7 +47,9 @@ export default function SyncStatus(props: SyncStatusProps) {
    * Update online/offline status
    */
   const updateOnlineStatus = () => {
-    setIsOnline(navigator.onLine)
+    if (typeof navigator !== 'undefined') {
+      setIsOnline(navigator.onLine)
+    }
   }
 
   /**
@@ -104,6 +106,10 @@ export default function SyncStatus(props: SyncStatusProps) {
   }
 
   onMount(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
     // Set initial online status
     updateOnlineStatus()
 
@@ -112,9 +118,11 @@ export default function SyncStatus(props: SyncStatusProps) {
     window.addEventListener('offline', updateOnlineStatus)
 
     // Initialize last sync from localStorage if available
-    const storedSync = localStorage.getItem('lastSyncTimestamp')
-    if (storedSync) {
-      setLastSync(new Date(storedSync))
+    if (typeof localStorage !== 'undefined') {
+      const storedSync = localStorage.getItem('lastSyncTimestamp')
+      if (storedSync) {
+        setLastSync(new Date(storedSync))
+      }
     }
 
     // Update relative time every 30 seconds
@@ -127,17 +135,21 @@ export default function SyncStatus(props: SyncStatusProps) {
       setIsSyncing(false)
       const timestamp = new Date(event.detail.timestamp || Date.now())
       setLastSync(timestamp)
-      localStorage.setItem('lastSyncTimestamp', timestamp.toISOString())
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('lastSyncTimestamp', timestamp.toISOString())
+      }
     }
 
     window.addEventListener('sync:start', handleSyncStart as EventListener)
     window.addEventListener('sync:complete', handleSyncComplete as EventListener)
 
     onCleanup(() => {
-      window.removeEventListener('online', updateOnlineStatus)
-      window.removeEventListener('offline', updateOnlineStatus)
-      window.removeEventListener('sync:start', handleSyncStart as EventListener)
-      window.removeEventListener('sync:complete', handleSyncComplete as EventListener)
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('online', updateOnlineStatus)
+        window.removeEventListener('offline', updateOnlineStatus)
+        window.removeEventListener('sync:start', handleSyncStart as EventListener)
+        window.removeEventListener('sync:complete', handleSyncComplete as EventListener)
+      }
       clearInterval(intervalId)
     })
   })

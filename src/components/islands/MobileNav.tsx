@@ -69,7 +69,7 @@ export default function MobileNav(props: MobileNavProps) {
    * Check if nav item is active
    */
   const isActive = (href: string): boolean => {
-    const currentPath = props.currentPath || window.location.pathname
+    const currentPath = props.currentPath || (typeof window !== 'undefined' ? window.location.pathname : '/')
     if (href === '/') {
       return currentPath === '/'
     }
@@ -82,7 +82,9 @@ export default function MobileNav(props: MobileNavProps) {
   const openDrawer = () => {
     setIsOpen(true)
     // Prevent body scroll when drawer is open
-    document.body.style.overflow = 'hidden'
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = 'hidden'
+    }
     
     // Focus first element when opened
     setTimeout(() => {
@@ -95,7 +97,9 @@ export default function MobileNav(props: MobileNavProps) {
    */
   const closeDrawer = () => {
     setIsOpen(false)
-    document.body.style.overflow = ''
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = ''
+    }
   }
 
   /**
@@ -120,7 +124,7 @@ export default function MobileNav(props: MobileNavProps) {
    * Handle focus trap within drawer
    */
   const handleFocusTrap = (e: FocusEvent) => {
-    if (!isOpen() || !drawerRef) return
+    if (!isOpen() || !drawerRef || typeof document === 'undefined') return
 
     const focusableElements = drawerRef.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
@@ -139,18 +143,30 @@ export default function MobileNav(props: MobileNavProps) {
   }
 
   onMount(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
     // Listen for custom open event from hamburger button
     const handleOpenEvent = () => openDrawer()
     window.addEventListener('mobile-nav:open', handleOpenEvent)
 
     // Cleanup
     onCleanup(() => {
-      window.removeEventListener('mobile-nav:open', handleOpenEvent)
-      document.body.style.overflow = ''
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('mobile-nav:open', handleOpenEvent)
+      }
+      if (typeof document !== 'undefined') {
+        document.body.style.overflow = ''
+      }
     })
   })
 
   createEffect(() => {
+    if (typeof document === 'undefined') {
+      return
+    }
+
     if (isOpen()) {
       document.addEventListener('keydown', handleKeyDown)
       document.addEventListener('focusin', handleFocusTrap)
