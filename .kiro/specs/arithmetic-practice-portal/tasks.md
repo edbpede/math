@@ -177,7 +177,7 @@
     - Implement rate limiting display (attempts remaining)
     - _Requirements: 1.4, 15.3_
   
-  - [ ] 8.3 Create language selector component
+  - [x] 8.3 Create language selector component
     - Build LanguageSelector island with flag icons
     - Implement instant language switching without reload
     - Add current language highlighting

@@ -49,5 +49,15 @@
     "help": "help",
     "info": "information",
     "warning": "warning"
+  },
+  "language": {
+    "selector": {
+      "title": "Choose language",
+      "danish": "Dansk",
+      "english": "English",
+      "current": "Current language",
+      "changingLanguage": "Changing language...",
+      "languageChanged": "Language changed"
+    }
   }
 }
