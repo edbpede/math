@@ -34,6 +34,7 @@ export {
   createUser,
   signInWithUUID,
   getUserByUUID,
+  getCurrentUser,
   updateUser,
   deleteUser,
 } from './service'

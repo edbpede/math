@@ -438,3 +438,53 @@ export async function deleteUser(
     }
   }
 }
+
+/**
+ * Gets the current authenticated user from the session
+ *
+ * This is a client-side function that calls the /api/auth/session endpoint.
+ * Use this in SolidJS components or other client-side code.
+ *
+ * @returns Promise with the current user or null if not authenticated
+ *
+ * @example
+ * const user = await getCurrentUser()
+ * if (user) {
+ *   console.log('User ID:', user.id)
+ * }
+ */
+export async function getCurrentUser(): Promise<User | null> {
+  try {
+    const response = await fetch('/api/auth/session', {
+      method: 'GET',
+      credentials: 'include', // Include cookies
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+
+    if (!response.ok) {
+      console.error('Failed to fetch current user:', response.statusText)
+      return null
+    }
+
+    const data = await response.json()
+
+    if (!data.success || !data.authenticated || !data.user) {
+      return null
+    }
+
+    // Convert ISO date strings back to Date objects
+    return {
+      id: data.user.id,
+      gradeRange: data.user.gradeRange,
+      locale: data.user.locale,
+      createdAt: new Date(data.user.createdAt),
+      lastActiveAt: new Date(data.user.lastActiveAt),
+      preferences: data.user.preferences || {},
+    }
+  } catch (error) {
+    console.error('Error getting current user:', error)
+    return null
+  }
+}

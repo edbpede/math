@@ -59,5 +59,33 @@
       "changingLanguage": "Skifter sprog...",
       "languageChanged": "Sprog ændret"
     }
+  },
+  "landing": {
+    "welcome": {
+      "title": "Velkommen til Matematik Øvelses Portal",
+      "subtitle": "Øv matematik tilpasset Fælles Mål - helt gratis og privat"
+    },
+    "cta": {
+      "startPractice": "Start øvelse",
+      "haveNumber": "Jeg har et øvelsesnummer"
+    },
+    "features": {
+      "private": {
+        "title": "Helt privat",
+        "description": "Ingen personlige oplysninger kræves - kun dit øvelsesnummer"
+      },
+      "curriculum": {
+        "title": "Fælles Mål",
+        "description": "Opgaver tilpasset den danske matematikundervisning"
+      },
+      "unlimited": {
+        "title": "Ubegrænsede opgaver",
+        "description": "Øv så meget du vil med uendelige variationer"
+      },
+      "offline": {
+        "title": "Virker offline",
+        "description": "Øv hvor som helst, også uden internetforbindelse"
+      }
+    }
   }
 }

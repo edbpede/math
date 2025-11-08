@@ -218,7 +218,7 @@
     - Build responsive layout for mobile and desktop
     - _Requirements: 2.1, 9.4_
   
-  - [ ] 9.2 Create landing page
+  - [x] 9.2 Create landing page
     - Build index.astro with clean, welcoming design
     - Add brief explanation (1-2 sentences)
     - Implement "Start Practice" primary action

@@ -59,5 +59,33 @@
       "changingLanguage": "Changing language...",
       "languageChanged": "Language changed"
     }
+  },
+  "landing": {
+    "welcome": {
+      "title": "Welcome to Arithmetic Practice Portal",
+      "subtitle": "Practice mathematics aligned with Fælles Mål - completely free and private"
+    },
+    "cta": {
+      "startPractice": "Start practice",
+      "haveNumber": "I have a practice number"
+    },
+    "features": {
+      "private": {
+        "title": "Completely private",
+        "description": "No personal information required - only your practice number"
+      },
+      "curriculum": {
+        "title": "Fælles Mål aligned",
+        "description": "Exercises tailored to Danish mathematics curriculum"
+      },
+      "unlimited": {
+        "title": "Unlimited practice",
+        "description": "Practice as much as you want with infinite variations"
+      },
+      "offline": {
+        "title": "Works offline",
+        "description": "Practice anywhere, even without an internet connection"
+      }
+    }
   }
 }
