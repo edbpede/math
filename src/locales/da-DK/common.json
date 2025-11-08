@@ -93,6 +93,21 @@
       }
     }
   },
+  "pwa": {
+    "install": {
+      "title": "Installer appen",
+      "description": "Installer Matematik Øvelses Portal på din enhed for hurtigere adgang og offline brug",
+      "button": "Installer",
+      "dismiss": "Ikke nu",
+      "feature": {
+        "offline": "Øv uden internetforbindelse",
+        "faster": "Hurtigere indlæsning",
+        "homescreen": "Start direkte fra din startskærm"
+      },
+      "installed": "App installeret succesfuldt!",
+      "error": "Installation mislykkedes. Prøv igen senere."
+    }
+  },
   "progress": {
     "dashboard": {
       "pageTitle": "Min Fremgang",

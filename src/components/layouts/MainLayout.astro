@@ -16,6 +16,7 @@ import Header from '@/components/static/Header.astro'
 import Footer from '@/components/static/Footer.astro'
 import OfflineIndicator from '@/components/islands/OfflineIndicator'
 import SyncStatusIndicator from '@/components/islands/SyncStatusIndicator'
+import InstallPrompt from '@/components/islands/InstallPrompt'
 
 interface Props {
   /** Page title (will be appended to site title) */
@@ -62,14 +63,27 @@ const metaDescription = description || defaultDescription
     
     <title>{fullTitle}</title>
     
-    {/* Favicon and app icons (to be added) */}
+    {/* Favicon and app icons */}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    
+    {/* PWA manifest */}
+    <link rel="manifest" href="/manifest.json" />
+    
+    {/* Apple Touch Icon for iOS */}
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    
+    {/* iOS meta tags for standalone mode */}
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Matematik Øvelse" />
+    
+    {/* Windows tile configuration */}
+    <meta name="msapplication-TileColor" content="#3b82f6" />
+    <meta name="msapplication-TileImage" content="/icons/icon-144x144.png" />
+    <meta name="msapplication-config" content="none" />
     
     {/* Preload critical resources */}
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-    
-    {/* PWA manifest (to be added in task 10.4) */}
-    {/* <link rel="manifest" href="/manifest.json" /> */}
     
     {/* Service worker registration (production only) */}
     <script>
@@ -106,6 +120,9 @@ const metaDescription = description || defaultDescription
   <body class="h-full flex flex-col bg-gray-50 text-gray-900">
     {/* Offline status indicator */}
     <OfflineIndicator client:load />
+    
+    {/* PWA install prompt */}
+    <InstallPrompt client:idle />
     
     {/* Header with navigation */}
     {!hideNav && <Header currentPath={currentPath} />}

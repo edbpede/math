@@ -272,7 +272,7 @@
     - Create sync status indicators in UI
     - _Requirements: 6.3, 6.4, 6.5, 15.4_
   
-  - [ ] 10.4 Add PWA manifest and installability
+  - [x] 10.4 Add PWA manifest and installability
     - Create manifest.json with app metadata
     - Add app icons in multiple sizes
     - Configure display mode (standalone)

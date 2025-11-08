@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && bun run scripts/generate-cache-manifest.ts",
+    "build": "bun run scripts/generate-pwa-icons.ts && astro build && bun run scripts/generate-cache-manifest.ts",
     "preview": "astro preview",
     "astro": "astro",
     "test": "vitest",

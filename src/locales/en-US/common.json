@@ -93,6 +93,21 @@
       }
     }
   },
+  "pwa": {
+    "install": {
+      "title": "Install app",
+      "description": "Install Arithmetic Practice Portal on your device for faster access and offline use",
+      "button": "Install",
+      "dismiss": "Not now",
+      "feature": {
+        "offline": "Practice without internet connection",
+        "faster": "Faster loading",
+        "homescreen": "Launch directly from your home screen"
+      },
+      "installed": "App installed successfully!",
+      "error": "Installation failed. Please try again later."
+    }
+  },
   "progress": {
     "dashboard": {
       "pageTitle": "My Progress",
