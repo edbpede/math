@@ -1,0 +1,48 @@
+/**
+ * OpenDyslexic Font Faces (Subsetted)
+ * 
+ * Subsetted to include:
+ * - Basic Latin (A-Z, a-z)
+ * - Numbers (0-9)
+ * - Danish characters (æ, ø, å, Æ, Ø, Å)
+ * - Mathematical symbols
+ * - Common punctuation
+ * 
+ * Format: WOFF2 for best compression (~50% smaller than WOFF)
+ */
+
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('/fonts/opendyslexic/OpenDyslexic-Regular.subset.woff2') format('woff2'),
+       url('/fonts/opendyslexic/OpenDyslexic-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap; /* Prevents invisible text during load */
+}
+
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('/fonts/opendyslexic/OpenDyslexic-Bold.subset.woff2') format('woff2'),
+       url('/fonts/opendyslexic/OpenDyslexic-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('/fonts/opendyslexic/OpenDyslexic-Italic.subset.woff2') format('woff2'),
+       url('/fonts/opendyslexic/OpenDyslexic-Italic.woff') format('woff');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('/fonts/opendyslexic/OpenDyslexic-BoldItalic.subset.woff2') format('woff2'),
+       url('/fonts/opendyslexic/OpenDyslexic-BoldItalic.woff') format('woff');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}

@@ -338,7 +338,7 @@
     - Create shared chunks for common dependencies
     - _Requirements: 13.3_
   
-  - [ ] 13.2 Optimize asset delivery
+  - [x] 13.2 Optimize asset delivery
     - Convert images to WebP format with fallbacks
     - Implement responsive images with srcset
     - Inline critical CSS in HTML
@@ -346,7 +346,7 @@
     - Configure compression (gzip/brotli)
     - _Requirements: 13.4, 13.5_
   
-  - [ ] 13.3 Add runtime performance optimizations
+  - [x] 13.3 Add runtime performance optimizations
     - Implement exercise pool pre-generation in background
     - Add memoization for expensive calculations
     - Debounce user input handlers

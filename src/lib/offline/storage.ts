@@ -216,12 +216,15 @@ export class OfflineStorage {
 
   /**
    * Get all unused (not yet presented to user) exercises
+   *
+   * @param limit - Maximum number of exercises to return
    */
-  async getUnusedExercises(): Promise<ExerciseCacheEntry[]> {
+  async getUnusedExercises(limit?: number): Promise<ExerciseInstance[]> {
     try {
       const db = await this.getDB()
-      const allExercises = await db.getAll('exercises')
-      return allExercises.filter(entry => !entry.used)
+      const index = db.transaction('exercises').objectStore('exercises').index('used')
+      const entries = await index.getAll(IDBKeyRange.only(false), limit)
+      return entries.map(entry => entry.instance)
     } catch (error) {
       throw new StorageError(
         'Failed to get unused exercises',
@@ -265,6 +268,116 @@ export class OfflineStorage {
         error
       )
     }
+  }
+
+  /**
+   * Store multiple exercises in the pool (batch operation)
+   *
+   * @param instances - Array of exercise instances to store
+   */
+  async storeExercisePool(instances: ExerciseInstance[]): Promise<void> {
+    try {
+      const db = await this.getDB()
+      const tx = db.transaction('exercises', 'readwrite')
+      const store = tx.objectStore('exercises')
+
+      for (const instance of instances) {
+        const entry: ExerciseCacheEntry = {
+          instance,
+          generatedAt: new Date(),
+          used: false,
+        }
+        await store.put(entry)
+      }
+
+      await tx.done
+    } catch (error) {
+      throw new StorageError(
+        `Failed to store ${instances.length} exercises`,
+        'storeExercisePool',
+        error
+      )
+    }
+  }
+
+  /**
+   * Get exercise pool statistics
+   */
+  async getExercisePoolStats(): Promise<{
+    total: number;
+    unused: number;
+    used: number;
+    oldestAge: number | null;
+  }> {
+    try {
+      const db = await this.getDB()
+      const allExercises = await db.getAll('exercises')
+
+      const unused = allExercises.filter(entry => !entry.used).length
+      const used = allExercises.filter(entry => entry.used).length
+
+      let oldestAge: number | null = null
+      if (allExercises.length > 0) {
+        const oldestDate = Math.min(
+          ...allExercises.map(entry => entry.generatedAt.getTime())
+        )
+        oldestAge = Math.floor((Date.now() - oldestDate) / (1000 * 60 * 60 * 24))
+      }
+
+      return {
+        total: allExercises.length,
+        unused,
+        used,
+        oldestAge,
+      }
+    } catch (error) {
+      throw new StorageError(
+        'Failed to get pool stats',
+        'getExercisePoolStats',
+        error
+      )
+    }
+  }
+
+  /**
+   * Clean up old exercises
+   *
+   * @param cutoffDate - Remove exercises older than this date
+   * @returns Number of exercises removed
+   */
+  async cleanupOldExercises(cutoffDate: Date): Promise<number> {
+    try {
+      const db = await this.getDB()
+      const tx = db.transaction('exercises', 'readwrite')
+      const store = tx.objectStore('exercises')
+      const index = store.index('generatedAt')
+
+      // Get exercises older than cutoff
+      const oldExercises = await index.getAll(
+        IDBKeyRange.upperBound(cutoffDate)
+      )
+
+      // Delete them
+      for (const entry of oldExercises) {
+        await store.delete(entry.instance.id)
+      }
+
+      await tx.done
+      return oldExercises.length
+    } catch (error) {
+      throw new StorageError(
+        'Failed to cleanup old exercises',
+        'cleanupOldExercises',
+        error
+      )
+    }
+  }
+
+  /**
+   * Clear the entire exercise pool
+   */
+  async clearExercisePool(): Promise<void> {
+    return this.clearExercises()
   }
 
   /**

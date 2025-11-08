@@ -1,13 +1,13 @@
 /**
  * Generate PWA Icons Script
  * 
- * Converts the base SVG favicon into PNG icons at multiple sizes
+ * Converts the base SVG favicon into PNG and WebP icons at multiple sizes
  * for PWA manifest, iOS, and other platforms.
  * 
  * Sizes generated:
- * - Standard icons: 72, 96, 128, 144, 152, 192, 384, 512
- * - Maskable icons: 192, 512 (with safe zone)
- * - Apple touch icon: 180
+ * - Standard icons: 72, 96, 128, 144, 152, 192, 384, 512 (PNG + WebP)
+ * - Maskable icons: 192, 512 (with safe zone) (PNG + WebP)
+ * - Apple touch icon: 180 (PNG only for iOS compatibility)
  * 
  * Requirements: sharp package for image processing
  * Usage: bun run scripts/generate-pwa-icons.ts
@@ -20,6 +20,9 @@ import { join } from 'node:path'
 const ICON_SIZES = [72, 96, 128, 144, 152, 192, 384, 512]
 const MASKABLE_SIZES = [192, 512]
 const APPLE_TOUCH_ICON_SIZE = 180
+
+// Generate both PNG and WebP formats for better compression
+const GENERATE_WEBP = true
 
 // Paths
 const SOURCE_SVG = join(process.cwd(), 'public', 'favicon.svg')
@@ -50,8 +53,7 @@ function copyBaseSVG() {
 }
 
 /**
- * Create a simple PNG icon from SVG data
- * This is a placeholder - in production, use sharp or similar
+ * Generate PNG and WebP icons from SVG data using sharp
  */
 async function generateIconsWithSharp() {
   try {
@@ -60,24 +62,35 @@ async function generateIconsWithSharp() {
     
     const svgBuffer = readFileSync(SOURCE_SVG)
     
-    // Generate standard icons
+    // Generate standard icons (PNG + WebP)
     for (const size of ICON_SIZES) {
-      const outputPath = join(ICONS_DIR, `icon-${size}x${size}.png`)
-      await sharp.default(svgBuffer)
+      const pngPath = join(ICONS_DIR, `icon-${size}x${size}.png`)
+      const webpPath = join(ICONS_DIR, `icon-${size}x${size}.webp`)
+      
+      const sharpInstance = sharp.default(svgBuffer)
         .resize(size, size, {
           fit: 'contain',
           background: { r: 255, g: 255, b: 255, alpha: 0 }
         })
-        .png()
-        .toFile(outputPath)
-      console.log(`✓ Generated ${size}x${size} icon`)
+      
+      // Generate PNG
+      await sharpInstance.clone().png().toFile(pngPath)
+      console.log(`✓ Generated ${size}x${size} PNG icon`)
+      
+      // Generate WebP
+      if (GENERATE_WEBP) {
+        await sharpInstance.clone().webp({ quality: 90 }).toFile(webpPath)
+        console.log(`✓ Generated ${size}x${size} WebP icon`)
+      }
     }
     
-    // Generate maskable icons (with padding for safe zone)
+    // Generate maskable icons (with padding for safe zone) (PNG + WebP)
     for (const size of MASKABLE_SIZES) {
-      const outputPath = join(ICONS_DIR, `icon-maskable-${size}x${size}.png`)
+      const pngPath = join(ICONS_DIR, `icon-maskable-${size}x${size}.png`)
+      const webpPath = join(ICONS_DIR, `icon-maskable-${size}x${size}.webp`)
       const paddedSize = Math.floor(size * 0.8) // 80% of size for safe zone
-      await sharp.default(svgBuffer)
+      
+      const sharpInstance = sharp.default(svgBuffer)
         .resize(paddedSize, paddedSize, {
           fit: 'contain',
           background: { r: 255, g: 255, b: 255, alpha: 1 }
@@ -89,12 +102,19 @@ async function generateIconsWithSharp() {
           right: Math.ceil((size - paddedSize) / 2),
           background: { r: 59, g: 130, b: 246, alpha: 1 } // Theme color
         })
-        .png()
-        .toFile(outputPath)
-      console.log(`✓ Generated maskable ${size}x${size} icon`)
+      
+      // Generate PNG
+      await sharpInstance.clone().png().toFile(pngPath)
+      console.log(`✓ Generated maskable ${size}x${size} PNG icon`)
+      
+      // Generate WebP
+      if (GENERATE_WEBP) {
+        await sharpInstance.clone().webp({ quality: 90 }).toFile(webpPath)
+        console.log(`✓ Generated maskable ${size}x${size} WebP icon`)
+      }
     }
     
-    // Generate Apple touch icon
+    // Generate Apple touch icon (PNG only for iOS compatibility)
     const appleTouchPath = join(ICONS_DIR, 'apple-touch-icon.png')
     await sharp.default(svgBuffer)
       .resize(APPLE_TOUCH_ICON_SIZE, APPLE_TOUCH_ICON_SIZE, {
@@ -103,7 +123,7 @@ async function generateIconsWithSharp() {
       })
       .png()
       .toFile(appleTouchPath)
-    console.log(`✓ Generated Apple touch icon`)
+    console.log(`✓ Generated Apple touch icon (PNG)`)
     
     return true
   } catch (error) {

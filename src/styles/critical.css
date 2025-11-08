@@ -1,0 +1,136 @@
+/**
+ * Critical CSS
+ * 
+ * Above-the-fold styles that should be inlined in the HTML <head>
+ * for immediate rendering without blocking on external CSS files.
+ * 
+ * Includes: CSS reset, focus styles, basic layout, and critical utilities.
+ * 
+ * Requirements: 13.4 - Inline critical CSS in HTML
+ */
+
+/* === CSS Reset (minimal) === */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  line-height: 1.5;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+/* === Focus Styles (WCAG 2.1 AA) === */
+*:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* === Layout === */
+main {
+  flex: 1;
+  width: 100%;
+}
+
+/* === Typography === */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* === Buttons (basic) === */
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* === Links === */
+a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* === Screen reader only === */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* === Skip link === */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  z-index: 1080;
+  padding: 1rem;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 0.25rem;
+}
+
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+}
+
+/* === Accessibility: Reduced Motion === */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* === Touch Targets (mobile) === */
+@media (pointer: coarse) {
+  button,
+  a,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"] {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* === Loading State === */
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+

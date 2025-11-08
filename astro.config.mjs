@@ -92,6 +92,25 @@ export default defineConfig({
       },
       // Set chunk size warning limit (500kb)
       chunkSizeWarningLimit: 500,
+      // Enable minification and compression
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: true, // Remove console.log in production
+          drop_debugger: true,
+          pure_funcs: ['console.log', 'console.info', 'console.debug'],
+        },
+        mangle: true,
+        format: {
+          comments: false, // Remove comments
+        },
+      },
+      // Enable CSS minification
+      cssMinify: true,
+      // Report compressed size
+      reportCompressedSize: true,
+      // Chunk size threshold
+      assetsInlineLimit: 4096, // Inline assets smaller than 4KB
     },
   },
 })

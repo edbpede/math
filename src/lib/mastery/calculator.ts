@@ -21,6 +21,7 @@
 import type { ExerciseAttempt, SkillProgress, MasteryLevelBand } from './types';
 import type { Difficulty, GradeRange } from '../curriculum/types';
 import { MASTERY_LEVELS } from './types';
+import { memoize } from '../utils/memoization';
 
 /**
  * Discriminated union for mastery calculation results
@@ -73,7 +74,7 @@ const RESPONSE_TIME_BENCHMARKS: Record<GradeRange, Record<Difficulty, { min: num
 };
 
 /**
- * Main mastery calculation function
+ * Internal mastery calculation function (unmemoized)
  *
  * Calculates mastery level (0-100) from recent exercise attempts using a weighted
  * algorithm combining five factors. Uses discriminated union for type-safe result handling.
@@ -81,16 +82,8 @@ const RESPONSE_TIME_BENCHMARKS: Record<GradeRange, Record<Difficulty, { min: num
  * @param recentAttempts - Array of recent exercise attempts (typically last 20)
  * @param skillProgress - Current skill progress data (for avgResponseTime and lastPracticed)
  * @returns MasteryCalculationResult with status and calculated mastery level
- *
- * @example
- * ```typescript
- * const result = calculateMasteryLevel(attempts, progress);
- * if (result.status === 'success') {
- *   console.log(`Mastery level: ${result.masteryLevel}`);
- * }
- * ```
  */
-export function calculateMasteryLevel(
+function calculateMasteryLevelInternal(
   recentAttempts: ExerciseAttempt[],
   skillProgress: SkillProgress
 ): MasteryCalculationResult {
@@ -145,6 +138,37 @@ export function calculateMasteryLevel(
     };
   }
 }
+
+/**
+ * Memoized mastery calculation function
+ *
+ * Caches calculation results for identical input combinations,
+ * providing significant performance improvements for repeated calculations.
+ *
+ * @param recentAttempts - Array of recent exercise attempts (typically last 20)
+ * @param skillProgress - Current skill progress data (for avgResponseTime and lastPracticed)
+ * @returns MasteryCalculationResult with status and calculated mastery level
+ *
+ * @example
+ * ```typescript
+ * const result = calculateMasteryLevel(attempts, progress);
+ * if (result.status === 'success') {
+ *   console.log(`Mastery level: ${result.masteryLevel}`);
+ * }
+ * ```
+ */
+export const calculateMasteryLevel = memoize(calculateMasteryLevelInternal, {
+  maxSize: 200,
+  keySerializer: (attempts: ExerciseAttempt[], progress: SkillProgress) => {
+    // Create cache key from relevant data
+    const attemptKeys = attempts
+      .slice(0, CONFIG.RECENT_ATTEMPTS_WINDOW)
+      .map(a => `${a.correct ? '1' : '0'}${a.timeSpentSeconds}${a.hintsUsed}`)
+      .join('-');
+    const progressKey = `${progress.skillId}_${progress.lastPracticed?.getTime() || 0}_${progress.avgResponseTime || 0}`;
+    return `${attemptKeys}_${progressKey}`;
+  },
+});
 
 /**
  * Calculate basic mastery for insufficient data (<5 attempts)

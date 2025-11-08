@@ -90,8 +90,33 @@ const userId = user?.id
     <meta name="msapplication-TileImage" content="/icons/icon-144x144.png" />
     <meta name="msapplication-config" content="none" />
     
-    {/* Preload critical resources */}
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    {/* Critical CSS - inlined for immediate rendering */}
+    <style is:inline>
+      /* Minified critical CSS - imported from critical.css */
+      *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;line-height:1.5;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif}body{min-height:100vh;display:flex;flex-direction:column;background-color:#f9fafb;color:#111827}*:focus-visible{outline:2px solid #3b82f6;outline-offset:2px}*:focus:not(:focus-visible){outline:none}main{flex:1;width:100%}h1,h2,h3,h4,h5,h6{font-weight:600;line-height:1.2}button{font-family:inherit;cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}a{color:#2563eb;text-decoration:none}a:hover{text-decoration:underline}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0}.skip-link{position:absolute;left:-9999px;z-index:1080;padding:1rem;background-color:#3b82f6;color:white;border-radius:.25rem}.skip-link:focus{left:1rem;top:1rem}@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}@media (pointer:coarse){button,a,input[type="button"],input[type="submit"],input[type="reset"]{min-width:44px;min-height:44px}}.loading{opacity:.6;pointer-events:none}
+    </style>
+    
+    {/* Deferred CSS - loaded asynchronously */}
+    <link rel="stylesheet" href="/styles/deferred.css" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="/styles/deferred.css" /></noscript>
+    
+    {/* Preload hints for critical resources */}
+    {/* DNS prefetch for Supabase API */}
+    <link rel="dns-prefetch" href="https://supabase.co" />
+    
+    {/* Preconnect to Supabase for faster API calls */}
+    {Astro.locals.user && (
+      <link rel="preconnect" href={import.meta.env.PUBLIC_SUPABASE_URL} crossorigin />
+    )}
+    
+    {/* Preload critical fonts (OpenDyslexic if enabled in preferences) */}
+    <link 
+      rel="preload" 
+      href="/fonts/opendyslexic/OpenDyslexic-Regular.woff" 
+      as="font" 
+      type="font/woff" 
+      crossorigin
+    />
 
     {/* Apply preferences immediately to prevent flash of unstyled content */}
     <script is:inline>

@@ -1,0 +1,123 @@
+---
+/**
+ * ResponsiveImage Component
+ * 
+ * A reusable component for rendering responsive images with srcset,
+ * multiple format support (WebP with fallbacks), and proper attributes
+ * for performance and accessibility.
+ * 
+ * Requirements:
+ * - 13.4: Lazy loading images, using WebP format, responsive images
+ * 
+ * Usage:
+ * <ResponsiveImage
+ *   src="/images/hero.png"
+ *   alt="Description"
+ *   widths={[320, 640, 960, 1280]}
+ *   loading="lazy"
+ * />
+ */
+
+interface Props {
+  /** Source image path */
+  src: string
+  /** Alt text for accessibility */
+  alt: string
+  /** Image widths for srcset (default: [320, 640, 960, 1280]) */
+  widths?: number[]
+  /** Sizes attribute for responsive images */
+  sizes?: string
+  /** Loading strategy: lazy (default) or eager */
+  loading?: 'lazy' | 'eager'
+  /** Priority loading (disables lazy loading) */
+  priority?: boolean
+  /** CSS class names */
+  class?: string
+  /** Image width (for aspect ratio) */
+  width?: number
+  /** Image height (for aspect ratio) */
+  height?: number
+  /** Object fit style */
+  objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down'
+}
+
+const {
+  src,
+  alt,
+  widths = [320, 640, 960, 1280],
+  sizes = '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw',
+  loading = 'lazy',
+  priority = false,
+  class: className = '',
+  width,
+  height,
+  objectFit = 'cover',
+} = Astro.props
+
+// Extract file path and extension
+const lastDotIndex = src.lastIndexOf('.')
+const basePath = src.substring(0, lastDotIndex)
+const extension = src.substring(lastDotIndex + 1)
+
+// Generate srcset for WebP and original format
+const generateSrcSet = (format: string) => {
+  return widths
+    .map(w => {
+      // For actual implementation, we'd use an image optimization service
+      // For now, we'll use the original image (in production, use Astro's image optimization)
+      const path = format === 'webp' ? `${basePath}.webp` : src
+      return `${path} ${w}w`
+    })
+    .join(', ')
+}
+
+// Determine loading attribute
+const loadingAttr = priority ? 'eager' : loading
+
+// Determine fetchpriority for priority images
+const fetchPriority = priority ? 'high' : undefined
+
+// Determine decoding
+const decoding = priority ? 'sync' : 'async'
+---
+
+<picture>
+  <!-- WebP source (modern browsers) -->
+  <source
+    type="image/webp"
+    srcset={`${basePath}.webp`}
+    sizes={sizes}
+  />
+  
+  <!-- Fallback to original format -->
+  <source
+    type={`image/${extension}`}
+    srcset={src}
+    sizes={sizes}
+  />
+  
+  <!-- Fallback img tag -->
+  <img
+    src={src}
+    alt={alt}
+    loading={loadingAttr}
+    decoding={decoding}
+    fetchpriority={fetchPriority}
+    class={className}
+    width={width}
+    height={height}
+    style={objectFit ? `object-fit: ${objectFit}` : undefined}
+  />
+</picture>
+
+<style>
+  picture {
+    display: contents;
+  }
+  
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+</style>
+

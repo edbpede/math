@@ -12,6 +12,13 @@
 
 import type { Locale, ContextPool } from './types';
 import { getContextPool } from './utils';
+import { memoizeAsync } from '../utils/memoization';
+
+/**
+ * Memoized context pool loader
+ * Caches context pools per locale to avoid redundant loading
+ */
+const getMemoizedContextPool = memoizeAsync(getContextPool, { maxSize: 10 });
 
 /**
  * Interface for tracking recently used contexts
@@ -37,10 +44,10 @@ export class ContextSelector {
   }
 
   /**
-   * Load context pool for the current locale
+   * Load context pool for the current locale (memoized)
    */
   async loadContextPool(): Promise<void> {
-    this.contextPool = await getContextPool(this.locale);
+    this.contextPool = await getMemoizedContextPool(this.locale);
   }
 
   /**

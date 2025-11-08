@@ -21,6 +21,7 @@ import { useStore } from '@nanostores/solid';
 import { $t } from '@/lib/i18n';
 import { createKeyboardShortcuts, announce } from '@/lib/accessibility';
 import type { ExerciseInstance } from '@/lib/exercises/types';
+import { batchUpdates } from '@/lib/utils/reactivity';
 import HintSystem from './HintSystem';
 import FeedbackDisplay from './FeedbackDisplay';
 import MathExpression from './MathExpression';
@@ -164,18 +165,21 @@ export default function ExercisePractice(props: ExercisePracticeProps) {
   const isLastExercise = () => props.currentIndex >= props.exercises.length - 1;
   const totalExercises = () => props.exercises.length;
   
-  // Reset state when exercise changes
+  // Reset state when exercise changes (batched for performance)
   createEffect(() => {
     // Track currentIndex to trigger reset
     const _index = props.currentIndex;
     const exercise = getCurrentExercise();
 
     if (exercise) {
-      setAnswer('');
-      setValidationState({ status: 'pending' });
-      setHintsUsed(0);
-      setStartTime(Date.now());
-      setShowSkipConfirm(false);
+      // Batch all state updates into a single render
+      batchUpdates(() => {
+        setAnswer('');
+        setValidationState({ status: 'pending' });
+        setHintsUsed(0);
+        setStartTime(Date.now());
+        setShowSkipConfirm(false);
+      });
 
       // Announce new exercise to screen readers
       const current = props.currentIndex + 1;
