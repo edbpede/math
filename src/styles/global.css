@@ -1,0 +1,11 @@
+/**
+ * Global Styles
+ *
+ * Main stylesheet that imports all global CSS including accessibility features.
+ * This file is imported in MainLayout.astro to apply styles across the entire application.
+ */
+
+/* Import accessibility styles (fonts, themes, high contrast, focus indicators) */
+@import './accessibility.css';
+
+/* Additional global styles can be added here */

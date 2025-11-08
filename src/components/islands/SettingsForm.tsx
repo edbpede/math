@@ -20,6 +20,7 @@ import type {
   FontSize,
 } from '@/lib/types/preferences'
 import { mergeWithDefaults, validatePreferences } from '@/lib/types/preferences'
+import { $preferences, updatePreferences } from '@/lib/preferences'
 
 export interface SettingsFormProps {
   /** Current user ID */
@@ -65,27 +66,16 @@ const DEBOUNCE_MS = 1000
  */
 export default function SettingsForm(props: SettingsFormProps) {
   const t = useStore($t)
-
-  // Merge preferences with defaults
-  const initialPrefs = mergeWithDefaults(props.initialPreferences)
+  const preferences = useStore($preferences)
 
   // Form state
   const [gradeRange, setGradeRange] = createSignal(props.initialGradeRange)
-  const [theme, setTheme] = createSignal<Theme>(initialPrefs.theme)
-  const [fontSize, setFontSize] = createSignal<FontSize>(initialPrefs.fontSize)
-  const [dyslexiaFont, setDyslexiaFont] = createSignal(
-    initialPrefs.dyslexiaFont
-  )
-  const [highContrast, setHighContrast] = createSignal(
-    initialPrefs.highContrast
-  )
-
   const [state, setState] = createSignal<FormState>({ status: 'idle' })
   const [hasUnsavedChanges, setHasUnsavedChanges] = createSignal(false)
 
   // Previous values for rollback on error
   let previousGradeRange = props.initialGradeRange
-  let previousPreferences = initialPrefs
+  let previousPreferences = preferences()
 
   /**
    * Save settings to Supabase with debouncing
@@ -100,12 +90,7 @@ export default function SettingsForm(props: SettingsFormProps) {
     setState({ status: 'saving' })
     setHasUnsavedChanges(false)
 
-    const newPreferences: UserPreferences = {
-      theme: theme(),
-      fontSize: fontSize(),
-      dyslexiaFont: dyslexiaFont(),
-      highContrast: highContrast(),
-    }
+    const newPreferences = preferences()
 
     // Validate preferences
     if (!validatePreferences(newPreferences)) {
@@ -129,10 +114,7 @@ export default function SettingsForm(props: SettingsFormProps) {
       if (!result.success) {
         // Rollback on error
         setGradeRange(previousGradeRange)
-        setTheme(previousPreferences.theme)
-        setFontSize(previousPreferences.fontSize)
-        setDyslexiaFont(previousPreferences.dyslexiaFont)
-        setHighContrast(previousPreferences.highContrast)
+        updatePreferences(previousPreferences)
 
         setState({
           status: 'error',
@@ -154,17 +136,14 @@ export default function SettingsForm(props: SettingsFormProps) {
         )
       }, 3000)
 
-      // Apply preferences to DOM immediately
-      applyPreferencesToDOM(newPreferences)
+      // Note: DOM updates are handled automatically by the preferences manager
+      // via the store subscription in init.ts
     } catch (error) {
       console.error('Error saving settings:', error)
 
       // Rollback on error
       setGradeRange(previousGradeRange)
-      setTheme(previousPreferences.theme)
-      setFontSize(previousPreferences.fontSize)
-      setDyslexiaFont(previousPreferences.dyslexiaFont)
-      setHighContrast(previousPreferences.highContrast)
+      updatePreferences(previousPreferences)
 
       setState({
         status: 'error',
@@ -188,50 +167,8 @@ export default function SettingsForm(props: SettingsFormProps) {
     }, DEBOUNCE_MS)
   }
 
-  /**
-   * Apply display preferences to DOM immediately for visual feedback
-   */
-  const applyPreferencesToDOM = (preferences: UserPreferences) => {
-    const root = document.documentElement
-
-    // Apply theme
-    if (preferences.theme === 'dark') {
-      root.classList.add('dark-theme')
-    } else if (preferences.theme === 'light') {
-      root.classList.remove('dark-theme')
-    }
-    // 'system' theme would require media query detection
-
-    // Apply font size
-    root.classList.remove('font-small', 'font-medium', 'font-large')
-    if (preferences.fontSize) {
-      root.classList.add(`font-${preferences.fontSize}`)
-    }
-
-    // Apply dyslexia font
-    if (preferences.dyslexiaFont) {
-      root.classList.add('dyslexia-font')
-    } else {
-      root.classList.remove('dyslexia-font')
-    }
-
-    // Apply high contrast
-    if (preferences.highContrast) {
-      root.classList.add('high-contrast')
-    } else {
-      root.classList.remove('high-contrast')
-    }
-  }
-
-  // Apply preferences on mount
-  createEffect(() => {
-    applyPreferencesToDOM({
-      theme: theme(),
-      fontSize: fontSize(),
-      dyslexiaFont: dyslexiaFont(),
-      highContrast: highContrast(),
-    })
-  })
+  // Note: Preferences are automatically applied to DOM by the preferences manager
+  // via the subscription in init.ts, so we don't need a local applyPreferencesToDOM
 
   // Grade range options
   const gradeOptions = [
@@ -378,7 +315,7 @@ export default function SettingsForm(props: SettingsFormProps) {
                   <button
                     type="button"
                     onClick={() => {
-                      setTheme(option.value)
+                      updatePreferences({ theme: option.value })
                       debouncedSave()
                     }}
                     class={`
@@ -386,12 +323,12 @@ export default function SettingsForm(props: SettingsFormProps) {
                       transition-all duration-200
                       focus:outline-none focus:ring-4 focus:ring-blue-300
                       ${
-                        theme() === option.value
+                        preferences().theme === option.value
                           ? 'border-blue-500 bg-blue-50 text-blue-700'
                           : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300'
                       }
                     `}
-                    aria-pressed={theme() === option.value}
+                    aria-pressed={preferences().theme === option.value}
                   >
                     {t()(option.labelKey)}
                   </button>
@@ -414,7 +351,7 @@ export default function SettingsForm(props: SettingsFormProps) {
                   <button
                     type="button"
                     onClick={() => {
-                      setFontSize(option.value)
+                      updatePreferences({ fontSize: option.value })
                       debouncedSave()
                     }}
                     class={`
@@ -422,12 +359,12 @@ export default function SettingsForm(props: SettingsFormProps) {
                       transition-all duration-200
                       focus:outline-none focus:ring-4 focus:ring-blue-300
                       ${
-                        fontSize() === option.value
+                        preferences().fontSize === option.value
                           ? 'border-blue-500 bg-blue-50 text-blue-700'
                           : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300'
                       }
                     `}
-                    aria-pressed={fontSize() === option.value}
+                    aria-pressed={preferences().fontSize === option.value}
                   >
                     {t()(option.labelKey)}
                   </button>
@@ -441,9 +378,9 @@ export default function SettingsForm(props: SettingsFormProps) {
             <input
               type="checkbox"
               id="dyslexia-font"
-              checked={dyslexiaFont()}
+              checked={preferences().dyslexiaFont}
               onChange={(e) => {
-                setDyslexiaFont(e.currentTarget.checked)
+                updatePreferences({ dyslexiaFont: e.currentTarget.checked })
                 debouncedSave()
               }}
               class="mt-1 h-5 w-5 cursor-pointer rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -466,9 +403,9 @@ export default function SettingsForm(props: SettingsFormProps) {
             <input
               type="checkbox"
               id="high-contrast"
-              checked={highContrast()}
+              checked={preferences().highContrast}
               onChange={(e) => {
-                setHighContrast(e.currentTarget.checked)
+                updatePreferences({ highContrast: e.currentTarget.checked })
                 debouncedSave()
               }}
               class="mt-1 h-5 w-5 cursor-pointer rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"

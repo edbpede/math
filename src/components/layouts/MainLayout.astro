@@ -19,6 +19,9 @@ import OfflineIndicator from '@/components/islands/OfflineIndicator'
 import SyncStatusIndicator from '@/components/islands/SyncStatusIndicator'
 import InstallPrompt from '@/components/islands/InstallPrompt'
 
+// Import global styles including accessibility features
+import '@/styles/global.css'
+
 interface Props {
   /** Page title (will be appended to site title) */
   title?: string
@@ -47,6 +50,10 @@ const fullTitle = title ? `${title} | ${siteTitle}` : siteTitle
 // Default description
 const defaultDescription = translations('common.app.tagline')
 const metaDescription = description || defaultDescription
+
+// Get user ID for preferences sync
+const user = Astro.locals.user
+const userId = user?.id
 ---
 
 <!DOCTYPE html>
@@ -85,7 +92,45 @@ const metaDescription = description || defaultDescription
     
     {/* Preload critical resources */}
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-    
+
+    {/* Apply preferences immediately to prevent flash of unstyled content */}
+    <script is:inline>
+      (function() {
+        try {
+          const stored = localStorage.getItem('math-preferences')
+          if (!stored) return
+
+          const prefs = JSON.parse(stored)
+          const html = document.documentElement
+
+          // Apply theme
+          if (prefs.theme === 'dark') {
+            html.classList.add('dark-theme')
+          } else if (prefs.theme === 'system') {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+            if (prefersDark) html.classList.add('dark-theme')
+          }
+
+          // Apply font size
+          if (prefs.fontSize) {
+            html.classList.add('font-' + prefs.fontSize)
+          }
+
+          // Apply dyslexia font
+          if (prefs.dyslexiaFont) {
+            html.classList.add('dyslexia-font')
+          }
+
+          // Apply high contrast
+          if (prefs.highContrast) {
+            html.classList.add('high-contrast')
+          }
+        } catch (e) {
+          // Silently fail - preferences will load normally
+        }
+      })()
+    </script>
+
     {/* Service worker registration (production only) */}
     <script>
       if ('serviceWorker' in navigator && import.meta.env.PROD) {
@@ -114,6 +159,20 @@ const metaDescription = description || defaultDescription
         });
       } else if (import.meta.env.DEV) {
         console.log('[SW] Service worker disabled in development mode');
+      }
+    </script>
+
+    {/* Preferences system initialization */}
+    <script define:vars={{ userId }}>
+      import { initializePreferencesSystem } from '@/lib/preferences'
+
+      // Initialize preferences system after DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+          initializePreferencesSystem(userId)
+        })
+      } else {
+        initializePreferencesSystem(userId)
       }
     </script>
   </head>

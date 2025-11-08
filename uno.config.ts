@@ -23,11 +23,14 @@ import {
 export default defineConfig({
   presets: [
     // Tailwind-compatible utilities with 200x faster generation
-    presetWind(),
-    
+    presetWind({
+      // Enable dark mode with class strategy (html.dark-theme)
+      dark: 'class',
+    }),
+
     // Attributify mode for better readability in complex components
     presetAttributify(),
-    
+
     // Pure CSS icons for minimal bundle size
     presetIcons({
       scale: 1.2,
@@ -76,7 +79,15 @@ export default defineConfig({
       'xl': '1280px',
       '2xl': '1536px',
     },
-    
+
+    // Font families with dyslexia-friendly option
+    fontFamily: {
+      sans: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+      serif: ['Georgia', 'Cambria', 'Times New Roman', 'Times', 'serif'],
+      mono: ['Menlo', 'Monaco', 'Courier New', 'monospace'],
+      dyslexic: ['OpenDyslexic', 'Comic Sans MS', 'sans-serif'],
+    },
+
     colors: {
       // Primary brand colors
       primary: {
@@ -169,6 +180,17 @@ export default defineConfig({
     'text-mastery-progressing',
     'text-mastery-proficient',
     'text-mastery-mastered',
+
+    // Dark mode variants for common elements
+    'dark:bg-gray-800',
+    'dark:bg-gray-900',
+    'dark:text-gray-100',
+    'dark:text-gray-200',
+    'dark:border-gray-700',
+
+    // High contrast mode
+    'high-contrast:border-2',
+    'high-contrast:border-black',
   ],
 
   // Rules for custom utilities

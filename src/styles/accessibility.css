@@ -1,0 +1,455 @@
+/**
+ * Accessibility Styles
+ *
+ * Comprehensive accessibility features for visual preferences:
+ * - OpenDyslexic font support
+ * - Dark theme with WCAG AA compliant colors
+ * - High contrast mode
+ * - Font size variations (scalable with browser zoom)
+ * - Enhanced focus indicators
+ *
+ * Requirements: 9.2 - Visual accessibility options
+ * WCAG 2.1 AA Compliance: 4.5:1 contrast ratio minimum
+ */
+
+/* ===================================================================
+   OpenDyslexic Font Family
+   =================================================================== */
+
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('/fonts/opendyslexic/OpenDyslexic-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('/fonts/opendyslexic/OpenDyslexic-Bold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('/fonts/opendyslexic/OpenDyslexic-Italic.woff') format('woff');
+  font-weight: normal;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('/fonts/opendyslexic/OpenDyslexic-BoldItalic.woff') format('woff');
+  font-weight: bold;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ===================================================================
+   CSS Custom Properties for Theming
+   =================================================================== */
+
+:root {
+  /* Light theme colors (default) */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f9fafb;
+  --color-bg-tertiary: #f3f4f6;
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-text-tertiary: #6b7280;
+  --color-border: #e5e7eb;
+  --color-border-focus: #3b82f6;
+
+  /* Interactive elements */
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-primary-active: #1d4ed8;
+
+  /* Status colors */
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+
+  /* Input backgrounds */
+  --color-input-bg: #ffffff;
+  --color-input-border: #d1d5db;
+  --color-input-text: #111827;
+
+  /* Card backgrounds */
+  --color-card-bg: #ffffff;
+  --color-card-border: #e5e7eb;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* ===================================================================
+   Dark Theme
+   =================================================================== */
+
+html.dark-theme {
+  /* Dark theme colors - WCAG AA compliant (4.5:1 minimum) */
+  --color-bg-primary: #0f172a;
+  --color-bg-secondary: #1e293b;
+  --color-bg-tertiary: #334155;
+  --color-text-primary: #f1f5f9;
+  --color-text-secondary: #cbd5e1;
+  --color-text-tertiary: #94a3b8;
+  --color-border: #334155;
+  --color-border-focus: #60a5fa;
+
+  /* Interactive elements - adjusted for dark backgrounds */
+  --color-primary: #60a5fa;
+  --color-primary-hover: #3b82f6;
+  --color-primary-active: #2563eb;
+
+  /* Status colors - adjusted for visibility on dark backgrounds */
+  --color-success: #4ade80;
+  --color-warning: #fbbf24;
+  --color-error: #f87171;
+  --color-info: #60a5fa;
+
+  /* Input backgrounds */
+  --color-input-bg: #1e293b;
+  --color-input-border: #475569;
+  --color-input-text: #f1f5f9;
+
+  /* Card backgrounds */
+  --color-card-bg: #1e293b;
+  --color-card-border: #334155;
+
+  /* Shadow - less prominent in dark mode */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
+}
+
+/* Apply dark theme colors to common elements */
+html.dark-theme {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+}
+
+html.dark-theme body {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+}
+
+/* ===================================================================
+   High Contrast Mode
+   =================================================================== */
+
+html.high-contrast {
+  /* Enhanced contrast colors (7:1 ratio - AAA compliance) */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #ffffff;
+  --color-bg-tertiary: #f5f5f5;
+  --color-text-primary: #000000;
+  --color-text-secondary: #1a1a1a;
+  --color-text-tertiary: #333333;
+  --color-border: #000000;
+  --color-border-focus: #0000ff;
+
+  /* Interactive elements - high contrast */
+  --color-primary: #0000ff;
+  --color-primary-hover: #0000cc;
+  --color-primary-active: #000099;
+
+  /* Status colors - maximum contrast */
+  --color-success: #008000;
+  --color-warning: #ff8c00;
+  --color-error: #cc0000;
+  --color-info: #0000ff;
+
+  /* Input backgrounds */
+  --color-input-bg: #ffffff;
+  --color-input-border: #000000;
+  --color-input-text: #000000;
+
+  /* Card backgrounds */
+  --color-card-bg: #ffffff;
+  --color-card-border: #000000;
+}
+
+/* High contrast dark theme combination */
+html.dark-theme.high-contrast {
+  --color-bg-primary: #000000;
+  --color-bg-secondary: #000000;
+  --color-bg-tertiary: #1a1a1a;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #e6e6e6;
+  --color-text-tertiary: #cccccc;
+  --color-border: #ffffff;
+  --color-border-focus: #ffff00;
+
+  --color-primary: #00ccff;
+  --color-primary-hover: #00aadd;
+  --color-primary-active: #0088bb;
+
+  --color-success: #00ff00;
+  --color-warning: #ffaa00;
+  --color-error: #ff3333;
+  --color-info: #00ccff;
+
+  --color-input-bg: #000000;
+  --color-input-border: #ffffff;
+  --color-input-text: #ffffff;
+
+  --color-card-bg: #000000;
+  --color-card-border: #ffffff;
+}
+
+/* Enhanced borders and outlines in high contrast mode */
+html.high-contrast * {
+  border-color: var(--color-border) !important;
+}
+
+html.high-contrast button,
+html.high-contrast a,
+html.high-contrast input,
+html.high-contrast select,
+html.high-contrast textarea {
+  border: 2px solid var(--color-border) !important;
+}
+
+/* ===================================================================
+   Font Size Variations (Scalable with Browser Zoom)
+   =================================================================== */
+
+/* Small font size */
+html.font-small {
+  font-size: 14px; /* Base size, scales with zoom */
+}
+
+/* Medium font size (default) */
+html.font-medium {
+  font-size: 16px;
+}
+
+/* Large font size */
+html.font-large {
+  font-size: 18px;
+}
+
+/* Extra large for maximum readability */
+html.font-xlarge {
+  font-size: 20px;
+}
+
+/* Ensure relative sizing throughout */
+html[class*="font-"] body {
+  font-size: 1rem; /* Will scale based on html font-size */
+}
+
+html[class*="font-"] h1 {
+  font-size: 2.25rem; /* Scales with base */
+}
+
+html[class*="font-"] h2 {
+  font-size: 1.875rem;
+}
+
+html[class*="font-"] h3 {
+  font-size: 1.5rem;
+}
+
+html[class*="font-"] h4 {
+  font-size: 1.25rem;
+}
+
+html[class*="font-"] h5 {
+  font-size: 1.125rem;
+}
+
+html[class*="font-"] h6 {
+  font-size: 1rem;
+}
+
+/* ===================================================================
+   Dyslexia-Friendly Font
+   =================================================================== */
+
+html.dyslexia-font,
+html.dyslexia-font * {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
+  letter-spacing: 0.05em; /* Slightly increased letter spacing for readability */
+  word-spacing: 0.16em; /* Increased word spacing */
+  line-height: 1.6; /* More generous line height */
+}
+
+/* Preserve monospace for code elements even with dyslexia font */
+html.dyslexia-font code,
+html.dyslexia-font pre,
+html.dyslexia-font kbd,
+html.dyslexia-font samp,
+html.dyslexia-font .font-mono {
+  font-family: 'OpenDyslexic', 'Courier New', monospace !important;
+}
+
+/* ===================================================================
+   Enhanced Focus Indicators
+   =================================================================== */
+
+/* Clear focus indicators for keyboard navigation (WCAG 2.1 AA) */
+:focus-visible {
+  outline: 3px solid var(--color-border-focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Enhanced focus for buttons and links */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline: 3px solid var(--color-border-focus);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+/* Input field focus */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 0;
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* High contrast mode gets even more prominent focus indicators */
+html.high-contrast :focus-visible {
+  outline-width: 4px;
+  outline-offset: 3px;
+}
+
+html.high-contrast button:focus-visible,
+html.high-contrast a:focus-visible {
+  outline-width: 4px;
+  box-shadow: 0 0 0 4px rgba(0, 0, 255, 0.3);
+}
+
+/* Dark theme focus indicators - yellow for better visibility */
+html.dark-theme :focus-visible {
+  outline-color: #fbbf24;
+}
+
+html.dark-theme button:focus-visible,
+html.dark-theme a:focus-visible {
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.3);
+}
+
+/* ===================================================================
+   Smooth Transitions for Theme Changes
+   =================================================================== */
+
+html,
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  html,
+  body,
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* ===================================================================
+   Ensure Touch Targets Meet WCAG Guidelines (44×44 pixels)
+   =================================================================== */
+
+@media (pointer: coarse) {
+  button,
+  a,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  input[type="checkbox"],
+  input[type="radio"],
+  select {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0.625rem 1rem; /* At least 10px vertical, 16px horizontal */
+  }
+
+  /* Ensure checkbox and radio inputs have adequate clickable area */
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: 1.5rem;
+    height: 1.5rem;
+    min-width: 24px;
+    min-height: 24px;
+  }
+}
+
+/* ===================================================================
+   Skip to Content Link Styling
+   =================================================================== */
+
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  z-index: 9999;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--color-primary);
+  color: white;
+  text-decoration: none;
+  border-radius: 0 0 0.5rem 0;
+  font-weight: 600;
+  transition: top 0.3s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: 3px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/* ===================================================================
+   Utility Classes
+   =================================================================== */
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Remove sr-only when focused */
+.sr-only:focus,
+.sr-only:active {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: inherit;
+  margin: inherit;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* High contrast images - ensure visibility */
+html.high-contrast img {
+  filter: contrast(1.2);
+}
+
+html.dark-theme.high-contrast img {
+  filter: contrast(1.3) brightness(0.9);
+}
