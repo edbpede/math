@@ -1,0 +1,35 @@
+{
+  "skipLinks": {
+    "skipToContent": "Skip to content",
+    "skipToNavigation": "Skip to navigation"
+  },
+  "keyboardShortcuts": {
+    "title": "Keyboard Shortcuts",
+    "hint": "H - Get hint",
+    "submit": "Enter - Submit answer",
+    "continue": "Enter - Continue",
+    "skip": "S - Skip exercise",
+    "close": "Esc - Close",
+    "showShortcuts": "Show keyboard shortcuts"
+  },
+  "screenReader": {
+    "exerciseChanged": "New exercise loaded",
+    "hintRevealed": "Hint level {{level}} revealed",
+    "answerCorrect": "Your answer is correct!",
+    "answerIncorrect": "Your answer is incorrect",
+    "loading": "Loading",
+    "modalOpen": "Modal opened",
+    "modalClosed": "Modal closed",
+    "menuOpen": "Menu opened",
+    "menuClosed": "Menu closed"
+  },
+  "ariaLabels": {
+    "closeModal": "Close dialog",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "expandSection": "Expand section",
+    "collapseSection": "Collapse section",
+    "currentPage": "Current page",
+    "externalLink": "Opens in new window"
+  }
+}

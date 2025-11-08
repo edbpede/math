@@ -1,0 +1,35 @@
+{
+  "skipLinks": {
+    "skipToContent": "Spring til indhold",
+    "skipToNavigation": "Spring til navigation"
+  },
+  "keyboardShortcuts": {
+    "title": "Tastaturgenveje",
+    "hint": "H - Få hjælp",
+    "submit": "Enter - Indsend svar",
+    "continue": "Enter - Fortsæt",
+    "skip": "S - Spring over opgave",
+    "close": "Esc - Luk",
+    "showShortcuts": "Vis tastaturgenveje"
+  },
+  "screenReader": {
+    "exerciseChanged": "Ny opgave indlæst",
+    "hintRevealed": "Hjælp niveau {{level}} vist",
+    "answerCorrect": "Dit svar er korrekt!",
+    "answerIncorrect": "Dit svar er ikke korrekt",
+    "loading": "Indlæser",
+    "modalOpen": "Modal åbnet",
+    "modalClosed": "Modal lukket",
+    "menuOpen": "Menu åbnet",
+    "menuClosed": "Menu lukket"
+  },
+  "ariaLabels": {
+    "closeModal": "Luk vindue",
+    "openMenu": "Åbn menu",
+    "closeMenu": "Luk menu",
+    "expandSection": "Udvid sektion",
+    "collapseSection": "Fold sektion sammen",
+    "currentPage": "Nuværende side",
+    "externalLink": "Åbner i nyt vindue"
+  }
+}

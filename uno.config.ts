@@ -48,13 +48,20 @@ export default defineConfig({
     'btn-primary': 'px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed',
     'btn-secondary': 'px-6 py-3 bg-white text-gray-700 border-2 border-gray-300 rounded-lg font-medium hover:border-blue-400 hover:bg-blue-50 active:bg-blue-100 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed',
     'btn-ghost': 'px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 active:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors',
-    
+
     // Touch-friendly targets (44x44px minimum per WCAG)
     'touch-target': 'min-w-44px min-h-44px',
-    
+
     // Focus indicators for accessibility
     'focus-visible-ring': 'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-300',
-    
+
+    // Screen reader only content (hidden visually but accessible to screen readers)
+    'sr-only': 'absolute w-1px h-1px p-0 -m-1px overflow-hidden whitespace-nowrap border-0',
+    'not-sr-only': 'static w-auto h-auto p-auto m-auto overflow-visible whitespace-normal',
+
+    // Skip links (visible only when focused)
+    'skip-link': 'sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-tooltip focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded focus:shadow-lg',
+
     // Card styling
     'card': 'bg-white rounded-lg shadow-md p-6',
     'card-hover': 'card hover:shadow-lg transition-shadow',

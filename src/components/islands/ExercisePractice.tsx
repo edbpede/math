@@ -19,6 +19,7 @@
 import { createSignal, createEffect, Show, onMount } from 'solid-js';
 import { useStore } from '@nanostores/solid';
 import { $t } from '@/lib/i18n';
+import { createKeyboardShortcuts } from '@/lib/accessibility';
 import type { ExerciseInstance } from '@/lib/exercises/types';
 import HintSystem from './HintSystem';
 import FeedbackDisplay from './FeedbackDisplay';
@@ -91,7 +92,7 @@ type ValidationState =
  */
 export default function ExercisePractice(props: ExercisePracticeProps) {
   const t = useStore($t);
-  
+
   // State management
   const [answer, setAnswer] = createSignal('');
   const [validationState, setValidationState] = createSignal<ValidationState>({ status: 'pending' });
@@ -99,6 +100,63 @@ export default function ExercisePractice(props: ExercisePracticeProps) {
   const [startTime, setStartTime] = createSignal(Date.now());
   const [showSkipConfirm, setShowSkipConfirm] = createSignal(false);
   const [answerInputRef, setAnswerInputRef] = createSignal<HTMLInputElement>();
+
+  // Ref for triggering hint button programmatically
+  let hintButtonRef: HTMLButtonElement | undefined;
+
+  // Keyboard shortcuts setup
+  const shortcuts = createKeyboardShortcuts();
+
+  // Register shortcuts
+  shortcuts.register('hint', {
+    key: 'h',
+    description: 'Get hint',
+    handler: () => {
+      // Trigger hint button click if available and not disabled
+      if (hintButtonRef && !hintButtonRef.disabled) {
+        hintButtonRef.click();
+      }
+    },
+    condition: () => {
+      const state = validationState();
+      return state.status !== 'validating';
+    },
+  });
+
+  shortcuts.register('skip', {
+    key: 's',
+    description: 'Skip exercise',
+    handler: () => {
+      const state = validationState();
+      // Only allow skip if not submitted yet
+      if (state.status === 'pending' || state.status === 'validating') {
+        if (!showSkipConfirm()) {
+          handleSkipClick();
+        }
+      }
+    },
+    condition: () => {
+      const state = validationState();
+      return state.status === 'pending' || state.status === 'validating';
+    },
+  });
+
+  shortcuts.register('continue', {
+    key: 'Enter',
+    description: 'Continue to next exercise',
+    handler: () => {
+      const state = validationState();
+      if (state.status === 'correct') {
+        handleNext();
+      } else if (state.status === 'incorrect') {
+        handleTryAgain();
+      }
+    },
+    condition: () => {
+      const state = validationState();
+      return state.status === 'correct' || state.status === 'incorrect';
+    },
+  });
   
   // Get current exercise
   const getCurrentExercise = () => props.exercises[props.currentIndex];
@@ -462,6 +520,7 @@ export default function ExercisePractice(props: ExercisePracticeProps) {
                 onHintRequested={handleHintRequested}
                 disabled={isSubmitting}
                 resetKey={ex().id}
+                hintButtonRef={(el) => (hintButtonRef = el)}
               />
             </div>
             

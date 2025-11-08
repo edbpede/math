@@ -1,0 +1,55 @@
+---
+/**
+ * SkipNavigation Component
+ *
+ * Provides skip links for keyboard and screen reader users to bypass
+ * repetitive navigation and jump directly to main content.
+ *
+ * Requirements:
+ * - 9.1: Keyboard navigation for all functionality
+ * - 9.1: Add skip navigation links
+ *
+ * Features:
+ * - Hidden visually but accessible via keyboard (Tab key)
+ * - Becomes visible when focused
+ * - Allows users to skip to main content or navigation
+ * - Internationalized labels
+ *
+ * Usage:
+ * Include this component at the very top of the page (before header)
+ * Ensure target elements have corresponding IDs:
+ * - #main-content for main content area
+ * - #main-nav for main navigation
+ */
+
+import { getTranslator } from '@/lib/i18n/server'
+
+const t = await getTranslator(Astro)
+---
+
+<div class="skip-navigation" role="navigation" aria-label="Skip links">
+  <a
+    href="#main-content"
+    class="skip-link"
+  >
+    {t('accessibility.skipLinks.skipToContent')}
+  </a>
+  <a
+    href="#main-nav"
+    class="skip-link"
+  >
+    {t('accessibility.skipLinks.skipToNavigation')}
+  </a>
+</div>
+
+<style>
+  /*
+   * Skip navigation styling
+   * Links are visually hidden but accessible to screen readers
+   * When focused, they become visible at the top of the page
+   */
+  .skip-navigation {
+    position: relative;
+    z-index: 9999; /* Above everything else */
+  }
+</style>

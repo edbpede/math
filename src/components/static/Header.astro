@@ -49,14 +49,6 @@ const isActive = (href: string) => {
   role="banner"
 >
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    {/* Skip to main content link for accessibility */}
-    <a
-      href="#main-content"
-      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-tooltip focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-lg focus:shadow-lg"
-    >
-      {translations('navigation.skipToMain') || 'Skip to main content'}
-    </a>
-
     <div class="flex items-center justify-between h-16">
       {/* Logo and brand */}
       <div class="flex items-center gap-4">
@@ -110,7 +102,7 @@ const isActive = (href: string) => {
       </div>
 
       {/* Desktop navigation */}
-      <nav class="hidden md:block" aria-label="Main navigation" role="navigation">
+      <nav id="main-nav" class="hidden md:block" aria-label="Main navigation" role="navigation">
         <ul class="flex items-center gap-1">
           {navItems.map((item) => (
             <li>

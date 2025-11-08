@@ -22,15 +22,18 @@ import WorkedSolutionDisplay from './WorkedSolutionDisplay';
 export interface HintSystemProps {
   /** Array of hints for the current exercise (should have 4 levels) */
   hints: Hint[];
-  
+
   /** Callback invoked when a hint is requested, receives the hint level (1-4) */
   onHintRequested: (level: number) => void;
-  
+
   /** Whether the hint system is disabled (e.g., during answer submission) */
   disabled?: boolean;
-  
+
   /** Key to reset the component state (change this when moving to a new exercise) */
   resetKey?: number | string;
+
+  /** Optional ref to the hint button for keyboard shortcuts */
+  hintButtonRef?: (el: HTMLButtonElement) => void;
 }
 
 /**
@@ -84,6 +87,7 @@ export default function HintSystem(props: HintSystemProps) {
       {/* Hint button */}
       <div class="hint-button-container mb-4">
         <button
+          ref={props.hintButtonRef}
           type="button"
           class="hint-button px-6 py-3 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
           classList={{

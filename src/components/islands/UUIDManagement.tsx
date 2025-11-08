@@ -11,11 +11,12 @@
  * - 9.1: WCAG 2.1 AA accessibility
  */
 
-import { createSignal, Show, onMount } from 'solid-js'
+import { createSignal, createEffect, Show, onMount } from 'solid-js'
 import { useStore } from '@nanostores/solid'
 import { $t } from '@/lib/i18n'
 import { formatUUID } from '@/lib/auth/uuid'
 import { deleteUser } from '@/lib/auth'
+import { createFocusTrap } from '@/lib/accessibility'
 import QRCode from 'qrcode'
 
 export interface UUIDManagementProps {
@@ -57,6 +58,26 @@ export default function UUIDManagement(props: UUIDManagementProps) {
   const [showQR, setShowQR] = createSignal(false)
   const [qrCodeDataUrl, setQrCodeDataUrl] = createSignal<string | null>(null)
   const [showDeleteModal, setShowDeleteModal] = createSignal(false)
+
+  // Modal ref and focus trap
+  let modalRef: HTMLDivElement | undefined
+  const focusTrap = createFocusTrap(
+    () => modalRef,
+    {
+      preventScroll: true,
+      allowEscape: true,
+      onDeactivate: () => setShowDeleteModal(false),
+    }
+  )
+
+  // Activate/deactivate focus trap based on modal visibility
+  createEffect(() => {
+    if (showDeleteModal()) {
+      focusTrap.activate()
+    } else {
+      focusTrap.deactivate()
+    }
+  })
 
   // Format the UUID for display
   const formattedUUID = () => formatUUID(props.uuid)
@@ -370,7 +391,7 @@ export default function UUIDManagement(props: UUIDManagementProps) {
             }
           }}
         >
-          <div class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+          <div ref={modalRef} class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
             <h3
               id="delete-modal-title"
               class="mb-4 text-xl font-bold text-gray-900"

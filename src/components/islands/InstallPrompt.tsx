@@ -18,9 +18,10 @@
  * - 14.1: Clear, welcoming install experience
  */
 
-import { Show, createSignal, onMount, onCleanup } from 'solid-js'
+import { Show, createSignal, createEffect, onMount, onCleanup } from 'solid-js'
 import { useStore } from '@nanostores/solid'
 import { $t } from '../../lib/i18n'
+import { createFocusTrap } from '@/lib/accessibility'
 
 // Types
 interface BeforeInstallPromptEvent extends Event {
@@ -34,12 +35,32 @@ const DISMISS_DURATION_DAYS = 30
 
 export default function InstallPrompt() {
   const t = useStore($t)
-  
+
   // State
   const [deferredPrompt, setDeferredPrompt] = createSignal<BeforeInstallPromptEvent | null>(null)
   const [showPrompt, setShowPrompt] = createSignal(false)
   const [isInstalled, setIsInstalled] = createSignal(false)
   const [isInstalling, setIsInstalling] = createSignal(false)
+
+  // Prompt container ref and focus trap
+  let promptRef: HTMLDivElement | undefined
+  const focusTrap = createFocusTrap(
+    () => promptRef,
+    {
+      preventScroll: true,
+      allowEscape: true,
+      onDeactivate: () => handleDismiss(),
+    }
+  )
+
+  // Activate/deactivate focus trap based on prompt visibility
+  createEffect(() => {
+    if (showPrompt() && !isInstalled()) {
+      focusTrap.activate()
+    } else {
+      focusTrap.deactivate()
+    }
+  })
 
   // Check if user previously dismissed the prompt
   const isDismissed = (): boolean => {
@@ -177,6 +198,7 @@ export default function InstallPrompt() {
   return (
     <Show when={showPrompt() && !isInstalled()}>
       <div
+        ref={promptRef}
         class="fixed bottom-0 left-0 right-0 z-50 bg-white border-t-2 border-blue-500 shadow-lg md:bottom-4 md:left-4 md:right-auto md:max-w-md md:rounded-lg md:border-2"
         role="dialog"
         aria-labelledby="install-prompt-title"

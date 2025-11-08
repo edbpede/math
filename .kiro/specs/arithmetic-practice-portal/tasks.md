@@ -248,7 +248,7 @@
     - Build UUID management section (view, export, delete account)
     - _Requirements: 9.1, 9.2_
 
-- [ ] 10. Implement offline functionality with service worker
+- [x] 10. Implement offline functionality with service worker
   - [x] 10.1 Set up service worker infrastructure
     - Create service worker registration in main app
     - Implement cache versioning strategy
@@ -280,7 +280,7 @@
     - _Requirements: 6.6_
 
 - [ ] 11. Implement accessibility features
-  - [ ] 11.1 Add keyboard navigation support
+  - [x] 11.1 Add keyboard navigation support
     - Ensure all interactive elements are keyboard accessible
     - Implement focus management for modals and overlays
     - Add skip navigation links
