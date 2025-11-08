@@ -44,6 +44,16 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     });
   }
 
+  // Mock React to prevent "React is not defined" errors
+  // Some dependencies may check for React's existence even though we use SolidJS
+  if (typeof globalThis !== 'undefined') {
+    (globalThis as any).React = {
+      createElement: () => null,
+      Component: class {},
+      Fragment: Symbol.for('react.fragment'),
+    };
+  }
+
   // Mock browser APIs that aren't available in jsdom/happy-dom
 
   // Clipboard API

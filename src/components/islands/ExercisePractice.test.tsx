@@ -29,6 +29,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@solidjs/testing-library';
 import ExercisePractice, { type ExercisePracticeProps, type ExerciseAttempt } from './ExercisePractice';
 import type { ExerciseInstance, Hint } from '@/lib/exercises/types';
+import { initI18n, changeLocale } from '@/lib/i18n';
 
 // Mock i18n with Nanostores (must define function inside mock since mocks are hoisted)
 vi.mock('@/lib/i18n', () => {
@@ -154,7 +155,11 @@ describe('ExercisePractice', () => {
   let mockExercises: ExerciseInstance[];
   let mockProps: ExercisePracticeProps;
   
-  beforeEach(() => {
+  beforeEach(async () => {
+    // Initialize i18n system and ensure English locale for consistent tests
+    await initI18n();
+    await changeLocale('en-US');
+    
     mockExercises = [
       createMockExercise('ex-1', '42'),
       createMockExercise('ex-2', '100'),

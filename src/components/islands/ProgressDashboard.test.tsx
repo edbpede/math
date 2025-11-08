@@ -8,6 +8,8 @@
  * - Streak display
  * - Review schedule rendering
  * - Accessibility
+ *
+ * @vitest-environment happy-dom
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -16,6 +18,7 @@ import { userEvent } from '@testing-library/user-event';
 import ProgressDashboard from './ProgressDashboard';
 import type { CompetencyProgress, SkillProgress, ExerciseAttempt } from '@/lib/mastery/types';
 import type { GradeRange } from '@/lib/curriculum/types';
+import { initI18n, changeLocale } from '@/lib/i18n';
 
 // Mock modules
 vi.mock('@/lib/supabase/progress', () => ({
@@ -29,21 +32,13 @@ vi.mock('@/lib/mastery/review-scheduler', () => ({
   formatReviewDate: vi.fn((date: Date) => 'in 2 days'),
 }));
 
-vi.mock('@/lib/i18n', () => ({
-  $t: {
-    get: () => (key: string, params?: any) => {
-      // Simple mock translation function
-      if (params) {
-        let result = key;
-        Object.entries(params).forEach(([k, v]) => {
-          result = result.replace(`{{${k}}}`, String(v));
-        });
-        return result;
-      }
-      return key;
-    },
-  },
-}));
+// Mock i18n module - use actual implementation but allow initialization
+vi.mock('@/lib/i18n', async () => {
+  const actual = await vi.importActual('@/lib/i18n');
+  return {
+    ...actual,
+  };
+});
 
 // Import mocked functions
 import {
@@ -169,8 +164,12 @@ describe('ProgressDashboard', () => {
     total: 3,
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
+    
+    // Initialize i18n system and ensure English locale for consistent tests
+    await initI18n();
+    await changeLocale('en-US');
     
     // Setup default mocks
     (fetchCompetencyProgress as any).mockResolvedValue(mockCompetencies);

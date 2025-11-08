@@ -39,6 +39,7 @@
     "jsdom": "^27.1.0",
     "sharp": "^0.33.2",
     "unocss": "^66.5.4",
+    "vite-plugin-solid": "^2.11.10",
     "vitest": "^4.0.7"
   }
 }

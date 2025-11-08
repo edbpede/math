@@ -39,8 +39,11 @@ vi.mock('@/lib/auth', async () => {
 
 describe('LanguageSelector', () => {
   
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
+    // Initialize i18n system and ensure English locale for consistent tests
+    await i18n.initI18n();
+    await i18n.changeLocale('en-US');
   });
 
   afterEach(() => {

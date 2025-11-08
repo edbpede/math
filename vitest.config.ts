@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitest/config';
 import { resolve } from 'path';
+import solid from 'vite-plugin-solid';
 
 // Vite plugin to force solid-js/web to use client build
 const solidJsWebClientPlugin = () => ({
@@ -18,7 +19,14 @@ const solidJsWebClientPlugin = () => ({
 });
 
 export default defineConfig({
-  plugins: [solidJsWebClientPlugin()],
+  plugins: [
+    solidJsWebClientPlugin(),
+    solid({
+      // Configure SolidJS for test environment
+      // Use DOM renderer (not SSR)
+      ssr: false,
+    }),
+  ],
   // Configure Vite to use client-side rendering for SolidJS in tests
   define: {
     // Force SolidJS to use client mode

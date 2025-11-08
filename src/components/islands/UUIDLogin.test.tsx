@@ -11,12 +11,13 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@solidjs/testing-library';
 import UUIDLogin from './UUIDLogin';
-import { $t, changeLocale } from '@/lib/i18n';
+import { $t, changeLocale, initI18n } from '@/lib/i18n';
 
 describe('UUIDLogin', () => {
 
   beforeEach(async () => {
-    // Ensure English locale for consistent tests
+    // Initialize i18n system and ensure English locale for consistent tests
+    await initI18n();
     await changeLocale('en-US');
 
     // Mock fetch API

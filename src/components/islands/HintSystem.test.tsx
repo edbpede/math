@@ -19,11 +19,27 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent } from '@solidjs/testing-library';
+import { render, screen, fireEvent, waitFor } from '@solidjs/testing-library';
 import { createSignal } from 'solid-js';
 import HintSystem from './HintSystem';
 import type { Hint } from '@/lib/exercises/types';
-import { $t, changeLocale } from '@/lib/i18n';
+import { $t, changeLocale, initI18n } from '@/lib/i18n';
+import * as accessibility from '@/lib/accessibility';
+
+// Mock announce function
+vi.mock('@/lib/accessibility', () => ({
+  announce: vi.fn(),
+  createAnnouncer: vi.fn(() => ({
+    announce: vi.fn(),
+    clear: vi.fn(),
+    destroy: vi.fn(),
+  })),
+  getGlobalAnnouncer: vi.fn(() => ({
+    announce: vi.fn(),
+    clear: vi.fn(),
+    destroy: vi.fn(),
+  })),
+}));
 
 // Mock hints for testing
 const mockHints: Hint[] = [
@@ -42,7 +58,8 @@ const mockHintsWithVisualAid: Hint[] = [
 
 describe('HintSystem', () => {
   beforeEach(async () => {
-    // Ensure English locale for consistent tests
+    // Initialize i18n system and ensure English locale for consistent tests
+    await initI18n();
     await changeLocale('en-US');
   });
 
