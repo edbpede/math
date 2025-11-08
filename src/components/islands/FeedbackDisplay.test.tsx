@@ -48,7 +48,7 @@ const mockVisualAid: VisualAid = {
   },
 };
 
-describe.skip('FeedbackDisplay', () => {
+describe('FeedbackDisplay', () => {
   beforeEach(async () => {
     // Ensure English locale for consistent tests
     await changeLocale('en-US');

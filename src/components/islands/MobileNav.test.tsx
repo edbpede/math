@@ -13,7 +13,7 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen } from '@solidjs/testing-library'
 import MobileNav from './MobileNav'
 
-describe.skip('MobileNav', () => {
+describe('MobileNav', () => {
   beforeEach(async () => {
     // Initialize i18n for tests
     const { initI18n } = await import('@/lib/i18n')

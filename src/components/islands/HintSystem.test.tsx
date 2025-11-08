@@ -40,7 +40,7 @@ const mockHintsWithVisualAid: Hint[] = [
   { level: 4, text: 'Final hint' },
 ];
 
-describe.skip('HintSystem', () => {
+describe('HintSystem', () => {
   beforeEach(async () => {
     // Ensure English locale for consistent tests
     await changeLocale('en-US');

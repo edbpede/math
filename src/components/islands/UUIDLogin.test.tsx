@@ -13,10 +13,7 @@ import { render, screen, fireEvent, waitFor } from '@solidjs/testing-library';
 import UUIDLogin from './UUIDLogin';
 import { $t, changeLocale } from '@/lib/i18n';
 
-describe.skip('UUIDLogin', () => {
-  // Note: Tests are skipped due to SolidJS testing environment setup issues
-  // The component follows SolidJS patterns and TypeScript ensures type safety
-  // To enable these tests, configure SolidJS testing with proper client-side rendering
+describe('UUIDLogin', () => {
 
   beforeEach(async () => {
     // Ensure English locale for consistent tests

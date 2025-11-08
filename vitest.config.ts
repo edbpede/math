@@ -6,7 +6,10 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'src/**/*.spec.ts', 'src/**/*.spec.tsx'],
-    setupFiles: ['./src/test/setup.ts'],
+    setupFiles: [
+      './src/test/setup.ts', // Base setup (runs for all environments)
+      './src/test/setup-browser.ts', // Browser setup (checks environment internally)
+    ],
     environmentMatchGlobs: [
       // Use happy-dom for component tests (TSX files) - better for SolidJS
       ['src/components/**/*.test.tsx', 'happy-dom'],

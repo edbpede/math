@@ -37,11 +37,7 @@ vi.mock('@/lib/auth', async () => {
   };
 });
 
-describe.skip('LanguageSelector', () => {
-  // Note: Tests are skipped due to SolidJS client-only API issues in test environment
-  // The component uses client-only APIs that require proper browser environment setup
-  // To enable these tests, configure SolidJS testing with proper client-side rendering
-  // The component follows SolidJS patterns and TypeScript ensures type safety
+describe('LanguageSelector', () => {
   
   beforeEach(() => {
     vi.clearAllMocks();

@@ -150,7 +150,7 @@ const createMockExercise = (id: string, answer: string | number): ExerciseInstan
   seed: 12345,
 });
 
-describe.skip('ExercisePractice', () => {
+describe('ExercisePractice', () => {
   let mockExercises: ExerciseInstance[];
   let mockProps: ExercisePracticeProps;
   

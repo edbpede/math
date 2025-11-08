@@ -19,7 +19,7 @@ vi.mock('qrcode', () => ({
   },
 }));
 
-describe.skip('UUIDGenerator', () => {
+describe('UUIDGenerator', () => {
   // Note: Component tests require additional SolidJS-specific configuration
   // Infrastructure is in place (setup.ts, happy-dom, mocks) but SolidJS SSR/client mode resolution needs work
   // The component is fully implemented and TypeScript-verified

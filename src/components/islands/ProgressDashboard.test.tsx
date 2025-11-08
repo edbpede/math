@@ -53,7 +53,7 @@ import {
 } from '@/lib/supabase/progress';
 import { getUpcomingReviews } from '@/lib/mastery/review-scheduler';
 
-describe.skip('ProgressDashboard', () => {
+describe('ProgressDashboard', () => {
   const mockUserId = 'user-123';
   const mockGradeRange: GradeRange = '4-6';
 
