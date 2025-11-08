@@ -17,6 +17,7 @@ import type { Hint } from '@/lib/exercises/types';
 import { createReactiveHintTracker } from '@/lib/exercises/hint-tracker';
 import { useStore } from '@nanostores/solid';
 import { $t } from '@/lib/i18n';
+import { announce } from '@/lib/accessibility';
 import WorkedSolutionDisplay from './WorkedSolutionDisplay';
 
 export interface HintSystemProps {
@@ -68,6 +69,14 @@ export default function HintSystem(props: HintSystemProps) {
     const hint = tracker.revealNext();
     if (hint) {
       props.onHintRequested(hint.level);
+
+      // Announce hint revelation to screen readers
+      announce(
+        t()('accessibility.screenReader.hintRevealed', {
+          level: hint.level.toString(),
+        }),
+        { priority: 'polite', delay: 200 }
+      );
     }
   };
 

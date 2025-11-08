@@ -21,7 +21,37 @@
     "modalOpen": "Modal åbnet",
     "modalClosed": "Modal lukket",
     "menuOpen": "Menu åbnet",
-    "menuClosed": "Menu lukket"
+    "menuClosed": "Menu lukket",
+    "progressMilestone": "Du er {{percent}}% gennem denne session!",
+    "masteryIncreased": "Mestringsniveau øget til {{level}}",
+    "achievementUnlocked": "Præstation låst op: {{name}}",
+    "solutionRevealed": "Løsning vist",
+    "newQuestionLoaded": "Nyt spørgsmål {{current}} af {{total}} indlæst"
+  },
+  "visualAids": {
+    "numberLine": "Tallinje fra {{start}} til {{end}} viser {{description}}",
+    "placeValue": "Ciffer-værdi diagram: {{hundreds}} hundreder, {{tens}} tiere, {{ones}} enere",
+    "fractionCircle": "Brøkcirkel viser {{numerator}} ud af {{denominator}} dele skraveret",
+    "fractionRectangle": "Brøkstang viser {{numerator}} ud af {{denominator}} dele skraveret",
+    "chart": "{{chartType}} diagram viser {{description}}",
+    "genericDiagram": "Diagram viser {{description}}"
+  },
+  "math": {
+    "operations": {
+      "plus": "plus",
+      "minus": "minus",
+      "times": "gange",
+      "dividedBy": "divideret med",
+      "equals": "lig med"
+    },
+    "fractions": {
+      "oneHalf": "en halv",
+      "oneThird": "en tredjedel",
+      "oneQuarter": "en fjerdedel",
+      "twoThirds": "to tredjedele",
+      "threeQuarters": "tre fjerdedele",
+      "generic": "{{numerator}} over {{denominator}}"
+    }
   },
   "ariaLabels": {
     "closeModal": "Luk vindue",

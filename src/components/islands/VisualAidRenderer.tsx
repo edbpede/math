@@ -9,10 +9,11 @@
  * - 8.5: Include visual aids in feedback when relevant
  */
 
-import { Match, Switch, Show, For } from 'solid-js';
+import { Match, Switch, Show, For, createMemo } from 'solid-js';
 import type { VisualAid } from '@/lib/exercises/types';
 import { useStore } from '@nanostores/solid';
 import { $t } from '@/lib/i18n';
+import { generateVisualAidDescription, generateLongDescription } from '@/lib/accessibility/visual-aid-descriptions';
 
 export interface VisualAidRendererProps {
   /** The visual aid to render */
@@ -44,22 +45,49 @@ export interface VisualAidRendererProps {
 export default function VisualAidRenderer(props: VisualAidRendererProps) {
   const t = useStore($t);
 
+  // Generate descriptive aria-label based on visual aid type and data
+  const description = createMemo(() => {
+    return generateVisualAidDescription(props.visualAid, t());
+  });
+
+  // Generate long description for complex diagrams (if applicable)
+  const longDescription = createMemo(() => {
+    return generateLongDescription(props.visualAid, t());
+  });
+
+  // Generate unique ID for long description
+  const descriptionId = `visual-aid-desc-${Math.random().toString(36).substring(2, 9)}`;
+
   return (
-    <div class={`visual-aid ${props.class || ''}`} role="img" aria-label={t()('hints.common.visualAid')}>
-      <Switch>
-        <Match when={props.visualAid.type === 'number-line'}>
-          <NumberLineRenderer data={props.visualAid.data as NumberLineData} />
-        </Match>
-        <Match when={props.visualAid.type === 'diagram'}>
-          <DiagramRenderer data={props.visualAid.data as DiagramData} />
-        </Match>
-        <Match when={props.visualAid.type === 'chart'}>
-          <ChartRenderer data={props.visualAid.data as ChartData} />
-        </Match>
-        <Match when={props.visualAid.type === 'image'}>
-          <ImageRenderer data={props.visualAid.data as ImageData} />
-        </Match>
-      </Switch>
+    <div class={`visual-aid ${props.class || ''}`}>
+      {/* Main visual aid with aria-label and optional aria-describedby */}
+      <div
+        role="img"
+        aria-label={description()}
+        aria-describedby={longDescription() ? descriptionId : undefined}
+      >
+        <Switch>
+          <Match when={props.visualAid.type === 'number-line'}>
+            <NumberLineRenderer data={props.visualAid.data as NumberLineData} />
+          </Match>
+          <Match when={props.visualAid.type === 'diagram'}>
+            <DiagramRenderer data={props.visualAid.data as DiagramData} />
+          </Match>
+          <Match when={props.visualAid.type === 'chart'}>
+            <ChartRenderer data={props.visualAid.data as ChartData} />
+          </Match>
+          <Match when={props.visualAid.type === 'image'}>
+            <ImageRenderer data={props.visualAid.data as ImageData} />
+          </Match>
+        </Switch>
+      </div>
+
+      {/* Long description for screen readers (visually hidden) */}
+      <Show when={longDescription()}>
+        <div id={descriptionId} class="sr-only">
+          {longDescription()}
+        </div>
+      </Show>
     </div>
   );
 }

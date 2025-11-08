@@ -21,7 +21,37 @@
     "modalOpen": "Modal opened",
     "modalClosed": "Modal closed",
     "menuOpen": "Menu opened",
-    "menuClosed": "Menu closed"
+    "menuClosed": "Menu closed",
+    "progressMilestone": "You're {{percent}}% through this session!",
+    "masteryIncreased": "Mastery level increased to {{level}}",
+    "achievementUnlocked": "Achievement unlocked: {{name}}",
+    "solutionRevealed": "Solution revealed",
+    "newQuestionLoaded": "New question {{current}} of {{total}} loaded"
+  },
+  "visualAids": {
+    "numberLine": "Number line from {{start}} to {{end}} showing {{description}}",
+    "placeValue": "Place value diagram: {{hundreds}} hundreds, {{tens}} tens, {{ones}} ones",
+    "fractionCircle": "Fraction circle showing {{numerator}} out of {{denominator}} parts shaded",
+    "fractionRectangle": "Fraction bar showing {{numerator}} out of {{denominator}} parts shaded",
+    "chart": "{{chartType}} chart showing {{description}}",
+    "genericDiagram": "Diagram showing {{description}}"
+  },
+  "math": {
+    "operations": {
+      "plus": "plus",
+      "minus": "minus",
+      "times": "times",
+      "dividedBy": "divided by",
+      "equals": "equals"
+    },
+    "fractions": {
+      "oneHalf": "one half",
+      "oneThird": "one third",
+      "oneQuarter": "one quarter",
+      "twoThirds": "two thirds",
+      "threeQuarters": "three quarters",
+      "generic": "{{numerator}} over {{denominator}}"
+    }
   },
   "ariaLabels": {
     "closeModal": "Close dialog",

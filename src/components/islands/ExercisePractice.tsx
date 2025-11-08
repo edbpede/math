@@ -19,10 +19,11 @@
 import { createSignal, createEffect, Show, onMount } from 'solid-js';
 import { useStore } from '@nanostores/solid';
 import { $t } from '@/lib/i18n';
-import { createKeyboardShortcuts } from '@/lib/accessibility';
+import { createKeyboardShortcuts, announce } from '@/lib/accessibility';
 import type { ExerciseInstance } from '@/lib/exercises/types';
 import HintSystem from './HintSystem';
 import FeedbackDisplay from './FeedbackDisplay';
+import MathExpression from './MathExpression';
 
 /**
  * Exercise attempt data for logging
@@ -168,14 +169,36 @@ export default function ExercisePractice(props: ExercisePracticeProps) {
     // Track currentIndex to trigger reset
     const _index = props.currentIndex;
     const exercise = getCurrentExercise();
-    
+
     if (exercise) {
       setAnswer('');
       setValidationState({ status: 'pending' });
       setHintsUsed(0);
       setStartTime(Date.now());
       setShowSkipConfirm(false);
-      
+
+      // Announce new exercise to screen readers
+      const current = props.currentIndex + 1;
+      const total = totalExercises();
+      announce(
+        t()('accessibility.screenReader.newQuestionLoaded', {
+          current: current.toString(),
+          total: total.toString(),
+        }),
+        { priority: 'polite', delay: 300 }
+      );
+
+      // Announce progress milestones (25%, 50%, 75%)
+      const progressPercent = Math.round((current / total) * 100);
+      if (progressPercent === 25 || progressPercent === 50 || progressPercent === 75) {
+        announce(
+          t()('accessibility.screenReader.progressMilestone', {
+            percent: progressPercent.toString(),
+          }),
+          { priority: 'polite', delay: 600 }
+        );
+      }
+
       // Focus answer input on new exercise
       setTimeout(() => {
         answerInputRef()?.focus();
@@ -427,7 +450,7 @@ export default function ExercisePractice(props: ExercisePracticeProps) {
                 {t()('exercises.exercise.question')}
               </h3>
               <div class="question-text text-2xl font-medium text-gray-800 leading-relaxed p-6 bg-blue-50 rounded-lg border-2 border-blue-200">
-                {ex().questionText}
+                <MathExpression expression={ex().questionText} class="text-2xl" />
               </div>
               
               {/* Exercise metadata */}

@@ -9,10 +9,11 @@
  * - 8.4: Provide worked solution at any time during or after exercise
  */
 
-import { For, Show } from 'solid-js';
+import { For, Show, createEffect, onMount } from 'solid-js';
 import type { WorkedSolution } from '@/lib/exercises/types';
 import { useStore } from '@nanostores/solid';
 import { $t } from '@/lib/i18n';
+import { announce } from '@/lib/accessibility';
 import VisualAidRenderer from './VisualAidRenderer';
 
 export interface WorkedSolutionDisplayProps {
@@ -42,6 +43,16 @@ export interface WorkedSolutionDisplayProps {
  */
 export default function WorkedSolutionDisplay(props: WorkedSolutionDisplayProps) {
   const t = useStore($t);
+
+  // Announce when solution is revealed
+  createEffect(() => {
+    if (props.show !== false && props.show !== undefined) {
+      announce(
+        t()('accessibility.screenReader.solutionRevealed'),
+        { priority: 'polite', delay: 200 }
+      );
+    }
+  });
 
   return (
     <Show when={props.show !== false}>

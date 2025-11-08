@@ -22,9 +22,9 @@
  * - #main-nav for main navigation
  */
 
-import { getTranslator } from '@/lib/i18n/server'
+import { $t } from '@/lib/i18n'
 
-const t = await getTranslator(Astro)
+const t = await $t.get()
 ---
 
 <div class="skip-navigation" role="navigation" aria-label="Skip links">
