@@ -9,7 +9,62 @@
     "paused": "Session sat på pause",
     "resume": "Genoptag session",
     "quit": "Afslut session",
-    "confirmQuit": "Er du sikker på, at du vil afslutte? Dit fremskridt bliver gemt."
+    "confirmQuit": "Er du sikker på, at du vil afslutte? Dit fremskridt bliver gemt.",
+    "setup": {
+      "title": "Opsæt øvelsessession",
+      "subtitle": "Tilpas din øvelsessession",
+      "difficulty": {
+        "label": "Sværhedsgrad",
+        "auto": "Auto (Anbefalet)",
+        "autoDescription": "Tilpasser sig automatisk til dit niveau",
+        "a": "Niveau A (Indledende)",
+        "aDescription": "Grundlæggende opgaver til at opbygge selvtillid",
+        "b": "Niveau B (Udviklende)",
+        "bDescription": "Mellemliggende opgaver til at udvikle færdigheder",
+        "c": "Niveau C (Avanceret)",
+        "cDescription": "Udfordrende opgaver til at mestre koncepter"
+      },
+      "exerciseCount": {
+        "label": "Antal opgaver",
+        "10": "Hurtig øvelse",
+        "10Description": "10 opgaver (~5 minutter)",
+        "20": "Standard session",
+        "20Description": "20 opgaver (~10 minutter)",
+        "30": "Udvidet øvelse",
+        "30Description": "30 opgaver (~15 minutter)"
+      },
+      "startButton": "Start øvelse",
+      "firstTimeNotice": "Starter med nemmere opgaver for at hjælpe dig i gang"
+    },
+    "summary": {
+      "title": "Session fuldført!",
+      "congratulations": "Godt klaret!",
+      "excellentWork": "Fremragende arbejde! Du mestrer dette!",
+      "goodProgress": "Godt fremskridt! Fortsæt!",
+      "keepPracticing": "Bliv ved med at øve dig for at forbedre!",
+      "statistics": {
+        "title": "Dine resultater",
+        "total": "Antal opgaver",
+        "correct": "Korrekte svar",
+        "accuracy": "Nøjagtighed",
+        "avgTime": "Gennemsnitlig tid",
+        "hintsUsed": "Hints brugt",
+        "skipped": "Sprunget over",
+        "masteryGain": "Mestringspoint optjent"
+      },
+      "actions": {
+        "practiceAgain": "Øv igen",
+        "viewProgress": "Se fremskridt",
+        "dashboard": "Tilbage til dashboard",
+        "changeDifficulty": "Skift sværhedsgrad"
+      },
+      "achievements": {
+        "perfectScore": "Perfekt score!",
+        "noHints": "Ingen hints brugt!",
+        "fastLearner": "Hurtig lærling!",
+        "persistent": "Vedholdende øvelse!"
+      }
+    }
   },
   "exercise": {
     "question": "Spørgsmål",

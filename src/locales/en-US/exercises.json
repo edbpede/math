@@ -9,7 +9,62 @@
     "paused": "Session paused",
     "resume": "Resume session",
     "quit": "End session",
-    "confirmQuit": "Are you sure you want to quit? Your progress will be saved."
+    "confirmQuit": "Are you sure you want to quit? Your progress will be saved.",
+    "setup": {
+      "title": "Setup Practice Session",
+      "subtitle": "Customize your practice session",
+      "difficulty": {
+        "label": "Difficulty Level",
+        "auto": "Auto (Recommended)",
+        "autoDescription": "Automatically adapts to your skill level",
+        "a": "Level A (Introductory)",
+        "aDescription": "Basic problems to build confidence",
+        "b": "Level B (Developing)",
+        "bDescription": "Intermediate problems to develop skills",
+        "c": "Level C (Advanced)",
+        "cDescription": "Challenging problems to master concepts"
+      },
+      "exerciseCount": {
+        "label": "Number of Exercises",
+        "10": "Quick Practice",
+        "10Description": "10 exercises (~5 minutes)",
+        "20": "Standard Session",
+        "20Description": "20 exercises (~10 minutes)",
+        "30": "Extended Practice",
+        "30Description": "30 exercises (~15 minutes)"
+      },
+      "startButton": "Start Practice",
+      "firstTimeNotice": "Starting with easier problems to help you get comfortable"
+    },
+    "summary": {
+      "title": "Session Complete!",
+      "congratulations": "Great work!",
+      "excellentWork": "Excellent work! You're mastering this!",
+      "goodProgress": "Good progress! Keep it up!",
+      "keepPracticing": "Keep practicing to improve!",
+      "statistics": {
+        "title": "Your Results",
+        "total": "Total Exercises",
+        "correct": "Correct Answers",
+        "accuracy": "Accuracy",
+        "avgTime": "Average Time",
+        "hintsUsed": "Hints Used",
+        "skipped": "Skipped",
+        "masteryGain": "Mastery Points Earned"
+      },
+      "actions": {
+        "practiceAgain": "Practice Again",
+        "viewProgress": "View Progress",
+        "dashboard": "Return to Dashboard",
+        "changeDifficulty": "Change Difficulty"
+      },
+      "achievements": {
+        "perfectScore": "Perfect Score!",
+        "noHints": "No Hints Used!",
+        "fastLearner": "Fast Learner!",
+        "persistent": "Persistent Practice!"
+      }
+    }
   },
   "exercise": {
     "question": "Question",

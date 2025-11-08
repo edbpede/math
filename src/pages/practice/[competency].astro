@@ -1,0 +1,103 @@
+---
+/**
+ * Practice Session Page - Dynamic Route
+ *
+ * Dynamic route for practice sessions by competency area.
+ * Handles session setup, exercise practice, and completion summary.
+ *
+ * Requirements:
+ * - 14.5: Begin first practice session with easier problems (difficulty A)
+ * - 8.1: Validate answer and display feedback within 1 second
+ * - 9.1: WCAG 2.1 AA compliance
+ *
+ * Task: 9.4
+ */
+
+import type { GetStaticPaths } from 'astro'
+import type { CompetencyAreaId } from '@/lib/curriculum/types'
+import MainLayout from '@/components/layouts/MainLayout.astro'
+import PracticeSessionWrapper from '@/components/islands/PracticeSessionWrapper'
+import { $t, initI18n } from '@/lib/i18n'
+import { fetchCompetencyProgressByArea } from '@/lib/supabase/progress'
+
+// Generate static paths for all competency areas
+export const getStaticPaths = (() => {
+  const competencies: CompetencyAreaId[] = [
+    'matematiske-kompetencer',
+    'tal-og-algebra',
+    'geometri-og-maling',
+    'statistik-og-sandsynlighed'
+  ]
+
+  return competencies.map((id) => ({
+    params: { competency: id }
+  }))
+}) satisfies GetStaticPaths
+
+// Get competency from URL params
+const { competency } = Astro.params
+
+// Validate competency parameter
+const validCompetencies: CompetencyAreaId[] = [
+  'matematiske-kompetencer',
+  'tal-og-algebra',
+  'geometri-og-maling',
+  'statistik-og-sandsynlighed'
+]
+
+if (!competency || !validCompetencies.includes(competency as CompetencyAreaId)) {
+  return Astro.redirect('/dashboard')
+}
+
+const competencyAreaId = competency as CompetencyAreaId
+
+// Check authentication - redirect if not authenticated
+const user = Astro.locals.user
+if (!user) {
+  return Astro.redirect('/login')
+}
+
+// Initialize i18n with user's preferred locale
+await initI18n(user.locale)
+
+// Get translations
+const t = await $t.get()
+
+// Check if this is the user's first time in this competency area
+let isFirstTime = true
+try {
+  const existingProgress = await fetchCompetencyProgressByArea(
+    user.id,
+    competencyAreaId,
+    user.gradeRange
+  )
+  isFirstTime = existingProgress === null
+} catch (error) {
+  console.error('Failed to fetch competency progress:', error)
+  // Default to not first time on error (safer default)
+  isFirstTime = false
+}
+
+// Get competency name for page title
+const competencyKey = `competencies.${competencyAreaId}.name`
+const competencyName = t(competencyKey)
+
+// Page metadata
+const title = `${t('exercises.session.title')} - ${competencyName}`
+const description = t('exercises.session.subtitle', { competency: competencyName })
+---
+
+<MainLayout
+  title={title}
+  description={description}
+  currentPath={`/practice/${competencyAreaId}`}
+>
+  <PracticeSessionWrapper
+    userId={user.id}
+    competencyAreaId={competencyAreaId}
+    gradeRange={user.gradeRange}
+    locale={user.locale}
+    isFirstTime={isFirstTime}
+    client:load
+  />
+</MainLayout>

@@ -234,7 +234,7 @@
     - Add quick continue option
     - _Requirements: 15.1_
   
-  - [ ] 9.4 Create practice session page
+  - [x] 9.4 Create practice session page
     - Build practice/[competency].astro dynamic route
     - Implement session setup (difficulty selection, mode selection)
     - Integrate ExercisePractice component
