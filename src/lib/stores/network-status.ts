@@ -12,6 +12,7 @@
 import { atom, computed } from 'nanostores'
 import { syncManager } from '../offline/sync-manager'
 import type { SyncEvent } from '../offline/sync-manager'
+import { offlineStorage } from '../offline/storage'
 
 /**
  * Network status store
@@ -119,7 +120,6 @@ export async function initializeStatusStores(): Promise<void> {
   // Load last sync time from IndexedDB preferences
   if (typeof window !== 'undefined') {
     try {
-      const { offlineStorage } = await import('../offline/storage')
       const lastSyncTimeStr = await offlineStorage.getPreference('lastSyncTime')
       if (lastSyncTimeStr && typeof lastSyncTimeStr === 'string') {
         $syncStatus.set({
@@ -215,7 +215,6 @@ function handleSyncEvent(event: SyncEvent): void {
  */
 async function persistLastSyncTime(timestamp: Date): Promise<void> {
   try {
-    const { offlineStorage } = await import('../offline/storage')
     await offlineStorage.setPreference('lastSyncTime', timestamp.toISOString())
   } catch (error) {
     console.warn('[NetworkStatus] Could not persist last sync time:', error)

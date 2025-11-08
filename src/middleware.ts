@@ -55,6 +55,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
   context.locals.user = null
   context.locals.session = null
 
+  // Skip authentication during prerendering (static site generation)
+  // Headers are not available during build-time prerendering
+  if (import.meta.env.PRERENDER) {
+    return next()
+  }
+
   try {
     // Get cookie header from request
     const cookieHeader = context.request.headers.get('cookie')

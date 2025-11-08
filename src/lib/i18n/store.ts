@@ -94,8 +94,13 @@ export const $t = computed(
   [$translations, $locale],
   (translations, locale): TranslationFunction => {
     return (key: string, params?: Record<string, string | number>): string => {
+      // Only log warnings in development mode, not during build/prerender
+      const isDevelopment = import.meta.env.DEV && !import.meta.env.PRERENDER;
+
       if (!translations) {
-        console.warn(`Translations not loaded, returning key: ${key}`);
+        if (isDevelopment) {
+          console.warn(`Translations not loaded, returning key: ${key}`);
+        }
         return key;
       }
 
@@ -106,18 +111,22 @@ export const $t = computed(
       const path = parts.slice(1).join('.');
 
       if (!(category in translations)) {
-        console.warn(
-          `Translation category "${category}" not found for key: ${key}`
-        );
+        if (isDevelopment) {
+          console.warn(
+            `Translation category "${category}" not found for key: ${key}`
+          );
+        }
         return key;
       }
 
       const value = getNestedValue(translations[category], path);
 
       if (typeof value !== 'string') {
-        console.warn(
-          `Translation not found or not a string for key: ${key} (locale: ${locale})`
-        );
+        if (isDevelopment) {
+          console.warn(
+            `Translation not found or not a string for key: ${key} (locale: ${locale})`
+          );
+        }
         return key;
       }
 
