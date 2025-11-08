@@ -1,0 +1,84 @@
+{
+  "dashboard": {
+    "title": "Din Fremgang",
+    "subtitle": "Følg din beherskelse på tværs af alle kompetenceområder"
+  },
+  "sections": {
+    "overview": "Oversigt",
+    "competencies": "Kompetenceområder",
+    "skills": "Færdighedsopdeling",
+    "streak": "Øvelsesstreg",
+    "reviews": "Kommende Gennemgange"
+  },
+  "masteryLevels": {
+    "introduced": "Introduceret",
+    "developing": "Under udvikling",
+    "progressing": "I fremgang",
+    "proficient": "Dygtig",
+    "mastered": "Mestret"
+  },
+  "competencyCard": {
+    "masteryLabel": "Beherskelse",
+    "attemptsLabel": "Forsøg",
+    "successRateLabel": "Succesrate",
+    "lastPracticedLabel": "Sidst øvet",
+    "notPracticedYet": "Ikke øvet endnu",
+    "viewSkills": "Vis færdigheder",
+    "hideSkills": "Skjul færdigheder"
+  },
+  "skillsBreakdown": {
+    "title": "Færdigheder i {{competencyName}}",
+    "masteryScore": "{{score}}% mestret",
+    "nextReview": "Næste gennemgang: {{date}}",
+    "dueForReview": "Klar til gennemgang",
+    "noSkillsYet": "Ingen færdigheder øvet endnu i dette område"
+  },
+  "streak": {
+    "current": "{{count}}-dages streg",
+    "currentPlural": "{{count}}-dages streg",
+    "milestone": "Fantastisk! {{count}} dage i træk!",
+    "milestonePlural": "Fantastisk! {{count}} dage i træk!",
+    "lastPracticed": "Sidst øvet {{date}}",
+    "practiceToday": "Øv i dag for at starte din streg",
+    "keepItGoing": "Øv i dag for at holde din streg i live",
+    "noStreak": "Begynd at øve for at opbygge din streg"
+  },
+  "reviews": {
+    "title": "Færdigheder Klar til Gennemgang",
+    "overdue": "Forsinket",
+    "dueToday": "Forfalden I Dag",
+    "dueThisWeek": "Forfalden Denne Uge",
+    "upcoming": "Kommende",
+    "noReviews": "Ingen gennemgange planlagt. Godt arbejde!",
+    "practiceNow": "Øv Nu",
+    "dueOn": "Forfalden {{date}}",
+    "overdueBy": "Forsinket med {{days}} dag",
+    "overdueByPlural": "Forsinket med {{days}} dage",
+    "showMore": "Vis mere",
+    "showLess": "Vis mindre"
+  },
+  "stats": {
+    "totalAttempts": "Totale forsøg",
+    "correctAnswers": "Korrekte svar",
+    "averageTime": "Gennemsnitstid",
+    "sessionsCompleted": "Sessioner gennemført"
+  },
+  "empty": {
+    "noProgress": "Ingen fremgangsdata endnu",
+    "startPracticing": "Begynd at øve for at se din fremgang her",
+    "noCompetencies": "Ingen kompetenceområder er øvet endnu",
+    "noSkills": "Ingen færdigheder øvet i dette område endnu"
+  },
+  "loading": {
+    "progress": "Indlæser din fremgang...",
+    "competencies": "Indlæser kompetencedata...",
+    "skills": "Indlæser færdigheder...",
+    "reviews": "Indlæser gennemgangsplan..."
+  },
+  "errors": {
+    "loadFailed": "Kunne ikke indlæse fremgangsdata",
+    "tryAgain": "Prøv igen",
+    "contactSupport": "Hvis dette problem fortsætter, kontakt venligst support"
+  }
+}
+

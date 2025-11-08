@@ -1,0 +1,84 @@
+{
+  "dashboard": {
+    "title": "Your Progress",
+    "subtitle": "Track your mastery across all competency areas"
+  },
+  "sections": {
+    "overview": "Overview",
+    "competencies": "Competency Areas",
+    "skills": "Skills Breakdown",
+    "streak": "Practice Streak",
+    "reviews": "Upcoming Reviews"
+  },
+  "masteryLevels": {
+    "introduced": "Introduced",
+    "developing": "Developing",
+    "progressing": "Progressing",
+    "proficient": "Proficient",
+    "mastered": "Mastered"
+  },
+  "competencyCard": {
+    "masteryLabel": "Mastery",
+    "attemptsLabel": "Attempts",
+    "successRateLabel": "Success Rate",
+    "lastPracticedLabel": "Last practiced",
+    "notPracticedYet": "Not practiced yet",
+    "viewSkills": "View skills",
+    "hideSkills": "Hide skills"
+  },
+  "skillsBreakdown": {
+    "title": "Skills in {{competencyName}}",
+    "masteryScore": "{{score}}% mastered",
+    "nextReview": "Next review: {{date}}",
+    "dueForReview": "Due for review",
+    "noSkillsYet": "No skills practiced yet in this area"
+  },
+  "streak": {
+    "current": "{{count}}-day streak",
+    "currentPlural": "{{count}}-day streak",
+    "milestone": "Amazing! {{count}} days in a row!",
+    "milestonePlural": "Amazing! {{count}} days in a row!",
+    "lastPracticed": "Last practiced {{date}}",
+    "practiceToday": "Practice today to start your streak",
+    "keepItGoing": "Practice today to keep your streak alive",
+    "noStreak": "Start practicing to build your streak"
+  },
+  "reviews": {
+    "title": "Skills Due for Review",
+    "overdue": "Overdue",
+    "dueToday": "Due Today",
+    "dueThisWeek": "Due This Week",
+    "upcoming": "Upcoming",
+    "noReviews": "No reviews scheduled. Great work!",
+    "practiceNow": "Practice Now",
+    "dueOn": "Due {{date}}",
+    "overdueBy": "Overdue by {{days}} day",
+    "overdueByPlural": "Overdue by {{days}} days",
+    "showMore": "Show more",
+    "showLess": "Show less"
+  },
+  "stats": {
+    "totalAttempts": "Total attempts",
+    "correctAnswers": "Correct answers",
+    "averageTime": "Average time",
+    "sessionsCompleted": "Sessions completed"
+  },
+  "empty": {
+    "noProgress": "No progress data yet",
+    "startPracticing": "Start practicing to see your progress here",
+    "noCompetencies": "No competency areas have been practiced yet",
+    "noSkills": "No skills practiced in this area yet"
+  },
+  "loading": {
+    "progress": "Loading your progress...",
+    "competencies": "Loading competency data...",
+    "skills": "Loading skills...",
+    "reviews": "Loading review schedule..."
+  },
+  "errors": {
+    "loadFailed": "Failed to load progress data",
+    "tryAgain": "Try again",
+    "contactSupport": "If this problem persists, please contact support"
+  }
+}
+
