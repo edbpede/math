@@ -70,7 +70,7 @@ const description = t('settings.page.description')
 
           <UUIDManagement
             uuid={user.id}
-            client:load
+            client:visible
           />
         </section>
 
@@ -90,7 +90,7 @@ const description = t('settings.page.description')
             userId={user.id}
             initialGradeRange={user.gradeRange}
             initialPreferences={user.preferences}
-            client:load
+            client:visible
           />
         </section>
       </div>

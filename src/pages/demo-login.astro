@@ -38,7 +38,7 @@ const title = 'UUID Login Demo';
           <p class="text-gray-600 mb-6">
             Standard login form with default redirect to /dashboard
           </p>
-          <UUIDLogin client:load />
+          <UUIDLogin client:visible />
         </section>
 
         {/* Test 2: Custom Redirect URL */}
@@ -49,7 +49,7 @@ const title = 'UUID Login Demo';
           <p class="text-gray-600 mb-6">
             Login form with custom redirect to /practice
           </p>
-          <UUIDLogin redirectTo="/practice" client:load />
+          <UUIDLogin redirectTo="/practice" client:visible />
         </section>
 
         {/* Test 3: With Custom Styling */}
@@ -60,7 +60,7 @@ const title = 'UUID Login Demo';
           <p class="text-gray-600 mb-6">
             Login form with custom CSS class for additional styling
           </p>
-          <UUIDLogin class="p-6 bg-blue-50 rounded-lg" client:load />
+          <UUIDLogin class="p-6 bg-blue-50 rounded-lg" client:visible />
         </section>
 
         {/* Testing Instructions */}
