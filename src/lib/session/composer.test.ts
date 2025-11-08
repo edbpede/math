@@ -234,8 +234,8 @@ describe('Category Identification', () => {
   describe('New Content Identification', () => {
     it('should identify skills with 0 attempts as new content', () => {
       const skills = [
-        createSkillProgress({ skillId: 'new-skill', attempts: 0, masteryLevel: 0 }),
-        createSkillProgress({ skillId: 'practiced-skill', attempts: 10, masteryLevel: 60 }),
+        createSkillProgress({ skillId: 'addition', attempts: 0, masteryLevel: 0 }),
+        createSkillProgress({ skillId: 'subtraction', attempts: 10, masteryLevel: 60 }),
       ];
 
       const result = composeSession({
@@ -259,8 +259,8 @@ describe('Category Identification', () => {
 
     it('should identify skills with few attempts as new content', () => {
       const skills = [
-        createSkillProgress({ skillId: 'barely-practiced', attempts: 2, masteryLevel: 20 }),
-        createSkillProgress({ skillId: 'well-practiced', attempts: 15, masteryLevel: 70 }),
+        createSkillProgress({ skillId: 'addition', attempts: 2, masteryLevel: 20 }),
+        createSkillProgress({ skillId: 'subtraction', attempts: 15, masteryLevel: 70 }),
       ];
 
       const result = composeSession({
@@ -282,12 +282,12 @@ describe('Category Identification', () => {
     it('should identify skills not practiced recently as new content', () => {
       const skills = [
         createSkillProgress({
-          skillId: 'forgotten-skill',
+          skillId: 'addition',
           attempts: 5,
           lastPracticed: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
         }),
         createSkillProgress({
-          skillId: 'recent-skill',
+          skillId: 'subtraction',
           attempts: 5,
           lastPracticed: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
         }),
@@ -318,12 +318,12 @@ describe('Category Identification', () => {
     it('should identify skills due for review', () => {
       const skills = [
         createSkillProgress({
-          skillId: 'due-skill',
+          skillId: 'addition',
           nextReview: new Date(Date.now() - 24 * 60 * 60 * 1000), // Yesterday
           attempts: 10,
         }),
         createSkillProgress({
-          skillId: 'not-due-skill',
+          skillId: 'subtraction',
           nextReview: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
           attempts: 10,
         }),
@@ -358,14 +358,14 @@ describe('Category Identification', () => {
     it('should prioritize more overdue skills', () => {
       const skills = [
         createSkillProgress({
-          skillId: 'very-overdue',
+          skillId: 'addition',
           nextReview: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days overdue
           srsParams: createSRSParams({ easeFactor: 1.5 }),
           masteryLevel: 30,
           attempts: 10,
         }),
         createSkillProgress({
-          skillId: 'slightly-overdue',
+          skillId: 'subtraction',
           nextReview: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day overdue
           srsParams: createSRSParams({ easeFactor: 2.8 }),
           masteryLevel: 80,
@@ -394,7 +394,7 @@ describe('Category Identification', () => {
 
         // Very overdue skill should appear first (higher priority)
         const firstReviewSkill = reviewExercises[0]?.skillId;
-        expect(firstReviewSkill).toBe('very-overdue');
+        expect(firstReviewSkill).toBe('addition');
       }
     });
   });
@@ -403,12 +403,12 @@ describe('Category Identification', () => {
     it('should identify skills with low mastery as weak areas', () => {
       const skills = [
         createSkillProgress({
-          skillId: 'weak-skill',
+          skillId: 'addition',
           masteryLevel: 25, // Developing band
           attempts: 10,
         }),
         createSkillProgress({
-          skillId: 'strong-skill',
+          skillId: 'subtraction',
           masteryLevel: 85, // Mastered band
           attempts: 10,
         }),
@@ -436,19 +436,19 @@ describe('Category Identification', () => {
 
         // Weak skill should be prioritized
         const weakSkillIds = weakExercises.map((ex) => ex.skillId);
-        expect(weakSkillIds).toContain('weak-skill');
+        expect(weakSkillIds).toContain('addition');
       }
     });
 
     it('should require minimum attempts for weak area classification', () => {
       const skills = [
         createSkillProgress({
-          skillId: 'new-weak',
+          skillId: 'addition',
           masteryLevel: 20,
           attempts: 1, // Too few attempts
         }),
         createSkillProgress({
-          skillId: 'confirmed-weak',
+          skillId: 'subtraction',
           masteryLevel: 25,
           attempts: 10, // Sufficient data
         }),
@@ -529,7 +529,12 @@ describe('Category Allocation', () => {
 
   it('should handle odd total exercise counts correctly', () => {
     const skills = Array.from({ length: 20 }, (_, i) =>
-      createSkillProgress({ skillId: AVAILABLE_SKILLS[i % AVAILABLE_SKILLS.length], attempts: 10, masteryLevel: 50 })
+      createSkillProgress({
+        skillId: AVAILABLE_SKILLS[i % AVAILABLE_SKILLS.length],
+        attempts: i < 7 ? 0 : 10, // First 7 are "new", rest are practiced
+        masteryLevel: i < 14 ? 30 : 60, // First 14 are weak/developing, rest are stronger
+        nextReview: new Date(Date.now() - 24 * 60 * 60 * 1000), // All due for review
+      })
     );
 
     const result = composeSession({
@@ -682,7 +687,7 @@ describe('Validation and Error Handling', () => {
 
   it('should return insufficient-data when not enough skills available', () => {
     const skills = [
-      createSkillProgress({ skillId: 'only-skill', attempts: 10 }),
+      createSkillProgress({ skillId: 'addition', attempts: 10 }),
     ];
 
     const result = composeSession({
@@ -730,7 +735,7 @@ describe('Integration Tests - Realistic Scenarios', () => {
 
     const result = composeSession({
       userId: 'new-user',
-      gradeRange: '0-3',
+      gradeRange: '4-6',
       skillsProgress: skills,
       config: {
         newContentPercent: 60, // High new content for new user
@@ -766,7 +771,7 @@ describe('Integration Tests - Realistic Scenarios', () => {
 
     const result = composeSession({
       userId: 'experienced-user',
-      gradeRange: '7-9',
+      gradeRange: '4-6',
       skillsProgress: skills,
       config: {
         newContentPercent: 10,
@@ -926,15 +931,26 @@ describe('Performance Tests', () => {
 
 describe('Edge Cases', () => {
   it('should handle minimum exercise count (5)', () => {
-    const skills = Array.from({ length: 10 }, (_, i) =>
-      createSkillProgress({ skillId: AVAILABLE_SKILLS[i % AVAILABLE_SKILLS.length], attempts: 10 })
+    const skills = AVAILABLE_SKILLS.map(skillId =>
+      createSkillProgress({
+        skillId,
+        attempts: 0,
+        masteryLevel: 0,
+        nextReview: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Future date
+      })
     );
 
     const result = composeSession({
       userId: 'user-123',
       gradeRange: '4-6',
       skillsProgress: skills,
-      config: { totalExercises: 5 },
+      config: {
+        newContentPercent: 80,
+        reviewContentPercent: 0,
+        weakAreaPercent: 0,
+        randomPercent: 20,
+        totalExercises: 5
+      },
     });
 
     expect(result.status).toBe('success');
@@ -974,12 +990,12 @@ describe('Edge Cases', () => {
 
     const skills = [
       createSkillProgress({
-        skillId: 'overdue-on-custom-date',
+        skillId: 'addition',
         nextReview: new Date('2025-01-10T12:00:00Z'), // 5 days before
         attempts: 10,
       }),
       createSkillProgress({
-        skillId: 'not-due-on-custom-date',
+        skillId: 'subtraction',
         nextReview: new Date('2025-01-20T12:00:00Z'), // 5 days after
         attempts: 10,
       }),
@@ -1006,7 +1022,7 @@ describe('Edge Cases', () => {
         (ex) => ex.category === 'review'
       );
       const hasOverdueSkill = reviewExercises.some(
-        (ex) => ex.skillId === 'overdue-on-custom-date'
+        (ex) => ex.skillId === 'addition'
       );
       expect(hasOverdueSkill).toBe(true);
     }

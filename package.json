@@ -26,9 +26,11 @@
   "devDependencies": {
     "@nanostores/solid": "^1.1.1",
     "@solidjs/testing-library": "^0.8.10",
+    "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/user-event": "^14.6.1",
     "@types/qrcode": "^1.5.6",
     "@vitest/ui": "^4.0.7",
+    "happy-dom": "^20.0.10",
     "jsdom": "^27.1.0",
     "unocss": "^66.5.4",
     "vitest": "^4.0.7"

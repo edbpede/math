@@ -146,6 +146,21 @@ export class ContextSelector {
   }
 
   /**
+   * Select multiple random names with variety tracking
+   *
+   * @param count - Number of names to select (default: 1)
+   * @param gender - Optional gender filter ('male', 'female', 'neutral')
+   * @returns Array of random names from the appropriate pool
+   */
+  async selectNames(count: number = 1, gender?: 'male' | 'female' | 'neutral'): Promise<string[]> {
+    const names: string[] = [];
+    for (let i = 0; i < count; i++) {
+      names.push(await this.selectName(gender));
+    }
+    return names;
+  }
+
+  /**
    * Select a random place with variety tracking
    *
    * @param type - Optional type filter ('cities', 'locations', 'neighborhoods')
