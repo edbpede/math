@@ -1,6 +1,6 @@
 {
-  "version": "2025-11-08T15:15:05.410Z",
-  "generatedAt": "2025-11-08T15:15:05.410Z",
+  "version": "2025-11-08T18:50:08.365Z",
+  "generatedAt": "2025-11-08T18:50:08.365Z",
   "assets": [
     {
       "path": "/_astro/_commonjsHelpers.gnU0ypJ3.js",
@@ -249,8 +249,8 @@
       "critical": true
     },
     {
-      "path": "/_astro/UUIDLogin.D-0EEDhn.js",
-      "size": 8480,
+      "path": "/_astro/UUIDLogin.CEkNkAYW.js",
+      "size": 8688,
       "type": "application/javascript",
       "critical": true
     },
