@@ -1,0 +1,130 @@
+{
+  "page": {
+    "title": "Settings",
+    "description": "Manage your preferences and account settings"
+  },
+  "sections": {
+    "account": {
+      "title": "Account",
+      "description": "View and manage your account information"
+    },
+    "gradeLevel": {
+      "title": "Grade Level",
+      "description": "Select your grade level to get exercises matched to your level"
+    },
+    "display": {
+      "title": "Display Settings",
+      "description": "Customize how content is displayed"
+    },
+    "dangerZone": {
+      "title": "Danger Zone",
+      "description": "Permanent actions that cannot be undone"
+    }
+  },
+  "gradeLevel": {
+    "label": "Your grade level",
+    "current": "Current grade level: {{gradeRange}}",
+    "options": {
+      "0-3": {
+        "label": "Grades 0-3",
+        "description": "Beginner mathematics and basic number sense"
+      },
+      "4-6": {
+        "label": "Grades 4-6",
+        "description": "Developing skills and intermediate level"
+      },
+      "7-9": {
+        "label": "Grades 7-9",
+        "description": "Advanced mathematical thinking"
+      }
+    },
+    "saveButton": "Save grade level",
+    "saving": "Saving...",
+    "saved": "Grade level saved",
+    "error": "Could not save grade level"
+  },
+  "display": {
+    "theme": {
+      "label": "Theme",
+      "description": "Choose the color theme for the application",
+      "options": {
+        "light": "Light",
+        "dark": "Dark",
+        "system": "System (automatic)"
+      }
+    },
+    "fontSize": {
+      "label": "Font size",
+      "description": "Adjust the size of text in the application",
+      "options": {
+        "small": "Small",
+        "medium": "Medium",
+        "large": "Large"
+      }
+    },
+    "dyslexiaFont": {
+      "label": "Dyslexia-friendly font",
+      "description": "Use OpenDyslexic font for better readability",
+      "enabled": "Enabled",
+      "disabled": "Disabled"
+    },
+    "highContrast": {
+      "label": "High contrast",
+      "description": "Increase contrast between text and background",
+      "enabled": "Enabled",
+      "disabled": "Disabled"
+    },
+    "saveButton": "Save settings",
+    "saving": "Saving...",
+    "saved": "Settings saved",
+    "autoSave": "Auto-saving...",
+    "error": "Could not save settings"
+  },
+  "uuid": {
+    "title": "Your Practice Number",
+    "description": "Your unique practice number is used to log in and access your progress",
+    "label": "Practice number",
+    "show": "Show",
+    "hide": "Hide",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "copyError": "Could not copy",
+    "export": "Export as file",
+    "exportDescription": "Download your practice number as a text file",
+    "showQR": "Show QR code",
+    "hideQR": "Hide QR code",
+    "qrDescription": "Scan this QR code to log in on another device",
+    "warning": {
+      "title": "Important!",
+      "message": "Keep your practice number safe. If you lose it, you cannot access your progress."
+    }
+  },
+  "deleteAccount": {
+    "title": "Delete account",
+    "description": "Permanently delete your account and all associated data",
+    "button": "Delete account",
+    "confirm": {
+      "title": "Are you sure?",
+      "message": "This action cannot be undone. All your progress and data will be permanently deleted.",
+      "warning": "You will lose:",
+      "items": [
+        "All your exercise progress",
+        "All skill mastery levels",
+        "All exercise history",
+        "All saved preferences"
+      ],
+      "confirmButton": "Yes, delete my account",
+      "cancelButton": "Cancel"
+    },
+    "deleting": "Deleting account...",
+    "success": "Your account has been deleted",
+    "error": "Could not delete account"
+  },
+  "messages": {
+    "saveSuccess": "Settings saved",
+    "saveError": "Could not save settings",
+    "loadError": "Could not load settings",
+    "updateError": "Could not update settings"
+  }
+}
+

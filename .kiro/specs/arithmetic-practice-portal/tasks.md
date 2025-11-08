@@ -241,7 +241,7 @@
     - Add session completion summary
     - _Requirements: 14.5_
   
-  - [ ] 9.5 Build settings page
+  - [x] 9.5 Build settings page
     - Create settings.astro with user preferences
     - Add grade level selection
     - Implement display preferences (theme, font size, dyslexia font)

@@ -1,0 +1,218 @@
+---
+/**
+ * Settings Page
+ *
+ * User settings page for managing preferences, grade level, display options,
+ * UUID, and account. Requires authentication and provides full accessibility support.
+ *
+ * Requirements:
+ * - 9.1: WCAG 2.1 AA accessibility (keyboard navigation, ARIA)
+ * - 9.2: Display preferences (theme, font size, dyslexia font, high contrast)
+ *
+ * Task: 9.5
+ */
+
+import MainLayout from '@/components/layouts/MainLayout.astro'
+import SettingsForm from '@/components/islands/SettingsForm'
+import UUIDManagement from '@/components/islands/UUIDManagement'
+import { $t, initI18n } from '@/lib/i18n'
+
+// Check authentication - redirect if not authenticated
+const user = Astro.locals.user
+if (!user) {
+  return Astro.redirect('/demo-login')
+}
+
+// Initialize i18n with user's preferred locale
+await initI18n(user.locale)
+
+// Get translations
+const t = await $t.get()
+
+// Page metadata
+const title = t('settings.page.title')
+const description = t('settings.page.description')
+---
+
+<MainLayout
+  title={title}
+  description={description}
+  currentPath="/settings"
+>
+  <div class="min-h-screen bg-gray-50 py-8">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      {/* Page Header */}
+      <header class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">
+          {title}
+        </h1>
+        <p class="mt-2 text-gray-600">
+          {description}
+        </p>
+      </header>
+
+      {/* Main Content */}
+      <div class="space-y-8">
+        {/* Account Section with UUID Management */}
+        <section
+          aria-labelledby="account-heading"
+          class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
+        >
+          <h2
+            id="account-heading"
+            class="mb-2 text-xl font-semibold text-gray-900"
+          >
+            {t('settings.sections.account.title')}
+          </h2>
+          <p class="mb-6 text-sm text-gray-600">
+            {t('settings.sections.account.description')}
+          </p>
+
+          <UUIDManagement
+            uuid={user.id}
+            client:load
+          />
+        </section>
+
+        {/* Settings Form Section (Grade Level + Display) */}
+        <section
+          aria-labelledby="preferences-heading"
+          class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
+        >
+          <h2
+            id="preferences-heading"
+            class="mb-6 text-xl font-semibold text-gray-900"
+          >
+            {t('common.actions.edit')} {t('settings.page.title')}
+          </h2>
+
+          <SettingsForm
+            userId={user.id}
+            initialGradeRange={user.gradeRange}
+            initialPreferences={user.preferences}
+            client:load
+          />
+        </section>
+      </div>
+
+      {/* Help Text */}
+      <footer class="mt-8 rounded-lg border border-blue-200 bg-blue-50 p-4">
+        <div class="flex items-start gap-3">
+          <svg
+            class="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <div class="flex-1">
+            <p class="font-medium text-blue-900">
+              {t('common.labels.info')}
+            </p>
+            <p class="mt-1 text-sm text-blue-800">
+              {t('settings.uuid.warning.message')}
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+</MainLayout>
+
+<style>
+  /* Custom styles for settings page */
+  
+  /* Ensure smooth transitions for theme changes */
+  :global(html) {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Dark theme styles (if implemented) */
+  :global(html.dark-theme) {
+    background-color: #1a202c;
+    color: #e2e8f0;
+  }
+
+  /* Font size variations */
+  :global(html.font-small) {
+    font-size: 14px;
+  }
+
+  :global(html.font-medium) {
+    font-size: 16px;
+  }
+
+  :global(html.font-large) {
+    font-size: 18px;
+  }
+
+  /* Dyslexia-friendly font */
+  :global(html.dyslexia-font),
+  :global(html.dyslexia-font *) {
+    font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
+  }
+
+  /* High contrast mode */
+  :global(html.high-contrast) {
+    filter: contrast(1.2);
+  }
+
+  :global(html.high-contrast *) {
+    border-color: currentColor !important;
+  }
+
+  /* Ensure minimum touch target sizes on mobile */
+  @media (pointer: coarse) {
+    button,
+    a,
+    input[type="button"],
+    input[type="submit"],
+    input[type="checkbox"],
+    input[type="radio"] {
+      min-width: 44px;
+      min-height: 44px;
+    }
+  }
+
+  /* Focus visible styles for keyboard navigation */
+  :global(*:focus-visible) {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+
+  /* Smooth scroll behavior */
+  :global(html) {
+    scroll-behavior: smooth;
+  }
+
+  /* Reduce motion for users who prefer it */
+  @media (prefers-reduced-motion: reduce) {
+    :global(*),
+    :global(*::before),
+    :global(*::after) {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+
+    :global(html) {
+      transition: none !important;
+    }
+  }
+
+  /* Print styles - hide interactive elements */
+  @media print {
+    :global(.settings-form button),
+    :global(.uuid-management button),
+    :global(header),
+    :global(footer) {
+      display: none !important;
+    }
+  }
+</style>
+

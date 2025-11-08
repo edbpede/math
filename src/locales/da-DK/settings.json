@@ -1,0 +1,130 @@
+{
+  "page": {
+    "title": "Indstillinger",
+    "description": "Administrer dine præferencer og kontoindstillinger"
+  },
+  "sections": {
+    "account": {
+      "title": "Konto",
+      "description": "Se og administrer dine kontooplysninger"
+    },
+    "gradeLevel": {
+      "title": "Klassetrin",
+      "description": "Vælg dit klassetrin for at få opgaver tilpasset dit niveau"
+    },
+    "display": {
+      "title": "Visningsindstillinger",
+      "description": "Tilpas hvordan indholdet vises"
+    },
+    "dangerZone": {
+      "title": "Farezone",
+      "description": "Permanente handlinger der ikke kan fortrydes"
+    }
+  },
+  "gradeLevel": {
+    "label": "Dit klassetrin",
+    "current": "Nuværende klassetrin: {{gradeRange}}",
+    "options": {
+      "0-3": {
+        "label": "0.-3. klasse",
+        "description": "Begyndermatematik og grundlæggende talforståelse"
+      },
+      "4-6": {
+        "label": "4.-6. klasse",
+        "description": "Udviklende færdigheder og mellemtrin"
+      },
+      "7-9": {
+        "label": "7.-9. klasse",
+        "description": "Avanceret matematisk tænkning og udskoling"
+      }
+    },
+    "saveButton": "Gem klassetrin",
+    "saving": "Gemmer...",
+    "saved": "Klassetrin gemt",
+    "error": "Kunne ikke gemme klassetrin"
+  },
+  "display": {
+    "theme": {
+      "label": "Tema",
+      "description": "Vælg farvetema for applikationen",
+      "options": {
+        "light": "Lyst",
+        "dark": "Mørkt",
+        "system": "System (automatisk)"
+      }
+    },
+    "fontSize": {
+      "label": "Skriftstørrelse",
+      "description": "Juster størrelsen på tekst i applikationen",
+      "options": {
+        "small": "Lille",
+        "medium": "Mellem",
+        "large": "Stor"
+      }
+    },
+    "dyslexiaFont": {
+      "label": "Dysleksivenlig skrifttype",
+      "description": "Brug OpenDyslexic skrifttype for bedre læsbarhed",
+      "enabled": "Aktiveret",
+      "disabled": "Deaktiveret"
+    },
+    "highContrast": {
+      "label": "Høj kontrast",
+      "description": "Øg kontrasten mellem tekst og baggrund",
+      "enabled": "Aktiveret",
+      "disabled": "Deaktiveret"
+    },
+    "saveButton": "Gem indstillinger",
+    "saving": "Gemmer...",
+    "saved": "Indstillinger gemt",
+    "autoSave": "Gemmer automatisk...",
+    "error": "Kunne ikke gemme indstillinger"
+  },
+  "uuid": {
+    "title": "Dit Øvelsesnummer",
+    "description": "Dit unikke øvelsesnummer bruges til at logge ind og få adgang til din fremgang",
+    "label": "Øvelsesnummer",
+    "show": "Vis",
+    "hide": "Skjul",
+    "copy": "Kopier",
+    "copied": "Kopieret!",
+    "copyError": "Kunne ikke kopiere",
+    "export": "Eksporter som fil",
+    "exportDescription": "Download dit øvelsesnummer som en tekstfil",
+    "showQR": "Vis QR-kode",
+    "hideQR": "Skjul QR-kode",
+    "qrDescription": "Scan denne QR-kode for at logge ind på en anden enhed",
+    "warning": {
+      "title": "Vigtigt!",
+      "message": "Gem dit øvelsesnummer sikkert. Hvis du mister det, kan du ikke få adgang til din fremgang."
+    }
+  },
+  "deleteAccount": {
+    "title": "Slet konto",
+    "description": "Slet permanent din konto og alle tilknyttede data",
+    "button": "Slet konto",
+    "confirm": {
+      "title": "Er du sikker?",
+      "message": "Denne handling kan ikke fortrydes. Al din fremgang og data vil blive permanent slettet.",
+      "warning": "Du vil miste:",
+      "items": [
+        "Al din øvelsesfremgang",
+        "Alle færdighedsniveauer",
+        "Al øvelseshistorik",
+        "Alle gemte præferencer"
+      ],
+      "confirmButton": "Ja, slet min konto",
+      "cancelButton": "Annuller"
+    },
+    "deleting": "Sletter konto...",
+    "success": "Din konto er blevet slettet",
+    "error": "Kunne ikke slette konto"
+  },
+  "messages": {
+    "saveSuccess": "Indstillinger gemt",
+    "saveError": "Kunne ikke gemme indstillinger",
+    "loadError": "Kunne ikke indlæse indstillinger",
+    "updateError": "Kunne ikke opdatere indstillinger"
+  }
+}
+
