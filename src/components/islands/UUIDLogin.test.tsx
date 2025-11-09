@@ -4,8 +4,6 @@
  * Tests for the UUIDLogin component to ensure correct login flow,
  * real-time formatting, validation, "remember device" functionality,
  * rate limiting, and accessibility.
- *
- * @vitest-environment happy-dom
  */
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';

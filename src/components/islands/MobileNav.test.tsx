@@ -2,9 +2,7 @@
  * MobileNav Component Tests
  * 
  * Tests the mobile navigation drawer component.
- * 
- * @vitest-environment happy-dom
- * 
+ *
  * TODO: Fix tests to properly mock auth dependencies and client-only APIs
  * These tests are temporarily skipped pending proper test environment setup.
  */

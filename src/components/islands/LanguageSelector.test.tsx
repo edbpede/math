@@ -8,8 +8,6 @@
  * - Supabase persistence for authenticated users
  * - Error handling
  * - Keyboard navigation and accessibility
- *
- * @vitest-environment happy-dom
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';

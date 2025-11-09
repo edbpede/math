@@ -17,12 +17,10 @@
  *
  * To enable these tests, configure SolidJS testing with:
  * - @solidjs/testing-library with client-side rendering
- * - happy-dom environment without clipboard API conflicts
+ * - jsdom environment (officially recommended by SolidJS)
  * - solid-js/web configured for browser environment
  *
  * For now, these tests are skipped pending proper SolidJS test environment setup.
- *
- * @vitest-environment happy-dom
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';

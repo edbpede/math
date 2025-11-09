@@ -2,9 +2,7 @@
  * SyncStatus Component Tests
  * 
  * Tests the sync status indicator component for offline-capable PWA.
- * 
- * @vitest-environment happy-dom
- * 
+ *
  * TODO: Fix tests to work with client-only APIs (onMount, etc.)
  * These tests are temporarily skipped pending proper test environment setup.
  */
