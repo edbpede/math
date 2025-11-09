@@ -28,12 +28,15 @@
 
 ## Testing
 
-- **Vitest**: Unit and component testing
+- **Vitest**: Unit and component testing (required - Bun's native test runner is incompatible)
 - **@solidjs/testing-library**: SolidJS component testing
 - **@testing-library/jest-dom**: DOM matchers
 - **fake-indexeddb**: IndexedDB mocking
 - **happy-dom**: DOM environment for component tests
 - **jsdom**: Node environment for logic tests
+
+> **⚠️ IMPORTANT:** Always use `bun run test`, NOT `bun test`
+> Bun's native test runner does not support browser environments (no DOM).
 
 ## Build & Development
 
@@ -49,7 +52,7 @@ bun run build           # Build production site to ./dist/
                         # Includes: PWA icon generation + cache manifest
 
 # Testing
-bun run test            # Run tests in watch mode
+bun run test            # Run tests in watch mode (use this, not `bun test`!)
 bun run test:run        # Run tests once (CI mode)
 bun run test:ui         # Open Vitest UI
 

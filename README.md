@@ -35,8 +35,13 @@ All commands are run from the root of the project, from a terminal:
 | `bun run dev`             | Starts local dev server at `localhost:4321`      |
 | `bun run build`           | Build your production site to `./dist/`          |
 | `bun run preview`         | Preview your build locally, before deploying     |
+| `bun run test`            | Run tests in watch mode (use this, not `bun test`!) |
+| `bun run test:run`        | Run tests once (CI mode)                         |
+| `bun run test:ui`         | Run tests with Vitest UI                         |
 | `bun run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `bun run astro -- --help` | Get help using the Astro CLI                     |
+
+> **⚠️ Important:** Use `bun run test`, NOT `bun test`. Bun's native test runner is incompatible with our SolidJS setup. See [TEST_RUNNER_GUIDE.md](TEST_RUNNER_GUIDE.md) for details.
 
 ## 👀 Want to learn more?
 

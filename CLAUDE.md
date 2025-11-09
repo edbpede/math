@@ -619,10 +619,17 @@ Database: arithmetic-practice-offline
 
 **Running Tests:**
 ```bash
-bun test              # Watch mode
-bun test:ui           # Vitest UI
-bun test:run          # CI mode (single run)
+bun run test          # Watch mode (use this, not `bun test`!)
+bun run test:ui       # Vitest UI
+bun run test:run      # CI mode (single run)
 ```
+
+> **⚠️ IMPORTANT:** Always use `bun run test`, NOT `bun test`
+>
+> Bun's native test runner is incompatible with this setup because:
+> - It doesn't load browser environments (no `document`, `window`, etc.)
+> - It ignores the Vitest configuration
+> - SolidJS Testing Library requires a DOM environment
 
 **Testing Patterns:**
 
@@ -1047,10 +1054,14 @@ RATE_LIMIT_WINDOW_MINUTES=15
 ```bash
 bun run dev                          # Dev server (localhost:4321)
 bun run build                        # Production build
-bun test                             # Run tests (watch mode)
+bun run test                         # Run tests (watch mode) - use this, not `bun test`!
+bun run test:run                     # Run tests once (CI mode)
+bun run test:ui                      # Vitest UI for debugging tests
 bun run validate-translations        # Check i18n completeness
 bun run sw:clear                     # Uninstall service worker
 ```
+
+> **⚠️ Test Runner Warning:** Never use `bun test` - it will fail with "document is not defined". Always use `bun run test` to run tests via Vitest.
 
 ---
 
@@ -1081,8 +1092,14 @@ bun run sw:clear                     # Uninstall service worker
    - Safelist dynamic classes in `uno.config.ts`
    - No runtime generation (build-time only)
 
+6. **Test Runner:**
+   - **ALWAYS use `bun run test`, NEVER `bun test`**
+   - Bun's native test runner is incompatible (no DOM environment)
+   - Will fail with "document is not defined" error
+   - See [TEST_RUNNER_GUIDE.md](TEST_RUNNER_GUIDE.md) for details
+
 ---
 
-**Last Updated:** 2025-11-08
+**Last Updated:** 2025-11-09
 **Astro Version:** 5.15.3
 **SolidJS Version:** 1.9.10
