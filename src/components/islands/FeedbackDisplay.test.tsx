@@ -274,7 +274,8 @@ describe('FeedbackDisplay', () => {
         />
       ));
 
-      const button = screen.getByText('View Solution');
+      // Find the button by its text content (the text is in a span inside the button)
+      const button = screen.getByRole('button', { name: /View Solution/i });
       expect(button).toBeTruthy();
       expect(button.tagName).toBe('BUTTON');
     });
@@ -314,7 +315,7 @@ describe('FeedbackDisplay', () => {
         />
       ));
 
-      const button = screen.getByText('View Solution');
+      const button = screen.getByRole('button', { name: /View Solution/i });
       expect(button.getAttribute('aria-expanded')).toBe('false');
 
       fireEvent.click(button);
@@ -350,8 +351,8 @@ describe('FeedbackDisplay', () => {
         />
       ));
 
-      // Check for visual aid container
-      const visualAidSection = screen.getByText('Visual Aid').closest('.visual-aid-section');
+      // Check for visual aid container (note: lowercase 'a' in translation)
+      const visualAidSection = screen.getByText('Visual aid').closest('.visual-aid-section');
       expect(visualAidSection).toBeTruthy();
     });
 
@@ -365,7 +366,7 @@ describe('FeedbackDisplay', () => {
         />
       ));
 
-      expect(screen.queryByText('Visual Aid')).toBeNull();
+      expect(screen.queryByText('Visual aid')).toBeNull();
     });
 
     it('should render visual aid for both correct and incorrect answers', () => {
@@ -379,7 +380,7 @@ describe('FeedbackDisplay', () => {
         />
       ));
 
-      expect(screen.getByText('Visual Aid')).toBeTruthy();
+      expect(screen.getByText('Visual aid')).toBeTruthy();
       unmount();
 
       render(() => (
@@ -392,7 +393,7 @@ describe('FeedbackDisplay', () => {
         />
       ));
 
-      expect(screen.getByText('Visual Aid')).toBeTruthy();
+      expect(screen.getByText('Visual aid')).toBeTruthy();
     });
   });
 
@@ -487,7 +488,7 @@ describe('FeedbackDisplay', () => {
         />
       ));
 
-      const button = screen.getByText('View Solution');
+      const button = screen.getByRole('button', { name: /View Solution/i });
       expect(button.getAttribute('aria-controls')).toBe('worked-solution-content');
     });
   });
@@ -511,8 +512,8 @@ describe('FeedbackDisplay', () => {
       expect(screen.getByRole('alert')).toBeTruthy();
       expect(screen.getByText('Not quite')).toBeTruthy();
       expect(screen.getByText(/The correct answer is: 42/i)).toBeTruthy();
-      expect(screen.getByText('Visual Aid')).toBeTruthy();
-      expect(screen.getByText('View Solution')).toBeTruthy();
+      expect(screen.getByText('Visual aid')).toBeTruthy();
+      expect(screen.getByRole('button', { name: /View Solution/i })).toBeTruthy();
       expect(screen.getByText('Try again')).toBeTruthy();
     });
 

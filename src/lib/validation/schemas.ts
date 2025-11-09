@@ -7,7 +7,7 @@
  * @see docs/SECURITY.md for validation patterns and security considerations
  */
 
-import { z } from 'zod'
+import * as z from 'zod'
 
 // ============================================================================
 // UUID VALIDATION

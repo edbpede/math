@@ -164,10 +164,12 @@ describe('withSecurityHeaders', () => {
   })
 
   test('should work with different development modes', async () => {
-    const response = new Response('test')
+    // Create separate responses since Response bodies can only be read once
+    const prodResponseOriginal = new Response('test')
+    const devResponseOriginal = new Response('test')
 
-    const prodResponse = withSecurityHeaders(response, false)
-    const devResponse = withSecurityHeaders(response, true)
+    const prodResponse = withSecurityHeaders(prodResponseOriginal, false)
+    const devResponse = withSecurityHeaders(devResponseOriginal, true)
 
     // Production should have HSTS
     expect(prodResponse.headers.get(SECURITY_HEADERS.HSTS)).toBeDefined()

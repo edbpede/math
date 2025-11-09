@@ -306,8 +306,11 @@ describe('ProgressDashboard', () => {
       ));
 
       await waitFor(() => {
-        const progressBars = screen.getAllByRole('progressbar', { hidden: true });
-        expect(progressBars.length).toBeGreaterThan(0);
+        // Check that mastery levels are displayed (the component shows percentages)
+        expect(screen.getByText('75%')).toBeInTheDocument(); // tal-og-algebra mastery
+        expect(screen.getByText('45%')).toBeInTheDocument(); // geometri-og-maling mastery
+        const proficientElements = screen.getAllByText('progress.masteryLevels.proficient');
+        expect(proficientElements.length).toBeGreaterThan(0);
       });
     });
 
@@ -368,7 +371,7 @@ describe('ProgressDashboard', () => {
 
     it('should show next review date for skills', async () => {
       const user = userEvent.setup();
-      
+
       render(() => (
         <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
       ));
@@ -381,7 +384,8 @@ describe('ProgressDashboard', () => {
       await user.click(viewButton!);
 
       await waitFor(() => {
-        expect(screen.getByText(/progress.skillsBreakdown.nextReview/i)).toBeInTheDocument();
+        const nextReviewElements = screen.getAllByText(/progress.skillsBreakdown.nextReview/i);
+        expect(nextReviewElements.length).toBeGreaterThan(0);
       });
     });
 
@@ -431,7 +435,8 @@ describe('ProgressDashboard', () => {
       ));
 
       await waitFor(() => {
-        expect(screen.getByText(/progress.reviews.overdue/i)).toBeInTheDocument();
+        const overdueElements = screen.getAllByText(/progress.reviews.overdue/i);
+        expect(overdueElements.length).toBeGreaterThan(0);
         expect(screen.getByText('multiplication-basics')).toBeInTheDocument();
       });
     });
