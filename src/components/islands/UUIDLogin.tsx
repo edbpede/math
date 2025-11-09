@@ -282,6 +282,11 @@ export default function UUIDLogin(props: UUIDLoginProps) {
         // Record failed attempt for rate limiting
         recordFailedAttempt();
 
+        // Check if rate limit was just triggered (don't overwrite rateLimited state)
+        if (state().status === 'rateLimited') {
+          return;
+        }
+
         // Map error codes to user-friendly messages
         let errorMessage = data.error;
         if (data.code === 'INVALID_UUID_FORMAT') {
@@ -446,76 +451,72 @@ export default function UUIDLogin(props: UUIDLoginProps) {
 
           {/* Error Message Display */}
           <Show when={state().status === 'error'}>
-            {(errorState) => (
-              <div
-                class="error-banner mb-4 p-4 bg-red-100 border-2 border-red-400 rounded-lg"
-                role="alert"
-                aria-live="assertive"
-              >
-                <div class="flex items-start gap-3">
-                  <svg
-                    class="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <div class="flex-1">
-                    <div class="text-sm font-medium text-red-900">
-                      {errorState().message}
-                    </div>
-                    {/* Show attempts remaining if not at limit */}
-                    <Show when={getAttemptsRemaining() > 0 && getAttemptsRemaining() < MAX_ATTEMPTS}>
-                      <div class="mt-1 text-xs text-red-800">
-                        {t()('auth.login.attemptsRemaining', { count: getAttemptsRemaining() })}
-                      </div>
-                    </Show>
+            <div
+              class="error-banner mb-4 p-4 bg-red-100 border-2 border-red-400 rounded-lg"
+              role="alert"
+              aria-live="assertive"
+            >
+              <div class="flex items-start gap-3">
+                <svg
+                  class="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <div class="flex-1">
+                  <div class="text-sm font-medium text-red-900">
+                    {state().status === 'error' && state().message}
                   </div>
+                  {/* Show attempts remaining if not at limit */}
+                  <Show when={getAttemptsRemaining() > 0 && getAttemptsRemaining() < MAX_ATTEMPTS}>
+                    <div class="mt-1 text-xs text-red-800">
+                      {t()('auth.login.attemptsRemaining', { count: getAttemptsRemaining() })}
+                    </div>
+                  </Show>
                 </div>
               </div>
-            )}
+            </div>
           </Show>
 
           {/* Rate Limit Message */}
           <Show when={state().status === 'rateLimited'}>
-            {(rateLimitState) => (
-              <div
-                class="rate-limit-banner mb-4 p-4 bg-orange-100 border-2 border-orange-400 rounded-lg"
-                role="alert"
-                aria-live="assertive"
-              >
-                <div class="flex items-start gap-3">
-                  <svg
-                    class="w-6 h-6 text-orange-600 flex-shrink-0 mt-0.5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <div class="flex-1">
-                    <div class="text-sm font-medium text-orange-900">
-                      {t()('auth.login.rateLimitExceeded', {
-                        seconds: rateLimitState().remainingSeconds,
-                      })}
-                    </div>
+            <div
+              class="rate-limit-banner mb-4 p-4 bg-orange-100 border-2 border-orange-400 rounded-lg"
+              role="alert"
+              aria-live="assertive"
+            >
+              <div class="flex items-start gap-3">
+                <svg
+                  class="w-6 h-6 text-orange-600 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <div class="flex-1">
+                  <div class="text-sm font-medium text-orange-900">
+                    {t()('auth.login.rateLimitExceeded', {
+                      seconds: state().status === 'rateLimited' && state().remainingSeconds,
+                    })}
                   </div>
                 </div>
               </div>
-            )}
+            </div>
           </Show>
 
           {/* Submit Button */}
