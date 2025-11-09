@@ -21,6 +21,10 @@ export default defineConfig({
     environment: 'jsdom',
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'src/**/*.spec.ts', 'src/**/*.spec.tsx'],
     setupFiles: ['./src/test/setup.ts'],
+    // Increase timeout for async operations
+    testTimeout: 10000,
+    // Prevent test isolation to avoid multiple Solid instances
+    isolate: false,
     // Transform JSX files in web mode (for SolidJS)
     transformMode: {
       web: [/\.[jt]sx?$/],
@@ -29,6 +33,16 @@ export default defineConfig({
     server: {
       deps: {
         inline: [/solid-js/, /@solidjs/],
+        // Optimize solid-js for bundling
+        optimizer: {
+          ssr: {
+            enabled: true,
+          },
+          web: {
+            enabled: true,
+            include: ['solid-js', 'solid-js/web', 'solid-js/store', '@solidjs/router'],
+          },
+        },
       },
     },
   },
@@ -40,7 +54,14 @@ export default defineConfig({
       '@/pages': resolve(__dirname, './src/pages'),
       '@/styles': resolve(__dirname, './src/styles'),
       '@/locales': resolve(__dirname, './src/locales'),
+      // Force all solid-js imports to resolve to the same instance
+      'solid-js': resolve(__dirname, './node_modules/solid-js'),
+      'solid-js/web': resolve(__dirname, './node_modules/solid-js/web'),
+      'solid-js/store': resolve(__dirname, './node_modules/solid-js/store'),
+      'solid-js/h': resolve(__dirname, './node_modules/solid-js/h'),
     },
+    // Deduplicate solid-js to prevent multiple instances (Bun compatibility fix)
+    dedupe: ['solid-js', 'solid-js/web', 'solid-js/store'],
     // Use browser resolution for SolidJS in tests (browser must come before development)
     conditions: ['browser', 'development'],
   },

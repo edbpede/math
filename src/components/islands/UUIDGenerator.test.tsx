@@ -10,6 +10,71 @@ import { render, screen, fireEvent, waitFor } from '@solidjs/testing-library';
 import UUIDGenerator from './UUIDGenerator';
 import { $t, changeLocale } from '@/lib/i18n';
 
+// Mock i18n module with complete mock (avoid loading translation files)
+vi.mock('@/lib/i18n', () => {
+  const createTranslationFunction = () => (key: string, params?: Record<string, string>) => {
+    const translations: Record<string, string> = {
+      'auth.uuid.title': 'Your practice number',
+      'auth.uuid.generate': 'Generate practice number',
+      'auth.uuid.yourNumber': 'Your practice number',
+      'auth.uuid.important': 'Important: Save this number!',
+      'auth.uuid.description': 'You will need this number to log in.',
+      'auth.uuid.save.title': 'Save your practice number',
+      'auth.uuid.save.instructions': 'Choose one or more ways to save your practice number:',
+      'auth.uuid.save.copy': 'Copy to clipboard',
+      'auth.uuid.save.download': 'Download as file',
+      'auth.uuid.save.qrCode': 'Show QR code',
+      'auth.uuid.save.writeDown': 'Write it down',
+      'auth.uuid.copied': 'Copied to clipboard',
+      'auth.uuid.error': 'Failed to generate UUID',
+      'common.status.loading': 'Loading...',
+      'common.actions.retry': 'Try again',
+      'common.actions.close': 'Close QR code',
+    };
+    return translations[key] || key;
+  };
+
+  const tFunc = createTranslationFunction();
+
+  return {
+    $t: {
+      get: () => tFunc,
+      subscribe: (fn: Function) => {
+        fn(tFunc);
+        return () => {};
+      },
+    },
+    changeLocale: vi.fn(async (locale: string) => Promise.resolve()),
+  };
+});
+
+// Mock useStore from Nanostores
+vi.mock('@nanostores/solid', () => ({
+  useStore: (store: any) => {
+    return () => (key: string, params?: Record<string, string>) => {
+      const translations: Record<string, string> = {
+        'auth.uuid.title': 'Your practice number',
+        'auth.uuid.generate': 'Generate practice number',
+        'auth.uuid.yourNumber': 'Your practice number',
+        'auth.uuid.important': 'Important: Save this number!',
+        'auth.uuid.description': 'You will need this number to log in.',
+        'auth.uuid.save.title': 'Save your practice number',
+        'auth.uuid.save.instructions': 'Choose one or more ways to save your practice number:',
+        'auth.uuid.save.copy': 'Copy to clipboard',
+        'auth.uuid.save.download': 'Download as file',
+        'auth.uuid.save.qrCode': 'Show QR code',
+        'auth.uuid.save.writeDown': 'Write it down',
+        'auth.uuid.copied': 'Copied to clipboard',
+        'auth.uuid.error': 'Failed to generate UUID',
+        'common.status.loading': 'Loading...',
+        'common.actions.retry': 'Try again',
+        'common.actions.close': 'Close QR code',
+      };
+      return translations[key] || key;
+    };
+  },
+}));
+
 // Mock QRCode library
 vi.mock('qrcode', () => ({
   default: {
@@ -23,8 +88,8 @@ describe('UUIDGenerator', () => {
   // The component is fully implemented and TypeScript-verified
 
   beforeEach(async () => {
-    // Ensure English locale for consistent tests
-    await changeLocale('en-US');
+    // Clear mocks
+    vi.clearAllMocks();
 
     // Mock fetch API
     global.fetch = vi.fn();
@@ -309,15 +374,11 @@ describe('UUIDGenerator', () => {
       global.URL.createObjectURL = vi.fn(() => 'blob:mock-url');
       global.URL.revokeObjectURL = vi.fn();
 
-      // Mock document.createElement for download link
-      const mockLink = {
-        href: '',
-        download: '',
-        click: vi.fn(),
-      };
-      vi.spyOn(document, 'createElement').mockReturnValue(mockLink as any);
-      vi.spyOn(document.body, 'appendChild').mockImplementation(() => mockLink as any);
-      vi.spyOn(document.body, 'removeChild').mockImplementation(() => mockLink as any);
+      // Spy on document.createElement to verify it's called, but let jsdom handle the actual creation
+      vi.spyOn(document, 'createElement');
+
+      // Mock HTMLAnchorElement.click to prevent actual download in tests
+      HTMLAnchorElement.prototype.click = vi.fn();
     });
 
     it('should download UUID as text file on button click', async () => {

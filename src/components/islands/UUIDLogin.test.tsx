@@ -11,12 +11,93 @@ import { render, screen, fireEvent, waitFor } from '@solidjs/testing-library';
 import UUIDLogin from './UUIDLogin';
 import { $t, changeLocale, initI18n } from '@/lib/i18n';
 
+// Mock i18n module with complete mock (avoid loading translation files)
+vi.mock('@/lib/i18n', () => {
+  const createTranslationFunction = () => (key: string, params?: Record<string, any>) => {
+    const templates: Record<string, string> = {
+      'auth.login.title': 'Log in with practice number',
+      'auth.login.subtitle': 'Enter your practice number to continue',
+      'auth.login.placeholder': 'xxxx-xxxx-xxxx-xxxx',
+      'auth.login.invalidFormat': 'Invalid format. Use format XXXX-XXXX-XXXX-XXXX',
+      'auth.login.notFound': 'This practice number does not exist. Please check if you entered it correctly.',
+      'auth.login.rememberDevice': 'Remember this device',
+      'auth.login.attemptsRemaining': '{{count}} attempts remaining',
+      'auth.login.rateLimitExceeded': 'Too many attempts. Please wait {{seconds}} seconds.',
+      'auth.login.submit': 'Log in',
+      'auth.login.newUser': 'New user? {{link}}',
+      'auth.login.newUserLink': 'Create practice number',
+      'auth.uuid.title': 'Your practice number',
+      'common.errors.unexpected': 'An unexpected error occurred',
+      'common.status.loading': 'Loading...',
+    };
+
+    let text = templates[key] || key;
+
+    // Interpolate parameters
+    if (params) {
+      Object.keys(params).forEach(param => {
+        text = text.replace(new RegExp(`\\{\\{${param}\\}\\}`, 'g'), String(params[param]));
+      });
+    }
+
+    return text;
+  };
+
+  const tFunc = createTranslationFunction();
+
+  return {
+    $t: {
+      get: () => tFunc,
+      subscribe: (fn: Function) => {
+        fn(tFunc);
+        return () => {};
+      },
+    },
+    initI18n: vi.fn(async () => Promise.resolve()),
+    changeLocale: vi.fn(async (locale: string) => Promise.resolve()),
+  };
+});
+
+// Mock useStore from Nanostores
+vi.mock('@nanostores/solid', () => ({
+  useStore: (store: any) => {
+    return () => (key: string, params?: Record<string, any>) => {
+      const templates: Record<string, string> = {
+        'auth.login.title': 'Log in with practice number',
+        'auth.login.subtitle': 'Enter your practice number to continue',
+        'auth.login.placeholder': 'xxxx-xxxx-xxxx-xxxx',
+        'auth.login.invalidFormat': 'Invalid format. Use format XXXX-XXXX-XXXX-XXXX',
+        'auth.login.notFound': 'This practice number does not exist. Please check if you entered it correctly.',
+        'auth.login.rememberDevice': 'Remember this device',
+        'auth.login.attemptsRemaining': '{{count}} attempts remaining',
+        'auth.login.rateLimitExceeded': 'Too many attempts. Please wait {{seconds}} seconds.',
+        'auth.login.submit': 'Log in',
+        'auth.login.newUser': 'New user? {{link}}',
+        'auth.login.newUserLink': 'Create practice number',
+        'auth.uuid.title': 'Your practice number',
+        'common.errors.unexpected': 'An unexpected error occurred',
+        'common.status.loading': 'Loading...',
+      };
+
+      let text = templates[key] || key;
+
+      // Interpolate parameters
+      if (params) {
+        Object.keys(params).forEach(param => {
+          text = text.replace(new RegExp(`\\{\\{${param}\\}\\}`, 'g'), String(params[param]));
+        });
+      }
+
+      return text;
+    };
+  },
+}));
+
 describe('UUIDLogin', () => {
 
   beforeEach(async () => {
-    // Initialize i18n system and ensure English locale for consistent tests
-    await initI18n();
-    await changeLocale('en-US');
+    // Clear all mocks
+    vi.clearAllMocks();
 
     // Mock fetch API
     global.fetch = vi.fn();

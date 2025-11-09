@@ -74,6 +74,40 @@ Object.defineProperty(navigator, 'clipboard', {
   configurable: true,
 });
 
+// ClipboardEvent and DataTransfer for paste event testing
+global.DataTransfer = class DataTransfer {
+  private data: Map<string, string> = new Map();
+
+  getData(format: string): string {
+    return this.data.get(format) || '';
+  }
+
+  setData(format: string, data: string): void {
+    this.data.set(format, data);
+  }
+
+  clearData(format?: string): void {
+    if (format) {
+      this.data.delete(format);
+    } else {
+      this.data.clear();
+    }
+  }
+
+  get types(): string[] {
+    return Array.from(this.data.keys());
+  }
+} as any;
+
+global.ClipboardEvent = class ClipboardEvent extends Event {
+  clipboardData: DataTransfer | null;
+
+  constructor(type: string, eventInitDict?: ClipboardEventInit) {
+    super(type, eventInitDict);
+    this.clipboardData = eventInitDict?.clipboardData || new DataTransfer();
+  }
+} as any;
+
 // FileReader API (for QR code generation)
 global.FileReader = class FileReader {
   readAsDataURL() {}

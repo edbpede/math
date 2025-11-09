@@ -56,9 +56,9 @@ vi.mock('@/lib/i18n', () => {
       'common.actions.cancel': 'Cancel',
       'errors.exercise.notFound': 'Exercise not found',
     };
-    
+
     const value = translations[key] || key;
-    
+
     // Parse JSON arrays
     if (value.startsWith('[') && value.endsWith(']')) {
       try {
@@ -67,10 +67,10 @@ vi.mock('@/lib/i18n', () => {
         return value;
       }
     }
-    
+
     return value;
   };
-  
+
   const tFunc = createTranslationFunction();
   return {
     $t: {
@@ -80,6 +80,8 @@ vi.mock('@/lib/i18n', () => {
         return () => {};
       },
     },
+    initI18n: async () => Promise.resolve(),
+    changeLocale: async (locale: string) => Promise.resolve(),
   };
 });
 

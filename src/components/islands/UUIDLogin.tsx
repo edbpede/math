@@ -315,8 +315,7 @@ export default function UUIDLogin(props: UUIDLoginProps) {
       }
 
       // Redirect to specified page or dashboard
-      const redirectUrl = props.redirectTo || '/dashboard';
-      window.location.href = redirectUrl;
+      window.location.href = props.redirectTo ?? '/dashboard';
     } catch (error) {
       console.error('Error during login:', error);
       setState({
@@ -368,7 +367,11 @@ export default function UUIDLogin(props: UUIDLoginProps) {
         </div>
 
         {/* Login Form */}
-        <form onSubmit={handleSubmit} novalidate>
+        <form
+          onSubmit={handleSubmit}
+          novalidate
+          aria-label={t()('auth.login.title')}
+        >
           {/* UUID Input Field */}
           <div class="form-group mb-4">
             <label

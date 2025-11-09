@@ -16,14 +16,67 @@ import LanguageSelector from './LanguageSelector';
 import * as i18n from '@/lib/i18n';
 import * as auth from '@/lib/auth';
 
-// Mock the i18n module
-vi.mock('@/lib/i18n', async () => {
-  const actual = await vi.importActual('@/lib/i18n');
+// Mock the i18n module with complete mock (avoid importActual to prevent loading translation files)
+vi.mock('@/lib/i18n', () => {
+  const createTranslationFunction = () => (key: string, params?: Record<string, string>) => {
+    const translations: Record<string, string> = {
+      'common.language.selector.title': 'Language selector',
+      'common.language.selector.danish': 'Dansk',
+      'common.language.selector.english': 'English',
+      'common.language.selector.changingLanguage': 'Changing language...',
+      'common.errors.generic': 'An error occurred',
+    };
+    return translations[key] || key;
+  };
+
+  const tFunc = createTranslationFunction();
+
+  let currentLocale: string = 'en-US';
+
   return {
-    ...actual,
-    changeLocale: vi.fn(),
+    $t: {
+      get: () => tFunc,
+      subscribe: (fn: Function) => {
+        fn(tFunc);
+        return () => {};
+      },
+    },
+    $locale: {
+      get: () => currentLocale,
+      set: (value: string) => { currentLocale = value; },
+      subscribe: (fn: Function) => {
+        fn(currentLocale);
+        return () => {};
+      },
+    },
+    initI18n: vi.fn(async () => Promise.resolve()),
+    changeLocale: vi.fn(async (locale: string) => {
+      currentLocale = locale;
+      return Promise.resolve();
+    }),
   };
 });
+
+// Mock useStore from Nanostores
+vi.mock('@nanostores/solid', () => ({
+  useStore: (store: any) => {
+    // Check if it's the $locale store by checking if it has get/set methods
+    if (store && typeof store.get === 'function') {
+      return () => store.get();
+    }
+    // For $t store, return a function that returns the translation function
+    return () => (key: string, params?: Record<string, string>) => {
+      const translations: Record<string, string> = {
+        'common.language.selector.title': 'Language selector',
+        'common.language.selector.danish': 'Dansk',
+        'common.language.selector.english': 'English',
+        'common.language.selector.changingLanguage': 'Changing language...',
+        'common.errors.generic': 'An error occurred',
+      };
+      return translations[key] || key;
+    };
+  },
+}));
 
 // Mock the auth module
 vi.mock('@/lib/auth', async () => {
@@ -36,16 +89,29 @@ vi.mock('@/lib/auth', async () => {
 });
 
 describe('LanguageSelector', () => {
-  
+
   beforeEach(async () => {
+    // Clear mocks first
     vi.clearAllMocks();
-    // Initialize i18n system and ensure English locale for consistent tests
-    await i18n.initI18n();
-    await i18n.changeLocale('en-US');
+
+    // Reset mock implementations to default (resolves successfully)
+    vi.mocked(i18n.changeLocale).mockResolvedValue();
+    vi.mocked(auth.getCurrentUser).mockResolvedValue(null);
+    vi.mocked(auth.updateUser).mockResolvedValue({ success: true, data: { user: null as any } });
+
+    // Since we're fully mocking i18n, we don't need to actually call these
+    // The mocked changeLocale will update the internal currentLocale
+    const mockChangeLocale = vi.mocked(i18n.changeLocale);
+    await mockChangeLocale('en-US');
+
+    // Clear the mock calls from setup so tests start with clean slate
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    // Don't restore mocks since we want to keep the i18n mock in place
+    // vi.restoreAllMocks() would restore the actual i18n module
+    vi.clearAllMocks();
   });
 
   describe('Rendering', () => {
