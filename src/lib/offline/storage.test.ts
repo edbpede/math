@@ -67,6 +67,7 @@ describe("OfflineStorage", () => {
             context: {
                 names: ["Alice"],
                 places: ["School"],
+                locale: "da-DK" as const,
             },
             seed: 12345,
         });

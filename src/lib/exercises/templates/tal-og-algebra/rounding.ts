@@ -70,7 +70,7 @@ export const roundingA: ExerciseTemplate = {
             return "Think about which two tens the number is between. Which is it closest to?";
         },
         // Level 2: Specific technique
-        (_params, locale) => {
+        (params, locale) => {
             const number = params.number as number;
             const onesDigit = number % 10;
             const lower = Math.floor(number / 10) * 10;
@@ -82,7 +82,7 @@ export const roundingA: ExerciseTemplate = {
             return `${number} is between ${lower} and ${upper}. Look at the ones digit: ${onesDigit}. If it's 5 or more, round up. If it's less than 5, round down.`;
         },
         // Level 3: Partial solution with intermediate steps
-        (_params, locale) => {
+        (params, locale) => {
             const number = params.number as number;
             const onesDigit = number % 10;
             const lower = Math.floor(number / 10) * 10;
@@ -107,7 +107,7 @@ export const roundingA: ExerciseTemplate = {
             }
         },
         // Level 4: Complete solution
-        (_params, locale) => {
+        (params, _locale) => {
             const number = params.number as number;
             const answer = Math.round(number / 10) * 10;
             return `${answer}`;
@@ -177,7 +177,7 @@ export const roundingB: ExerciseTemplate = {
     },
     hints: [
         // Level 1: General strategy
-        (_params, locale) => {
+        (params, locale) => {
             const roundTo = params.roundTo as string;
             if (locale === "da-DK") {
                 if (roundTo === "10") {
@@ -193,7 +193,7 @@ export const roundingB: ExerciseTemplate = {
             }
         },
         // Level 2: Specific technique
-        (_params, locale) => {
+        (params, locale) => {
             const number = params.number as number;
             const roundTo = params.roundTo as string;
 
@@ -218,7 +218,7 @@ export const roundingB: ExerciseTemplate = {
             }
         },
         // Level 3: Partial solution with intermediate steps
-        (_params, locale) => {
+        (params, locale) => {
             const number = params.number as number;
             const roundTo = params.roundTo as string;
 
@@ -261,7 +261,7 @@ export const roundingB: ExerciseTemplate = {
             }
         },
         // Level 4: Complete solution
-        (_params, locale) => {
+        (params, _locale) => {
             const number = params.number as number;
             const roundTo = params.roundTo as string;
 
@@ -336,7 +336,7 @@ export const roundingC: ExerciseTemplate = {
             return "Think about which two hundreds the number is between. Look at the tens digit to determine whether to round up or down.";
         },
         // Level 2: Specific technique
-        (_params, locale) => {
+        (params, locale) => {
             const number = params.number as number;
             const tensDigit = Math.floor((number % 100) / 10);
             const lower = Math.floor(number / 100) * 100;
@@ -348,7 +348,7 @@ export const roundingC: ExerciseTemplate = {
             return `${number} is between ${lower} and ${upper}. The tens digit is ${tensDigit}. If the tens digit is 5 or more, round up. Otherwise round down.`;
         },
         // Level 3: Partial solution with intermediate steps
-        (_params, locale) => {
+        (params, locale) => {
             const number = params.number as number;
             const tensDigit = Math.floor((number % 100) / 10);
             const lower = Math.floor(number / 100) * 100;
@@ -373,7 +373,7 @@ export const roundingC: ExerciseTemplate = {
             }
         },
         // Level 4: Complete solution
-        (_params, locale) => {
+        (params, _locale) => {
             const number = params.number as number;
             const answer = Math.round(number / 100) * 100;
             return `${answer}`;

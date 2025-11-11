@@ -15,10 +15,7 @@
 
 import { describe, it, expect, beforeEach } from "vitest";
 import { composeSession } from "./composer";
-import type {
-    SessionCompositionConfig,
-    SessionCompositionResult,
-} from "./types";
+import type { SessionCompositionConfig } from "./types";
 import type { SkillProgress, SRSParameters } from "../types";
 import { templateRegistry } from "../exercises/template-registry";
 import type { ExerciseTemplate } from "../exercises/types";
@@ -64,7 +61,9 @@ function createSkillProgress(
 }
 
 // Helper to create skill with proper skill ID from available templates
-function createSkillWithIndex(
+// (Currently unused but kept for potential future test expansion)
+/*
+function _createSkillWithIndex(
     index: number,
     overrides: Partial<SkillProgress> = {},
 ): SkillProgress {
@@ -73,6 +72,7 @@ function createSkillWithIndex(
         ...overrides,
     });
 }
+*/
 
 // ============================================================================
 // Setup and Teardown

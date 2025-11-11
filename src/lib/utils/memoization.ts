@@ -9,7 +9,7 @@
  * - Target: Mastery calculation <5ms (Req 13.2)
  */
 
-import { createMemo, type Accessor } from 'solid-js';
+import { createMemo, type Accessor } from "solid-js";
 
 /**
  * LRU Cache implementation
@@ -18,60 +18,62 @@ import { createMemo, type Accessor } from 'solid-js';
  * Automatically evicts oldest entries when capacity is exceeded.
  */
 class LRUCache<K, V> {
-  private cache: Map<K, V>;
-  private readonly maxSize: number;
+    private cache: Map<K, V>;
+    private readonly maxSize: number;
 
-  constructor(maxSize: number) {
-    this.cache = new Map();
-    this.maxSize = maxSize;
-  }
-
-  get(key: K): V | undefined {
-    const value = this.cache.get(key);
-    if (value !== undefined) {
-      // Move to end (most recently used)
-      this.cache.delete(key);
-      this.cache.set(key, value);
+    constructor(maxSize: number) {
+        this.cache = new Map();
+        this.maxSize = maxSize;
     }
-    return value;
-  }
 
-  set(key: K, value: V): void {
-    // Remove if exists (to update position)
-    if (this.cache.has(key)) {
-      this.cache.delete(key);
+    get(key: K): V | undefined {
+        const value = this.cache.get(key);
+        if (value !== undefined) {
+            // Move to end (most recently used)
+            this.cache.delete(key);
+            this.cache.set(key, value);
+        }
+        return value;
     }
-    // Add to end (most recently used)
-    this.cache.set(key, value);
 
-    // Evict oldest if over capacity
-    if (this.cache.size > this.maxSize) {
-      const firstKey = this.cache.keys().next().value;
-      this.cache.delete(firstKey);
+    set(key: K, value: V): void {
+        // Remove if exists (to update position)
+        if (this.cache.has(key)) {
+            this.cache.delete(key);
+        }
+        // Add to end (most recently used)
+        this.cache.set(key, value);
+
+        // Evict oldest if over capacity
+        if (this.cache.size > this.maxSize) {
+            const firstKey = this.cache.keys().next().value as K;
+            if (firstKey !== undefined) {
+                this.cache.delete(firstKey);
+            }
+        }
     }
-  }
 
-  has(key: K): boolean {
-    return this.cache.has(key);
-  }
+    has(key: K): boolean {
+        return this.cache.has(key);
+    }
 
-  clear(): void {
-    this.cache.clear();
-  }
+    clear(): void {
+        this.cache.clear();
+    }
 
-  get size(): number {
-    return this.cache.size;
-  }
+    get size(): number {
+        return this.cache.size;
+    }
 }
 
 /**
  * Memoization options
  */
 export interface MemoizeOptions {
-  /** Maximum cache size (default: 100) */
-  maxSize?: number;
-  /** Custom key serializer (default: JSON.stringify) */
-  keySerializer?: (...args: any[]) => string;
+    /** Maximum cache size (default: 100) */
+    maxSize?: number;
+    /** Custom key serializer (default: JSON.stringify) */
+    keySerializer?: (args: any[]) => string;
 }
 
 /**
@@ -96,47 +98,53 @@ export interface MemoizeOptions {
  * ```
  */
 export function memoize<T extends (...args: any[]) => any>(
-  fn: T,
-  options: MemoizeOptions = {}
+    fn: T,
+    options: MemoizeOptions = {},
 ): T & { cache: { clear: () => void; size: () => number } } {
-  const { maxSize = 100, keySerializer = JSON.stringify } = options;
-  const cache = new LRUCache<string, ReturnType<T>>(maxSize);
+    const {
+        maxSize = 100,
+        keySerializer = (args: any[]) => JSON.stringify(args),
+    } = options;
+    const cache = new LRUCache<string, ReturnType<T>>(maxSize);
 
-  const memoized = function (this: any, ...args: Parameters<T>): ReturnType<T> {
-    const key = keySerializer(...args);
+    const memoized = function (
+        this: any,
+        ...args: Parameters<T>
+    ): ReturnType<T> {
+        const key = keySerializer(args);
 
-    if (cache.has(key)) {
-      return cache.get(key)!;
-    }
+        if (cache.has(key)) {
+            return cache.get(key)!;
+        }
 
-    const result = fn.apply(this, args);
-    cache.set(key, result);
-    return result;
-  } as T & { cache: { clear: () => void; size: () => number } };
+        const result = fn.apply(this, args);
+        cache.set(key, result);
+        return result;
+    } as T & { cache: { clear: () => void; size: () => number } };
 
-  // Add cache management methods
-  memoized.cache = {
-    clear: () => cache.clear(),
-    size: () => cache.size,
-  };
+    // Add cache management methods
+    memoized.cache = {
+        clear: () => cache.clear(),
+        size: () => cache.size,
+    };
 
-  return memoized;
+    return memoized;
 }
 
 /**
  * Options for time-expiring memoization
  */
 export interface MemoizeWithExpiryOptions extends MemoizeOptions {
-  /** Time to live in milliseconds */
-  ttl: number;
+    /** Time to live in milliseconds */
+    ttl: number;
 }
 
 /**
  * Cache entry with expiry
  */
 interface CacheEntryWithExpiry<T> {
-  value: T;
-  expiresAt: number;
+    value: T;
+    expiresAt: number;
 }
 
 /**
@@ -160,35 +168,44 @@ interface CacheEntryWithExpiry<T> {
  * ```
  */
 export function memoizeWithExpiry<T extends (...args: any[]) => any>(
-  fn: T,
-  options: MemoizeWithExpiryOptions
+    fn: T,
+    options: MemoizeWithExpiryOptions,
 ): T & { cache: { clear: () => void; size: () => number } } {
-  const { maxSize = 100, ttl, keySerializer = JSON.stringify } = options;
-  const cache = new LRUCache<string, CacheEntryWithExpiry<ReturnType<T>>>(maxSize);
+    const {
+        maxSize = 100,
+        ttl,
+        keySerializer = (args: any[]) => JSON.stringify(args),
+    } = options;
+    const cache = new LRUCache<string, CacheEntryWithExpiry<ReturnType<T>>>(
+        maxSize,
+    );
 
-  const memoized = function (this: any, ...args: Parameters<T>): ReturnType<T> {
-    const key = keySerializer(...args);
-    const now = Date.now();
+    const memoized = function (
+        this: any,
+        ...args: Parameters<T>
+    ): ReturnType<T> {
+        const key = keySerializer(args);
+        const now = Date.now();
 
-    const cached = cache.get(key);
-    if (cached && cached.expiresAt > now) {
-      return cached.value;
-    }
+        const cached = cache.get(key);
+        if (cached && cached.expiresAt > now) {
+            return cached.value;
+        }
 
-    const result = fn.apply(this, args);
-    cache.set(key, {
-      value: result,
-      expiresAt: now + ttl,
-    });
-    return result;
-  } as T & { cache: { clear: () => void; size: () => number } };
+        const result = fn.apply(this, args);
+        cache.set(key, {
+            value: result,
+            expiresAt: now + ttl,
+        });
+        return result;
+    } as T & { cache: { clear: () => void; size: () => number } };
 
-  memoized.cache = {
-    clear: () => cache.clear(),
-    size: () => cache.size,
-  };
+    memoized.cache = {
+        clear: () => cache.clear(),
+        size: () => cache.size,
+    };
 
-  return memoized;
+    return memoized;
 }
 
 /**
@@ -213,7 +230,7 @@ export function memoizeWithExpiry<T extends (...args: any[]) => any>(
  * ```
  */
 export function createMemoizedSelector<T>(fn: () => T): Accessor<T> {
-  return createMemo(fn);
+    return createMemo(fn);
 }
 
 /**
@@ -226,16 +243,16 @@ export function createMemoizedSelector<T>(fn: () => T): Accessor<T> {
  * @returns Hash string
  */
 export function hashObject(obj: any): string {
-  const str = typeof obj === 'string' ? obj : JSON.stringify(obj);
-  let hash = 0;
+    const str = typeof obj === "string" ? obj : JSON.stringify(obj);
+    let hash = 0;
 
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32-bit integer
-  }
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = (hash << 5) - hash + char;
+        hash = hash & hash; // Convert to 32-bit integer
+    }
 
-  return hash.toString(36);
+    return hash.toString(36);
 }
 
 /**
@@ -259,39 +276,51 @@ export function hashObject(obj: any): string {
  * ```
  */
 export function memoizeAsync<T extends (...args: any[]) => Promise<any>>(
-  fn: T,
-  options: MemoizeOptions = {}
+    fn: T,
+    options: MemoizeOptions = {},
 ): T & { cache: { clear: () => void; size: () => number } } {
-  const { maxSize = 100, keySerializer = JSON.stringify } = options;
-  const cache = new LRUCache<string, Promise<Awaited<ReturnType<T>>>>(maxSize);
+    const {
+        maxSize = 100,
+        keySerializer = (args: any[]) => JSON.stringify(args),
+    } = options;
+    const cache = new LRUCache<string, Promise<Awaited<ReturnType<T>>>>(
+        maxSize,
+    );
 
-  const memoized = function (this: any, ...args: Parameters<T>): ReturnType<T> {
-    const key = keySerializer(...args);
+    const memoized = function (
+        this: any,
+        ...args: Parameters<T>
+    ): ReturnType<T> {
+        const key = keySerializer(args);
 
-    if (cache.has(key)) {
-      return cache.get(key) as ReturnType<T>;
-    }
+        if (cache.has(key)) {
+            return cache.get(key) as ReturnType<T>;
+        }
 
-    const promise = fn.apply(this, args) as Promise<Awaited<ReturnType<T>>>;
+        const promise = fn.apply(this, args) as Promise<Awaited<ReturnType<T>>>;
 
-    // Cache the promise
-    cache.set(key, promise);
+        // Cache the promise
+        cache.set(key, promise);
 
-    // Remove from cache if promise rejects
-    promise.catch(() => {
-      // Don't cache errors by default
-      // Could be made configurable if needed
-    });
+        // Remove from cache if promise rejects
+        promise.catch(() => {
+            // Don't cache errors by default
+            // Could be made configurable if needed
+        });
 
-    return promise as ReturnType<T>;
-  } as T & { cache: { clear: () => void; size: () => number } };
+        return promise as ReturnType<T>;
+    };
 
-  memoized.cache = {
-    clear: () => cache.clear(),
-    size: () => cache.size,
-  };
+    const memoizedWithCache = memoized as unknown as T & {
+        cache: { clear: () => void; size: () => number };
+    };
 
-  return memoized;
+    memoizedWithCache.cache = {
+        clear: () => cache.clear(),
+        size: () => cache.size,
+    };
+
+    return memoizedWithCache;
 }
 
 /**
@@ -311,18 +340,17 @@ export function memoizeAsync<T extends (...args: any[]) => Promise<any>>(
  * ```
  */
 export function weakMemoize<T extends object, R>(
-  fn: (arg: T) => R
+    fn: (arg: T) => R,
 ): (arg: T) => R {
-  const cache = new WeakMap<T, R>();
+    const cache = new WeakMap<T, R>();
 
-  return function (arg: T): R {
-    if (cache.has(arg)) {
-      return cache.get(arg)!;
-    }
+    return function (arg: T): R {
+        if (cache.has(arg)) {
+            return cache.get(arg)!;
+        }
 
-    const result = fn(arg);
-    cache.set(arg, result);
-    return result;
-  };
+        const result = fn(arg);
+        cache.set(arg, result);
+        return result;
+    };
 }
-

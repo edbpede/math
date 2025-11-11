@@ -168,7 +168,9 @@ function calculateMasteryLevelInternal(
  */
 export const calculateMasteryLevel = memoize(calculateMasteryLevelInternal, {
     maxSize: 200,
-    keySerializer: (attempts: ExerciseAttempt[], progress: SkillProgress) => {
+    keySerializer: (args: any[]) => {
+        const attempts = args[0] as ExerciseAttempt[];
+        const progress = args[1] as SkillProgress;
         // Create cache key from relevant data
         const attemptKeys = attempts
             .slice(0, CONFIG.RECENT_ATTEMPTS_WINDOW)

@@ -472,7 +472,8 @@ export async function updateCompetencyProgress(
 
         const { data, error } = await supabase
             .from("competency_progress")
-            .upsert(updateData, {
+            // @ts-ignore - Supabase type inference issue with generated types
+            .upsert(updateData as CompetencyProgressUpdate, {
                 onConflict: "user_id,competency_area_id,grade_range",
             })
             .select()
@@ -515,7 +516,8 @@ export async function updateSkillProgress(
 
         const { data, error } = await supabase
             .from("skills_progress")
-            .upsert(updateData, {
+            // @ts-ignore - Supabase type inference issue with generated types
+            .upsert(updateData as SkillsProgressUpdate, {
                 onConflict: "user_id,skill_id",
             })
             .select()
@@ -565,7 +567,8 @@ export async function batchUpdateCompetencyProgress(
 
         const { data, error } = await supabase
             .from("competency_progress")
-            .upsert(updateData, {
+            // @ts-ignore - Supabase type inference issue with generated types
+            .upsert(updateData as CompetencyProgressUpdate[], {
                 onConflict: "user_id,competency_area_id,grade_range",
             })
             .select();
@@ -615,7 +618,8 @@ export async function batchUpdateSkillProgress(
 
         const { data, error } = await supabase
             .from("skills_progress")
-            .upsert(updateData, {
+            // @ts-ignore - Supabase type inference issue with generated types
+            .upsert(updateData as SkillsProgressUpdate[], {
                 onConflict: "user_id,skill_id",
             })
             .select();
@@ -660,7 +664,8 @@ export async function logExerciseAttempt(
 
         const { data, error } = await supabase
             .from("exercise_history")
-            .insert(insertData)
+            // @ts-ignore - Supabase type inference issue with generated types
+            .insert(insertData as ExerciseHistoryInsert)
             .select()
             .single();
 
@@ -704,7 +709,8 @@ export async function batchLogExerciseAttempts(
 
         const { data, error } = await supabase
             .from("exercise_history")
-            .insert(insertData)
+            // @ts-ignore - Supabase type inference issue with generated types
+            .insert(insertData as ExerciseHistoryInsert[])
             .select();
 
         if (error) {
@@ -744,7 +750,8 @@ export async function startSession(
 
         const { data, error } = await supabase
             .from("sessions")
-            .insert(insertData)
+            // @ts-ignore - Supabase type inference issue with generated types
+            .insert(insertData as SessionInsert)
             .select()
             .single();
 
@@ -778,7 +785,8 @@ export async function updateSession(
 
         const { data, error } = await supabase
             .from("sessions")
-            .update(updateData)
+            // @ts-ignore - Supabase type inference issue with generated types
+            .update(updateData as SessionUpdate)
             .eq("id", sessionId)
             .select()
             .single();
@@ -820,7 +828,8 @@ export async function endSession(
 
         const { data, error } = await supabase
             .from("sessions")
-            .update(updateData)
+            // @ts-ignore - Supabase type inference issue with generated types
+            .update(updateData as SessionUpdate)
             .eq("id", sessionId)
             .select()
             .single();

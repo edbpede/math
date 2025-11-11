@@ -75,18 +75,18 @@ export const subtractionA: ExerciseTemplate = {
             return "Think about counting backward. You can use your fingers to help.";
         },
         // Level 2: Specific technique
-        (_params, locale) => {
-            const a = _params.a as number;
-            const b = _params.b as number;
+        (params, locale) => {
+            const a = params.a as number;
+            const b = params.b as number;
             if (locale === "da-DK") {
                 return `Start med ${a} og tæl ${b} tilbage.`;
             }
             return `Start with ${a} and count ${b} back.`;
         },
         // Level 3: Partial solution with intermediate steps
-        (_params, locale) => {
-            const a = _params.a as number;
-            const b = _params.b as number;
+        (params, locale) => {
+            const a = params.a as number;
+            const b = params.b as number;
             if (b > 0) {
                 const steps = Array.from({ length: b }, (_, i) => a - i - 1);
                 if (locale === "da-DK") {
@@ -100,9 +100,9 @@ export const subtractionA: ExerciseTemplate = {
             return `${a} - 0 means you don't take any away.`;
         },
         // Level 4: Complete solution
-        (_params, locale) => {
-            const a = _params.a as number;
-            const b = _params.b as number;
+        (params, locale) => {
+            const a = params.a as number;
+            const b = params.b as number;
             const answer = a - b;
             if (locale === "da-DK") {
                 return `${a} - ${b} = ${answer}`;
@@ -173,9 +173,9 @@ export const subtractionB: ExerciseTemplate = {
             return "Think about ones and tens. You can subtract from the ones first.";
         },
         // Level 2: Specific technique
-        (_params, locale) => {
-            const a = _params.a as number;
-            const b = _params.b as number;
+        (params, locale) => {
+            const a = params.a as number;
+            const b = params.b as number;
             const aTens = Math.floor(a / 10);
             const aOnes = a % 10;
             if (locale === "da-DK") {
@@ -184,9 +184,9 @@ export const subtractionB: ExerciseTemplate = {
             return `${a} is ${aTens} tens + ${aOnes} ones. Subtract ${b} from the ones.`;
         },
         // Level 3: Partial solution with intermediate steps
-        (_params, locale) => {
-            const a = _params.a as number;
-            const b = _params.b as number;
+        (params, locale) => {
+            const a = params.a as number;
+            const b = params.b as number;
             const aTens = Math.floor(a / 10);
             const aOnes = a % 10;
             const newOnes = aOnes - b;
@@ -196,9 +196,9 @@ export const subtractionB: ExerciseTemplate = {
             return `${a} - ${b} = ${aTens} tens + (${aOnes} - ${b}) ones = ${aTens} tens + ${newOnes} ones`;
         },
         // Level 4: Complete solution
-        (_params, locale) => {
-            const a = _params.a as number;
-            const b = _params.b as number;
+        (params, locale) => {
+            const a = params.a as number;
+            const b = params.b as number;
             const answer = a - b;
             if (locale === "da-DK") {
                 return `${a} - ${b} = ${answer}`;
@@ -267,9 +267,9 @@ export const subtractionC: ExerciseTemplate = {
     },
     hints: [
         // Level 1: General strategy
-        (_params, locale) => {
-            const a = _params.a as number;
-            const b = _params.b as number;
+        (params, locale) => {
+            const a = params.a as number;
+            const b = params.b as number;
             const aOnes = a % 10;
             const bOnes = b % 10;
             const needsBorrowing = aOnes < bOnes;
@@ -286,9 +286,9 @@ export const subtractionC: ExerciseTemplate = {
             return "Subtract the ones first, then the tens.";
         },
         // Level 2: Specific technique
-        (_params, locale) => {
-            const a = _params.a as number;
-            const b = _params.b as number;
+        (params, locale) => {
+            const a = params.a as number;
+            const b = params.b as number;
             const aTens = Math.floor(a / 10);
             const aOnes = a % 10;
             const bTens = Math.floor(b / 10);
@@ -307,9 +307,9 @@ export const subtractionC: ExerciseTemplate = {
             return `Ones: ${aOnes} - ${bOnes}. Tens: ${aTens} - ${bTens}.`;
         },
         // Level 3: Partial solution with intermediate steps
-        (_params, locale) => {
-            const a = _params.a as number;
-            const b = _params.b as number;
+        (params, locale) => {
+            const a = params.a as number;
+            const b = params.b as number;
             const aTens = Math.floor(a / 10);
             const aOnes = a % 10;
             const bTens = Math.floor(b / 10);
@@ -340,7 +340,7 @@ export const subtractionC: ExerciseTemplate = {
             return `Ones: ${aOnes} - ${bOnes} = ${resultOnes}\nTens: ${aTens} - ${bTens} = ${resultTens}\nAnswer: ${resultTens} tens + ${resultOnes} ones`;
         },
         // Level 4: Complete solution
-        (_params, locale) => {
+        (params, locale) => {
             const a = params.a as number;
             const b = params.b as number;
             const answer = a - b;

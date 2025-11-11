@@ -259,7 +259,7 @@ export const fractionDecimalConversionB: ExerciseTemplate = {
             const numerator = params.numerator as number;
             const direction = params.direction as number;
             const denominator = conversionType === 0 ? 10 : 100;
-            const separator = locale === "da-DK" ? "," : ".";
+            // Separator is locale-specific (not currently used but kept for future enhancements)
 
             if (locale === "da-DK") {
                 if (direction === 0) {
@@ -278,6 +278,7 @@ export const fractionDecimalConversionB: ExerciseTemplate = {
             const numerator = params.numerator as number;
             const direction = params.direction as number;
             const denominator = conversionType === 0 ? 10 : 100;
+            const separator = locale === "da-DK" ? "," : ".";
 
             if (direction === 0) {
                 const decimalStr =

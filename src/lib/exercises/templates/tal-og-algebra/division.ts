@@ -194,7 +194,6 @@ export const divisionB: ExerciseTemplate = {
         // Level 2: Specific technique
         (params, locale) => {
             const divisor = params.divisor as number;
-            const quotient = params.quotient as number;
             const dividend = params.dividend as number;
 
             if (locale === "da-DK") {

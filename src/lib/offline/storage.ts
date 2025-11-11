@@ -437,7 +437,8 @@ export class OfflineStorage {
     async addToSyncQueue(item: Omit<SyncQueueItem, "id">): Promise<number> {
         try {
             const db = await this.getDB();
-            return await db.add("syncQueue", item as SyncQueueItem);
+            const id = await db.add("syncQueue", item as SyncQueueItem);
+            return Number(id);
         } catch (error) {
             throw new StorageError(
                 "Failed to add item to sync queue",

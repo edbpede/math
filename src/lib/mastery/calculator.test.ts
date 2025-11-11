@@ -18,7 +18,7 @@ import {
     calculateTimeDecayFactor,
     getMasteryLevelBand,
 } from "./calculator";
-import type { MasteryCalculationResult } from "./calculator";
+// MasteryCalculationResult type is available but not directly used in tests
 import type { ExerciseAttempt, SkillProgress } from "./types";
 
 // ============================================================================

@@ -234,7 +234,7 @@ export function generateVisualAidDescription(
  */
 export function generateLongDescription(
     visualAid: VisualAid,
-    t: TranslationFunction,
+    _t: TranslationFunction,
 ): string | null {
     // Only provide long descriptions for complex visualizations
     switch (visualAid.type) {

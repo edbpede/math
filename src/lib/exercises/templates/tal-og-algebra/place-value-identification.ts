@@ -53,16 +53,13 @@ export const placeValueIdentificationA: ExerciseTemplate = {
         const tensDigit = digits.length >= 2 ? digits[digits.length - 2] : 0;
 
         let targetDigit: number;
-        let positionName: string;
         let answer: number;
 
         if (position === "ones") {
             targetDigit = onesDigit;
-            positionName = locale === "da-DK" ? "enerpladsen" : "ones place";
             answer = onesDigit;
         } else {
             targetDigit = tensDigit;
-            positionName = locale === "da-DK" ? "tierpladsen" : "tens place";
             answer = tensDigit * 10;
         }
 
@@ -83,7 +80,7 @@ export const placeValueIdentificationA: ExerciseTemplate = {
     },
     hints: [
         // Level 1: General strategy
-        (_params, locale) => {
+        (params, locale) => {
             const position = params.position as string;
             if (locale === "da-DK") {
                 if (position === "ones") {
@@ -99,7 +96,7 @@ export const placeValueIdentificationA: ExerciseTemplate = {
             }
         },
         // Level 2: Specific technique
-        (_params, locale) => {
+        (params, locale) => {
             const number = params.number as number;
             const position = params.position as string;
             const digits = number.toString().split("").map(Number);
@@ -121,7 +118,7 @@ export const placeValueIdentificationA: ExerciseTemplate = {
             }
         },
         // Level 3: Partial solution with intermediate steps
-        (_params, locale) => {
+        (params, locale) => {
             const number = params.number as number;
             const position = params.position as string;
             const digits = number.toString().split("").map(Number);
@@ -143,7 +140,7 @@ export const placeValueIdentificationA: ExerciseTemplate = {
             }
         },
         // Level 4: Complete solution
-        (_params, locale) => {
+        (params, _locale) => {
             const number = params.number as number;
             const position = params.position as string;
             const digits = number.toString().split("").map(Number);
@@ -198,16 +195,13 @@ export const placeValueIdentificationB: ExerciseTemplate = {
         const tensDigit = digits.length >= 2 ? digits[digits.length - 2] : 0;
 
         let targetDigit: number;
-        let positionName: string;
         let answer: number;
 
         if (position === "ones") {
             targetDigit = onesDigit;
-            positionName = locale === "da-DK" ? "enerpladsen" : "ones place";
             answer = onesDigit;
         } else {
             targetDigit = tensDigit;
-            positionName = locale === "da-DK" ? "tierpladsen" : "tens place";
             answer = tensDigit * 10;
         }
 
@@ -235,7 +229,7 @@ export const placeValueIdentificationB: ExerciseTemplate = {
             return "Remember that a digit has different values depending on its place in the number.";
         },
         // Level 2: Specific technique
-        (_params, locale) => {
+        (params, locale) => {
             const number = params.number as number;
             const position = params.position as string;
             const digits = number.toString().split("").map(Number);
@@ -257,7 +251,7 @@ export const placeValueIdentificationB: ExerciseTemplate = {
             }
         },
         // Level 3: Partial solution with intermediate steps
-        (_params, locale) => {
+        (params, locale) => {
             const number = params.number as number;
             const position = params.position as string;
             const digits = number.toString().split("").map(Number);
@@ -279,7 +273,7 @@ export const placeValueIdentificationB: ExerciseTemplate = {
             }
         },
         // Level 4: Complete solution
-        (_params, locale) => {
+        (params, _locale) => {
             const number = params.number as number;
             const position = params.position as string;
             const digits = number.toString().split("").map(Number);
@@ -336,21 +330,16 @@ export const placeValueIdentificationC: ExerciseTemplate = {
             digits.length >= 3 ? digits[digits.length - 3] : 0;
 
         let targetDigit: number;
-        let positionName: string;
         let answer: number;
 
         if (position === "ones") {
             targetDigit = onesDigit;
-            positionName = locale === "da-DK" ? "enerpladsen" : "ones place";
             answer = onesDigit;
         } else if (position === "tens") {
             targetDigit = tensDigit;
-            positionName = locale === "da-DK" ? "tierpladsen" : "tens place";
             answer = tensDigit * 10;
         } else {
             targetDigit = hundredsDigit;
-            positionName =
-                locale === "da-DK" ? "hundredepladsen" : "hundreds place";
             answer = hundredsDigit * 100;
         }
 
@@ -378,7 +367,7 @@ export const placeValueIdentificationC: ExerciseTemplate = {
             return "Think about the place: ones (far right), tens (middle), hundreds (far left).";
         },
         // Level 2: Specific technique
-        (_params, locale) => {
+        (params, locale) => {
             const number = params.number as number;
             const position = params.position as string;
             const digits = number.toString().split("").map(Number);
@@ -406,7 +395,7 @@ export const placeValueIdentificationC: ExerciseTemplate = {
             }
         },
         // Level 3: Partial solution with intermediate steps
-        (_params, locale) => {
+        (params, locale) => {
             const number = params.number as number;
             const position = params.position as string;
             const digits = number.toString().split("").map(Number);
@@ -436,7 +425,7 @@ export const placeValueIdentificationC: ExerciseTemplate = {
             }
         },
         // Level 4: Complete solution
-        (_params, locale) => {
+        (params, _locale) => {
             const number = params.number as number;
             const position = params.position as string;
             const digits = number.toString().split("").map(Number);

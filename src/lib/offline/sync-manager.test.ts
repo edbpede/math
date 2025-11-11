@@ -76,7 +76,7 @@ vi.mock("./sync-operations", () => ({
 import { SyncManager } from "./sync-manager";
 
 // Destructure mocks for easier access in tests
-const { mockGetSyncQueueCount, mockClearSyncQueue } = mocks;
+const { mockGetSyncQueueCount } = mocks;
 
 describe("SyncManager", () => {
     let syncManager: SyncManager;
@@ -96,14 +96,14 @@ describe("SyncManager", () => {
         it("should initialize successfully", async () => {
             await syncManager.initialize();
             // Verify the sync manager is initialized by checking it can perform operations
-            expect(syncManager.isOnline).toBeDefined();
+            expect((syncManager as any).isOnline).toBeDefined();
         });
 
         it("should not initialize twice", async () => {
             await syncManager.initialize();
             await syncManager.initialize();
             // Should not throw an error when initialized twice
-            expect(syncManager.isOnline).toBeDefined();
+            expect((syncManager as any).isOnline).toBeDefined();
         });
     });
 
