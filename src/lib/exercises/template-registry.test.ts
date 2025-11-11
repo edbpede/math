@@ -674,12 +674,14 @@ describe('TemplateRegistry', () => {
   describe('Convenience Functions', () => {
     // Clean up singleton registry before each convenience function test
     beforeEach(() => {
-      // Unregister any existing templates from singleton
-      if (templateRegistry.has('test-1')) {
-        templateRegistry.unregister('test-1');
-      }
-      if (templateRegistry.has('test-conv-1')) {
-        templateRegistry.unregister('test-conv-1');
+      // Unregister all test templates from singleton registry
+      // This is necessary because the singleton is shared across all test files
+      const allTemplateIds = templateRegistry.find({});
+      for (const id of allTemplateIds) {
+        // Only unregister test templates (those starting with 'test-')
+        if (id.startsWith('test-')) {
+          templateRegistry.unregister(id);
+        }
       }
       templateRegistry.clearRecentlyUsed();
     });

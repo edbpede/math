@@ -8,16 +8,41 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import type { SyncQueueItem } from './types'
 
 // Use vi.hoisted to ensure mocks are created before imports
-const mocks = vi.hoisted(() => ({
-  mockInit: vi.fn().mockResolvedValue(undefined),
-  mockAddToSyncQueue: vi.fn().mockResolvedValue(1),
-  mockGetAllSyncQueue: vi.fn().mockResolvedValue([]),
-  mockRemoveFromSyncQueue: vi.fn().mockResolvedValue(undefined),
-  mockIncrementSyncRetries: vi.fn().mockResolvedValue(undefined),
-  mockGetSyncQueueCount: vi.fn().mockResolvedValue(0),
-  mockClearSyncQueue: vi.fn().mockResolvedValue(undefined),
-  mockSyncQueueItem: vi.fn().mockResolvedValue(undefined),
-}))
+const mocks = vi.hoisted(() => {
+  // Stateful mock queue to track items
+  let mockQueue: SyncQueueItem[] = []
+  let nextId = 1
+
+  return {
+    mockInit: vi.fn().mockResolvedValue(undefined),
+    mockAddToSyncQueue: vi.fn().mockImplementation(async (item: Omit<SyncQueueItem, 'id'>) => {
+      const id = nextId++
+      mockQueue.push({ ...item, id } as SyncQueueItem)
+      return id
+    }),
+    mockGetAllSyncQueue: vi.fn().mockImplementation(async () => [...mockQueue]),
+    mockRemoveFromSyncQueue: vi.fn().mockImplementation(async (id: number) => {
+      mockQueue = mockQueue.filter(item => item.id !== id)
+    }),
+    mockIncrementSyncRetries: vi.fn().mockImplementation(async (id: number) => {
+      const item = mockQueue.find(item => item.id === id)
+      if (item) {
+        item.retries += 1
+      }
+    }),
+    mockGetSyncQueueCount: vi.fn().mockImplementation(async () => mockQueue.length),
+    mockClearSyncQueue: vi.fn().mockImplementation(async () => {
+      mockQueue = []
+      nextId = 1
+    }),
+    mockSyncQueueItem: vi.fn().mockResolvedValue(undefined),
+    // Helper to reset the mock queue state
+    resetMockQueue: () => {
+      mockQueue = []
+      nextId = 1
+    },
+  }
+})
 
 // Mock the storage layer
 vi.mock('./storage', () => ({
@@ -49,6 +74,7 @@ describe('SyncManager', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    mocks.resetMockQueue()
     // Create a fresh sync manager instance with auto-sync disabled for tests
     syncManager = new SyncManager({ autoSync: false })
   })
@@ -113,7 +139,7 @@ describe('SyncManager', () => {
       await smallQueue.clearQueue()
 
       // Add one item to fill the queue
-      await smallQueue.addToQueue({
+      const firstId = await smallQueue.addToQueue({
         type: 'exercise_complete',
         data: {
           id: 'test-id',
@@ -134,6 +160,11 @@ describe('SyncManager', () => {
         retries: 0,
       })
 
+      // Verify the first item was added
+      expect(firstId).toBeGreaterThanOrEqual(1)
+      const count = await smallQueue.getQueueCount()
+      expect(count).toBe(1)
+
       const item: Omit<SyncQueueItem, 'id'> = {
         type: 'session_end',
         data: {
@@ -147,7 +178,7 @@ describe('SyncManager', () => {
         retries: 0,
       }
 
-      await expect(smallQueue.addToQueue(item)).rejects.toThrow('queue is full')
+      await expect(smallQueue.addToQueue(item)).rejects.toThrow('Sync queue is full')
 
       smallQueue.destroy()
     })
