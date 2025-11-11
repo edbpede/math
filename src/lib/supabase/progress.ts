@@ -20,34 +20,41 @@
  * - 12.4: Debounced batch writes every 30 seconds
  */
 
-import { supabase } from './client'
-import type { Database } from './types'
+import { supabase } from "./client";
+import type { Database } from "./types";
 import type {
-  CompetencyProgress,
-  SkillProgress,
-  ExerciseAttempt,
-  PracticeSession,
-} from '../mastery/types'
-import type { CompetencyAreaId, GradeRange, Difficulty } from '../curriculum/types'
+    CompetencyProgress,
+    SkillProgress,
+    ExerciseAttempt,
+    PracticeSession,
+} from "../mastery/types";
+import type {
+    CompetencyAreaId,
+    GradeRange,
+    Difficulty,
+} from "../curriculum/types";
 
 // ============================================================================
 // TYPE ALIASES FOR DATABASE OPERATIONS
 // ============================================================================
 
-type CompetencyProgressRow = Database['public']['Tables']['competency_progress']['Row']
-type CompetencyProgressInsert = Database['public']['Tables']['competency_progress']['Insert']
-type CompetencyProgressUpdate = Database['public']['Tables']['competency_progress']['Update']
+type CompetencyProgressRow =
+    Database["public"]["Tables"]["competency_progress"]["Row"];
+type CompetencyProgressUpdate =
+    Database["public"]["Tables"]["competency_progress"]["Update"];
 
-type SkillsProgressRow = Database['public']['Tables']['skills_progress']['Row']
-type SkillsProgressInsert = Database['public']['Tables']['skills_progress']['Insert']
-type SkillsProgressUpdate = Database['public']['Tables']['skills_progress']['Update']
+type SkillsProgressRow = Database["public"]["Tables"]["skills_progress"]["Row"];
+type SkillsProgressUpdate =
+    Database["public"]["Tables"]["skills_progress"]["Update"];
 
-type ExerciseHistoryRow = Database['public']['Tables']['exercise_history']['Row']
-type ExerciseHistoryInsert = Database['public']['Tables']['exercise_history']['Insert']
+type ExerciseHistoryRow =
+    Database["public"]["Tables"]["exercise_history"]["Row"];
+type ExerciseHistoryInsert =
+    Database["public"]["Tables"]["exercise_history"]["Insert"];
 
-type SessionRow = Database['public']['Tables']['sessions']['Row']
-type SessionInsert = Database['public']['Tables']['sessions']['Insert']
-type SessionUpdate = Database['public']['Tables']['sessions']['Update']
+type SessionRow = Database["public"]["Tables"]["sessions"]["Row"];
+type SessionInsert = Database["public"]["Tables"]["sessions"]["Insert"];
+type SessionUpdate = Database["public"]["Tables"]["sessions"]["Update"];
 
 // ============================================================================
 // ERROR HANDLING UTILITIES
@@ -57,32 +64,32 @@ type SessionUpdate = Database['public']['Tables']['sessions']['Update']
  * Error class for progress tracking operations
  */
 export class ProgressError extends Error {
-  constructor(
-    message: string,
-    public readonly operation: string,
-    public readonly cause?: unknown
-  ) {
-    super(message)
-    this.name = 'ProgressError'
-  }
+    constructor(
+        message: string,
+        public readonly operation: string,
+        public readonly cause?: unknown,
+    ) {
+        super(message);
+        this.name = "ProgressError";
+    }
 }
 
 /**
  * Retry configuration for database operations
  */
 interface RetryConfig {
-  maxAttempts: number
-  initialDelayMs: number
-  maxDelayMs: number
-  backoffMultiplier: number
+    maxAttempts: number;
+    initialDelayMs: number;
+    maxDelayMs: number;
+    backoffMultiplier: number;
 }
 
 const DEFAULT_RETRY_CONFIG: RetryConfig = {
-  maxAttempts: 3,
-  initialDelayMs: 100,
-  maxDelayMs: 2000,
-  backoffMultiplier: 2,
-}
+    maxAttempts: 3,
+    initialDelayMs: 100,
+    maxDelayMs: 2000,
+    backoffMultiplier: 2,
+};
 
 /**
  * Execute a database operation with exponential backoff retry logic
@@ -94,42 +101,45 @@ const DEFAULT_RETRY_CONFIG: RetryConfig = {
  * @throws ProgressError if all retries fail
  */
 async function withRetry<T>(
-  operation: () => Promise<T>,
-  operationName: string,
-  config: RetryConfig = DEFAULT_RETRY_CONFIG
+    operation: () => Promise<T>,
+    operationName: string,
+    config: RetryConfig = DEFAULT_RETRY_CONFIG,
 ): Promise<T> {
-  let lastError: unknown
-  let delay = config.initialDelayMs
+    let lastError: unknown;
+    let delay = config.initialDelayMs;
 
-  for (let attempt = 1; attempt <= config.maxAttempts; attempt++) {
-    try {
-      return await operation()
-    } catch (error) {
-      lastError = error
+    for (let attempt = 1; attempt <= config.maxAttempts; attempt++) {
+        try {
+            return await operation();
+        } catch (error) {
+            lastError = error;
 
-      // Don't retry on last attempt
-      if (attempt === config.maxAttempts) {
-        break
-      }
+            // Don't retry on last attempt
+            if (attempt === config.maxAttempts) {
+                break;
+            }
 
-      // Log retry attempt (in production, send to monitoring)
-      console.warn(
-        `[ProgressTracking] ${operationName} failed (attempt ${attempt}/${config.maxAttempts}), retrying in ${delay}ms`,
-        error
-      )
+            // Log retry attempt (in production, send to monitoring)
+            console.warn(
+                `[ProgressTracking] ${operationName} failed (attempt ${attempt}/${config.maxAttempts}), retrying in ${delay}ms`,
+                error,
+            );
 
-      // Wait before retry with exponential backoff
-      await new Promise(resolve => setTimeout(resolve, delay))
-      delay = Math.min(delay * config.backoffMultiplier, config.maxDelayMs)
+            // Wait before retry with exponential backoff
+            await new Promise((resolve) => setTimeout(resolve, delay));
+            delay = Math.min(
+                delay * config.backoffMultiplier,
+                config.maxDelayMs,
+            );
+        }
     }
-  }
 
-  // All retries failed
-  throw new ProgressError(
-    `Failed to ${operationName} after ${config.maxAttempts} attempts`,
-    operationName,
-    lastError
-  )
+    // All retries failed
+    throw new ProgressError(
+        `Failed to ${operationName} after ${config.maxAttempts} attempts`,
+        operationName,
+        lastError,
+    );
 }
 
 // ============================================================================
@@ -139,74 +149,85 @@ async function withRetry<T>(
 /**
  * Convert database row to CompetencyProgress domain type
  */
-function rowToCompetencyProgress(row: CompetencyProgressRow): CompetencyProgress {
-  return {
-    competencyAreaId: row.competency_area_id as CompetencyAreaId,
-    gradeRange: row.grade_range as GradeRange,
-    masteryLevel: row.mastery_level,
-    totalAttempts: row.total_attempts,
-    successRate: Number(row.success_rate),
-    lastPracticed: row.last_practiced_at ? new Date(row.last_practiced_at) : new Date(),
-    achievedAt: row.achieved_at ? new Date(row.achieved_at) : undefined,
-  }
+function rowToCompetencyProgress(
+    row: CompetencyProgressRow,
+): CompetencyProgress {
+    return {
+        competencyAreaId: row.competency_area_id as CompetencyAreaId,
+        gradeRange: row.grade_range as GradeRange,
+        masteryLevel: row.mastery_level,
+        totalAttempts: row.total_attempts,
+        successRate: Number(row.success_rate),
+        lastPracticed: row.last_practiced_at
+            ? new Date(row.last_practiced_at)
+            : new Date(),
+        achievedAt: row.achieved_at ? new Date(row.achieved_at) : undefined,
+    };
 }
 
 /**
  * Convert database row to SkillProgress domain type
  */
 function rowToSkillProgress(row: SkillsProgressRow): SkillProgress {
-  return {
-    skillId: row.skill_id,
-    masteryLevel: row.mastery_level,
-    srsParams: {
-      easeFactor: Number(row.ease_factor),
-      interval: row.interval_days,
-      repetitionCount: row.repetition_count,
-    },
-    attempts: row.attempts,
-    successes: row.successes,
-    avgResponseTime: row.avg_response_time_ms ?? 0,
-    lastPracticed: row.last_practiced_at ? new Date(row.last_practiced_at) : new Date(),
-    nextReview: row.next_review_at ? new Date(row.next_review_at) : new Date(),
-  }
+    return {
+        skillId: row.skill_id,
+        masteryLevel: row.mastery_level,
+        srsParams: {
+            easeFactor: Number(row.ease_factor),
+            interval: row.interval_days,
+            repetitionCount: row.repetition_count,
+        },
+        attempts: row.attempts,
+        successes: row.successes,
+        avgResponseTime: row.avg_response_time_ms ?? 0,
+        lastPracticed: row.last_practiced_at
+            ? new Date(row.last_practiced_at)
+            : new Date(),
+        nextReview: row.next_review_at
+            ? new Date(row.next_review_at)
+            : new Date(),
+    };
 }
 
 /**
  * Convert database row to ExerciseAttempt domain type
  */
 function rowToExerciseAttempt(row: ExerciseHistoryRow): ExerciseAttempt {
-  return {
-    id: row.id,
-    userId: row.user_id,
-    sessionId: row.session_id,
-    templateId: row.template_id,
-    competencyAreaId: row.competency_area_id as CompetencyAreaId,
-    skillId: row.skill_id,
-    difficulty: row.difficulty as Difficulty,
-    isBinding: row.is_binding,
-    correct: row.correct,
-    timeSpentSeconds: row.time_spent_seconds,
-    hintsUsed: row.hints_used,
-    userAnswer: row.user_answer ?? '',
-    createdAt: new Date(row.created_at),
-  }
+    return {
+        id: row.id,
+        userId: row.user_id,
+        sessionId: row.session_id,
+        templateId: row.template_id,
+        competencyAreaId: row.competency_area_id as CompetencyAreaId,
+        skillId: row.skill_id,
+        difficulty: row.difficulty as Difficulty,
+        isBinding: row.is_binding,
+        correct: row.correct,
+        timeSpentSeconds: row.time_spent_seconds,
+        hintsUsed: row.hints_used,
+        userAnswer: row.user_answer ?? "",
+        createdAt: new Date(row.created_at),
+    };
 }
 
 /**
  * Convert database row to PracticeSession domain type
  */
 function rowToPracticeSession(row: SessionRow): PracticeSession {
-  return {
-    id: row.id,
-    userId: row.user_id,
-    gradeRange: row.grade_range as GradeRange,
-    competencyAreaId: row.competency_area_id as CompetencyAreaId | undefined,
-    startedAt: new Date(row.started_at),
-    endedAt: row.ended_at ? new Date(row.ended_at) : undefined,
-    totalExercises: row.total_exercises,
-    correctCount: row.correct_count,
-    avgTimePerExerciseSeconds: row.avg_time_per_exercise_seconds ?? undefined,
-  }
+    return {
+        id: row.id,
+        userId: row.user_id,
+        gradeRange: row.grade_range as GradeRange,
+        competencyAreaId: row.competency_area_id as
+            | CompetencyAreaId
+            | undefined,
+        startedAt: new Date(row.started_at),
+        endedAt: row.ended_at ? new Date(row.ended_at) : undefined,
+        totalExercises: row.total_exercises,
+        correctCount: row.correct_count,
+        avgTimePerExerciseSeconds:
+            row.avg_time_per_exercise_seconds ?? undefined,
+    };
 }
 
 // ============================================================================
@@ -221,21 +242,21 @@ function rowToPracticeSession(row: SessionRow): PracticeSession {
  * @throws ProgressError if fetch fails
  */
 export async function fetchCompetencyProgress(
-  userId: string
+    userId: string,
 ): Promise<CompetencyProgress[]> {
-  return withRetry(async () => {
-    const { data, error } = await supabase
-      .from('competency_progress')
-      .select('*')
-      .eq('user_id', userId)
-      .order('competency_area_id', { ascending: true })
+    return withRetry(async () => {
+        const { data, error } = await supabase
+            .from("competency_progress")
+            .select("*")
+            .eq("user_id", userId)
+            .order("competency_area_id", { ascending: true });
 
-    if (error) {
-      throw error
-    }
+        if (error) {
+            throw error;
+        }
 
-    return (data ?? []).map(rowToCompetencyProgress)
-  }, 'fetch competency progress')
+        return (data ?? []).map(rowToCompetencyProgress);
+    }, "fetch competency progress");
 }
 
 /**
@@ -248,29 +269,29 @@ export async function fetchCompetencyProgress(
  * @throws ProgressError if fetch fails
  */
 export async function fetchCompetencyProgressByArea(
-  userId: string,
-  competencyAreaId: CompetencyAreaId,
-  gradeRange: GradeRange
+    userId: string,
+    competencyAreaId: CompetencyAreaId,
+    gradeRange: GradeRange,
 ): Promise<CompetencyProgress | null> {
-  return withRetry(async () => {
-    const { data, error } = await supabase
-      .from('competency_progress')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('competency_area_id', competencyAreaId)
-      .eq('grade_range', gradeRange)
-      .single()
+    return withRetry(async () => {
+        const { data, error } = await supabase
+            .from("competency_progress")
+            .select("*")
+            .eq("user_id", userId)
+            .eq("competency_area_id", competencyAreaId)
+            .eq("grade_range", gradeRange)
+            .single();
 
-    if (error) {
-      // Not found is not an error - return null
-      if (error.code === 'PGRST116') {
-        return null
-      }
-      throw error
-    }
+        if (error) {
+            // Not found is not an error - return null
+            if (error.code === "PGRST116") {
+                return null;
+            }
+            throw error;
+        }
 
-    return data ? rowToCompetencyProgress(data) : null
-  }, 'fetch competency progress by area')
+        return data ? rowToCompetencyProgress(data) : null;
+    }, "fetch competency progress by area");
 }
 
 /**
@@ -280,20 +301,22 @@ export async function fetchCompetencyProgressByArea(
  * @returns Array of skills progress records
  * @throws ProgressError if fetch fails
  */
-export async function fetchSkillsProgress(userId: string): Promise<SkillProgress[]> {
-  return withRetry(async () => {
-    const { data, error } = await supabase
-      .from('skills_progress')
-      .select('*')
-      .eq('user_id', userId)
-      .order('skill_id', { ascending: true })
+export async function fetchSkillsProgress(
+    userId: string,
+): Promise<SkillProgress[]> {
+    return withRetry(async () => {
+        const { data, error } = await supabase
+            .from("skills_progress")
+            .select("*")
+            .eq("user_id", userId)
+            .order("skill_id", { ascending: true });
 
-    if (error) {
-      throw error
-    }
+        if (error) {
+            throw error;
+        }
 
-    return (data ?? []).map(rowToSkillProgress)
-  }, 'fetch skills progress')
+        return (data ?? []).map(rowToSkillProgress);
+    }, "fetch skills progress");
 }
 
 /**
@@ -305,27 +328,27 @@ export async function fetchSkillsProgress(userId: string): Promise<SkillProgress
  * @throws ProgressError if fetch fails
  */
 export async function fetchSkillProgressBySkill(
-  userId: string,
-  skillId: string
+    userId: string,
+    skillId: string,
 ): Promise<SkillProgress | null> {
-  return withRetry(async () => {
-    const { data, error } = await supabase
-      .from('skills_progress')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('skill_id', skillId)
-      .single()
+    return withRetry(async () => {
+        const { data, error } = await supabase
+            .from("skills_progress")
+            .select("*")
+            .eq("user_id", userId)
+            .eq("skill_id", skillId)
+            .single();
 
-    if (error) {
-      // Not found is not an error - return null
-      if (error.code === 'PGRST116') {
-        return null
-      }
-      throw error
-    }
+        if (error) {
+            // Not found is not an error - return null
+            if (error.code === "PGRST116") {
+                return null;
+            }
+            throw error;
+        }
 
-    return data ? rowToSkillProgress(data) : null
-  }, 'fetch skill progress by skill')
+        return data ? rowToSkillProgress(data) : null;
+    }, "fetch skill progress by skill");
 }
 
 /**
@@ -337,23 +360,23 @@ export async function fetchSkillProgressBySkill(
  * @throws ProgressError if fetch fails
  */
 export async function fetchSkillsDueForReview(
-  userId: string,
-  beforeDate: Date = new Date()
+    userId: string,
+    beforeDate: Date = new Date(),
 ): Promise<SkillProgress[]> {
-  return withRetry(async () => {
-    const { data, error } = await supabase
-      .from('skills_progress')
-      .select('*')
-      .eq('user_id', userId)
-      .lte('next_review_at', beforeDate.toISOString())
-      .order('next_review_at', { ascending: true })
+    return withRetry(async () => {
+        const { data, error } = await supabase
+            .from("skills_progress")
+            .select("*")
+            .eq("user_id", userId)
+            .lte("next_review_at", beforeDate.toISOString())
+            .order("next_review_at", { ascending: true });
 
-    if (error) {
-      throw error
-    }
+        if (error) {
+            throw error;
+        }
 
-    return (data ?? []).map(rowToSkillProgress)
-  }, 'fetch skills due for review')
+        return (data ?? []).map(rowToSkillProgress);
+    }, "fetch skills due for review");
 }
 
 /**
@@ -365,23 +388,23 @@ export async function fetchSkillsDueForReview(
  * @throws ProgressError if fetch fails
  */
 export async function fetchExerciseHistory(
-  userId: string,
-  limit: number = 100
+    userId: string,
+    limit: number = 100,
 ): Promise<ExerciseAttempt[]> {
-  return withRetry(async () => {
-    const { data, error } = await supabase
-      .from('exercise_history')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(limit)
+    return withRetry(async () => {
+        const { data, error } = await supabase
+            .from("exercise_history")
+            .select("*")
+            .eq("user_id", userId)
+            .order("created_at", { ascending: false })
+            .limit(limit);
 
-    if (error) {
-      throw error
-    }
+        if (error) {
+            throw error;
+        }
 
-    return (data ?? []).map(rowToExerciseAttempt)
-  }, 'fetch exercise history')
+        return (data ?? []).map(rowToExerciseAttempt);
+    }, "fetch exercise history");
 }
 
 /**
@@ -394,25 +417,25 @@ export async function fetchExerciseHistory(
  * @throws ProgressError if fetch fails
  */
 export async function fetchExerciseHistoryBySkill(
-  userId: string,
-  skillId: string,
-  limit: number = 20
+    userId: string,
+    skillId: string,
+    limit: number = 20,
 ): Promise<ExerciseAttempt[]> {
-  return withRetry(async () => {
-    const { data, error } = await supabase
-      .from('exercise_history')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('skill_id', skillId)
-      .order('created_at', { ascending: false })
-      .limit(limit)
+    return withRetry(async () => {
+        const { data, error } = await supabase
+            .from("exercise_history")
+            .select("*")
+            .eq("user_id", userId)
+            .eq("skill_id", skillId)
+            .order("created_at", { ascending: false })
+            .limit(limit);
 
-    if (error) {
-      throw error
-    }
+        if (error) {
+            throw error;
+        }
 
-    return (data ?? []).map(rowToExerciseAttempt)
-  }, 'fetch exercise history by skill')
+        return (data ?? []).map(rowToExerciseAttempt);
+    }, "fetch exercise history by skill");
 }
 
 // ============================================================================
@@ -428,36 +451,39 @@ export async function fetchExerciseHistoryBySkill(
  * @throws ProgressError if update fails
  */
 export async function updateCompetencyProgress(
-  userId: string,
-  progress: Omit<CompetencyProgress, 'lastPracticed' | 'achievedAt'>
+    userId: string,
+    progress: Omit<CompetencyProgress, "lastPracticed" | "achievedAt">,
 ): Promise<CompetencyProgress> {
-  return withRetry(async () => {
-    const updateData: CompetencyProgressUpdate = {
-      user_id: userId,
-      competency_area_id: progress.competencyAreaId,
-      grade_range: progress.gradeRange,
-      mastery_level: progress.masteryLevel,
-      total_attempts: progress.totalAttempts,
-      success_rate: progress.successRate,
-      last_practiced_at: new Date().toISOString(),
-      // Set achieved_at if mastery level reaches proficient (80+) and not already set
-      achieved_at: progress.masteryLevel >= 80 ? new Date().toISOString() : undefined,
-    }
+    return withRetry(async () => {
+        const updateData: CompetencyProgressUpdate = {
+            user_id: userId,
+            competency_area_id: progress.competencyAreaId,
+            grade_range: progress.gradeRange,
+            mastery_level: progress.masteryLevel,
+            total_attempts: progress.totalAttempts,
+            success_rate: progress.successRate,
+            last_practiced_at: new Date().toISOString(),
+            // Set achieved_at if mastery level reaches proficient (80+) and not already set
+            achieved_at:
+                progress.masteryLevel >= 80
+                    ? new Date().toISOString()
+                    : undefined,
+        };
 
-    const { data, error } = await supabase
-      .from('competency_progress')
-      .upsert(updateData, {
-        onConflict: 'user_id,competency_area_id,grade_range',
-      })
-      .select()
-      .single()
+        const { data, error } = await supabase
+            .from("competency_progress")
+            .upsert(updateData, {
+                onConflict: "user_id,competency_area_id,grade_range",
+            })
+            .select()
+            .single();
 
-    if (error) {
-      throw error
-    }
+        if (error) {
+            throw error;
+        }
 
-    return rowToCompetencyProgress(data)
-  }, 'update competency progress')
+        return rowToCompetencyProgress(data);
+    }, "update competency progress");
 }
 
 /**
@@ -469,38 +495,38 @@ export async function updateCompetencyProgress(
  * @throws ProgressError if update fails
  */
 export async function updateSkillProgress(
-  userId: string,
-  progress: Omit<SkillProgress, 'lastPracticed'>
+    userId: string,
+    progress: Omit<SkillProgress, "lastPracticed">,
 ): Promise<SkillProgress> {
-  return withRetry(async () => {
-    const updateData: SkillsProgressUpdate = {
-      user_id: userId,
-      skill_id: progress.skillId,
-      mastery_level: progress.masteryLevel,
-      attempts: progress.attempts,
-      successes: progress.successes,
-      avg_response_time_ms: progress.avgResponseTime,
-      ease_factor: progress.srsParams.easeFactor,
-      interval_days: progress.srsParams.interval,
-      repetition_count: progress.srsParams.repetitionCount,
-      last_practiced_at: new Date().toISOString(),
-      next_review_at: progress.nextReview.toISOString(),
-    }
+    return withRetry(async () => {
+        const updateData: SkillsProgressUpdate = {
+            user_id: userId,
+            skill_id: progress.skillId,
+            mastery_level: progress.masteryLevel,
+            attempts: progress.attempts,
+            successes: progress.successes,
+            avg_response_time_ms: progress.avgResponseTime,
+            ease_factor: progress.srsParams.easeFactor,
+            interval_days: progress.srsParams.interval,
+            repetition_count: progress.srsParams.repetitionCount,
+            last_practiced_at: new Date().toISOString(),
+            next_review_at: progress.nextReview.toISOString(),
+        };
 
-    const { data, error } = await supabase
-      .from('skills_progress')
-      .upsert(updateData, {
-        onConflict: 'user_id,skill_id',
-      })
-      .select()
-      .single()
+        const { data, error } = await supabase
+            .from("skills_progress")
+            .upsert(updateData, {
+                onConflict: "user_id,skill_id",
+            })
+            .select()
+            .single();
 
-    if (error) {
-      throw error
-    }
+        if (error) {
+            throw error;
+        }
 
-    return rowToSkillProgress(data)
-  }, 'update skill progress')
+        return rowToSkillProgress(data);
+    }, "update skill progress");
 }
 
 /**
@@ -513,39 +539,43 @@ export async function updateSkillProgress(
  * @throws ProgressError if batch update fails
  */
 export async function batchUpdateCompetencyProgress(
-  userId: string,
-  progressList: Array<Omit<CompetencyProgress, 'lastPracticed' | 'achievedAt'>>
+    userId: string,
+    progressList: Array<
+        Omit<CompetencyProgress, "lastPracticed" | "achievedAt">
+    >,
 ): Promise<CompetencyProgress[]> {
-  if (progressList.length === 0) {
-    return []
-  }
-
-  return withRetry(async () => {
-    const now = new Date().toISOString()
-    const updateData: CompetencyProgressUpdate[] = progressList.map(progress => ({
-      user_id: userId,
-      competency_area_id: progress.competencyAreaId,
-      grade_range: progress.gradeRange,
-      mastery_level: progress.masteryLevel,
-      total_attempts: progress.totalAttempts,
-      success_rate: progress.successRate,
-      last_practiced_at: now,
-      achieved_at: progress.masteryLevel >= 80 ? now : undefined,
-    }))
-
-    const { data, error } = await supabase
-      .from('competency_progress')
-      .upsert(updateData, {
-        onConflict: 'user_id,competency_area_id,grade_range',
-      })
-      .select()
-
-    if (error) {
-      throw error
+    if (progressList.length === 0) {
+        return [];
     }
 
-    return (data ?? []).map(rowToCompetencyProgress)
-  }, 'batch update competency progress')
+    return withRetry(async () => {
+        const now = new Date().toISOString();
+        const updateData: CompetencyProgressUpdate[] = progressList.map(
+            (progress) => ({
+                user_id: userId,
+                competency_area_id: progress.competencyAreaId,
+                grade_range: progress.gradeRange,
+                mastery_level: progress.masteryLevel,
+                total_attempts: progress.totalAttempts,
+                success_rate: progress.successRate,
+                last_practiced_at: now,
+                achieved_at: progress.masteryLevel >= 80 ? now : undefined,
+            }),
+        );
+
+        const { data, error } = await supabase
+            .from("competency_progress")
+            .upsert(updateData, {
+                onConflict: "user_id,competency_area_id,grade_range",
+            })
+            .select();
+
+        if (error) {
+            throw error;
+        }
+
+        return (data ?? []).map(rowToCompetencyProgress);
+    }, "batch update competency progress");
 }
 
 /**
@@ -558,42 +588,44 @@ export async function batchUpdateCompetencyProgress(
  * @throws ProgressError if batch update fails
  */
 export async function batchUpdateSkillProgress(
-  userId: string,
-  progressList: Array<Omit<SkillProgress, 'lastPracticed'>>
+    userId: string,
+    progressList: Array<Omit<SkillProgress, "lastPracticed">>,
 ): Promise<SkillProgress[]> {
-  if (progressList.length === 0) {
-    return []
-  }
-
-  return withRetry(async () => {
-    const now = new Date().toISOString()
-    const updateData: SkillsProgressUpdate[] = progressList.map(progress => ({
-      user_id: userId,
-      skill_id: progress.skillId,
-      mastery_level: progress.masteryLevel,
-      attempts: progress.attempts,
-      successes: progress.successes,
-      avg_response_time_ms: progress.avgResponseTime,
-      ease_factor: progress.srsParams.easeFactor,
-      interval_days: progress.srsParams.interval,
-      repetition_count: progress.srsParams.repetitionCount,
-      last_practiced_at: now,
-      next_review_at: progress.nextReview.toISOString(),
-    }))
-
-    const { data, error } = await supabase
-      .from('skills_progress')
-      .upsert(updateData, {
-        onConflict: 'user_id,skill_id',
-      })
-      .select()
-
-    if (error) {
-      throw error
+    if (progressList.length === 0) {
+        return [];
     }
 
-    return (data ?? []).map(rowToSkillProgress)
-  }, 'batch update skill progress')
+    return withRetry(async () => {
+        const now = new Date().toISOString();
+        const updateData: SkillsProgressUpdate[] = progressList.map(
+            (progress) => ({
+                user_id: userId,
+                skill_id: progress.skillId,
+                mastery_level: progress.masteryLevel,
+                attempts: progress.attempts,
+                successes: progress.successes,
+                avg_response_time_ms: progress.avgResponseTime,
+                ease_factor: progress.srsParams.easeFactor,
+                interval_days: progress.srsParams.interval,
+                repetition_count: progress.srsParams.repetitionCount,
+                last_practiced_at: now,
+                next_review_at: progress.nextReview.toISOString(),
+            }),
+        );
+
+        const { data, error } = await supabase
+            .from("skills_progress")
+            .upsert(updateData, {
+                onConflict: "user_id,skill_id",
+            })
+            .select();
+
+        if (error) {
+            throw error;
+        }
+
+        return (data ?? []).map(rowToSkillProgress);
+    }, "batch update skill progress");
 }
 
 // ============================================================================
@@ -609,35 +641,35 @@ export async function batchUpdateSkillProgress(
  * @throws ProgressError if logging fails
  */
 export async function logExerciseAttempt(
-  attempt: Omit<ExerciseAttempt, 'id' | 'createdAt'>
+    attempt: Omit<ExerciseAttempt, "id" | "createdAt">,
 ): Promise<ExerciseAttempt> {
-  return withRetry(async () => {
-    const insertData: ExerciseHistoryInsert = {
-      user_id: attempt.userId,
-      session_id: attempt.sessionId,
-      template_id: attempt.templateId,
-      competency_area_id: attempt.competencyAreaId,
-      skill_id: attempt.skillId,
-      difficulty: attempt.difficulty,
-      is_binding: attempt.isBinding,
-      correct: attempt.correct,
-      time_spent_seconds: attempt.timeSpentSeconds,
-      hints_used: attempt.hintsUsed,
-      user_answer: attempt.userAnswer,
-    }
+    return withRetry(async () => {
+        const insertData: ExerciseHistoryInsert = {
+            user_id: attempt.userId,
+            session_id: attempt.sessionId,
+            template_id: attempt.templateId,
+            competency_area_id: attempt.competencyAreaId,
+            skill_id: attempt.skillId,
+            difficulty: attempt.difficulty,
+            is_binding: attempt.isBinding,
+            correct: attempt.correct,
+            time_spent_seconds: attempt.timeSpentSeconds,
+            hints_used: attempt.hintsUsed,
+            user_answer: attempt.userAnswer,
+        };
 
-    const { data, error } = await supabase
-      .from('exercise_history')
-      .insert(insertData)
-      .select()
-      .single()
+        const { data, error } = await supabase
+            .from("exercise_history")
+            .insert(insertData)
+            .select()
+            .single();
 
-    if (error) {
-      throw error
-    }
+        if (error) {
+            throw error;
+        }
 
-    return rowToExerciseAttempt(data)
-  }, 'log exercise attempt')
+        return rowToExerciseAttempt(data);
+    }, "log exercise attempt");
 }
 
 /**
@@ -649,38 +681,38 @@ export async function logExerciseAttempt(
  * @throws ProgressError if batch logging fails
  */
 export async function batchLogExerciseAttempts(
-  attempts: Array<Omit<ExerciseAttempt, 'id' | 'createdAt'>>
+    attempts: Array<Omit<ExerciseAttempt, "id" | "createdAt">>,
 ): Promise<ExerciseAttempt[]> {
-  if (attempts.length === 0) {
-    return []
-  }
-
-  return withRetry(async () => {
-    const insertData: ExerciseHistoryInsert[] = attempts.map(attempt => ({
-      user_id: attempt.userId,
-      session_id: attempt.sessionId,
-      template_id: attempt.templateId,
-      competency_area_id: attempt.competencyAreaId,
-      skill_id: attempt.skillId,
-      difficulty: attempt.difficulty,
-      is_binding: attempt.isBinding,
-      correct: attempt.correct,
-      time_spent_seconds: attempt.timeSpentSeconds,
-      hints_used: attempt.hintsUsed,
-      user_answer: attempt.userAnswer,
-    }))
-
-    const { data, error } = await supabase
-      .from('exercise_history')
-      .insert(insertData)
-      .select()
-
-    if (error) {
-      throw error
+    if (attempts.length === 0) {
+        return [];
     }
 
-    return (data ?? []).map(rowToExerciseAttempt)
-  }, 'batch log exercise attempts')
+    return withRetry(async () => {
+        const insertData: ExerciseHistoryInsert[] = attempts.map((attempt) => ({
+            user_id: attempt.userId,
+            session_id: attempt.sessionId,
+            template_id: attempt.templateId,
+            competency_area_id: attempt.competencyAreaId,
+            skill_id: attempt.skillId,
+            difficulty: attempt.difficulty,
+            is_binding: attempt.isBinding,
+            correct: attempt.correct,
+            time_spent_seconds: attempt.timeSpentSeconds,
+            hints_used: attempt.hintsUsed,
+            user_answer: attempt.userAnswer,
+        }));
+
+        const { data, error } = await supabase
+            .from("exercise_history")
+            .insert(insertData)
+            .select();
+
+        if (error) {
+            throw error;
+        }
+
+        return (data ?? []).map(rowToExerciseAttempt);
+    }, "batch log exercise attempts");
 }
 
 // ============================================================================
@@ -698,30 +730,30 @@ export async function batchLogExerciseAttempts(
  * @throws ProgressError if session creation fails
  */
 export async function startSession(
-  userId: string,
-  gradeRange: GradeRange,
-  competencyAreaId?: CompetencyAreaId
+    userId: string,
+    gradeRange: GradeRange,
+    competencyAreaId?: CompetencyAreaId,
 ): Promise<PracticeSession> {
-  return withRetry(async () => {
-    const insertData: SessionInsert = {
-      user_id: userId,
-      grade_range: gradeRange,
-      competency_area_id: competencyAreaId,
-      started_at: new Date().toISOString(),
-    }
+    return withRetry(async () => {
+        const insertData: SessionInsert = {
+            user_id: userId,
+            grade_range: gradeRange,
+            competency_area_id: competencyAreaId,
+            started_at: new Date().toISOString(),
+        };
 
-    const { data, error } = await supabase
-      .from('sessions')
-      .insert(insertData)
-      .select()
-      .single()
+        const { data, error } = await supabase
+            .from("sessions")
+            .insert(insertData)
+            .select()
+            .single();
 
-    if (error) {
-      throw error
-    }
+        if (error) {
+            throw error;
+        }
 
-    return rowToPracticeSession(data)
-  }, 'start session')
+        return rowToPracticeSession(data);
+    }, "start session");
 }
 
 /**
@@ -734,29 +766,29 @@ export async function startSession(
  * @throws ProgressError if update fails
  */
 export async function updateSession(
-  sessionId: string,
-  totalExercises: number,
-  correctCount: number
+    sessionId: string,
+    totalExercises: number,
+    correctCount: number,
 ): Promise<PracticeSession> {
-  return withRetry(async () => {
-    const updateData: SessionUpdate = {
-      total_exercises: totalExercises,
-      correct_count: correctCount,
-    }
+    return withRetry(async () => {
+        const updateData: SessionUpdate = {
+            total_exercises: totalExercises,
+            correct_count: correctCount,
+        };
 
-    const { data, error } = await supabase
-      .from('sessions')
-      .update(updateData)
-      .eq('id', sessionId)
-      .select()
-      .single()
+        const { data, error } = await supabase
+            .from("sessions")
+            .update(updateData)
+            .eq("id", sessionId)
+            .select()
+            .single();
 
-    if (error) {
-      throw error
-    }
+        if (error) {
+            throw error;
+        }
 
-    return rowToPracticeSession(data)
-  }, 'update session')
+        return rowToPracticeSession(data);
+    }, "update session");
 }
 
 /**
@@ -771,32 +803,34 @@ export async function updateSession(
  * @throws ProgressError if update fails
  */
 export async function endSession(
-  sessionId: string,
-  totalExercises: number,
-  correctCount: number,
-  avgTimePerExerciseSeconds: number
+    sessionId: string,
+    totalExercises: number,
+    correctCount: number,
+    avgTimePerExerciseSeconds: number,
 ): Promise<PracticeSession> {
-  return withRetry(async () => {
-    const updateData: SessionUpdate = {
-      ended_at: new Date().toISOString(),
-      total_exercises: totalExercises,
-      correct_count: correctCount,
-      avg_time_per_exercise_seconds: Math.round(avgTimePerExerciseSeconds),
-    }
+    return withRetry(async () => {
+        const updateData: SessionUpdate = {
+            ended_at: new Date().toISOString(),
+            total_exercises: totalExercises,
+            correct_count: correctCount,
+            avg_time_per_exercise_seconds: Math.round(
+                avgTimePerExerciseSeconds,
+            ),
+        };
 
-    const { data, error } = await supabase
-      .from('sessions')
-      .update(updateData)
-      .eq('id', sessionId)
-      .select()
-      .single()
+        const { data, error } = await supabase
+            .from("sessions")
+            .update(updateData)
+            .eq("id", sessionId)
+            .select()
+            .single();
 
-    if (error) {
-      throw error
-    }
+        if (error) {
+            throw error;
+        }
 
-    return rowToPracticeSession(data)
-  }, 'end session')
+        return rowToPracticeSession(data);
+    }, "end session");
 }
 
 /**
@@ -806,24 +840,26 @@ export async function endSession(
  * @returns Session record or null if not found
  * @throws ProgressError if fetch fails
  */
-export async function fetchSession(sessionId: string): Promise<PracticeSession | null> {
-  return withRetry(async () => {
-    const { data, error } = await supabase
-      .from('sessions')
-      .select('*')
-      .eq('id', sessionId)
-      .single()
+export async function fetchSession(
+    sessionId: string,
+): Promise<PracticeSession | null> {
+    return withRetry(async () => {
+        const { data, error } = await supabase
+            .from("sessions")
+            .select("*")
+            .eq("id", sessionId)
+            .single();
 
-    if (error) {
-      // Not found is not an error - return null
-      if (error.code === 'PGRST116') {
-        return null
-      }
-      throw error
-    }
+        if (error) {
+            // Not found is not an error - return null
+            if (error.code === "PGRST116") {
+                return null;
+            }
+            throw error;
+        }
 
-    return data ? rowToPracticeSession(data) : null
-  }, 'fetch session')
+        return data ? rowToPracticeSession(data) : null;
+    }, "fetch session");
 }
 
 /**
@@ -835,23 +871,23 @@ export async function fetchSession(sessionId: string): Promise<PracticeSession |
  * @throws ProgressError if fetch fails
  */
 export async function fetchRecentSessions(
-  userId: string,
-  limit: number = 20
+    userId: string,
+    limit: number = 20,
 ): Promise<PracticeSession[]> {
-  return withRetry(async () => {
-    const { data, error } = await supabase
-      .from('sessions')
-      .select('*')
-      .eq('user_id', userId)
-      .order('started_at', { ascending: false })
-      .limit(limit)
+    return withRetry(async () => {
+        const { data, error } = await supabase
+            .from("sessions")
+            .select("*")
+            .eq("user_id", userId)
+            .order("started_at", { ascending: false })
+            .limit(limit);
 
-    if (error) {
-      throw error
-    }
+        if (error) {
+            throw error;
+        }
 
-    return (data ?? []).map(rowToPracticeSession)
-  }, 'fetch recent sessions')
+        return (data ?? []).map(rowToPracticeSession);
+    }, "fetch recent sessions");
 }
 
 /**
@@ -861,21 +897,23 @@ export async function fetchRecentSessions(
  * @returns Active session or null if no active session
  * @throws ProgressError if fetch fails
  */
-export async function fetchActiveSession(userId: string): Promise<PracticeSession | null> {
-  return withRetry(async () => {
-    const { data, error } = await supabase
-      .from('sessions')
-      .select('*')
-      .eq('user_id', userId)
-      .is('ended_at', null)
-      .order('started_at', { ascending: false })
-      .limit(1)
-      .maybeSingle()
+export async function fetchActiveSession(
+    userId: string,
+): Promise<PracticeSession | null> {
+    return withRetry(async () => {
+        const { data, error } = await supabase
+            .from("sessions")
+            .select("*")
+            .eq("user_id", userId)
+            .is("ended_at", null)
+            .order("started_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
 
-    if (error) {
-      throw error
-    }
+        if (error) {
+            throw error;
+        }
 
-    return data ? rowToPracticeSession(data) : null
-  }, 'fetch active session')
+        return data ? rowToPracticeSession(data) : null;
+    }, "fetch active session");
 }

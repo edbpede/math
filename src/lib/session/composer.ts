@@ -9,51 +9,54 @@
  */
 
 import type {
-  SessionCompositionConfig,
-  SessionCompositionResult,
-  SessionPlan,
-  PlannedExercise,
-  CategoryAllocation,
-  ContentCategory,
-  NewContentCriteria,
-  WeakAreaCriteria,
-} from './types';
+    SessionCompositionConfig,
+    SessionCompositionResult,
+    SessionPlan,
+    PlannedExercise,
+    CategoryAllocation,
+    ContentCategory,
+    NewContentCriteria,
+    WeakAreaCriteria,
+} from "./types";
 import {
-  DEFAULT_SESSION_CONFIG,
-  DEFAULT_NEW_CONTENT_CRITERIA,
-  DEFAULT_WEAK_AREA_CRITERIA,
-} from './types';
-import type { SkillProgress, CompetencyAreaId, GradeRange } from '../types';
-import { getDueSkillsSortedByPriority } from '../mastery/srs';
-import { templateRegistry, type TemplateSelectionCriteria } from '../exercises/template-registry';
+    DEFAULT_SESSION_CONFIG,
+    DEFAULT_NEW_CONTENT_CRITERIA,
+    DEFAULT_WEAK_AREA_CRITERIA,
+} from "./types";
+import type { SkillProgress, CompetencyAreaId, GradeRange } from "../types";
+import { getDueSkillsSortedByPriority } from "../mastery/srs";
+import {
+    templateRegistry,
+    type TemplateSelectionCriteria,
+} from "../exercises/template-registry";
 
 /**
  * Options for session composition
  */
 export interface ComposeSessionOptions {
-  /** User ID for this session */
-  userId: string;
+    /** User ID for this session */
+    userId: string;
 
-  /** Grade range to compose for */
-  gradeRange: GradeRange;
+    /** Grade range to compose for */
+    gradeRange: GradeRange;
 
-  /** Optional competency area filter */
-  competencyAreaId?: CompetencyAreaId;
+    /** Optional competency area filter */
+    competencyAreaId?: CompetencyAreaId;
 
-  /** User's skills progress data */
-  skillsProgress: SkillProgress[];
+    /** User's skills progress data */
+    skillsProgress: SkillProgress[];
 
-  /** Configuration for content balancing (uses defaults if not provided) */
-  config?: Partial<SessionCompositionConfig>;
+    /** Configuration for content balancing (uses defaults if not provided) */
+    config?: Partial<SessionCompositionConfig>;
 
-  /** Criteria for identifying new content (uses defaults if not provided) */
-  newContentCriteria?: Partial<NewContentCriteria>;
+    /** Criteria for identifying new content (uses defaults if not provided) */
+    newContentCriteria?: Partial<NewContentCriteria>;
 
-  /** Criteria for identifying weak areas (uses defaults if not provided) */
-  weakAreaCriteria?: Partial<WeakAreaCriteria>;
+    /** Criteria for identifying weak areas (uses defaults if not provided) */
+    weakAreaCriteria?: Partial<WeakAreaCriteria>;
 
-  /** Current date (for testing purposes) */
-  currentDate?: Date;
+    /** Current date (for testing purposes) */
+    currentDate?: Date;
 }
 
 /**
@@ -85,147 +88,152 @@ export interface ComposeSessionOptions {
  * }
  * ```
  */
-export function composeSession(options: ComposeSessionOptions): SessionCompositionResult {
-  try {
-    // Merge provided config with defaults
-    const config: SessionCompositionConfig = {
-      ...DEFAULT_SESSION_CONFIG,
-      ...options.config,
-    };
+export function composeSession(
+    options: ComposeSessionOptions,
+): SessionCompositionResult {
+    try {
+        // Merge provided config with defaults
+        const config: SessionCompositionConfig = {
+            ...DEFAULT_SESSION_CONFIG,
+            ...options.config,
+        };
 
-    // Merge criteria with defaults
-    const newContentCriteria = {
-      ...DEFAULT_NEW_CONTENT_CRITERIA,
-      ...options.newContentCriteria,
-    };
+        // Merge criteria with defaults
+        const newContentCriteria = {
+            ...DEFAULT_NEW_CONTENT_CRITERIA,
+            ...options.newContentCriteria,
+        };
 
-    const weakAreaCriteria = {
-      ...DEFAULT_WEAK_AREA_CRITERIA,
-      ...options.weakAreaCriteria,
-    };
+        const weakAreaCriteria = {
+            ...DEFAULT_WEAK_AREA_CRITERIA,
+            ...options.weakAreaCriteria,
+        };
 
-    const currentDate = options.currentDate || new Date();
+        const currentDate = options.currentDate || new Date();
 
-    // Validate configuration
-    const validationError = validateConfig(config);
-    if (validationError) {
-      return {
-        status: 'error',
-        message: validationError,
-      };
+        // Validate configuration
+        const validationError = validateConfig(config);
+        if (validationError) {
+            return {
+                status: "error",
+                message: validationError,
+            };
+        }
+
+        // Step 1: Calculate category allocation
+        const allocation = calculateCategoryAllocation(config);
+
+        // Step 2: Identify skills in each category
+        const newSkills = identifyNewContent(
+            options.skillsProgress,
+            newContentCriteria,
+            currentDate,
+        );
+
+        const reviewSkills = identifyReviewContent(
+            options.skillsProgress,
+            currentDate,
+        );
+
+        const weakAreaSkills = identifyWeakAreas(
+            options.skillsProgress,
+            weakAreaCriteria,
+        );
+
+        // Step 3: Build template selection criteria
+        const baseCriteria: TemplateSelectionCriteria = {
+            gradeRange: options.gradeRange,
+            competencyAreaId: options.competencyAreaId,
+        };
+
+        // Step 4: Select templates for each category
+        const exercises: PlannedExercise[] = [];
+        const usedTemplateIds = new Set<string>();
+
+        // Select review content (highest priority)
+        const reviewExercises = selectTemplatesForCategory(
+            "review",
+            reviewSkills,
+            allocation.review,
+            baseCriteria,
+            usedTemplateIds,
+        );
+        exercises.push(...reviewExercises);
+
+        // Select weak area content
+        const weakAreaExercises = selectTemplatesForCategory(
+            "weak-area",
+            weakAreaSkills,
+            allocation.weakArea,
+            baseCriteria,
+            usedTemplateIds,
+        );
+        exercises.push(...weakAreaExercises);
+
+        // Select new content
+        const newExercises = selectTemplatesForCategory(
+            "new",
+            newSkills,
+            allocation.new,
+            baseCriteria,
+            usedTemplateIds,
+        );
+        exercises.push(...newExercises);
+
+        // Select random content (from all available, excluding used templates)
+        const randomExercises = selectRandomContent(
+            options.skillsProgress,
+            allocation.random,
+            baseCriteria,
+            usedTemplateIds,
+        );
+        exercises.push(...randomExercises);
+
+        // Check if we have sufficient exercises
+        // Accept sessions with at least 50% of requested exercises to handle edge cases
+        if (exercises.length < Math.max(5, config.totalExercises * 0.5)) {
+            // If we have less than 50% of requested exercises (minimum 5), report insufficient data
+            return {
+                status: "insufficient-data",
+                message: `Not enough content available. Found ${exercises.length} exercises, need at least ${Math.max(5, Math.ceil(config.totalExercises * 0.5))}.`,
+                availableExercises: exercises.length,
+                requestedExercises: config.totalExercises,
+            };
+        }
+
+        // Step 5: Shuffle exercises to distribute categories throughout session
+        const shuffledExercises = shuffleExercises(exercises);
+
+        // Add position to each exercise
+        shuffledExercises.forEach((exercise, index) => {
+            exercise.position = index;
+        });
+
+        // Build final session plan
+        const sessionPlan: SessionPlan = {
+            userId: options.userId,
+            gradeRange: options.gradeRange,
+            competencyAreaId: options.competencyAreaId,
+            config,
+            allocation,
+            exercises: shuffledExercises,
+            composedAt: currentDate,
+        };
+
+        return {
+            status: "success",
+            sessionPlan,
+        };
+    } catch (error) {
+        return {
+            status: "error",
+            message:
+                error instanceof Error
+                    ? error.message
+                    : "Unknown error during session composition",
+            error: error instanceof Error ? error : undefined,
+        };
     }
-
-    // Step 1: Calculate category allocation
-    const allocation = calculateCategoryAllocation(config);
-
-    // Step 2: Identify skills in each category
-    const newSkills = identifyNewContent(
-      options.skillsProgress,
-      newContentCriteria,
-      currentDate
-    );
-
-    const reviewSkills = identifyReviewContent(
-      options.skillsProgress,
-      currentDate
-    );
-
-    const weakAreaSkills = identifyWeakAreas(
-      options.skillsProgress,
-      weakAreaCriteria
-    );
-
-    // Step 3: Build template selection criteria
-    const baseCriteria: TemplateSelectionCriteria = {
-      gradeRange: options.gradeRange,
-      competencyAreaId: options.competencyAreaId,
-    };
-
-    // Step 4: Select templates for each category
-    const exercises: PlannedExercise[] = [];
-    const usedTemplateIds = new Set<string>();
-
-    // Select review content (highest priority)
-    const reviewExercises = selectTemplatesForCategory(
-      'review',
-      reviewSkills,
-      allocation.review,
-      baseCriteria,
-      usedTemplateIds
-    );
-    exercises.push(...reviewExercises);
-
-    // Select weak area content
-    const weakAreaExercises = selectTemplatesForCategory(
-      'weak-area',
-      weakAreaSkills,
-      allocation.weakArea,
-      baseCriteria,
-      usedTemplateIds
-    );
-    exercises.push(...weakAreaExercises);
-
-    // Select new content
-    const newExercises = selectTemplatesForCategory(
-      'new',
-      newSkills,
-      allocation.new,
-      baseCriteria,
-      usedTemplateIds
-    );
-    exercises.push(...newExercises);
-
-    // Select random content (from all available, excluding used templates)
-    const randomExercises = selectRandomContent(
-      options.skillsProgress,
-      allocation.random,
-      baseCriteria,
-      usedTemplateIds
-    );
-    exercises.push(...randomExercises);
-
-    // Check if we have sufficient exercises
-    // Accept sessions with at least 50% of requested exercises to handle edge cases
-    if (exercises.length < Math.max(5, config.totalExercises * 0.5)) {
-      // If we have less than 50% of requested exercises (minimum 5), report insufficient data
-      return {
-        status: 'insufficient-data',
-        message: `Not enough content available. Found ${exercises.length} exercises, need at least ${Math.max(5, Math.ceil(config.totalExercises * 0.5))}.`,
-        availableExercises: exercises.length,
-        requestedExercises: config.totalExercises,
-      };
-    }
-
-    // Step 5: Shuffle exercises to distribute categories throughout session
-    const shuffledExercises = shuffleExercises(exercises);
-
-    // Add position to each exercise
-    shuffledExercises.forEach((exercise, index) => {
-      exercise.position = index;
-    });
-
-    // Build final session plan
-    const sessionPlan: SessionPlan = {
-      userId: options.userId,
-      gradeRange: options.gradeRange,
-      competencyAreaId: options.competencyAreaId,
-      config,
-      allocation,
-      exercises: shuffledExercises,
-      composedAt: currentDate,
-    };
-
-    return {
-      status: 'success',
-      sessionPlan,
-    };
-  } catch (error) {
-    return {
-      status: 'error',
-      message: error instanceof Error ? error.message : 'Unknown error during session composition',
-      error: error instanceof Error ? error : undefined,
-    };
-  }
 }
 
 /**
@@ -237,43 +245,43 @@ export function composeSession(options: ComposeSessionOptions): SessionCompositi
  * @returns Error message if invalid, undefined if valid
  */
 function validateConfig(config: SessionCompositionConfig): string | undefined {
-  const totalPercent =
-    config.newContentPercent +
-    config.reviewContentPercent +
-    config.weakAreaPercent +
-    config.randomPercent;
+    const totalPercent =
+        config.newContentPercent +
+        config.reviewContentPercent +
+        config.weakAreaPercent +
+        config.randomPercent;
 
-  // Allow 1% tolerance for rounding
-  if (Math.abs(totalPercent - 100) > 1) {
-    return `Category percentages must sum to 100 (got ${totalPercent})`;
-  }
+    // Allow 1% tolerance for rounding
+    if (Math.abs(totalPercent - 100) > 1) {
+        return `Category percentages must sum to 100 (got ${totalPercent})`;
+    }
 
-  if (config.totalExercises < 5) {
-    return 'Total exercises must be at least 5';
-  }
+    if (config.totalExercises < 5) {
+        return "Total exercises must be at least 5";
+    }
 
-  if (config.totalExercises > 100) {
-    return 'Total exercises must be at most 100';
-  }
+    if (config.totalExercises > 100) {
+        return "Total exercises must be at most 100";
+    }
 
-  // Validate individual percentages are within requirement bounds
-  if (config.newContentPercent < 0 || config.newContentPercent > 100) {
-    return `New content percent must be 0-100 (got ${config.newContentPercent})`;
-  }
+    // Validate individual percentages are within requirement bounds
+    if (config.newContentPercent < 0 || config.newContentPercent > 100) {
+        return `New content percent must be 0-100 (got ${config.newContentPercent})`;
+    }
 
-  if (config.reviewContentPercent < 0 || config.reviewContentPercent > 100) {
-    return `Review content percent must be 0-100 (got ${config.reviewContentPercent})`;
-  }
+    if (config.reviewContentPercent < 0 || config.reviewContentPercent > 100) {
+        return `Review content percent must be 0-100 (got ${config.reviewContentPercent})`;
+    }
 
-  if (config.weakAreaPercent < 0 || config.weakAreaPercent > 100) {
-    return `Weak area percent must be 0-100 (got ${config.weakAreaPercent})`;
-  }
+    if (config.weakAreaPercent < 0 || config.weakAreaPercent > 100) {
+        return `Weak area percent must be 0-100 (got ${config.weakAreaPercent})`;
+    }
 
-  if (config.randomPercent < 0 || config.randomPercent > 100) {
-    return `Random percent must be 0-100 (got ${config.randomPercent})`;
-  }
+    if (config.randomPercent < 0 || config.randomPercent > 100) {
+        return `Random percent must be 0-100 (got ${config.randomPercent})`;
+    }
 
-  return undefined;
+    return undefined;
 }
 
 /**
@@ -285,48 +293,50 @@ function validateConfig(config: SessionCompositionConfig): string | undefined {
  * @param config - Session composition configuration
  * @returns Category allocation with exercise counts
  */
-function calculateCategoryAllocation(config: SessionCompositionConfig): CategoryAllocation {
-  const { totalExercises } = config;
+function calculateCategoryAllocation(
+    config: SessionCompositionConfig,
+): CategoryAllocation {
+    const { totalExercises } = config;
 
-  // Calculate ideal allocations
-  const newIdeal = (config.newContentPercent / 100) * totalExercises;
-  const reviewIdeal = (config.reviewContentPercent / 100) * totalExercises;
-  const weakAreaIdeal = (config.weakAreaPercent / 100) * totalExercises;
-  const randomIdeal = (config.randomPercent / 100) * totalExercises;
+    // Calculate ideal allocations
+    const newIdeal = (config.newContentPercent / 100) * totalExercises;
+    const reviewIdeal = (config.reviewContentPercent / 100) * totalExercises;
+    const weakAreaIdeal = (config.weakAreaPercent / 100) * totalExercises;
+    const randomIdeal = (config.randomPercent / 100) * totalExercises;
 
-  // Round down initially
-  let newCount = Math.floor(newIdeal);
-  let reviewCount = Math.floor(reviewIdeal);
-  let weakAreaCount = Math.floor(weakAreaIdeal);
-  let randomCount = Math.floor(randomIdeal);
+    // Round down initially
+    let newCount = Math.floor(newIdeal);
+    let reviewCount = Math.floor(reviewIdeal);
+    let weakAreaCount = Math.floor(weakAreaIdeal);
+    let randomCount = Math.floor(randomIdeal);
 
-  // Calculate remainder to distribute
-  let allocated = newCount + reviewCount + weakAreaCount + randomCount;
-  let remainder = totalExercises - allocated;
+    // Calculate remainder to distribute
+    let allocated = newCount + reviewCount + weakAreaCount + randomCount;
+    let remainder = totalExercises - allocated;
 
-  // Distribute remainder to categories based on their fractional parts
-  const fractionalParts = [
-    { category: 'new', fraction: newIdeal - newCount },
-    { category: 'review', fraction: reviewIdeal - reviewCount },
-    { category: 'weakArea', fraction: weakAreaIdeal - weakAreaCount },
-    { category: 'random', fraction: randomIdeal - randomCount },
-  ].sort((a, b) => b.fraction - a.fraction);
+    // Distribute remainder to categories based on their fractional parts
+    const fractionalParts = [
+        { category: "new", fraction: newIdeal - newCount },
+        { category: "review", fraction: reviewIdeal - reviewCount },
+        { category: "weakArea", fraction: weakAreaIdeal - weakAreaCount },
+        { category: "random", fraction: randomIdeal - randomCount },
+    ].sort((a, b) => b.fraction - a.fraction);
 
-  for (let i = 0; i < remainder; i++) {
-    const category = fractionalParts[i % fractionalParts.length].category;
-    if (category === 'new') newCount++;
-    else if (category === 'review') reviewCount++;
-    else if (category === 'weakArea') weakAreaCount++;
-    else if (category === 'random') randomCount++;
-  }
+    for (let i = 0; i < remainder; i++) {
+        const category = fractionalParts[i % fractionalParts.length].category;
+        if (category === "new") newCount++;
+        else if (category === "review") reviewCount++;
+        else if (category === "weakArea") weakAreaCount++;
+        else if (category === "random") randomCount++;
+    }
 
-  return {
-    new: newCount,
-    review: reviewCount,
-    weakArea: weakAreaCount,
-    random: randomCount,
-    total: totalExercises,
-  };
+    return {
+        new: newCount,
+        review: reviewCount,
+        weakArea: weakAreaCount,
+        random: randomCount,
+        total: totalExercises,
+    };
 }
 
 /**
@@ -343,31 +353,32 @@ function calculateCategoryAllocation(config: SessionCompositionConfig): Category
  * @returns Array of skills considered "new content"
  */
 function identifyNewContent(
-  skillsProgress: SkillProgress[],
-  criteria: NewContentCriteria,
-  currentDate: Date
+    skillsProgress: SkillProgress[],
+    criteria: NewContentCriteria,
+    currentDate: Date,
 ): SkillProgress[] {
-  return skillsProgress.filter(skill => {
-    // Never practiced
-    if (skill.attempts === 0) {
-      return true;
-    }
+    return skillsProgress.filter((skill) => {
+        // Never practiced
+        if (skill.attempts === 0) {
+            return true;
+        }
 
-    // Rarely practiced
-    if (skill.attempts < criteria.maxAttempts) {
-      return true;
-    }
+        // Rarely practiced
+        if (skill.attempts < criteria.maxAttempts) {
+            return true;
+        }
 
-    // Not practiced recently
-    const daysSinceLastPractice =
-      (currentDate.getTime() - skill.lastPracticed.getTime()) / (24 * 60 * 60 * 1000);
+        // Not practiced recently
+        const daysSinceLastPractice =
+            (currentDate.getTime() - skill.lastPracticed.getTime()) /
+            (24 * 60 * 60 * 1000);
 
-    if (daysSinceLastPractice >= criteria.minDaysSinceLastPractice) {
-      return true;
-    }
+        if (daysSinceLastPractice >= criteria.minDaysSinceLastPractice) {
+            return true;
+        }
 
-    return false;
-  });
+        return false;
+    });
 }
 
 /**
@@ -381,10 +392,10 @@ function identifyNewContent(
  * @returns Array of skills due for review, sorted by priority
  */
 function identifyReviewContent(
-  skillsProgress: SkillProgress[],
-  currentDate: Date
+    skillsProgress: SkillProgress[],
+    currentDate: Date,
 ): SkillProgress[] {
-  return getDueSkillsSortedByPriority(skillsProgress, currentDate);
+    return getDueSkillsSortedByPriority(skillsProgress, currentDate);
 }
 
 /**
@@ -398,17 +409,17 @@ function identifyReviewContent(
  * @returns Array of skills considered "weak areas", sorted by mastery (lowest first)
  */
 function identifyWeakAreas(
-  skillsProgress: SkillProgress[],
-  criteria: WeakAreaCriteria
+    skillsProgress: SkillProgress[],
+    criteria: WeakAreaCriteria,
 ): SkillProgress[] {
-  const weakSkills = skillsProgress.filter(
-    skill =>
-      skill.masteryLevel <= criteria.maxMasteryLevel &&
-      skill.attempts >= criteria.minAttempts
-  );
+    const weakSkills = skillsProgress.filter(
+        (skill) =>
+            skill.masteryLevel <= criteria.maxMasteryLevel &&
+            skill.attempts >= criteria.minAttempts,
+    );
 
-  // Sort by mastery level (lowest first) for prioritization
-  return weakSkills.sort((a, b) => a.masteryLevel - b.masteryLevel);
+    // Sort by mastery level (lowest first) for prioritization
+    return weakSkills.sort((a, b) => a.masteryLevel - b.masteryLevel);
 }
 
 /**
@@ -426,64 +437,67 @@ function identifyWeakAreas(
  * @returns Array of planned exercises
  */
 function selectTemplatesForCategory(
-  category: ContentCategory,
-  skills: SkillProgress[],
-  count: number,
-  baseCriteria: TemplateSelectionCriteria,
-  usedTemplateIds: Set<string>
+    category: ContentCategory,
+    skills: SkillProgress[],
+    count: number,
+    baseCriteria: TemplateSelectionCriteria,
+    usedTemplateIds: Set<string>,
 ): PlannedExercise[] {
-  const exercises: PlannedExercise[] = [];
+    const exercises: PlannedExercise[] = [];
 
-  // If no skills available for this category, return empty
-  if (skills.length === 0 || count === 0) {
-    return exercises;
-  }
-
-  // Track failed attempts to avoid infinite loops
-  let consecutiveFailures = 0;
-  const maxConsecutiveFailures = skills.length;
-
-  // Keep selecting until we have enough or can't find more
-  while (exercises.length < count && consecutiveFailures < maxConsecutiveFailures) {
-    // Cycle through skills in priority order
-    const skillIndex = exercises.length % skills.length;
-    const skill = skills[skillIndex];
-
-    // Build selection criteria for this skill
-    const criteria: TemplateSelectionCriteria = {
-      ...baseCriteria,
-      skillsAreaId: skill.skillId,
-      excludeTemplateIds: Array.from(usedTemplateIds),
-    };
-
-    // Calculate selection weights based on category
-    const weights = calculateSelectionWeights(category, skill);
-
-    // Select template with weighted selection
-    const templateId = templateRegistry.select(
-      criteria,
-      weights,
-      skill.masteryLevel
-    );
-
-    if (templateId) {
-      exercises.push({
-        templateId,
-        category,
-        skillId: skill.skillId,
-        skillProgress: skill,
-        position: 0, // Will be set after shuffling
-      });
-
-      usedTemplateIds.add(templateId);
-      consecutiveFailures = 0; // Reset failure count on success
-    } else {
-      // No template found for this skill, count as failure
-      consecutiveFailures++;
+    // If no skills available for this category, return empty
+    if (skills.length === 0 || count === 0) {
+        return exercises;
     }
-  }
 
-  return exercises;
+    // Track failed attempts to avoid infinite loops
+    let consecutiveFailures = 0;
+    const maxConsecutiveFailures = skills.length;
+
+    // Keep selecting until we have enough or can't find more
+    while (
+        exercises.length < count &&
+        consecutiveFailures < maxConsecutiveFailures
+    ) {
+        // Cycle through skills in priority order
+        const skillIndex = exercises.length % skills.length;
+        const skill = skills[skillIndex];
+
+        // Build selection criteria for this skill
+        const criteria: TemplateSelectionCriteria = {
+            ...baseCriteria,
+            skillsAreaId: skill.skillId,
+            excludeTemplateIds: Array.from(usedTemplateIds),
+        };
+
+        // Calculate selection weights based on category
+        const weights = calculateSelectionWeights(category, skill);
+
+        // Select template with weighted selection
+        const templateId = templateRegistry.select(
+            criteria,
+            weights,
+            skill.masteryLevel,
+        );
+
+        if (templateId) {
+            exercises.push({
+                templateId,
+                category,
+                skillId: skill.skillId,
+                skillProgress: skill,
+                position: 0, // Will be set after shuffling
+            });
+
+            usedTemplateIds.add(templateId);
+            consecutiveFailures = 0; // Reset failure count on success
+        } else {
+            // No template found for this skill, count as failure
+            consecutiveFailures++;
+        }
+    }
+
+    return exercises;
 }
 
 /**
@@ -500,67 +514,70 @@ function selectTemplatesForCategory(
  * @returns Array of planned exercises
  */
 function selectRandomContent(
-  skillsProgress: SkillProgress[],
-  count: number,
-  baseCriteria: TemplateSelectionCriteria,
-  usedTemplateIds: Set<string>
+    skillsProgress: SkillProgress[],
+    count: number,
+    baseCriteria: TemplateSelectionCriteria,
+    usedTemplateIds: Set<string>,
 ): PlannedExercise[] {
-  const exercises: PlannedExercise[] = [];
+    const exercises: PlannedExercise[] = [];
 
-  if (count === 0 || skillsProgress.length === 0) {
-    return exercises;
-  }
-
-  // Shuffle skills for random selection
-  const shuffledSkills = [...skillsProgress].sort(() => Math.random() - 0.5);
-
-  // Track failed attempts to avoid infinite loops
-  let consecutiveFailures = 0;
-  const maxConsecutiveFailures = shuffledSkills.length;
-
-  // Keep selecting until we have enough or can't find more
-  while (exercises.length < count && consecutiveFailures < maxConsecutiveFailures) {
-    // Cycle through shuffled skills
-    const skillIndex = exercises.length % shuffledSkills.length;
-    const skill = shuffledSkills[skillIndex];
-
-    const criteria: TemplateSelectionCriteria = {
-      ...baseCriteria,
-      skillsAreaId: skill.skillId,
-      excludeTemplateIds: Array.from(usedTemplateIds),
-    };
-
-    // Use balanced weights for random content
-    const weights = {
-      srsBaseline: 1.0,
-      bindingBonus: 0.2,
-      recencyPenalty: 0.3,
-      masteryAdjustment: 0.0,
-    };
-
-    const templateId = templateRegistry.select(
-      criteria,
-      weights,
-      skill.masteryLevel
-    );
-
-    if (templateId) {
-      exercises.push({
-        templateId,
-        category: 'random',
-        skillId: skill.skillId,
-        skillProgress: skill,
-        position: 0,
-      });
-
-      usedTemplateIds.add(templateId);
-      consecutiveFailures = 0; // Reset on success
-    } else {
-      consecutiveFailures++;
+    if (count === 0 || skillsProgress.length === 0) {
+        return exercises;
     }
-  }
 
-  return exercises;
+    // Shuffle skills for random selection
+    const shuffledSkills = [...skillsProgress].sort(() => Math.random() - 0.5);
+
+    // Track failed attempts to avoid infinite loops
+    let consecutiveFailures = 0;
+    const maxConsecutiveFailures = shuffledSkills.length;
+
+    // Keep selecting until we have enough or can't find more
+    while (
+        exercises.length < count &&
+        consecutiveFailures < maxConsecutiveFailures
+    ) {
+        // Cycle through shuffled skills
+        const skillIndex = exercises.length % shuffledSkills.length;
+        const skill = shuffledSkills[skillIndex];
+
+        const criteria: TemplateSelectionCriteria = {
+            ...baseCriteria,
+            skillsAreaId: skill.skillId,
+            excludeTemplateIds: Array.from(usedTemplateIds),
+        };
+
+        // Use balanced weights for random content
+        const weights = {
+            srsBaseline: 1.0,
+            bindingBonus: 0.2,
+            recencyPenalty: 0.3,
+            masteryAdjustment: 0.0,
+        };
+
+        const templateId = templateRegistry.select(
+            criteria,
+            weights,
+            skill.masteryLevel,
+        );
+
+        if (templateId) {
+            exercises.push({
+                templateId,
+                category: "random",
+                skillId: skill.skillId,
+                skillProgress: skill,
+                position: 0,
+            });
+
+            usedTemplateIds.add(templateId);
+            consecutiveFailures = 0; // Reset on success
+        } else {
+            consecutiveFailures++;
+        }
+    }
+
+    return exercises;
 }
 
 /**
@@ -578,46 +595,51 @@ function selectRandomContent(
  * @returns Selection weights for template registry
  */
 function calculateSelectionWeights(
-  category: ContentCategory,
-  skill: SkillProgress
-): Partial<{ srsBaseline: number; bindingBonus: number; recencyPenalty: number; masteryAdjustment: number }> {
-  switch (category) {
-    case 'review':
-      // Review content: prioritize due items and binding content
-      return {
-        srsBaseline: 1.5, // Higher baseline for review items
-        bindingBonus: 0.4, // Strong preference for binding content
-        recencyPenalty: 0.5,
-        masteryAdjustment: 0.2, // Adjust for appropriate difficulty
-      };
+    category: ContentCategory,
+    _skill: SkillProgress,
+): Partial<{
+    srsBaseline: number;
+    bindingBonus: number;
+    recencyPenalty: number;
+    masteryAdjustment: number;
+}> {
+    switch (category) {
+        case "review":
+            // Review content: prioritize due items and binding content
+            return {
+                srsBaseline: 1.5, // Higher baseline for review items
+                bindingBonus: 0.4, // Strong preference for binding content
+                recencyPenalty: 0.5,
+                masteryAdjustment: 0.2, // Adjust for appropriate difficulty
+            };
 
-    case 'weak-area':
-      // Weak areas: focus on binding content and appropriate difficulty
-      return {
-        srsBaseline: 1.0,
-        bindingBonus: 0.4, // Strong preference for binding content
-        recencyPenalty: 0.3,
-        masteryAdjustment: 0.3, // Higher adjustment to match difficulty to low mastery
-      };
+        case "weak-area":
+            // Weak areas: focus on binding content and appropriate difficulty
+            return {
+                srsBaseline: 1.0,
+                bindingBonus: 0.4, // Strong preference for binding content
+                recencyPenalty: 0.3,
+                masteryAdjustment: 0.3, // Higher adjustment to match difficulty to low mastery
+            };
 
-    case 'new':
-      // New content: balanced selection
-      return {
-        srsBaseline: 1.0,
-        bindingBonus: 0.3,
-        recencyPenalty: 0.4, // Higher penalty to ensure variety in new content
-        masteryAdjustment: 0.1,
-      };
+        case "new":
+            // New content: balanced selection
+            return {
+                srsBaseline: 1.0,
+                bindingBonus: 0.3,
+                recencyPenalty: 0.4, // Higher penalty to ensure variety in new content
+                masteryAdjustment: 0.1,
+            };
 
-    case 'random':
-      // Random: balanced weights for variety
-      return {
-        srsBaseline: 1.0,
-        bindingBonus: 0.2,
-        recencyPenalty: 0.3,
-        masteryAdjustment: 0.0,
-      };
-  }
+        case "random":
+            // Random: balanced weights for variety
+            return {
+                srsBaseline: 1.0,
+                bindingBonus: 0.2,
+                recencyPenalty: 0.3,
+                masteryAdjustment: 0.0,
+            };
+    }
 }
 
 /**
@@ -638,46 +660,54 @@ function calculateSelectionWeights(
  * @returns Shuffled exercises with distributed categories
  */
 function shuffleExercises(exercises: PlannedExercise[]): PlannedExercise[] {
-  if (exercises.length === 0) {
-    return exercises;
-  }
-
-  // Group exercises by category
-  const byCategory = exercises.reduce((acc, exercise) => {
-    if (!acc[exercise.category]) {
-      acc[exercise.category] = [];
+    if (exercises.length === 0) {
+        return exercises;
     }
-    acc[exercise.category].push(exercise);
-    return acc;
-  }, {} as Record<ContentCategory, PlannedExercise[]>);
 
-  // Create result array
-  const result: (PlannedExercise | null)[] = new Array(exercises.length).fill(null);
+    // Group exercises by category
+    const byCategory = exercises.reduce(
+        (acc, exercise) => {
+            if (!acc[exercise.category]) {
+                acc[exercise.category] = [];
+            }
+            acc[exercise.category].push(exercise);
+            return acc;
+        },
+        {} as Record<ContentCategory, PlannedExercise[]>,
+    );
 
-  // Place each category's exercises at evenly distributed positions
-  const categories = Object.keys(byCategory) as ContentCategory[];
+    // Create result array
+    const result: (PlannedExercise | null)[] = new Array(exercises.length).fill(
+        null,
+    );
 
-  for (const category of categories) {
-    const categoryExercises = byCategory[category];
-    const spacing = exercises.length / categoryExercises.length;
+    // Place each category's exercises at evenly distributed positions
+    const categories = Object.keys(byCategory) as ContentCategory[];
 
-    categoryExercises.forEach((exercise, index) => {
-      // Calculate base position with even spacing
-      let position = Math.floor(index * spacing);
+    for (const category of categories) {
+        const categoryExercises = byCategory[category];
+        const spacing = exercises.length / categoryExercises.length;
 
-      // Add small random offset (±20% of spacing) to prevent perfect regularity
-      const offset = Math.floor((Math.random() - 0.5) * spacing * 0.4);
-      position = Math.max(0, Math.min(exercises.length - 1, position + offset));
+        categoryExercises.forEach((exercise, index) => {
+            // Calculate base position with even spacing
+            let position = Math.floor(index * spacing);
 
-      // Find next available slot if position is taken
-      while (result[position] !== null) {
-        position = (position + 1) % exercises.length;
-      }
+            // Add small random offset (±20% of spacing) to prevent perfect regularity
+            const offset = Math.floor((Math.random() - 0.5) * spacing * 0.4);
+            position = Math.max(
+                0,
+                Math.min(exercises.length - 1, position + offset),
+            );
 
-      result[position] = exercise;
-    });
-  }
+            // Find next available slot if position is taken
+            while (result[position] !== null) {
+                position = (position + 1) % exercises.length;
+            }
 
-  // Filter out any null values (shouldn't happen, but for type safety)
-  return result.filter((ex): ex is PlannedExercise => ex !== null);
+            result[position] = exercise;
+        });
+    }
+
+    // Filter out any null values (shouldn't happen, but for type safety)
+    return result.filter((ex): ex is PlannedExercise => ex !== null);
 }
