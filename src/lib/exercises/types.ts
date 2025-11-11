@@ -1,19 +1,24 @@
 /**
  * Exercise Template Type Definitions
- * 
+ *
  * Type definitions for the exercise generation system including templates,
  * instances, answers, hints, and constraints.
- * 
+ *
  * Requirements:
  * - 3.2: Map templates to specific curriculum elements
  * - 11.2: Template registry with metadata and generation logic
  */
 
-import type { CompetencyAreaId, Difficulty, GradeRange } from '../curriculum/types';
+import type {
+  CompetencyAreaId,
+  Difficulty,
+  GradeRange,
+} from "../curriculum/types";
 
 export interface TemplateMetadata {
   competencyAreaId: CompetencyAreaId;
   skillsAreaId: string;
+  skillId?: string;
   gradeRange: GradeRange;
   difficulty: Difficulty;
   isBinding: boolean;
@@ -27,7 +32,7 @@ export interface Answer {
   tolerance?: number;
 }
 
-export type ParameterType = 'integer' | 'decimal' | 'fraction' | 'string';
+export type ParameterType = "integer" | "decimal" | "fraction" | "string";
 
 export interface ParameterConstraint {
   type: ParameterType;
@@ -43,10 +48,15 @@ export interface ParameterConstraints {
   [key: string]: ParameterConstraint;
 }
 
-export type ContextType = 'shopping' | 'school' | 'nature' | 'sports' | 'abstract';
+export type ContextType =
+  | "shopping"
+  | "school"
+  | "nature"
+  | "sports"
+  | "abstract";
 
 export interface VisualAid {
-  type: 'number-line' | 'diagram' | 'chart' | 'image';
+  type: "number-line" | "diagram" | "chart" | "image";
   data: unknown;
 }
 
@@ -87,7 +97,7 @@ export interface Hint {
 }
 
 export interface ExerciseContext {
-  locale: 'da-DK' | 'en-US';
+  locale: "da-DK" | "en-US";
   contextType?: ContextType;
   names?: string[];
   places?: string[];
@@ -129,15 +139,18 @@ export interface ValidationResult {
  */
 export type HintGenerator = (
   params: Record<string, unknown>,
-  locale: string
-) => string | Omit<Hint, 'level'>;
+  locale: string,
+) => string | Omit<Hint, "level">;
 
 export interface ExerciseTemplate {
   id: string;
   name: string;
   metadata: TemplateMetadata;
   parameters: ParameterConstraints;
-  generate: (params: Record<string, unknown>, locale: string) => GenerationResult;
+  generate: (
+    params: Record<string, unknown>,
+    locale: string,
+  ) => GenerationResult;
   validate: (userAnswer: string, correctAnswer: Answer) => ValidationResult;
   hints: HintGenerator[];
   contextType?: ContextType;

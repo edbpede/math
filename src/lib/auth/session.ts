@@ -14,16 +14,16 @@
  * @see Requirements 1.5, 7.3
  */
 
-import type { Session } from './service'
+import type { Session } from "./service";
 
 /**
  * Session token payload
  */
 interface SessionPayload {
-  userId: string
-  uuid: string
-  createdAt: number // Unix timestamp
-  expiresAt: number // Unix timestamp
+  userId: string;
+  uuid: string;
+  createdAt: number; // Unix timestamp
+  expiresAt: number; // Unix timestamp
 }
 
 /**
@@ -31,7 +31,7 @@ interface SessionPayload {
  */
 const SESSION_CONFIG = {
   // Cookie name for session storage
-  cookieName: 'math-session',
+  cookieName: "math-session",
 
   // Session duration: 24 hours
   durationMs: 24 * 60 * 60 * 1000,
@@ -40,11 +40,11 @@ const SESSION_CONFIG = {
   cookie: {
     httpOnly: true,
     secure: true, // HTTPS only (will be set based on environment)
-    sameSite: 'strict' as const,
-    path: '/',
+    sameSite: "strict" as const,
+    path: "/",
     maxAge: 24 * 60 * 60, // 24 hours in seconds
   },
-}
+};
 
 /**
  * Generates a cryptographically secure random token
@@ -56,18 +56,18 @@ const SESSION_CONFIG = {
  * @returns Base64url-encoded random string
  */
 function generateSecureToken(bytes: number = 32): string {
-  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
-    const buffer = new Uint8Array(bytes)
-    crypto.getRandomValues(buffer)
+  if (typeof crypto !== "undefined" && crypto.getRandomValues) {
+    const buffer = new Uint8Array(bytes);
+    crypto.getRandomValues(buffer);
     return btoa(String.fromCharCode(...buffer))
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=/g, '')
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=/g, "");
   }
 
   // Fallback for environments without crypto.getRandomValues
   // This should rarely be used in practice
-  throw new Error('crypto.getRandomValues is not available')
+  throw new Error("crypto.getRandomValues is not available");
 }
 
 /**
@@ -86,25 +86,25 @@ function generateSecureToken(bytes: number = 32): string {
  * @returns Session token string
  */
 export function createSessionToken(userId: string, uuid: string): string {
-  const now = Date.now()
-  const expiresAt = now + SESSION_CONFIG.durationMs
+  const now = Date.now();
+  const expiresAt = now + SESSION_CONFIG.durationMs;
 
   const payload: SessionPayload = {
     userId,
     uuid,
     createdAt: now,
     expiresAt,
-  }
+  };
 
   // Create token: random_id.base64url(payload)
-  const randomId = generateSecureToken(16)
-  const payloadJson = JSON.stringify(payload)
+  const randomId = generateSecureToken(16);
+  const payloadJson = JSON.stringify(payload);
   const payloadB64 = btoa(payloadJson)
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '')
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=/g, "");
 
-  return `${randomId}.${payloadB64}`
+  return `${randomId}.${payloadB64}`;
 }
 
 /**
@@ -120,21 +120,21 @@ export function createSessionToken(userId: string, uuid: string): string {
  */
 export function validateSessionToken(token: string): Session | null {
   try {
-    if (!token || typeof token !== 'string') {
-      return null
+    if (!token || typeof token !== "string") {
+      return null;
     }
 
     // Split token into parts
-    const parts = token.split('.')
+    const parts = token.split(".");
     if (parts.length !== 2) {
-      return null
+      return null;
     }
 
-    const [randomId, payloadB64] = parts
+    const [, payloadB64] = parts;
 
     // Decode payload
-    const payloadJson = atob(payloadB64.replace(/-/g, '+').replace(/_/g, '/'))
-    const payload = JSON.parse(payloadJson) as SessionPayload
+    const payloadJson = atob(payloadB64.replace(/-/g, "+").replace(/_/g, "/"));
+    const payload = JSON.parse(payloadJson) as SessionPayload;
 
     // Validate payload structure
     if (
@@ -143,13 +143,13 @@ export function validateSessionToken(token: string): Session | null {
       !payload.createdAt ||
       !payload.expiresAt
     ) {
-      return null
+      return null;
     }
 
     // Check expiration
-    const now = Date.now()
+    const now = Date.now();
     if (now > payload.expiresAt) {
-      return null
+      return null;
     }
 
     // Return session data
@@ -158,10 +158,10 @@ export function validateSessionToken(token: string): Session | null {
       uuid: payload.uuid,
       createdAt: new Date(payload.createdAt),
       expiresAt: new Date(payload.expiresAt),
-    }
+    };
   } catch (error) {
-    console.error('Error validating session token:', error)
-    return null
+    console.error("Error validating session token:", error);
+    return null;
   }
 }
 
@@ -181,23 +181,23 @@ export function validateSessionToken(token: string): Session | null {
  */
 export function createSessionCookie(
   token: string,
-  isDevelopment: boolean = false
+  isDevelopment: boolean = false,
 ): string {
   const parts = [
     `${SESSION_CONFIG.cookieName}=${token}`,
     `Max-Age=${SESSION_CONFIG.cookie.maxAge}`,
     `Path=${SESSION_CONFIG.cookie.path}`,
     `SameSite=${SESSION_CONFIG.cookie.sameSite}`,
-    'HttpOnly',
-  ]
+    "HttpOnly",
+  ];
 
   // Only set Secure flag in production (HTTPS)
   // In development, allow HTTP for localhost testing
   if (!isDevelopment) {
-    parts.push('Secure')
+    parts.push("Secure");
   }
 
-  return parts.join('; ')
+  return parts.join("; ");
 }
 
 /**
@@ -208,7 +208,7 @@ export function createSessionCookie(
  * @returns Set-Cookie header value for clearing session
  */
 export function clearSessionCookie(): string {
-  return `${SESSION_CONFIG.cookieName}=; Max-Age=0; Path=${SESSION_CONFIG.cookie.path}; HttpOnly; Secure; SameSite=${SESSION_CONFIG.cookie.sameSite}`
+  return `${SESSION_CONFIG.cookieName}=; Max-Age=0; Path=${SESSION_CONFIG.cookie.path}; HttpOnly; Secure; SameSite=${SESSION_CONFIG.cookie.sameSite}`;
 }
 
 /**
@@ -219,21 +219,23 @@ export function clearSessionCookie(): string {
  * @param cookieHeader - Cookie header value
  * @returns Session token or null if not found
  */
-export function getSessionFromCookie(cookieHeader: string | null): string | null {
+export function getSessionFromCookie(
+  cookieHeader: string | null,
+): string | null {
   if (!cookieHeader) {
-    return null
+    return null;
   }
 
-  const cookies = cookieHeader.split(';').map((c) => c.trim())
+  const cookies = cookieHeader.split(";").map((c) => c.trim());
   const sessionCookie = cookies.find((c) =>
-    c.startsWith(`${SESSION_CONFIG.cookieName}=`)
-  )
+    c.startsWith(`${SESSION_CONFIG.cookieName}=`),
+  );
 
   if (!sessionCookie) {
-    return null
+    return null;
   }
 
-  return sessionCookie.substring(SESSION_CONFIG.cookieName.length + 1)
+  return sessionCookie.substring(SESSION_CONFIG.cookieName.length + 1);
 }
 
 /**
@@ -246,11 +248,11 @@ export function getSessionFromCookie(cookieHeader: string | null): string | null
  * @returns true if session should be refreshed
  */
 export function shouldRefreshSession(session: Session): boolean {
-  const now = Date.now()
-  const age = now - session.createdAt.getTime()
-  const halfLife = SESSION_CONFIG.durationMs / 2
+  const now = Date.now();
+  const age = now - session.createdAt.getTime();
+  const halfLife = SESSION_CONFIG.durationMs / 2;
 
-  return age > halfLife
+  return age > halfLife;
 }
 
 /**
@@ -261,5 +263,5 @@ export function shouldRefreshSession(session: Session): boolean {
  * @returns Session configuration object
  */
 export function getSessionConfig() {
-  return SESSION_CONFIG
+  return SESSION_CONFIG;
 }
