@@ -69,14 +69,14 @@ export const additionA: ExerciseTemplate = {
   },
   hints: [
     // Level 1: General strategy
-    (params, locale) => {
+    (_params, locale) => {
       if (locale === "da-DK") {
         return "Tænk på at tælle fremad. Du kan bruge dine fingre til at hjælpe.";
       }
       return "Think about counting forward. You can use your fingers to help.";
     },
     // Level 2: Specific technique
-    (params, locale) => {
+    (_params, locale) => {
       const a = params.a as number;
       const b = params.b as number;
       if (locale === "da-DK") {
@@ -85,7 +85,7 @@ export const additionA: ExerciseTemplate = {
       return `Start with ${a} and count ${b} more.`;
     },
     // Level 3: Partial solution with intermediate steps
-    (params, locale) => {
+    (_params, locale) => {
       const a = params.a as number;
       const b = params.b as number;
       if (locale === "da-DK") {
@@ -94,7 +94,7 @@ export const additionA: ExerciseTemplate = {
       return `If you count: ${a}, ${Array.from({ length: b }, (_, i) => a + i + 1).join(", ")}`;
     },
     // Level 4: Complete worked solution
-    (params, locale) => {
+    (_params, locale) => {
       const a = params.a as number;
       const b = params.b as number;
       const workedSolution = generateAdditionSolution(
@@ -153,7 +153,7 @@ export const additionB: ExerciseTemplate = {
       },
     },
   },
-  generate: (params, locale) => {
+  generate: (params, _locale) => {
     const a = params.a as number;
     const b = params.b as number;
     const answer = a + b;
@@ -170,7 +170,7 @@ export const additionB: ExerciseTemplate = {
   },
   hints: [
     // Level 1: General strategy
-    (params, locale) => {
+    (_params, locale) => {
       const a = params.a as number;
       if (locale === "da-DK") {
         if (a >= 10) {
@@ -184,7 +184,7 @@ export const additionB: ExerciseTemplate = {
       return "When the sum is larger than 10, think about making a ten.";
     },
     // Level 2: Specific technique
-    (params, locale) => {
+    (_params, locale) => {
       const a = params.a as number;
       const b = params.b as number;
       if (locale === "da-DK") {
@@ -213,7 +213,7 @@ export const additionB: ExerciseTemplate = {
       return `Think about how ${a} and ${b} fit together.`;
     },
     // Level 3: Partial solution with intermediate steps
-    (params, locale) => {
+    (_params, locale) => {
       const a = params.a as number;
       const b = params.b as number;
       const answer = a + b;
@@ -251,7 +251,7 @@ export const additionB: ExerciseTemplate = {
       return `${a} + ${b} = ...`;
     },
     // Level 4: Complete worked solution
-    (params, locale) => {
+    (_params, locale) => {
       const a = params.a as number;
       const b = params.b as number;
       const workedSolution = generateAdditionSolution(
@@ -310,7 +310,7 @@ export const additionC: ExerciseTemplate = {
       },
     },
   },
-  generate: (params, locale) => {
+  generate: (params, _locale) => {
     const a = params.a as number;
     const b = params.b as number;
     const answer = a + b;
@@ -327,14 +327,14 @@ export const additionC: ExerciseTemplate = {
   },
   hints: [
     // Level 1: General strategy
-    (params, locale) => {
+    (_params, locale) => {
       if (locale === "da-DK") {
         return "Læg ental og tital sammen hver for sig. Husk at samle dem til sidst.";
       }
       return "Add the ones and tens separately. Remember to combine them at the end.";
     },
     // Level 2: Specific technique
-    (params, locale) => {
+    (_params, locale) => {
       const a = params.a as number;
       const b = params.b as number;
       const aTens = Math.floor(a / 10);
@@ -347,7 +347,7 @@ export const additionC: ExerciseTemplate = {
       return `${a} = ${aTens} tens + ${aOnes} ones. ${b} = ${bTens} tens + ${bOnes} ones. Add tens together, then ones together.`;
     },
     // Level 3: Partial solution with intermediate steps
-    (params, locale) => {
+    (_params, locale) => {
       const a = params.a as number;
       const b = params.b as number;
       const aTens = Math.floor(a / 10);
@@ -373,7 +373,7 @@ export const additionC: ExerciseTemplate = {
       return `Ones: ${aOnes} + ${bOnes} = ${totalOnes}\nTens: ${aTens} + ${bTens} = ${totalTens}\nAnswer: ${totalTens} tens + ${totalOnes} ones`;
     },
     // Level 4: Complete worked solution
-    (params, locale) => {
+    (_params, locale) => {
       const a = params.a as number;
       const b = params.b as number;
       const workedSolution = generateAdditionSolution(

@@ -10,7 +10,7 @@
  * - Accessibility
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@solidjs/testing-library";
 import { userEvent } from "@testing-library/user-event";
 import ProgressDashboard from "./ProgressDashboard";
@@ -31,7 +31,7 @@ vi.mock("@/lib/supabase/progress", () => ({
 
 vi.mock("@/lib/mastery/review-scheduler", () => ({
   getUpcomingReviews: vi.fn(),
-  formatReviewDate: vi.fn((date: Date) => "in 2 days"),
+  formatReviewDate: vi.fn(() => "in 2 days"),
 }));
 
 // Mock i18n module - use actual implementation but allow initialization

@@ -14,7 +14,6 @@ import { useStore } from "@nanostores/solid";
 import {
   $networkStatus,
   $syncStatus,
-  $syncStatusText,
   initializeStatusStores,
   triggerManualSync,
   getTimeSinceLastSync,

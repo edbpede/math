@@ -12,29 +12,28 @@ import { changeLocale } from "@/lib/i18n";
 
 // Mock i18n module with complete mock (avoid loading translation files)
 vi.mock("@/lib/i18n", () => {
-  const createTranslationFunction =
-    () => (key: string, params?: Record<string, string>) => {
-      const translations: Record<string, string> = {
-        "auth.uuid.title": "Your practice number",
-        "auth.uuid.generate": "Generate practice number",
-        "auth.uuid.yourNumber": "Your practice number",
-        "auth.uuid.important": "Important: Save this number!",
-        "auth.uuid.description": "You will need this number to log in.",
-        "auth.uuid.save.title": "Save your practice number",
-        "auth.uuid.save.instructions":
-          "Choose one or more ways to save your practice number:",
-        "auth.uuid.save.copy": "Copy to clipboard",
-        "auth.uuid.save.download": "Download as file",
-        "auth.uuid.save.qrCode": "Show QR code",
-        "auth.uuid.save.writeDown": "Write it down",
-        "auth.uuid.copied": "Copied to clipboard",
-        "auth.uuid.error": "Failed to generate UUID",
-        "common.status.loading": "Loading...",
-        "common.actions.retry": "Try again",
-        "common.actions.close": "Close QR code",
-      };
-      return translations[key] || key;
+  const createTranslationFunction = () => (key: string) => {
+    const translations: Record<string, string> = {
+      "auth.uuid.title": "Your practice number",
+      "auth.uuid.generate": "Generate practice number",
+      "auth.uuid.yourNumber": "Your practice number",
+      "auth.uuid.important": "Important: Save this number!",
+      "auth.uuid.description": "You will need this number to log in.",
+      "auth.uuid.save.title": "Save your practice number",
+      "auth.uuid.save.instructions":
+        "Choose one or more ways to save your practice number:",
+      "auth.uuid.save.copy": "Copy to clipboard",
+      "auth.uuid.save.download": "Download as file",
+      "auth.uuid.save.qrCode": "Show QR code",
+      "auth.uuid.save.writeDown": "Write it down",
+      "auth.uuid.copied": "Copied to clipboard",
+      "auth.uuid.error": "Failed to generate UUID",
+      "common.status.loading": "Loading...",
+      "common.actions.retry": "Try again",
+      "common.actions.close": "Close QR code",
     };
+    return translations[key] || key;
+  };
 
   const tFunc = createTranslationFunction();
 
@@ -670,7 +669,7 @@ describe("UUIDGenerator", () => {
       ["0-3", "Grade 0-3"],
       ["4-6", "Grade 4-6"],
       ["7-9", "Grade 7-9"],
-    ])("should handle grade range %s", async (gradeRange, label) => {
+    ])("should handle grade range %s", async (gradeRange) => {
       const mockUUID = "1234-5678-90ab-cdef";
       (global.fetch as any).mockResolvedValue({
         ok: true,

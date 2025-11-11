@@ -297,7 +297,8 @@ describe("Place Value Identification Templates", () => {
       const hint1 = placeValueIdentificationC.hints[0](params, "da-DK");
 
       // Should mention place value positions
-      expect(hint1.toLowerCase()).toMatch(/hundred|tier|ener/);
+      const hint1Text = typeof hint1 === "string" ? hint1 : hint1.text;
+      expect(hint1Text.toLowerCase()).toMatch(/hundred|tier|ener/);
     });
   });
 

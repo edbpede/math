@@ -14,11 +14,8 @@ import { createSignal, Show, For } from "solid-js";
 import { useStore } from "@nanostores/solid";
 import { $t } from "@/lib/i18n";
 import { updateUser } from "@/lib/auth";
-import type { UserPreferences, Theme, FontSize } from "@/lib/types/preferences";
-import {
-  mergeWithDefaults,
-  validatePreferences,
-} from "@/lib/types/preferences";
+import type { UserPreferences } from "@/lib/types/preferences";
+import { validatePreferences } from "@/lib/types/preferences";
 import { $preferences, updatePreferences } from "@/lib/preferences";
 
 export interface SettingsFormProps {

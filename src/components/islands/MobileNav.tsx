@@ -19,7 +19,7 @@ import {
   For,
 } from "solid-js";
 import { useStore } from "@nanostores/solid";
-import { $t, $locale } from "@/lib/i18n";
+import { $t } from "@/lib/i18n";
 import LanguageSelector from "./LanguageSelector";
 
 export interface MobileNavProps {
@@ -160,9 +160,7 @@ export default function MobileNav(props: MobileNavProps) {
     );
 
     const firstElement = focusableElements[0] as HTMLElement;
-    const lastElement = focusableElements[
-      focusableElements.length - 1
-    ] as HTMLElement;
+    focusableElements[focusableElements.length - 1] as HTMLElement;
 
     // If focus moves outside the drawer, bring it back to the first element
     if (!drawerRef.contains(e.target as Node)) {

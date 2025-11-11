@@ -290,7 +290,8 @@ describe("Rounding Templates", () => {
       const hint2 = roundingC.hints[1](params, "da-DK");
 
       // Should mention relevant place value concepts
-      expect(hint2.toLowerCase()).toMatch(/tier|ten/);
+      const hint2Text = typeof hint2 === "string" ? hint2 : hint2.text;
+      expect(hint2Text.toLowerCase()).toMatch(/tier|ten/);
     });
 
     it("should handle edge case near 1000", () => {

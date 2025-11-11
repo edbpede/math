@@ -367,7 +367,8 @@ describe("Number Ordering Templates", () => {
       const hint1 = numberOrderingC.hints[0](params, "da-DK");
 
       // Should mention place value concepts
-      expect(hint1.toLowerCase()).toMatch(/hundred|tier|ener/);
+      const hint1Text = typeof hint1 === "string" ? hint1 : hint1.text;
+      expect(hint1Text.toLowerCase()).toMatch(/hundred|tier|ener/);
     });
   });
 

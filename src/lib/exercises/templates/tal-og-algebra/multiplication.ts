@@ -64,7 +64,7 @@ export const multiplicationA: ExerciseTemplate = {
     // Level 1: General strategy
     (params, locale) => {
       const a = params.a as number;
-      // const b = params.b as number;
+      const b = params.b as number;
       if (locale === "da-DK") {
         if (a === 0 || b === 0) {
           return "Når du ganger med 0, er resultatet altid 0.";
@@ -187,7 +187,6 @@ export const multiplicationB: ExerciseTemplate = {
     // Level 1: General strategy
     (params, locale) => {
       const a = params.a as number;
-      const b = params.b as number;
       if (locale === "da-DK") {
         if (a === 2) {
           return "Gange med 2 er det samme som at fordoble tallet eller lægge det sammen med sig selv.";

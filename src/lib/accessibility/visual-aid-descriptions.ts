@@ -90,7 +90,7 @@ type TranslationFunction = (
  */
 function describeNumberLine(
   data: NumberLineData,
-  t: TranslationFunction,
+  _t: TranslationFunction,
 ): string {
   const [rangeStart, rangeEnd] = data.range;
 

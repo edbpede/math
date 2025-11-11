@@ -47,9 +47,8 @@ export const divisionA: ExerciseTemplate = {
     },
   },
   generate: (params, _locale) => {
-    const divisor = params.divisor as number;
     const quotient = params.quotient as number;
-    // const dividend = divisor * quotient;
+    const dividend = params.dividend as number;
 
     return {
       questionText: `{{dividend}} ÷ {{divisor}} = ?`,
@@ -65,8 +64,7 @@ export const divisionA: ExerciseTemplate = {
     // Level 1: General strategy
     (params, locale) => {
       const divisor = params.divisor as number;
-      const quotient = params.quotient as number;
-      // const dividend = divisor * quotient;
+      const dividend = params.dividend as number;
 
       if (locale === "da-DK") {
         if (divisor === 1) {
@@ -82,8 +80,7 @@ export const divisionA: ExerciseTemplate = {
     // Level 2: Specific technique
     (params, locale) => {
       const divisor = params.divisor as number;
-      const quotient = params.quotient as number;
-      // const dividend = divisor * quotient;
+      const dividend = params.dividend as number;
 
       if (locale === "da-DK") {
         if (divisor === 2) {
@@ -106,7 +103,7 @@ export const divisionA: ExerciseTemplate = {
     (params, locale) => {
       const divisor = params.divisor as number;
       const quotient = params.quotient as number;
-      // const dividend = divisor * quotient;
+      const dividend = params.dividend as number;
 
       if (locale === "da-DK") {
         if (divisor === 2) {
@@ -133,7 +130,7 @@ export const divisionA: ExerciseTemplate = {
     (params, locale) => {
       const divisor = params.divisor as number;
       const quotient = params.quotient as number;
-      // const dividend = divisor * quotient;
+      const dividend = params.dividend as number;
 
       if (locale === "da-DK") {
         return `${dividend} ÷ ${divisor} = ${quotient}`;
@@ -174,9 +171,8 @@ export const divisionB: ExerciseTemplate = {
     },
   },
   generate: (params, _locale) => {
-    const divisor = params.divisor as number;
     const quotient = params.quotient as number;
-    // const dividend = divisor * quotient;
+    const dividend = params.dividend as number;
 
     return {
       questionText: `{{dividend}} ÷ {{divisor}} = ?`,
@@ -192,8 +188,7 @@ export const divisionB: ExerciseTemplate = {
     // Level 1: General strategy
     (params, locale) => {
       const divisor = params.divisor as number;
-      const quotient = params.quotient as number;
-      // const dividend = divisor * quotient;
+      const dividend = params.dividend as number;
 
       if (locale === "da-DK") {
         return `Tænk på ${divisor}-tabellen bagvendt. ${divisor} gange hvad er lig ${dividend}?`;
@@ -204,7 +199,7 @@ export const divisionB: ExerciseTemplate = {
     (params, locale) => {
       const divisor = params.divisor as number;
       const quotient = params.quotient as number;
-      // const dividend = divisor * quotient;
+      const dividend = params.dividend as number;
 
       if (locale === "da-DK") {
         return `Brug gange-fakta: Hvis ${divisor} × ? = ${dividend}, så ${dividend} ÷ ${divisor} = ?`;
@@ -215,7 +210,7 @@ export const divisionB: ExerciseTemplate = {
     (params, locale) => {
       const divisor = params.divisor as number;
       const quotient = params.quotient as number;
-      // const dividend = divisor * quotient;
+      const dividend = params.dividend as number;
 
       if (locale === "da-DK") {
         // Show the multiplication fact
@@ -246,7 +241,7 @@ export const divisionB: ExerciseTemplate = {
     (params, locale) => {
       const divisor = params.divisor as number;
       const quotient = params.quotient as number;
-      // const dividend = divisor * quotient;
+      const dividend = params.dividend as number;
 
       if (locale === "da-DK") {
         return `${dividend} ÷ ${divisor} = ${quotient}\nFordi ${divisor} × ${quotient} = ${dividend}`;
@@ -287,9 +282,8 @@ export const divisionC: ExerciseTemplate = {
     },
   },
   generate: (params, _locale) => {
-    const divisor = params.divisor as number;
     const quotient = params.quotient as number;
-    // const dividend = divisor * quotient;
+    const dividend = params.dividend as number;
 
     return {
       questionText: `{{dividend}} ÷ {{divisor}} = ?`,
@@ -306,7 +300,7 @@ export const divisionC: ExerciseTemplate = {
     (params, locale) => {
       const divisor = params.divisor as number;
       const quotient = params.quotient as number;
-      // const dividend = divisor * quotient;
+      const dividend = params.dividend as number;
 
       if (locale === "da-DK") {
         return `Brug din viden om ${divisor}-tabellen. Hvilket tal ganget med ${divisor} giver ${dividend}?`;
@@ -317,7 +311,7 @@ export const divisionC: ExerciseTemplate = {
     (params, locale) => {
       const divisor = params.divisor as number;
       const quotient = params.quotient as number;
-      // const dividend = divisor * quotient;
+      const dividend = params.dividend as number;
 
       if (locale === "da-DK") {
         // Suggest estimation
@@ -338,7 +332,7 @@ export const divisionC: ExerciseTemplate = {
     (params, locale) => {
       const divisor = params.divisor as number;
       const quotient = params.quotient as number;
-      // const dividend = divisor * quotient;
+      const dividend = params.dividend as number;
 
       if (locale === "da-DK") {
         // Show relevant multiplication facts
@@ -377,7 +371,7 @@ export const divisionC: ExerciseTemplate = {
     (params, locale) => {
       const divisor = params.divisor as number;
       const quotient = params.quotient as number;
-      // const dividend = divisor * quotient;
+      const dividend = params.dividend as number;
 
       if (locale === "da-DK") {
         return `${dividend} ÷ ${divisor} = ${quotient}\n\nTjek: ${divisor} × ${quotient} = ${dividend} ✓`;

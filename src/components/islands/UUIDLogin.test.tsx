@@ -9,7 +9,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@solidjs/testing-library";
 import UUIDLogin from "./UUIDLogin";
-import { changeLocale, initI18n } from "@/lib/i18n";
+import { changeLocale } from "@/lib/i18n";
 
 // Mock i18n module with complete mock (avoid loading translation files)
 vi.mock("@/lib/i18n", () => {

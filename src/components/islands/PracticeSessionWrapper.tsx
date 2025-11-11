@@ -12,11 +12,7 @@
  */
 
 import { createSignal, createMemo, Match, Switch } from "solid-js";
-import type {
-  CompetencyAreaId,
-  GradeRange,
-  Difficulty,
-} from "@/lib/curriculum/types";
+import type { CompetencyAreaId, GradeRange } from "@/lib/curriculum/types";
 import type { ExerciseInstance } from "@/lib/exercises/types";
 import type { Locale } from "@/lib/i18n/types";
 import { generateBatch } from "@/lib/exercises/generator";
