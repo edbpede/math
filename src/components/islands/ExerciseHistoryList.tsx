@@ -9,12 +9,12 @@
  * - Target: Render max 100 DOM nodes for 1000+ items
  */
 
-import { createVirtualizer } from '@tanstack/solid-virtual';
-import { createSignal, For, Show } from 'solid-js';
-import { useStore } from '@nanostores/solid';
-import { $t } from '@/lib/i18n';
-import type { ExerciseAttempt } from '@/lib/mastery/types';
-import { getMasteryLevelBand } from '@/lib/mastery/calculator';
+import { createVirtualizer } from "@tanstack/solid-virtual";
+import { createSignal, For, Show } from "solid-js";
+import { useStore } from "@nanostores/solid";
+import { $t } from "@/lib/i18n";
+import type { ExerciseAttempt } from "@/lib/mastery/types";
+// getMasteryLevelBand not currently used but available for future features
 
 /**
  * Props for ExerciseHistoryList
@@ -52,7 +52,7 @@ export default function ExerciseHistoryList(props: ExerciseHistoryListProps) {
     get count() {
       return props.history.length;
     },
-    getScrollElement: () => scrollElement(),
+    getScrollElement: () => scrollElement() ?? null,
     estimateSize: () => 60, // Fixed row height for performance
     overscan: 5, // Render 5 extra items above/below viewport
   });
@@ -61,12 +61,12 @@ export default function ExerciseHistoryList(props: ExerciseHistoryListProps) {
    * Format date for display
    */
   const formatDate = (date: Date): string => {
-    return new Intl.DateTimeFormat(t()('locale') || 'da-DK', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return new Intl.DateTimeFormat(t()("locale") || "da-DK", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     }).format(date);
   };
 
@@ -87,33 +87,33 @@ export default function ExerciseHistoryList(props: ExerciseHistoryListProps) {
    */
   const getStatusColor = (correct: boolean): string => {
     return correct
-      ? 'bg-green-100 text-green-800 border-green-200'
-      : 'bg-red-100 text-red-800 border-red-200';
+      ? "bg-green-100 text-green-800 border-green-200"
+      : "bg-red-100 text-red-800 border-red-200";
   };
 
   /**
    * Get status icon
    */
   const getStatusIcon = (correct: boolean): string => {
-    return correct ? '✓' : '✗';
+    return correct ? "✓" : "✗";
   };
 
   return (
-    <div class={`exercise-history-list ${props.class || ''}`}>
+    <div class={`exercise-history-list ${props.class || ""}`}>
       {/* Header */}
       <div class="mb-4">
         <h3 class="text-lg font-semibold text-gray-900">
-          {t()('progress.history.title')}
+          {t()("progress.history.title")}
         </h3>
         <p class="text-sm text-gray-600">
-          {t()('progress.history.totalAttempts')}: {props.history.length}
+          {t()("progress.history.totalAttempts")}: {props.history.length}
         </p>
       </div>
 
       {/* Empty state */}
       <Show when={props.history.length === 0}>
         <div class="rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center">
-          <p class="text-gray-600">{t()('progress.history.empty')}</p>
+          <p class="text-gray-600">{t()("progress.history.empty")}</p>
         </div>
       </Show>
 
@@ -124,14 +124,14 @@ export default function ExerciseHistoryList(props: ExerciseHistoryListProps) {
           class="overflow-auto rounded-lg border border-gray-200"
           style={{
             height: `${props.height || 600}px`,
-            contain: 'strict',
+            contain: "strict",
           }}
         >
           <div
             style={{
               height: `${virtualizer.getTotalSize()}px`,
-              width: '100%',
-              position: 'relative',
+              width: "100%",
+              position: "relative",
             }}
           >
             <For each={virtualizer.getVirtualItems()}>
@@ -153,8 +153,8 @@ export default function ExerciseHistoryList(props: ExerciseHistoryListProps) {
                         class={`flex h-10 w-10 items-center justify-center rounded-full border-2 font-bold ${getStatusColor(attempt.correct)}`}
                         aria-label={
                           attempt.correct
-                            ? t()('progress.history.correct')
-                            : t()('progress.history.incorrect')
+                            ? t()("progress.history.correct")
+                            : t()("progress.history.incorrect")
                         }
                       >
                         {getStatusIcon(attempt.correct)}
@@ -178,10 +178,10 @@ export default function ExerciseHistoryList(props: ExerciseHistoryListProps) {
                           </span>
                           <Show when={attempt.hintsUsed > 0}>
                             <span>
-                              💡 {attempt.hintsUsed}{' '}
+                              💡 {attempt.hintsUsed}{" "}
                               {attempt.hintsUsed === 1
-                                ? t()('common.hint')
-                                : t()('common.hints')}
+                                ? t()("common.hint")
+                                : t()("common.hints")}
                             </span>
                           </Show>
                           <span class="text-gray-400">
@@ -208,25 +208,25 @@ export default function ExerciseHistoryList(props: ExerciseHistoryListProps) {
         <div class="mt-4 flex gap-6 text-sm text-gray-600">
           <div>
             <span class="font-medium">
-              {t()('progress.history.correctCount')}:
-            </span>{' '}
+              {t()("progress.history.correctCount")}:
+            </span>{" "}
             {props.history.filter((a) => a.correct).length}
           </div>
           <div>
             <span class="font-medium">
-              {t()('progress.history.incorrectCount')}:
-            </span>{' '}
+              {t()("progress.history.incorrectCount")}:
+            </span>{" "}
             {props.history.filter((a) => !a.correct).length}
           </div>
           <div>
             <span class="font-medium">
-              {t()('progress.history.successRate')}:
-            </span>{' '}
+              {t()("progress.history.successRate")}:
+            </span>{" "}
             {props.history.length > 0
               ? Math.round(
                   (props.history.filter((a) => a.correct).length /
                     props.history.length) *
-                    100
+                    100,
                 )
               : 0}
             %
@@ -236,4 +236,3 @@ export default function ExerciseHistoryList(props: ExerciseHistoryListProps) {
     </div>
   );
 }
-

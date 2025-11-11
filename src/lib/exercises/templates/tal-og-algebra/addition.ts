@@ -1,47 +1,47 @@
 /**
  * Addition Exercise Templates
- * 
+ *
  * Templates for addition exercises aligned with Danish Fælles Mål curriculum
  * for grades 0-3 (klassetrin 0-3).
- * 
+ *
  * Competency Area: Tal og Algebra (Numbers and Algebra)
  * Skills Area: Regning (Calculation and number patterns)
- * 
+ *
  * Requirements:
  * - 3.1: Organize content according to Tal og Algebra competency area
  * - 3.2: Map templates to specific curriculum elements
  * - 3.5: Three difficulty levels (A, B, C)
  */
 
-import type { ExerciseTemplate } from '../../types';
-import { validateAnswer } from '../../validator';
-import { generateAdditionSolution } from '../../solution-generator';
+import type { ExerciseTemplate } from "../../types";
+import { validateAnswer } from "../../validator";
+import { generateAdditionSolution } from "../../solution-generator";
 
 /**
  * Addition Template - Difficulty A (Introductory)
- * 
+ *
  * Single digit + single digit, result ≤ 10
  * For early learners just beginning to understand addition
  */
 export const additionA: ExerciseTemplate = {
-  id: 'tal-algebra-addition-0-3-A',
-  name: 'Single Digit Addition (Basic)',
+  id: "tal-algebra-addition-0-3-A",
+  name: "Single Digit Addition (Basic)",
   metadata: {
-    competencyAreaId: 'tal-og-algebra',
-    skillsAreaId: 'regning',
-    gradeRange: '0-3',
-    difficulty: 'A',
+    competencyAreaId: "tal-og-algebra",
+    skillsAreaId: "regning",
+    gradeRange: "0-3",
+    difficulty: "A",
     isBinding: true,
-    tags: ['addition', 'single-digit', 'basic-arithmetic', 'no-regrouping'],
+    tags: ["addition", "single-digit", "basic-arithmetic", "no-regrouping"],
   },
   parameters: {
     a: {
-      type: 'integer',
+      type: "integer",
       min: 0,
       max: 9,
     },
     b: {
-      type: 'integer',
+      type: "integer",
       min: 0,
       max: 9,
       constraint: (params) => {
@@ -52,7 +52,7 @@ export const additionA: ExerciseTemplate = {
       },
     },
   },
-  generate: (params, locale) => {
+  generate: (params, _locale) => {
     const a = params.a as number;
     const b = params.b as number;
     const answer = a + b;
@@ -70,16 +70,16 @@ export const additionA: ExerciseTemplate = {
   hints: [
     // Level 1: General strategy
     (params, locale) => {
-      if (locale === 'da-DK') {
-        return 'Tænk på at tælle fremad. Du kan bruge dine fingre til at hjælpe.';
+      if (locale === "da-DK") {
+        return "Tænk på at tælle fremad. Du kan bruge dine fingre til at hjælpe.";
       }
-      return 'Think about counting forward. You can use your fingers to help.';
+      return "Think about counting forward. You can use your fingers to help.";
     },
     // Level 2: Specific technique
     (params, locale) => {
       const a = params.a as number;
       const b = params.b as number;
-      if (locale === 'da-DK') {
+      if (locale === "da-DK") {
         return `Start med ${a} og tæl ${b} mere.`;
       }
       return `Start with ${a} and count ${b} more.`;
@@ -88,57 +88,61 @@ export const additionA: ExerciseTemplate = {
     (params, locale) => {
       const a = params.a as number;
       const b = params.b as number;
-      if (locale === 'da-DK') {
-        return `Hvis du tæller: ${a}, ${Array.from({ length: b }, (_, i) => a + i + 1).join(', ')}`;
+      if (locale === "da-DK") {
+        return `Hvis du tæller: ${a}, ${Array.from({ length: b }, (_, i) => a + i + 1).join(", ")}`;
       }
-      return `If you count: ${a}, ${Array.from({ length: b }, (_, i) => a + i + 1).join(', ')}`;
+      return `If you count: ${a}, ${Array.from({ length: b }, (_, i) => a + i + 1).join(", ")}`;
     },
     // Level 4: Complete worked solution
     (params, locale) => {
       const a = params.a as number;
       const b = params.b as number;
-      const workedSolution = generateAdditionSolution(a, b, locale as 'da-DK' | 'en-US');
+      const workedSolution = generateAdditionSolution(
+        a,
+        b,
+        locale as "da-DK" | "en-US",
+      );
 
-      if (locale === 'da-DK') {
+      if (locale === "da-DK") {
         return {
-          text: 'Her er den komplette løsning trin for trin:',
+          text: "Her er den komplette løsning trin for trin:",
           workedSolution,
         };
       }
       return {
-        text: 'Here is the complete step-by-step solution:',
+        text: "Here is the complete step-by-step solution:",
         workedSolution,
       };
     },
   ],
-  contextType: 'abstract',
+  contextType: "abstract",
 };
 
 /**
  * Addition Template - Difficulty B (Developing)
- * 
+ *
  * Single digit + single digit (result may be > 10) or double digit + single digit
  * Introduces regrouping/carrying over 10
  */
 export const additionB: ExerciseTemplate = {
-  id: 'tal-algebra-addition-0-3-B',
-  name: 'Addition with Regrouping',
+  id: "tal-algebra-addition-0-3-B",
+  name: "Addition with Regrouping",
   metadata: {
-    competencyAreaId: 'tal-og-algebra',
-    skillsAreaId: 'regning',
-    gradeRange: '0-3',
-    difficulty: 'B',
+    competencyAreaId: "tal-og-algebra",
+    skillsAreaId: "regning",
+    gradeRange: "0-3",
+    difficulty: "B",
     isBinding: true,
-    tags: ['addition', 'regrouping', 'tens', 'double-digit'],
+    tags: ["addition", "regrouping", "tens", "double-digit"],
   },
   parameters: {
     a: {
-      type: 'integer',
+      type: "integer",
       min: 5,
       max: 19,
     },
     b: {
-      type: 'integer',
+      type: "integer",
       min: 1,
       max: 9,
       constraint: (params) => {
@@ -168,22 +172,22 @@ export const additionB: ExerciseTemplate = {
     // Level 1: General strategy
     (params, locale) => {
       const a = params.a as number;
-      if (locale === 'da-DK') {
+      if (locale === "da-DK") {
         if (a >= 10) {
-          return 'Tænk på ental og tital. Du lægger sammen en del ad gangen.';
+          return "Tænk på ental og tital. Du lægger sammen en del ad gangen.";
         }
-        return 'Når summen bliver større end 10, tænk på at lave en tier.';
+        return "Når summen bliver større end 10, tænk på at lave en tier.";
       }
       if (a >= 10) {
-        return 'Think about ones and tens. You add one part at a time.';
+        return "Think about ones and tens. You add one part at a time.";
       }
-      return 'When the sum is larger than 10, think about making a ten.';
+      return "When the sum is larger than 10, think about making a ten.";
     },
     // Level 2: Specific technique
     (params, locale) => {
       const a = params.a as number;
       const b = params.b as number;
-      if (locale === 'da-DK') {
+      if (locale === "da-DK") {
         if (a >= 10) {
           const tens = Math.floor(a / 10) * 10;
           const ones = a % 10;
@@ -213,7 +217,7 @@ export const additionB: ExerciseTemplate = {
       const a = params.a as number;
       const b = params.b as number;
       const answer = a + b;
-      if (locale === 'da-DK') {
+      if (locale === "da-DK") {
         if (a >= 10) {
           const tens = Math.floor(a / 10) * 10;
           const ones = a % 10;
@@ -250,48 +254,52 @@ export const additionB: ExerciseTemplate = {
     (params, locale) => {
       const a = params.a as number;
       const b = params.b as number;
-      const workedSolution = generateAdditionSolution(a, b, locale as 'da-DK' | 'en-US');
+      const workedSolution = generateAdditionSolution(
+        a,
+        b,
+        locale as "da-DK" | "en-US",
+      );
 
-      if (locale === 'da-DK') {
+      if (locale === "da-DK") {
         return {
-          text: 'Her er den komplette løsning trin for trin:',
+          text: "Her er den komplette løsning trin for trin:",
           workedSolution,
         };
       }
       return {
-        text: 'Here is the complete step-by-step solution:',
+        text: "Here is the complete step-by-step solution:",
         workedSolution,
       };
     },
   ],
-  contextType: 'abstract',
+  contextType: "abstract",
 };
 
 /**
  * Addition Template - Difficulty C (Advanced)
- * 
+ *
  * Double digit + double digit with regrouping
  * For students ready to work with larger numbers
  */
 export const additionC: ExerciseTemplate = {
-  id: 'tal-algebra-addition-0-3-C',
-  name: 'Double Digit Addition',
+  id: "tal-algebra-addition-0-3-C",
+  name: "Double Digit Addition",
   metadata: {
-    competencyAreaId: 'tal-og-algebra',
-    skillsAreaId: 'regning',
-    gradeRange: '0-3',
-    difficulty: 'C',
+    competencyAreaId: "tal-og-algebra",
+    skillsAreaId: "regning",
+    gradeRange: "0-3",
+    difficulty: "C",
     isBinding: true,
-    tags: ['addition', 'double-digit', 'regrouping', 'advanced'],
+    tags: ["addition", "double-digit", "regrouping", "advanced"],
   },
   parameters: {
     a: {
-      type: 'integer',
+      type: "integer",
       min: 10,
       max: 49,
     },
     b: {
-      type: 'integer',
+      type: "integer",
       min: 10,
       max: 49,
       constraint: (params) => {
@@ -320,10 +328,10 @@ export const additionC: ExerciseTemplate = {
   hints: [
     // Level 1: General strategy
     (params, locale) => {
-      if (locale === 'da-DK') {
-        return 'Læg ental og tital sammen hver for sig. Husk at samle dem til sidst.';
+      if (locale === "da-DK") {
+        return "Læg ental og tital sammen hver for sig. Husk at samle dem til sidst.";
       }
-      return 'Add the ones and tens separately. Remember to combine them at the end.';
+      return "Add the ones and tens separately. Remember to combine them at the end.";
     },
     // Level 2: Specific technique
     (params, locale) => {
@@ -333,7 +341,7 @@ export const additionC: ExerciseTemplate = {
       const aOnes = a % 10;
       const bTens = Math.floor(b / 10);
       const bOnes = b % 10;
-      if (locale === 'da-DK') {
+      if (locale === "da-DK") {
         return `${a} = ${aTens} tiere + ${aOnes} enere. ${b} = ${bTens} tiere + ${bOnes} enere. Læg tiere sammen, så enere sammen.`;
       }
       return `${a} = ${aTens} tens + ${aOnes} ones. ${b} = ${bTens} tens + ${bOnes} ones. Add tens together, then ones together.`;
@@ -348,8 +356,8 @@ export const additionC: ExerciseTemplate = {
       const bOnes = b % 10;
       const totalOnes = aOnes + bOnes;
       const totalTens = aTens + bTens;
-      
-      if (locale === 'da-DK') {
+
+      if (locale === "da-DK") {
         if (totalOnes >= 10) {
           const carryTens = Math.floor(totalOnes / 10);
           const remainingOnes = totalOnes % 10;
@@ -368,23 +376,26 @@ export const additionC: ExerciseTemplate = {
     (params, locale) => {
       const a = params.a as number;
       const b = params.b as number;
-      const workedSolution = generateAdditionSolution(a, b, locale as 'da-DK' | 'en-US');
+      const workedSolution = generateAdditionSolution(
+        a,
+        b,
+        locale as "da-DK" | "en-US",
+      );
 
-      if (locale === 'da-DK') {
+      if (locale === "da-DK") {
         return {
-          text: 'Her er den komplette løsning trin for trin:',
+          text: "Her er den komplette løsning trin for trin:",
           workedSolution,
         };
       }
       return {
-        text: 'Here is the complete step-by-step solution:',
+        text: "Here is the complete step-by-step solution:",
         workedSolution,
       };
     },
   ],
-  contextType: 'abstract',
+  contextType: "abstract",
 };
 
 // Export all addition templates
 export const additionTemplates = [additionA, additionB, additionC];
-

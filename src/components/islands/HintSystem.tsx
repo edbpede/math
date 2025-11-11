@@ -1,9 +1,9 @@
 /**
  * HintSystem Component
- * 
+ *
  * SolidJS island component for displaying progressive hints during exercise practice.
  * Implements 4-level hint revelation with usage tracking for mastery calculation.
- * 
+ *
  * Requirements:
  * - 4.1: Hint button accessible during every exercise without penalty
  * - 4.2: Implement four progressive hint levels
@@ -12,13 +12,13 @@
  * - 4.5: Keep hints available after answer submission for learning review
  */
 
-import { createSignal, createEffect, For, Show } from 'solid-js';
-import type { Hint } from '@/lib/exercises/types';
-import { createReactiveHintTracker } from '@/lib/exercises/hint-tracker';
-import { useStore } from '@nanostores/solid';
-import { $t } from '@/lib/i18n';
-import { announce } from '@/lib/accessibility';
-import WorkedSolutionDisplay from './WorkedSolutionDisplay';
+import { createSignal, createEffect, For, Show } from "solid-js";
+import type { Hint } from "@/lib/exercises/types";
+import { createReactiveHintTracker } from "@/lib/exercises/hint-tracker";
+import { useStore } from "@nanostores/solid";
+import { $t } from "@/lib/i18n";
+import { announce } from "@/lib/accessibility";
+import WorkedSolutionDisplay from "./WorkedSolutionDisplay";
 
 export interface HintSystemProps {
   /** Array of hints for the current exercise (should have 4 levels) */
@@ -39,10 +39,10 @@ export interface HintSystemProps {
 
 /**
  * HintSystem - Progressive hint display component
- * 
+ *
  * Displays hints one at a time as the user requests them, keeping previous hints
  * visible. Tracks usage count for mastery calculation and supports accessibility.
- * 
+ *
  * @example
  * ```tsx
  * <HintSystem
@@ -61,7 +61,8 @@ export default function HintSystem(props: HintSystemProps) {
   // Reset state when resetKey changes (new exercise)
   createEffect(() => {
     // Access resetKey to track it
-    const _key = props.resetKey;
+    // Track reset key for future use
+    // const _key = props.resetKey;
     tracker.reset();
   });
 
@@ -72,10 +73,10 @@ export default function HintSystem(props: HintSystemProps) {
 
       // Announce hint revelation to screen readers
       announce(
-        t()('accessibility.screenReader.hintRevealed', {
+        t()("accessibility.screenReader.hintRevealed", {
           level: hint.level.toString(),
         }),
-        { priority: 'polite', delay: 200 }
+        { priority: "polite", delay: 200 },
       );
     }
   };
@@ -88,7 +89,7 @@ export default function HintSystem(props: HintSystemProps) {
     <div
       class="hint-system"
       role="region"
-      aria-label={t()('hints.common.hintProgress', {
+      aria-label={t()("hints.common.hintProgress", {
         current: hintsRevealed().toString(),
         total: totalHints().toString(),
       })}
@@ -100,22 +101,24 @@ export default function HintSystem(props: HintSystemProps) {
           type="button"
           class="hint-button px-6 py-3 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
           classList={{
-            'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500': !areAllRevealed() && !props.disabled,
-            'bg-gray-300 text-gray-500 cursor-not-allowed': areAllRevealed() || props.disabled,
+            "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500":
+              !areAllRevealed() && !props.disabled,
+            "bg-gray-300 text-gray-500 cursor-not-allowed":
+              areAllRevealed() || props.disabled,
           }}
           onClick={handleRevealHint}
           disabled={areAllRevealed() || props.disabled}
           aria-label={
             areAllRevealed()
-              ? t()('hints.common.allHintsShown')
-              : `${t()('hints.common.hintProgress', {
+              ? t()("hints.common.allHintsShown")
+              : `${t()("hints.common.hintProgress", {
                   current: (hintsRevealed() + 1).toString(),
                   total: totalHints().toString(),
                 })}`
           }
           style={{
-            'min-width': '44px',
-            'min-height': '44px',
+            "min-width": "44px",
+            "min-height": "44px",
           }}
         >
           <Show
@@ -137,7 +140,7 @@ export default function HintSystem(props: HintSystemProps) {
                     d="M5 13l4 4L19 7"
                   />
                 </svg>
-                <span>{t()('hints.common.allHintsShown')}</span>
+                <span>{t()("hints.common.allHintsShown")}</span>
               </span>
             }
           >
@@ -159,8 +162,8 @@ export default function HintSystem(props: HintSystemProps) {
               </svg>
               <span>
                 {hintsRevealed() === 0
-                  ? t()('hints.common.getHint')
-                  : t()('hints.common.getNextHint')}
+                  ? t()("hints.common.getHint")
+                  : t()("hints.common.getNextHint")}
               </span>
             </span>
           </Show>
@@ -172,7 +175,7 @@ export default function HintSystem(props: HintSystemProps) {
             class="hint-progress mt-2 text-sm text-gray-600"
             aria-live="polite"
           >
-            {t()('hints.common.hintProgress', {
+            {t()("hints.common.hintProgress", {
               current: hintsRevealed().toString(),
               total: totalHints().toString(),
             })}
@@ -185,30 +188,30 @@ export default function HintSystem(props: HintSystemProps) {
         <div
           class="revealed-hints space-y-4"
           role="list"
-          aria-label={t()('hints.common.revealedHints')}
+          aria-label={t()("hints.common.revealedHints")}
         >
           <For each={getRevealedHints()}>
             {(hint) => (
               <div
                 class="hint-item p-4 rounded-lg border-l-4 transition-all duration-300 animate-fade-in"
                 classList={{
-                  'bg-blue-50 border-blue-500': hint.level === 1,
-                  'bg-green-50 border-green-500': hint.level === 2,
-                  'bg-yellow-50 border-yellow-500': hint.level === 3,
-                  'bg-purple-50 border-purple-500': hint.level === 4,
+                  "bg-blue-50 border-blue-500": hint.level === 1,
+                  "bg-green-50 border-green-500": hint.level === 2,
+                  "bg-yellow-50 border-yellow-500": hint.level === 3,
+                  "bg-purple-50 border-purple-500": hint.level === 4,
                 }}
                 role="listitem"
-                aria-label={`${t()('hints.common.hintLevel')} ${hint.level}`}
+                aria-label={`${t()("hints.common.hintLevel")} ${hint.level}`}
               >
                 {/* Hint level badge */}
                 <div class="flex items-start gap-3">
                   <div
                     class="hint-level-badge flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm"
                     classList={{
-                      'bg-blue-600 text-white': hint.level === 1,
-                      'bg-green-600 text-white': hint.level === 2,
-                      'bg-yellow-600 text-white': hint.level === 3,
-                      'bg-purple-600 text-white': hint.level === 4,
+                      "bg-blue-600 text-white": hint.level === 1,
+                      "bg-green-600 text-white": hint.level === 2,
+                      "bg-yellow-600 text-white": hint.level === 3,
+                      "bg-purple-600 text-white": hint.level === 4,
                     }}
                     aria-hidden="true"
                   >
@@ -226,10 +229,10 @@ export default function HintSystem(props: HintSystemProps) {
                       <div
                         class="hint-visual-aid mt-3 p-3 bg-white rounded border border-gray-200"
                         role="img"
-                        aria-label={t()('hints.common.visualAid')}
+                        aria-label={t()("hints.common.visualAid")}
                       >
                         <div class="text-sm text-gray-600 mb-2 font-medium">
-                          {t()('hints.common.visualAid')}
+                          {t()("hints.common.visualAid")}
                         </div>
                         {/* Visual aid rendering will be implemented based on type */}
                         <div class="text-xs text-gray-500">
@@ -241,7 +244,9 @@ export default function HintSystem(props: HintSystemProps) {
                     {/* Worked solution (typically for level 4 hints) */}
                     <Show when={hint.workedSolution}>
                       <div class="worked-solution-wrapper mt-4">
-                        <WorkedSolutionDisplay solution={hint.workedSolution!} />
+                        <WorkedSolutionDisplay
+                          solution={hint.workedSolution!}
+                        />
                       </div>
                     </Show>
                   </div>
@@ -254,4 +259,3 @@ export default function HintSystem(props: HintSystemProps) {
     </div>
   );
 }
-

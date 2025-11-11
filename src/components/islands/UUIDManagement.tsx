@@ -11,27 +11,27 @@
  * - 9.1: WCAG 2.1 AA accessibility
  */
 
-import { createSignal, createEffect, Show, onMount } from 'solid-js'
-import { useStore } from '@nanostores/solid'
-import { $t } from '@/lib/i18n'
-import { formatUUID } from '@/lib/auth/uuid'
-import { deleteUser } from '@/lib/auth'
-import { createFocusTrap } from '@/lib/accessibility'
-import QRCode from 'qrcode'
+import { createSignal, createEffect, Show } from "solid-js";
+import { useStore } from "@nanostores/solid";
+import { $t } from "@/lib/i18n";
+import { formatUUID } from "@/lib/auth/uuid";
+import { deleteUser } from "@/lib/auth";
+import { createFocusTrap } from "@/lib/accessibility";
+import QRCode from "qrcode";
 
 export interface UUIDManagementProps {
   /** User's UUID */
-  uuid: string
+  uuid: string;
   /** Optional CSS class */
-  class?: string
+  class?: string;
 }
 
 // Discriminated union for component state
 type ComponentState =
-  | { status: 'idle' }
-  | { status: 'loading-qr' }
-  | { status: 'deleting' }
-  | { status: 'error'; message: string }
+  | { status: "idle" }
+  | { status: "loading-qr" }
+  | { status: "deleting" }
+  | { status: "error"; message: string };
 
 /**
  * UUIDManagement - Display and manage user UUID and account
@@ -50,160 +50,157 @@ type ComponentState =
  * ```
  */
 export default function UUIDManagement(props: UUIDManagementProps) {
-  const t = useStore($t)
+  const t = useStore($t);
 
-  const [state, setState] = createSignal<ComponentState>({ status: 'idle' })
-  const [showUUID, setShowUUID] = createSignal(false)
-  const [copied, setCopied] = createSignal(false)
-  const [showQR, setShowQR] = createSignal(false)
-  const [qrCodeDataUrl, setQrCodeDataUrl] = createSignal<string | null>(null)
-  const [showDeleteModal, setShowDeleteModal] = createSignal(false)
+  const [state, setState] = createSignal<ComponentState>({ status: "idle" });
+  const [showUUID, setShowUUID] = createSignal(false);
+  const [copied, setCopied] = createSignal(false);
+  const [showQR, setShowQR] = createSignal(false);
+  const [qrCodeDataUrl, setQrCodeDataUrl] = createSignal<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = createSignal(false);
 
   // Modal ref and focus trap
-  let modalRef: HTMLDivElement | undefined
-  const focusTrap = createFocusTrap(
-    () => modalRef,
-    {
-      preventScroll: true,
-      allowEscape: true,
-      onDeactivate: () => setShowDeleteModal(false),
-    }
-  )
+  let modalRef: HTMLDivElement | undefined;
+  const focusTrap = createFocusTrap(() => modalRef, {
+    preventScroll: true,
+    allowEscape: true,
+    onDeactivate: () => setShowDeleteModal(false),
+  });
 
   // Activate/deactivate focus trap based on modal visibility
   createEffect(() => {
     if (showDeleteModal()) {
-      focusTrap.activate()
+      focusTrap.activate();
     } else {
-      focusTrap.deactivate()
+      focusTrap.deactivate();
     }
-  })
+  });
 
   // Format the UUID for display
-  const formattedUUID = () => formatUUID(props.uuid)
-  
+  const formattedUUID = () => formatUUID(props.uuid);
+
   // Masked UUID (shows asterisks)
-  const maskedUUID = () => '****-****-****-****'
+  const maskedUUID = () => "****-****-****-****";
 
   /**
    * Copy UUID to clipboard
    */
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(formattedUUID())
-      setCopied(true)
-      setTimeout(() => setCopied(false), 3000)
+      await navigator.clipboard.writeText(formattedUUID());
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
     } catch (error) {
-      console.error('Failed to copy UUID:', error)
+      console.error("Failed to copy UUID:", error);
       setState({
-        status: 'error',
-        message: t()('settings.uuid.copyError'),
-      })
-      setTimeout(() => setState({ status: 'idle' }), 3000)
+        status: "error",
+        message: t()("settings.uuid.copyError"),
+      });
+      setTimeout(() => setState({ status: "idle" }), 3000);
     }
-  }
+  };
 
   /**
    * Export UUID as text file
    */
   const exportAsFile = () => {
-    const content = `Your Practice Number: ${formattedUUID()}\n\nKeep this number safe. You need it to log in and access your progress.`
-    const blob = new Blob([content], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `practice-number-${formattedUUID()}.txt`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
-  }
+    const content = `Your Practice Number: ${formattedUUID()}\n\nKeep this number safe. You need it to log in and access your progress.`;
+    const blob = new Blob([content], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `practice-number-${formattedUUID()}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   /**
    * Generate and show QR code
    */
   const toggleQRCode = async () => {
     if (showQR()) {
-      setShowQR(false)
-      return
+      setShowQR(false);
+      return;
     }
 
     // Generate QR code if not already generated
     if (!qrCodeDataUrl()) {
-      setState({ status: 'loading-qr' })
+      setState({ status: "loading-qr" });
       try {
         const dataUrl = await QRCode.toDataURL(formattedUUID(), {
           width: 256,
           margin: 2,
           color: {
-            dark: '#000000',
-            light: '#FFFFFF',
+            dark: "#000000",
+            light: "#FFFFFF",
           },
-        })
-        setQrCodeDataUrl(dataUrl)
-        setState({ status: 'idle' })
+        });
+        setQrCodeDataUrl(dataUrl);
+        setState({ status: "idle" });
       } catch (error) {
-        console.error('Failed to generate QR code:', error)
+        console.error("Failed to generate QR code:", error);
         setState({
-          status: 'error',
-          message: t()('settings.uuid.copyError'),
-        })
-        return
+          status: "error",
+          message: t()("settings.uuid.copyError"),
+        });
+        return;
       }
     }
 
-    setShowQR(true)
-  }
+    setShowQR(true);
+  };
 
   /**
    * Handle account deletion
    */
   const handleDeleteAccount = async () => {
-    setState({ status: 'deleting' })
+    setState({ status: "deleting" });
 
     try {
-      const result = await deleteUser(props.uuid)
+      const result = await deleteUser(props.uuid);
 
       if (!result.success) {
         setState({
-          status: 'error',
-          message: result.error || t()('settings.deleteAccount.error'),
-        })
-        setShowDeleteModal(false)
-        return
+          status: "error",
+          message: result.error || t()("settings.deleteAccount.error"),
+        });
+        setShowDeleteModal(false);
+        return;
       }
 
       // Account deleted successfully - redirect to home
-      window.location.href = '/'
+      window.location.href = "/";
     } catch (error) {
-      console.error('Error deleting account:', error)
+      console.error("Error deleting account:", error);
       setState({
-        status: 'error',
-        message: t()('settings.deleteAccount.error'),
-      })
-      setShowDeleteModal(false)
+        status: "error",
+        message: t()("settings.deleteAccount.error"),
+      });
+      setShowDeleteModal(false);
     }
-  }
+  };
 
   return (
-    <div class={`uuid-management ${props.class || ''}`}>
+    <div class={`uuid-management ${props.class || ""}`}>
       {/* Error message */}
-      <Show when={state().status === 'error'}>
+      <Show when={state().status === "error"}>
         <div
           class="mb-4 rounded-lg border border-red-300 bg-red-50 p-4 text-red-800"
           role="alert"
         >
-          {(state() as { status: 'error'; message: string }).message}
+          {(state() as { status: "error"; message: string }).message}
         </div>
       </Show>
 
       {/* UUID Display Section */}
       <section class="mb-8 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
         <h3 class="mb-2 text-lg font-semibold text-gray-900">
-          {t()('settings.uuid.title')}
+          {t()("settings.uuid.title")}
         </h3>
         <p class="mb-4 text-sm text-gray-600">
-          {t()('settings.uuid.description')}
+          {t()("settings.uuid.description")}
         </p>
 
         {/* Warning box */}
@@ -222,10 +219,10 @@ export default function UUIDManagement(props: UUIDManagementProps) {
             </svg>
             <div>
               <p class="font-medium text-amber-900">
-                {t()('settings.uuid.warning.title')}
+                {t()("settings.uuid.warning.title")}
               </p>
               <p class="mt-1 text-sm text-amber-800">
-                {t()('settings.uuid.warning.message')}
+                {t()("settings.uuid.warning.message")}
               </p>
             </div>
           </div>
@@ -234,7 +231,7 @@ export default function UUIDManagement(props: UUIDManagementProps) {
         {/* UUID display with show/hide */}
         <div class="mb-4">
           <label class="mb-2 block text-sm font-medium text-gray-700">
-            {t()('settings.uuid.label')}
+            {t()("settings.uuid.label")}
           </label>
           <div class="flex items-center gap-3">
             <div
@@ -247,9 +244,15 @@ export default function UUIDManagement(props: UUIDManagementProps) {
               type="button"
               onClick={() => setShowUUID(!showUUID())}
               class="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-blue-300 touch-target"
-              aria-label={showUUID() ? t()('settings.uuid.hide') : t()('settings.uuid.show')}
+              aria-label={
+                showUUID()
+                  ? t()("settings.uuid.hide")
+                  : t()("settings.uuid.show")
+              }
             >
-              {showUUID() ? t()('settings.uuid.hide') : t()('settings.uuid.show')}
+              {showUUID()
+                ? t()("settings.uuid.hide")
+                : t()("settings.uuid.show")}
             </button>
           </div>
         </div>
@@ -261,12 +264,17 @@ export default function UUIDManagement(props: UUIDManagementProps) {
             type="button"
             onClick={copyToClipboard}
             class="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-blue-300 touch-target"
-            aria-label={t()('settings.uuid.copy')}
+            aria-label={t()("settings.uuid.copy")}
           >
             <Show
               when={copied()}
               fallback={
-                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg
+                  class="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -276,7 +284,11 @@ export default function UUIDManagement(props: UUIDManagementProps) {
                 </svg>
               }
             >
-              <svg class="h-5 w-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+              <svg
+                class="h-5 w-5 text-green-600"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
                 <path
                   fill-rule="evenodd"
                   d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -284,7 +296,11 @@ export default function UUIDManagement(props: UUIDManagementProps) {
                 />
               </svg>
             </Show>
-            <span>{copied() ? t()('settings.uuid.copied') : t()('settings.uuid.copy')}</span>
+            <span>
+              {copied()
+                ? t()("settings.uuid.copied")
+                : t()("settings.uuid.copy")}
+            </span>
           </button>
 
           {/* Export button */}
@@ -292,9 +308,14 @@ export default function UUIDManagement(props: UUIDManagementProps) {
             type="button"
             onClick={exportAsFile}
             class="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-blue-300 touch-target"
-            aria-label={t()('settings.uuid.export')}
+            aria-label={t()("settings.uuid.export")}
           >
-            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -302,7 +323,7 @@ export default function UUIDManagement(props: UUIDManagementProps) {
                 d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
               />
             </svg>
-            <span>{t()('settings.uuid.export')}</span>
+            <span>{t()("settings.uuid.export")}</span>
           </button>
 
           {/* QR code button */}
@@ -310,17 +331,26 @@ export default function UUIDManagement(props: UUIDManagementProps) {
             type="button"
             onClick={toggleQRCode}
             class="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-blue-300 touch-target"
-            aria-label={showQR() ? t()('settings.uuid.hideQR') : t()('settings.uuid.showQR')}
+            aria-label={
+              showQR()
+                ? t()("settings.uuid.hideQR")
+                : t()("settings.uuid.showQR")
+            }
             aria-expanded={showQR()}
-            disabled={state().status === 'loading-qr'}
+            disabled={state().status === "loading-qr"}
           >
             <Show
-              when={state().status !== 'loading-qr'}
+              when={state().status !== "loading-qr"}
               fallback={
                 <div class="h-5 w-5 animate-spin rounded-full border-2 border-gray-700 border-t-transparent" />
               }
             >
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -329,7 +359,11 @@ export default function UUIDManagement(props: UUIDManagementProps) {
                 />
               </svg>
             </Show>
-            <span>{showQR() ? t()('settings.uuid.hideQR') : t()('settings.uuid.showQR')}</span>
+            <span>
+              {showQR()
+                ? t()("settings.uuid.hideQR")
+                : t()("settings.uuid.showQR")}
+            </span>
           </button>
         </div>
 
@@ -337,7 +371,7 @@ export default function UUIDManagement(props: UUIDManagementProps) {
         <Show when={showQR() && qrCodeDataUrl()}>
           <div class="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-6">
             <p class="mb-4 text-center text-sm text-gray-600">
-              {t()('settings.uuid.qrDescription')}
+              {t()("settings.uuid.qrDescription")}
             </p>
             <div class="flex justify-center">
               <img
@@ -355,25 +389,25 @@ export default function UUIDManagement(props: UUIDManagementProps) {
       {/* Danger Zone Section */}
       <section class="rounded-lg border-2 border-red-200 bg-red-50 p-6">
         <h3 class="mb-2 text-lg font-semibold text-red-900">
-          {t()('settings.sections.dangerZone.title')}
+          {t()("settings.sections.dangerZone.title")}
         </h3>
         <p class="mb-4 text-sm text-red-800">
-          {t()('settings.sections.dangerZone.description')}
+          {t()("settings.sections.dangerZone.description")}
         </p>
 
         <div class="rounded-lg border border-red-300 bg-white p-4">
           <h4 class="mb-2 font-semibold text-gray-900">
-            {t()('settings.deleteAccount.title')}
+            {t()("settings.deleteAccount.title")}
           </h4>
           <p class="mb-4 text-sm text-gray-600">
-            {t()('settings.deleteAccount.description')}
+            {t()("settings.deleteAccount.description")}
           </p>
           <button
             type="button"
             onClick={() => setShowDeleteModal(true)}
             class="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 touch-target"
           >
-            {t()('settings.deleteAccount.button')}
+            {t()("settings.deleteAccount.button")}
           </button>
         </div>
       </section>
@@ -387,33 +421,33 @@ export default function UUIDManagement(props: UUIDManagementProps) {
           aria-describedby="delete-modal-description"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
-              setShowDeleteModal(false)
+              setShowDeleteModal(false);
             }
           }}
         >
-          <div ref={modalRef} class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+          <div
+            ref={modalRef}
+            class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl"
+          >
             <h3
               id="delete-modal-title"
               class="mb-4 text-xl font-bold text-gray-900"
             >
-              {t()('settings.deleteAccount.confirm.title')}
+              {t()("settings.deleteAccount.confirm.title")}
             </h3>
-            <p
-              id="delete-modal-description"
-              class="mb-4 text-gray-700"
-            >
-              {t()('settings.deleteAccount.confirm.message')}
+            <p id="delete-modal-description" class="mb-4 text-gray-700">
+              {t()("settings.deleteAccount.confirm.message")}
             </p>
 
             <div class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
               <p class="mb-2 font-semibold text-red-900">
-                {t()('settings.deleteAccount.confirm.warning')}
+                {t()("settings.deleteAccount.confirm.warning")}
               </p>
               <ul class="list-inside list-disc space-y-1 text-sm text-red-800">
-                <li>{t()('settings.deleteAccount.confirm.items.0')}</li>
-                <li>{t()('settings.deleteAccount.confirm.items.1')}</li>
-                <li>{t()('settings.deleteAccount.confirm.items.2')}</li>
-                <li>{t()('settings.deleteAccount.confirm.items.3')}</li>
+                <li>{t()("settings.deleteAccount.confirm.items.0")}</li>
+                <li>{t()("settings.deleteAccount.confirm.items.1")}</li>
+                <li>{t()("settings.deleteAccount.confirm.items.2")}</li>
+                <li>{t()("settings.deleteAccount.confirm.items.3")}</li>
               </ul>
             </div>
 
@@ -421,24 +455,24 @@ export default function UUIDManagement(props: UUIDManagementProps) {
               <button
                 type="button"
                 onClick={() => setShowDeleteModal(false)}
-                disabled={state().status === 'deleting'}
+                disabled={state().status === "deleting"}
                 class="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-300 disabled:opacity-50 touch-target"
               >
-                {t()('settings.deleteAccount.confirm.cancelButton')}
+                {t()("settings.deleteAccount.confirm.cancelButton")}
               </button>
               <button
                 type="button"
                 onClick={handleDeleteAccount}
-                disabled={state().status === 'deleting'}
+                disabled={state().status === "deleting"}
                 class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 disabled:opacity-50 touch-target"
               >
-                <Show when={state().status === 'deleting'}>
+                <Show when={state().status === "deleting"}>
                   <div class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                 </Show>
                 <span>
-                  {state().status === 'deleting'
-                    ? t()('settings.deleteAccount.deleting')
-                    : t()('settings.deleteAccount.confirm.confirmButton')}
+                  {state().status === "deleting"
+                    ? t()("settings.deleteAccount.deleting")
+                    : t()("settings.deleteAccount.confirm.confirmButton")}
                 </span>
               </button>
             </div>
@@ -446,6 +480,5 @@ export default function UUIDManagement(props: UUIDManagementProps) {
         </div>
       </Show>
     </div>
-  )
+  );
 }
-

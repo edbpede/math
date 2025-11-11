@@ -224,7 +224,7 @@ Grade Range: ${props.gradeRange}
 
       {/* Generated State: UUID Display with Save Options */}
       <Show when={state().status === "generated"}>
-        {(isGenerated) => {
+        {(_isGenerated) => {
           const currentState = state();
           if (currentState.status !== "generated") return null;
 
@@ -451,7 +451,7 @@ Grade Range: ${props.gradeRange}
 
       {/* Error State */}
       <Show when={state().status === "error"}>
-        {(isError) => {
+        {(_isError) => {
           const currentState = state();
           if (currentState.status !== "error") return null;
 

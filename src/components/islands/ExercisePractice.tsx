@@ -170,7 +170,8 @@ export default function ExercisePractice(props: ExercisePracticeProps) {
   // Reset state when exercise changes (batched for performance)
   createEffect(() => {
     // Track currentIndex to trigger reset
-    const _index = props.currentIndex;
+    // Track current index (for future use)
+    // const _index = props.currentIndex;
     const exercise = getCurrentExercise();
 
     if (exercise) {
@@ -224,7 +225,7 @@ export default function ExercisePractice(props: ExercisePracticeProps) {
   /**
    * Handle hint request from HintSystem
    */
-  const handleHintRequested = (level: number) => {
+  const handleHintRequested = (_level: number) => {
     setHintsUsed((prev) => prev + 1);
   };
 
@@ -270,8 +271,9 @@ export default function ExercisePractice(props: ExercisePracticeProps) {
 
     try {
       // Validate answer using template's validation function
-      const template = exercise.templateId;
-      const validation = exercise.metadata.competencyAreaId; // TODO: Get template and validate
+      // TODO: Implement template validation
+      // const template = exercise.templateId;
+      // const validation = exercise.metadata.competencyAreaId;
 
       // For now, use a simple validation approach
       // This will be improved when we have proper template validation
@@ -413,7 +415,7 @@ export default function ExercisePractice(props: ExercisePracticeProps) {
   const isSubmitting = state.status === "validating";
   const hasSubmitted =
     state.status === "correct" || state.status === "incorrect";
-  const isCorrect = state.status === "correct";
+  // const isCorrect = state.status === "correct";
   const isIncorrect = state.status === "incorrect";
 
   return (

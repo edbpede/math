@@ -9,12 +9,12 @@
  * - 8.4: Provide worked solution at any time during or after exercise
  */
 
-import { For, Show, createEffect, onMount } from 'solid-js';
-import type { WorkedSolution } from '@/lib/exercises/types';
-import { useStore } from '@nanostores/solid';
-import { $t } from '@/lib/i18n';
-import { announce } from '@/lib/accessibility';
-import VisualAidRenderer from './VisualAidRenderer';
+import { For, Show, createEffect } from "solid-js";
+import type { WorkedSolution } from "@/lib/exercises/types";
+import { useStore } from "@nanostores/solid";
+import { $t } from "@/lib/i18n";
+import { announce } from "@/lib/accessibility";
+import VisualAidRenderer from "./VisualAidRenderer";
 
 export interface WorkedSolutionDisplayProps {
   /** The worked solution to display */
@@ -41,25 +41,27 @@ export interface WorkedSolutionDisplayProps {
  * />
  * ```
  */
-export default function WorkedSolutionDisplay(props: WorkedSolutionDisplayProps) {
+export default function WorkedSolutionDisplay(
+  props: WorkedSolutionDisplayProps,
+) {
   const t = useStore($t);
 
   // Announce when solution is revealed
   createEffect(() => {
     if (props.show !== false && props.show !== undefined) {
-      announce(
-        t()('accessibility.screenReader.solutionRevealed'),
-        { priority: 'polite', delay: 200 }
-      );
+      announce(t()("accessibility.screenReader.solutionRevealed"), {
+        priority: "polite",
+        delay: 200,
+      });
     }
   });
 
   return (
     <Show when={props.show !== false}>
       <div
-        class={`worked-solution-container ${props.class || ''}`}
+        class={`worked-solution-container ${props.class || ""}`}
         role="region"
-        aria-label={t()('solutions.workedSolutionLabel')}
+        aria-label={t()("solutions.workedSolutionLabel")}
       >
         {/* Header */}
         <div class="worked-solution-header mb-4 pb-3 border-b-2 border-purple-300">
@@ -79,7 +81,7 @@ export default function WorkedSolutionDisplay(props: WorkedSolutionDisplayProps)
                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
               />
             </svg>
-            <span>{t()('solutions.stepByStepSolution')}</span>
+            <span>{t()("solutions.stepByStepSolution")}</span>
           </h3>
         </div>
 
@@ -87,14 +89,14 @@ export default function WorkedSolutionDisplay(props: WorkedSolutionDisplayProps)
         <div
           class="solution-steps space-y-4 mb-6"
           role="list"
-          aria-label={t()('solutions.solutionSteps')}
+          aria-label={t()("solutions.solutionSteps")}
         >
           <For each={props.solution.steps}>
             {(step, index) => (
               <div
                 class="solution-step p-4 rounded-lg bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 shadow-sm transition-all duration-200 hover:shadow-md"
                 role="listitem"
-                aria-label={`${t()('solutions.step')} ${index() + 1}`}
+                aria-label={`${t()("solutions.step")} ${index() + 1}`}
               >
                 {/* Step number badge */}
                 <div class="flex items-start gap-4">
@@ -134,7 +136,7 @@ export default function WorkedSolutionDisplay(props: WorkedSolutionDisplayProps)
         <Show when={props.solution.visualAid}>
           <div class="solution-visual-aid mb-6 p-4 bg-purple-50 rounded-lg border border-purple-200">
             <div class="text-sm font-medium text-purple-900 mb-3">
-              {t()('solutions.overallVisualization')}
+              {t()("solutions.overallVisualization")}
             </div>
             <VisualAidRenderer visualAid={props.solution.visualAid!} />
           </div>
@@ -144,7 +146,7 @@ export default function WorkedSolutionDisplay(props: WorkedSolutionDisplayProps)
         <div
           class="final-answer p-4 rounded-lg bg-gradient-to-r from-green-100 to-green-200 border-2 border-green-400 shadow-md"
           role="status"
-          aria-label={t()('solutions.finalAnswer')}
+          aria-label={t()("solutions.finalAnswer")}
         >
           <div class="flex items-center gap-3">
             <svg
@@ -164,7 +166,7 @@ export default function WorkedSolutionDisplay(props: WorkedSolutionDisplayProps)
             </svg>
             <div class="flex-1">
               <div class="text-sm font-medium text-green-800 uppercase tracking-wide mb-1">
-                {t()('solutions.finalAnswer')}
+                {t()("solutions.finalAnswer")}
               </div>
               <div class="text-xl font-bold text-green-900">
                 {props.solution.finalAnswer}

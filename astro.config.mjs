@@ -1,7 +1,7 @@
 // @ts-check
-import { defineConfig } from 'astro/config'
-import solidJs from '@astrojs/solid-js'
-import UnoCSS from 'unocss/astro'
+import { defineConfig } from "astro/config";
+import solidJs from "@astrojs/solid-js";
+import UnoCSS from "unocss/astro";
 
 // https://astro.build/config
 export default defineConfig({
@@ -12,12 +12,9 @@ export default defineConfig({
   // - Node: @astrojs/node
   // Then change output to 'server' or 'hybrid'
   // See: https://docs.astro.build/en/guides/on-demand-rendering/
-  output: 'static',
+  output: "static",
 
-  integrations: [
-    solidJs(),
-    UnoCSS(),
-  ],
+  integrations: [solidJs(), UnoCSS()],
 
   vite: {
     build: {
@@ -26,79 +23,82 @@ export default defineConfig({
           // Configure manual chunks for better code splitting
           manualChunks(id) {
             // Vendor chunks: separate large dependencies
-            if (id.includes('node_modules')) {
+            if (id.includes("node_modules")) {
               // Supabase in separate chunk (large dependency)
-              if (id.includes('@supabase/supabase-js')) {
-                return 'supabase'
+              if (id.includes("@supabase/supabase-js")) {
+                return "supabase";
               }
-              
+
               // QR code library (used only in UUID generation)
-              if (id.includes('qrcode')) {
-                return 'qrcode'
+              if (id.includes("qrcode")) {
+                return "qrcode";
               }
-              
+
               // SolidJS core and nanostores
-              if (id.includes('solid-js') || id.includes('nanostores')) {
-                return 'solid-core'
+              if (id.includes("solid-js") || id.includes("nanostores")) {
+                return "solid-core";
               }
-              
+
               // IndexedDB wrapper
-              if (id.includes('idb')) {
-                return 'idb'
+              if (id.includes("idb")) {
+                return "idb";
               }
-              
+
               // Other vendor dependencies in shared vendor chunk
-              return 'vendor'
+              return "vendor";
             }
-            
+
             // Application chunks: separate by functional area
             // Exercise generation system
-            if (id.includes('/src/lib/exercises/')) {
-              return 'exercises'
+            if (id.includes("/src/lib/exercises/")) {
+              return "exercises";
             }
-            
+
             // Mastery and SRS system
-            if (id.includes('/src/lib/mastery/')) {
-              return 'mastery'
+            if (id.includes("/src/lib/mastery/")) {
+              return "mastery";
             }
-            
+
             // Offline/PWA functionality
-            if (id.includes('/src/lib/offline/')) {
-              return 'offline'
+            if (id.includes("/src/lib/offline/")) {
+              return "offline";
             }
-            
+
             // Large island components
-            if (id.includes('ExercisePractice.tsx')) {
-              return 'island-practice'
+            if (id.includes("ExercisePractice.tsx")) {
+              return "island-practice";
             }
-            
-            if (id.includes('ProgressDashboard.tsx')) {
-              return 'island-dashboard'
+
+            if (id.includes("ProgressDashboard.tsx")) {
+              return "island-dashboard";
             }
-            
-            if (id.includes('UUIDGenerator.tsx')) {
-              return 'island-uuid-gen'
+
+            if (id.includes("UUIDGenerator.tsx")) {
+              return "island-uuid-gen";
             }
-            
-            if (id.includes('UUIDLogin.tsx')) {
-              return 'island-uuid-login'
+
+            if (id.includes("UUIDLogin.tsx")) {
+              return "island-uuid-login";
             }
-            
-            if (id.includes('SettingsForm.tsx')) {
-              return 'island-settings'
+
+            if (id.includes("SettingsForm.tsx")) {
+              return "island-settings";
             }
+
+            // Return undefined for all other modules (default chunk)
+            return undefined;
           },
         },
       },
       // Set chunk size warning limit (500kb)
       chunkSizeWarningLimit: 500,
       // Enable minification and compression
-      minify: 'terser',
+      minify: "terser",
       terserOptions: {
         compress: {
           drop_console: true, // Remove console.log in production
           drop_debugger: true,
-          pure_funcs: ['console.log', 'console.info', 'console.debug'],
+          pure_funcs: ["console.log", "console.info", "console.debug"],
         },
         mangle: true,
         format: {
@@ -113,4 +113,4 @@ export default defineConfig({
       assetsInlineLimit: 4096, // Inline assets smaller than 4KB
     },
   },
-})
+});

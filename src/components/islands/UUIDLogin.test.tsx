@@ -6,42 +6,49 @@
  * rate limiting, and accessibility.
  */
 
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@solidjs/testing-library';
-import UUIDLogin from './UUIDLogin';
-import { $t, changeLocale, initI18n } from '@/lib/i18n';
+import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@solidjs/testing-library";
+import UUIDLogin from "./UUIDLogin";
+import { changeLocale, initI18n } from "@/lib/i18n";
 
 // Mock i18n module with complete mock (avoid loading translation files)
-vi.mock('@/lib/i18n', () => {
-  const createTranslationFunction = () => (key: string, params?: Record<string, any>) => {
-    const templates: Record<string, string> = {
-      'auth.login.title': 'Log in with practice number',
-      'auth.login.subtitle': 'Enter your practice number to continue',
-      'auth.login.placeholder': 'xxxx-xxxx-xxxx-xxxx',
-      'auth.login.invalidFormat': 'Invalid format. Use format XXXX-XXXX-XXXX-XXXX',
-      'auth.login.notFound': 'This practice number does not exist. Please check if you entered it correctly.',
-      'auth.login.rememberDevice': 'Remember this device',
-      'auth.login.attemptsRemaining': '{{count}} attempts remaining',
-      'auth.login.rateLimitExceeded': 'Too many attempts. Please wait {{seconds}} seconds.',
-      'auth.login.submit': 'Log in',
-      'auth.login.newUser': 'New user? {{link}}',
-      'auth.login.newUserLink': 'Create practice number',
-      'auth.uuid.title': 'Your practice number',
-      'common.errors.unexpected': 'An unexpected error occurred',
-      'common.status.loading': 'Loading...',
+vi.mock("@/lib/i18n", () => {
+  const createTranslationFunction =
+    () => (key: string, params?: Record<string, any>) => {
+      const templates: Record<string, string> = {
+        "auth.login.title": "Log in with practice number",
+        "auth.login.subtitle": "Enter your practice number to continue",
+        "auth.login.placeholder": "xxxx-xxxx-xxxx-xxxx",
+        "auth.login.invalidFormat":
+          "Invalid format. Use format XXXX-XXXX-XXXX-XXXX",
+        "auth.login.notFound":
+          "This practice number does not exist. Please check if you entered it correctly.",
+        "auth.login.rememberDevice": "Remember this device",
+        "auth.login.attemptsRemaining": "{{count}} attempts remaining",
+        "auth.login.rateLimitExceeded":
+          "Too many attempts. Please wait {{seconds}} seconds.",
+        "auth.login.submit": "Log in",
+        "auth.login.newUser": "New user? {{link}}",
+        "auth.login.newUserLink": "Create practice number",
+        "auth.uuid.title": "Your practice number",
+        "common.errors.unexpected": "An unexpected error occurred",
+        "common.status.loading": "Loading...",
+      };
+
+      let text = templates[key] || key;
+
+      // Interpolate parameters
+      if (params) {
+        Object.keys(params).forEach((param) => {
+          text = text.replace(
+            new RegExp(`\\{\\{${param}\\}\\}`, "g"),
+            String(params[param]),
+          );
+        });
+      }
+
+      return text;
     };
-
-    let text = templates[key] || key;
-
-    // Interpolate parameters
-    if (params) {
-      Object.keys(params).forEach(param => {
-        text = text.replace(new RegExp(`\\{\\{${param}\\}\\}`, 'g'), String(params[param]));
-      });
-    }
-
-    return text;
-  };
 
   const tFunc = createTranslationFunction();
 
@@ -54,37 +61,43 @@ vi.mock('@/lib/i18n', () => {
       },
     },
     initI18n: vi.fn(async () => Promise.resolve()),
-    changeLocale: vi.fn(async (locale: string) => Promise.resolve()),
+    changeLocale: vi.fn(async (_locale: string) => Promise.resolve()),
   };
 });
 
 // Mock useStore from Nanostores
-vi.mock('@nanostores/solid', () => ({
-  useStore: (store: any) => {
+vi.mock("@nanostores/solid", () => ({
+  useStore: (_store: any) => {
     return () => (key: string, params?: Record<string, any>) => {
       const templates: Record<string, string> = {
-        'auth.login.title': 'Log in with practice number',
-        'auth.login.subtitle': 'Enter your practice number to continue',
-        'auth.login.placeholder': 'xxxx-xxxx-xxxx-xxxx',
-        'auth.login.invalidFormat': 'Invalid format. Use format XXXX-XXXX-XXXX-XXXX',
-        'auth.login.notFound': 'This practice number does not exist. Please check if you entered it correctly.',
-        'auth.login.rememberDevice': 'Remember this device',
-        'auth.login.attemptsRemaining': '{{count}} attempts remaining',
-        'auth.login.rateLimitExceeded': 'Too many attempts. Please wait {{seconds}} seconds.',
-        'auth.login.submit': 'Log in',
-        'auth.login.newUser': 'New user? {{link}}',
-        'auth.login.newUserLink': 'Create practice number',
-        'auth.uuid.title': 'Your practice number',
-        'common.errors.unexpected': 'An unexpected error occurred',
-        'common.status.loading': 'Loading...',
+        "auth.login.title": "Log in with practice number",
+        "auth.login.subtitle": "Enter your practice number to continue",
+        "auth.login.placeholder": "xxxx-xxxx-xxxx-xxxx",
+        "auth.login.invalidFormat":
+          "Invalid format. Use format XXXX-XXXX-XXXX-XXXX",
+        "auth.login.notFound":
+          "This practice number does not exist. Please check if you entered it correctly.",
+        "auth.login.rememberDevice": "Remember this device",
+        "auth.login.attemptsRemaining": "{{count}} attempts remaining",
+        "auth.login.rateLimitExceeded":
+          "Too many attempts. Please wait {{seconds}} seconds.",
+        "auth.login.submit": "Log in",
+        "auth.login.newUser": "New user? {{link}}",
+        "auth.login.newUserLink": "Create practice number",
+        "auth.uuid.title": "Your practice number",
+        "common.errors.unexpected": "An unexpected error occurred",
+        "common.status.loading": "Loading...",
       };
 
       let text = templates[key] || key;
 
       // Interpolate parameters
       if (params) {
-        Object.keys(params).forEach(param => {
-          text = text.replace(new RegExp(`\\{\\{${param}\\}\\}`, 'g'), String(params[param]));
+        Object.keys(params).forEach((param) => {
+          text = text.replace(
+            new RegExp(`\\{\\{${param}\\}\\}`, "g"),
+            String(params[param]),
+          );
         });
       }
 
@@ -93,8 +106,7 @@ vi.mock('@nanostores/solid', () => ({
   },
 }));
 
-describe('UUIDLogin', () => {
-
+describe("UUIDLogin", () => {
   beforeEach(async () => {
     // Clear all mocks
     vi.clearAllMocks();
@@ -119,14 +131,14 @@ describe('UUIDLogin', () => {
       };
     })();
 
-    Object.defineProperty(window, 'localStorage', {
+    Object.defineProperty(window, "localStorage", {
       value: localStorageMock,
       writable: true,
     });
 
     // Mock window.location.href
     delete (window as any).location;
-    (window as any).location = { href: '' };
+    (window as any).location = { href: "" };
   });
 
   afterEach(() => {
@@ -134,204 +146,227 @@ describe('UUIDLogin', () => {
     localStorage.clear();
   });
 
-  describe('initial render', () => {
-    it('should render login form with all required elements', () => {
+  describe("initial render", () => {
+    it("should render login form with all required elements", () => {
       render(() => <UUIDLogin />);
 
       // Check for title and subtitle
       expect(screen.getByText(/log in with practice number/i)).toBeTruthy();
-      expect(screen.getByText(/enter your practice number to continue/i)).toBeTruthy();
+      expect(
+        screen.getByText(/enter your practice number to continue/i),
+      ).toBeTruthy();
 
       // Check for UUID input field
       const input = screen.getByLabelText(/your practice number/i);
       expect(input).toBeTruthy();
-      expect(input.getAttribute('type')).toBe('text');
-      expect(input.getAttribute('maxlength')).toBe('19');
+      expect(input.getAttribute("type")).toBe("text");
+      expect(input.getAttribute("maxlength")).toBe("19");
 
       // Check for remember device checkbox
       const checkbox = screen.getByLabelText(/remember this device/i);
       expect(checkbox).toBeTruthy();
-      expect(checkbox.getAttribute('type')).toBe('checkbox');
+      expect(checkbox.getAttribute("type")).toBe("checkbox");
 
       // Check for submit button
-      const button = screen.getByRole('button', { name: /log in/i });
+      const button = screen.getByRole("button", { name: /log in/i });
       expect(button).toBeTruthy();
     });
 
-    it('should have proper ARIA labels and roles', () => {
+    it("should have proper ARIA labels and roles", () => {
       render(() => <UUIDLogin />);
 
-      const region = screen.getByRole('region', { name: /log in with practice number/i });
+      const region = screen.getByRole("region", {
+        name: /log in with practice number/i,
+      });
       expect(region).toBeTruthy();
 
-      const form = screen.getByRole('form');
+      const form = screen.getByRole("form");
       expect(form).toBeTruthy();
     });
 
-    it('should load remembered UUID from localStorage on mount', () => {
-      const rememberedUUID = '1234-5678-90ab-cdef';
-      localStorage.setItem('math-remember-uuid', rememberedUUID);
+    it("should load remembered UUID from localStorage on mount", () => {
+      const rememberedUUID = "1234-5678-90ab-cdef";
+      localStorage.setItem("math-remember-uuid", rememberedUUID);
 
       render(() => <UUIDLogin />);
 
-      const input = screen.getByLabelText(/your practice number/i) as HTMLInputElement;
+      const input = screen.getByLabelText(
+        /your practice number/i,
+      ) as HTMLInputElement;
       expect(input.value).toBe(rememberedUUID);
 
-      const checkbox = screen.getByLabelText(/remember this device/i) as HTMLInputElement;
+      const checkbox = screen.getByLabelText(
+        /remember this device/i,
+      ) as HTMLInputElement;
       expect(checkbox.checked).toBe(true);
     });
 
-    it('should not load invalid UUID from localStorage', () => {
-      localStorage.setItem('math-remember-uuid', 'invalid-uuid');
+    it("should not load invalid UUID from localStorage", () => {
+      localStorage.setItem("math-remember-uuid", "invalid-uuid");
 
       render(() => <UUIDLogin />);
 
-      const input = screen.getByLabelText(/your practice number/i) as HTMLInputElement;
-      expect(input.value).toBe('');
+      const input = screen.getByLabelText(
+        /your practice number/i,
+      ) as HTMLInputElement;
+      expect(input.value).toBe("");
     });
 
-    it('should have submit button disabled when input is empty', () => {
+    it("should have submit button disabled when input is empty", () => {
       render(() => <UUIDLogin />);
 
-      const button = screen.getByRole('button', { name: /log in/i }) as HTMLButtonElement;
+      const button = screen.getByRole("button", {
+        name: /log in/i,
+      }) as HTMLButtonElement;
       expect(button.disabled).toBe(true);
     });
   });
 
-  describe('real-time UUID formatting', () => {
-    it('should format UUID as user types', () => {
+  describe("real-time UUID formatting", () => {
+    it("should format UUID as user types", () => {
       render(() => <UUIDLogin />);
 
-      const input = screen.getByLabelText(/your practice number/i) as HTMLInputElement;
+      const input = screen.getByLabelText(
+        /your practice number/i,
+      ) as HTMLInputElement;
 
       // Type characters one by one
-      fireEvent.input(input, { target: { value: '1' } });
-      expect(input.value).toBe('1');
+      fireEvent.input(input, { target: { value: "1" } });
+      expect(input.value).toBe("1");
 
-      fireEvent.input(input, { target: { value: '12' } });
-      expect(input.value).toBe('12');
+      fireEvent.input(input, { target: { value: "12" } });
+      expect(input.value).toBe("12");
 
-      fireEvent.input(input, { target: { value: '1234' } });
-      expect(input.value).toBe('1234');
+      fireEvent.input(input, { target: { value: "1234" } });
+      expect(input.value).toBe("1234");
 
       // Should add dash after 4 characters
-      fireEvent.input(input, { target: { value: '12345' } });
-      expect(input.value).toBe('1234-5');
+      fireEvent.input(input, { target: { value: "12345" } });
+      expect(input.value).toBe("1234-5");
 
-      fireEvent.input(input, { target: { value: '12345678' } });
-      expect(input.value).toBe('1234-5678');
+      fireEvent.input(input, { target: { value: "12345678" } });
+      expect(input.value).toBe("1234-5678");
 
       // Should add second dash
-      fireEvent.input(input, { target: { value: '123456789' } });
-      expect(input.value).toBe('1234-5678-9');
+      fireEvent.input(input, { target: { value: "123456789" } });
+      expect(input.value).toBe("1234-5678-9");
 
       // Complete formatting
-      fireEvent.input(input, { target: { value: '1234567890abcdef' } });
-      expect(input.value).toBe('1234-5678-90ab-cdef');
+      fireEvent.input(input, { target: { value: "1234567890abcdef" } });
+      expect(input.value).toBe("1234-5678-90ab-cdef");
     });
 
-    it('should remove non-alphanumeric characters', () => {
+    it("should remove non-alphanumeric characters", () => {
       render(() => <UUIDLogin />);
 
-      const input = screen.getByLabelText(/your practice number/i) as HTMLInputElement;
+      const input = screen.getByLabelText(
+        /your practice number/i,
+      ) as HTMLInputElement;
 
-      fireEvent.input(input, { target: { value: '12!@#34$%^56' } });
-      expect(input.value).toBe('1234-56');
+      fireEvent.input(input, { target: { value: "12!@#34$%^56" } });
+      expect(input.value).toBe("1234-56");
     });
 
-    it('should limit input to 16 characters (excluding dashes)', () => {
+    it("should limit input to 16 characters (excluding dashes)", () => {
       render(() => <UUIDLogin />);
 
-      const input = screen.getByLabelText(/your practice number/i) as HTMLInputElement;
+      const input = screen.getByLabelText(
+        /your practice number/i,
+      ) as HTMLInputElement;
 
-      fireEvent.input(input, { target: { value: '1234567890abcdefEXTRA' } });
-      expect(input.value).toBe('1234-5678-90ab-cdef');
+      fireEvent.input(input, { target: { value: "1234567890abcdefEXTRA" } });
+      expect(input.value).toBe("1234-5678-90ab-cdef");
     });
 
-    it('should handle paste events with proper formatting', () => {
+    it("should handle paste events with proper formatting", () => {
       render(() => <UUIDLogin />);
 
       const input = screen.getByLabelText(/your practice number/i);
 
       // Paste with existing formatting
-      const pasteEvent = new ClipboardEvent('paste', {
+      const pasteEvent = new ClipboardEvent("paste", {
         clipboardData: new DataTransfer(),
       });
-      pasteEvent.clipboardData?.setData('text', '1234-5678-90ab-cdef');
+      pasteEvent.clipboardData?.setData("text", "1234-5678-90ab-cdef");
 
       fireEvent(input, pasteEvent);
 
-      expect((input as HTMLInputElement).value).toBe('1234-5678-90ab-cdef');
+      expect((input as HTMLInputElement).value).toBe("1234-5678-90ab-cdef");
     });
 
-    it('should handle paste of standard UUID format', () => {
+    it("should handle paste of standard UUID format", () => {
       render(() => <UUIDLogin />);
 
       const input = screen.getByLabelText(/your practice number/i);
 
-      const pasteEvent = new ClipboardEvent('paste', {
+      const pasteEvent = new ClipboardEvent("paste", {
         clipboardData: new DataTransfer(),
       });
-      pasteEvent.clipboardData?.setData('text', '12345678-90ab-cdef-1234-567890abcdef');
+      pasteEvent.clipboardData?.setData(
+        "text",
+        "12345678-90ab-cdef-1234-567890abcdef",
+      );
 
       fireEvent(input, pasteEvent);
 
       // Should extract first 16 characters and format
-      expect((input as HTMLInputElement).value).toBe('1234-5678-90ab-cdef');
+      expect((input as HTMLInputElement).value).toBe("1234-5678-90ab-cdef");
     });
 
-    it('should clear validation error when user starts typing', () => {
+    it("should clear validation error when user starts typing", () => {
       render(() => <UUIDLogin />);
 
-      const input = screen.getByLabelText(/your practice number/i) as HTMLInputElement;
+      const input = screen.getByLabelText(
+        /your practice number/i,
+      ) as HTMLInputElement;
 
       // Enter invalid UUID and blur to trigger validation
-      fireEvent.input(input, { target: { value: 'invalid' } });
+      fireEvent.input(input, { target: { value: "invalid" } });
       fireEvent.blur(input);
 
       // Should show validation error
       expect(screen.getByText(/invalid format/i)).toBeTruthy();
 
       // Start typing again
-      fireEvent.input(input, { target: { value: '1234' } });
+      fireEvent.input(input, { target: { value: "1234" } });
 
       // Error should be cleared
       expect(screen.queryByText(/invalid format/i)).toBeFalsy();
     });
   });
 
-  describe('validation', () => {
-    it('should validate UUID format on blur', () => {
+  describe("validation", () => {
+    it("should validate UUID format on blur", () => {
       render(() => <UUIDLogin />);
 
       const input = screen.getByLabelText(/your practice number/i);
 
       // Enter invalid UUID
-      fireEvent.input(input, { target: { value: 'invalid' } });
+      fireEvent.input(input, { target: { value: "invalid" } });
       fireEvent.blur(input);
 
       expect(screen.getByText(/invalid format/i)).toBeTruthy();
-      expect(input.getAttribute('aria-invalid')).toBe('true');
+      expect(input.getAttribute("aria-invalid")).toBe("true");
     });
 
-    it('should not show validation error for valid UUID on blur', () => {
+    it("should not show validation error for valid UUID on blur", () => {
       render(() => <UUIDLogin />);
 
       const input = screen.getByLabelText(/your practice number/i);
 
-      fireEvent.input(input, { target: { value: '1234567890abcdef' } });
+      fireEvent.input(input, { target: { value: "1234567890abcdef" } });
       fireEvent.blur(input);
 
       expect(screen.queryByText(/invalid format/i)).toBeFalsy();
     });
 
-    it('should validate UUID before submission', async () => {
+    it("should validate UUID before submission", async () => {
       render(() => <UUIDLogin />);
 
       const input = screen.getByLabelText(/your practice number/i);
-      const form = screen.getByRole('form');
+      const form = screen.getByRole("form");
 
-      fireEvent.input(input, { target: { value: 'invalid' } });
+      fireEvent.input(input, { target: { value: "invalid" } });
       fireEvent.submit(form);
 
       // Should show validation error without calling API
@@ -340,17 +375,17 @@ describe('UUIDLogin', () => {
     });
   });
 
-  describe('remember device functionality', () => {
-    it('should save UUID to localStorage when checkbox is checked', async () => {
-      const mockUUID = '1234-5678-90ab-cdef';
+  describe("remember device functionality", () => {
+    it("should save UUID to localStorage when checkbox is checked", async () => {
+      const mockUUID = "1234-5678-90ab-cdef";
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => ({
           success: true,
           user: {
-            id: 'test-id',
-            gradeRange: '0-3',
-            locale: 'en-US',
+            id: "test-id",
+            gradeRange: "0-3",
+            locale: "en-US",
             createdAt: new Date().toISOString(),
             lastActiveAt: new Date().toISOString(),
           },
@@ -361,31 +396,34 @@ describe('UUIDLogin', () => {
 
       const input = screen.getByLabelText(/your practice number/i);
       const checkbox = screen.getByLabelText(/remember this device/i);
-      const form = screen.getByRole('form');
+      const form = screen.getByRole("form");
 
       fireEvent.input(input, { target: { value: mockUUID } });
       fireEvent.click(checkbox);
       fireEvent.submit(form);
 
       await waitFor(() => {
-        expect(localStorage.setItem).toHaveBeenCalledWith('math-remember-uuid', mockUUID);
+        expect(localStorage.setItem).toHaveBeenCalledWith(
+          "math-remember-uuid",
+          mockUUID,
+        );
       });
     });
 
-    it('should not save UUID when checkbox is unchecked', async () => {
-      const mockUUID = '1234-5678-90ab-cdef';
+    it("should not save UUID when checkbox is unchecked", async () => {
+      const mockUUID = "1234-5678-90ab-cdef";
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => ({
           success: true,
-          user: { id: 'test-id', gradeRange: '0-3', locale: 'en-US' },
+          user: { id: "test-id", gradeRange: "0-3", locale: "en-US" },
         }),
       });
 
       render(() => <UUIDLogin />);
 
       const input = screen.getByLabelText(/your practice number/i);
-      const form = screen.getByRole('form');
+      const form = screen.getByRole("form");
 
       fireEvent.input(input, { target: { value: mockUUID } });
       fireEvent.submit(form);
@@ -395,69 +433,73 @@ describe('UUIDLogin', () => {
       });
     });
 
-    it('should remove UUID from localStorage when unchecked on login', async () => {
-      localStorage.setItem('math-remember-uuid', '1234-5678-90ab-cdef');
+    it("should remove UUID from localStorage when unchecked on login", async () => {
+      localStorage.setItem("math-remember-uuid", "1234-5678-90ab-cdef");
 
-      const mockUUID = '9999-8888-7777-6666';
+      const mockUUID = "9999-8888-7777-6666";
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => ({
           success: true,
-          user: { id: 'test-id', gradeRange: '0-3', locale: 'en-US' },
+          user: { id: "test-id", gradeRange: "0-3", locale: "en-US" },
         }),
       });
 
       render(() => <UUIDLogin />);
 
       // Uncheck the checkbox
-      const checkbox = screen.getByLabelText(/remember this device/i) as HTMLInputElement;
+      const checkbox = screen.getByLabelText(
+        /remember this device/i,
+      ) as HTMLInputElement;
       fireEvent.click(checkbox);
 
       // Change UUID and submit
       const input = screen.getByLabelText(/your practice number/i);
       fireEvent.input(input, { target: { value: mockUUID } });
 
-      const form = screen.getByRole('form');
+      const form = screen.getByRole("form");
       fireEvent.submit(form);
 
       await waitFor(() => {
-        expect(localStorage.removeItem).toHaveBeenCalledWith('math-remember-uuid');
+        expect(localStorage.removeItem).toHaveBeenCalledWith(
+          "math-remember-uuid",
+        );
       });
     });
   });
 
-  describe('API integration', () => {
-    it('should call signin API with correct UUID', async () => {
-      const mockUUID = '1234-5678-90ab-cdef';
+  describe("API integration", () => {
+    it("should call signin API with correct UUID", async () => {
+      const mockUUID = "1234-5678-90ab-cdef";
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => ({
           success: true,
-          user: { id: 'test-id', gradeRange: '0-3', locale: 'en-US' },
+          user: { id: "test-id", gradeRange: "0-3", locale: "en-US" },
         }),
       });
 
       render(() => <UUIDLogin />);
 
       const input = screen.getByLabelText(/your practice number/i);
-      const form = screen.getByRole('form');
+      const form = screen.getByRole("form");
 
       fireEvent.input(input, { target: { value: mockUUID } });
       fireEvent.submit(form);
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
-          '/api/auth/signin',
+          "/api/auth/signin",
           expect.objectContaining({
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ uuid: mockUUID }),
-          })
+          }),
         );
       });
     });
 
-    it('should display loading state during submission', async () => {
+    it("should display loading state during submission", async () => {
       (global.fetch as any).mockImplementationOnce(
         () =>
           new Promise((resolve) =>
@@ -467,20 +509,20 @@ describe('UUIDLogin', () => {
                   ok: true,
                   json: async () => ({
                     success: true,
-                    user: { id: 'test-id' },
+                    user: { id: "test-id" },
                   }),
                 }),
-              100
-            )
-          )
+              100,
+            ),
+          ),
       );
 
       render(() => <UUIDLogin />);
 
       const input = screen.getByLabelText(/your practice number/i);
-      const form = screen.getByRole('form');
+      const form = screen.getByRole("form");
 
-      fireEvent.input(input, { target: { value: '1234-5678-90ab-cdef' } });
+      fireEvent.input(input, { target: { value: "1234-5678-90ab-cdef" } });
       fireEvent.submit(form);
 
       await waitFor(() => {
@@ -488,29 +530,29 @@ describe('UUIDLogin', () => {
       });
     });
 
-    it('should redirect to dashboard on successful login', async () => {
+    it("should redirect to dashboard on successful login", async () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => ({
           success: true,
-          user: { id: 'test-id', gradeRange: '0-3', locale: 'en-US' },
+          user: { id: "test-id", gradeRange: "0-3", locale: "en-US" },
         }),
       });
 
       render(() => <UUIDLogin />);
 
       const input = screen.getByLabelText(/your practice number/i);
-      const form = screen.getByRole('form');
+      const form = screen.getByRole("form");
 
-      fireEvent.input(input, { target: { value: '1234-5678-90ab-cdef' } });
+      fireEvent.input(input, { target: { value: "1234-5678-90ab-cdef" } });
       fireEvent.submit(form);
 
       await waitFor(() => {
-        expect(window.location.href).toBe('/dashboard');
+        expect(window.location.href).toBe("/dashboard");
       });
     });
 
-    it.skip('should redirect to custom URL when provided', async () => {
+    it.skip("should redirect to custom URL when provided", async () => {
       // TODO: Fix props passing in SolidJS test environment
       // Props are not being correctly passed to components in the test environment.
       // This is likely a SolidJS Testing Library configuration issue.
@@ -521,41 +563,41 @@ describe('UUIDLogin', () => {
         ok: true,
         json: async () => ({
           success: true,
-          user: { id: 'test-id' },
+          user: { id: "test-id" },
         }),
       });
 
-      const props = { redirectTo: '/practice' };
+      const props = { redirectTo: "/practice" };
       render(() => <UUIDLogin {...props} />);
 
       const input = screen.getByLabelText(/your practice number/i);
-      const form = screen.getByRole('form');
+      const form = screen.getByRole("form");
 
-      fireEvent.input(input, { target: { value: '1234-5678-90ab-cdef' } });
+      fireEvent.input(input, { target: { value: "1234-5678-90ab-cdef" } });
       fireEvent.submit(form);
 
       await waitFor(() => {
-        expect(window.location.href).toBe('/practice');
+        expect(window.location.href).toBe("/practice");
       });
     });
 
-    it('should display error message for UUID not found', async () => {
+    it("should display error message for UUID not found", async () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: false,
         status: 404,
         json: async () => ({
           success: false,
-          error: 'UUID not found',
-          code: 'UUID_NOT_FOUND',
+          error: "UUID not found",
+          code: "UUID_NOT_FOUND",
         }),
       });
 
       render(() => <UUIDLogin />);
 
       const input = screen.getByLabelText(/your practice number/i);
-      const form = screen.getByRole('form');
+      const form = screen.getByRole("form");
 
-      fireEvent.input(input, { target: { value: '1234-5678-90ab-cdef' } });
+      fireEvent.input(input, { target: { value: "1234-5678-90ab-cdef" } });
       fireEvent.submit(form);
 
       await waitFor(() => {
@@ -563,23 +605,23 @@ describe('UUIDLogin', () => {
       });
     });
 
-    it('should display error message for invalid format from API', async () => {
+    it("should display error message for invalid format from API", async () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: false,
         status: 400,
         json: async () => ({
           success: false,
-          error: 'Invalid UUID format',
-          code: 'INVALID_UUID_FORMAT',
+          error: "Invalid UUID format",
+          code: "INVALID_UUID_FORMAT",
         }),
       });
 
       render(() => <UUIDLogin />);
 
       const input = screen.getByLabelText(/your practice number/i);
-      const form = screen.getByRole('form');
+      const form = screen.getByRole("form");
 
-      fireEvent.input(input, { target: { value: '1234-5678-90ab-cdef' } });
+      fireEvent.input(input, { target: { value: "1234-5678-90ab-cdef" } });
       fireEvent.submit(form);
 
       await waitFor(() => {
@@ -587,42 +629,42 @@ describe('UUIDLogin', () => {
       });
     });
 
-    it('should handle unexpected errors gracefully', async () => {
-      (global.fetch as any).mockRejectedValueOnce(new Error('Network error'));
+    it("should handle unexpected errors gracefully", async () => {
+      (global.fetch as any).mockRejectedValueOnce(new Error("Network error"));
 
       render(() => <UUIDLogin />);
 
       const input = screen.getByLabelText(/your practice number/i);
-      const form = screen.getByRole('form');
+      const form = screen.getByRole("form");
 
-      fireEvent.input(input, { target: { value: '1234-5678-90ab-cdef' } });
+      fireEvent.input(input, { target: { value: "1234-5678-90ab-cdef" } });
       fireEvent.submit(form);
 
       await waitFor(() => {
-        expect(screen.getByRole('alert')).toBeTruthy();
+        expect(screen.getByRole("alert")).toBeTruthy();
       });
     });
   });
 
-  describe('rate limiting', () => {
-    it('should track failed login attempts', async () => {
+  describe("rate limiting", () => {
+    it("should track failed login attempts", async () => {
       (global.fetch as any).mockResolvedValue({
         ok: false,
         status: 404,
         json: async () => ({
           success: false,
-          error: 'UUID not found',
-          code: 'UUID_NOT_FOUND',
+          error: "UUID not found",
+          code: "UUID_NOT_FOUND",
         }),
       });
 
       render(() => <UUIDLogin />);
 
       const input = screen.getByLabelText(/your practice number/i);
-      const form = screen.getByRole('form');
+      const form = screen.getByRole("form");
 
       // First failed attempt
-      fireEvent.input(input, { target: { value: '1234-5678-90ab-cdef' } });
+      fireEvent.input(input, { target: { value: "1234-5678-90ab-cdef" } });
       fireEvent.submit(form);
 
       await waitFor(() => {
@@ -630,25 +672,25 @@ describe('UUIDLogin', () => {
       });
     });
 
-    it('should display rate limit message after max attempts', async () => {
+    it("should display rate limit message after max attempts", async () => {
       (global.fetch as any).mockResolvedValue({
         ok: false,
         status: 404,
         json: async () => ({
           success: false,
-          error: 'UUID not found',
-          code: 'UUID_NOT_FOUND',
+          error: "UUID not found",
+          code: "UUID_NOT_FOUND",
         }),
       });
 
       render(() => <UUIDLogin />);
 
       const input = screen.getByLabelText(/your practice number/i);
-      const form = screen.getByRole('form');
+      const form = screen.getByRole("form");
 
       // Submit 5 failed attempts
       for (let i = 0; i < 5; i++) {
-        fireEvent.input(input, { target: { value: '1234-5678-90ab-cdef' } });
+        fireEvent.input(input, { target: { value: "1234-5678-90ab-cdef" } });
         fireEvent.submit(form);
         await waitFor(() => expect(global.fetch).toHaveBeenCalled());
       }
@@ -659,26 +701,28 @@ describe('UUIDLogin', () => {
       });
     });
 
-    it('should disable submit button when rate limited', async () => {
+    it("should disable submit button when rate limited", async () => {
       (global.fetch as any).mockResolvedValue({
         ok: false,
         status: 404,
         json: async () => ({
           success: false,
-          error: 'UUID not found',
-          code: 'UUID_NOT_FOUND',
+          error: "UUID not found",
+          code: "UUID_NOT_FOUND",
         }),
       });
 
       render(() => <UUIDLogin />);
 
       const input = screen.getByLabelText(/your practice number/i);
-      const form = screen.getByRole('form');
-      const button = screen.getByRole('button', { name: /log in/i }) as HTMLButtonElement;
+      const form = screen.getByRole("form");
+      const button = screen.getByRole("button", {
+        name: /log in/i,
+      }) as HTMLButtonElement;
 
       // Submit 5 failed attempts
       for (let i = 0; i < 5; i++) {
-        fireEvent.input(input, { target: { value: '1234-5678-90ab-cdef' } });
+        fireEvent.input(input, { target: { value: "1234-5678-90ab-cdef" } });
         fireEvent.submit(form);
         await waitFor(() => expect(global.fetch).toHaveBeenCalled());
       }
@@ -688,7 +732,7 @@ describe('UUIDLogin', () => {
       });
     });
 
-    it('should handle server-side 429 rate limit response', async () => {
+    it("should handle server-side 429 rate limit response", async () => {
       const retryAfter = 60;
       const resetAt = Date.now() + retryAfter * 1000;
 
@@ -697,8 +741,8 @@ describe('UUIDLogin', () => {
         status: 429,
         json: async () => ({
           success: false,
-          error: 'Too many login attempts. Please try again later.',
-          code: 'RATE_LIMIT_EXCEEDED',
+          error: "Too many login attempts. Please try again later.",
+          code: "RATE_LIMIT_EXCEEDED",
           retryAfter,
           resetAt,
         }),
@@ -707,11 +751,13 @@ describe('UUIDLogin', () => {
       render(() => <UUIDLogin />);
 
       const input = screen.getByLabelText(/your practice number/i);
-      const form = screen.getByRole('form');
-      const button = screen.getByRole('button', { name: /log in/i }) as HTMLButtonElement;
+      const form = screen.getByRole("form");
+      const button = screen.getByRole("button", {
+        name: /log in/i,
+      }) as HTMLButtonElement;
 
       // Submit login attempt
-      fireEvent.input(input, { target: { value: '1234-5678-90ab-cdef' } });
+      fireEvent.input(input, { target: { value: "1234-5678-90ab-cdef" } });
       fireEvent.submit(form);
 
       // Should display rate limit message with countdown
@@ -726,7 +772,7 @@ describe('UUIDLogin', () => {
       });
     });
 
-    it('should sync client rate limit with server 429 response', async () => {
+    it("should sync client rate limit with server 429 response", async () => {
       const retryAfter = 45;
       const resetAt = Date.now() + retryAfter * 1000;
 
@@ -735,8 +781,8 @@ describe('UUIDLogin', () => {
         status: 429,
         json: async () => ({
           success: false,
-          error: 'Too many login attempts. Please try again later.',
-          code: 'RATE_LIMIT_EXCEEDED',
+          error: "Too many login attempts. Please try again later.",
+          code: "RATE_LIMIT_EXCEEDED",
           retryAfter,
           resetAt,
         }),
@@ -745,10 +791,10 @@ describe('UUIDLogin', () => {
       render(() => <UUIDLogin />);
 
       const input = screen.getByLabelText(/your practice number/i);
-      const form = screen.getByRole('form');
+      const form = screen.getByRole("form");
 
       // Submit login attempt that triggers server rate limit
-      fireEvent.input(input, { target: { value: '1234-5678-90ab-cdef' } });
+      fireEvent.input(input, { target: { value: "1234-5678-90ab-cdef" } });
       fireEvent.submit(form);
 
       // Should display server-provided countdown time
@@ -758,76 +804,76 @@ describe('UUIDLogin', () => {
     });
   });
 
-  describe('accessibility', () => {
-    it('should have keyboard navigable form elements', () => {
+  describe("accessibility", () => {
+    it("should have keyboard navigable form elements", () => {
       render(() => <UUIDLogin />);
 
       const input = screen.getByLabelText(/your practice number/i);
       const checkbox = screen.getByLabelText(/remember this device/i);
-      const button = screen.getByRole('button', { name: /log in/i });
+      const button = screen.getByRole("button", { name: /log in/i });
 
-      expect(input.getAttribute('type')).toBe('text');
-      expect(checkbox.getAttribute('type')).toBe('checkbox');
-      expect(button.getAttribute('type')).toBe('submit');
+      expect(input.getAttribute("type")).toBe("text");
+      expect(checkbox.getAttribute("type")).toBe("checkbox");
+      expect(button.getAttribute("type")).toBe("submit");
     });
 
-    it('should have proper ARIA attributes for validation errors', () => {
+    it("should have proper ARIA attributes for validation errors", () => {
       render(() => <UUIDLogin />);
 
       const input = screen.getByLabelText(/your practice number/i);
 
-      fireEvent.input(input, { target: { value: 'invalid' } });
+      fireEvent.input(input, { target: { value: "invalid" } });
       fireEvent.blur(input);
 
-      expect(input.getAttribute('aria-invalid')).toBe('true');
-      expect(input.getAttribute('aria-describedby')).toBe('uuid-error');
+      expect(input.getAttribute("aria-invalid")).toBe("true");
+      expect(input.getAttribute("aria-describedby")).toBe("uuid-error");
     });
 
-    it('should have aria-live region for error messages', async () => {
+    it("should have aria-live region for error messages", async () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: false,
         status: 404,
         json: async () => ({
           success: false,
-          error: 'UUID not found',
-          code: 'UUID_NOT_FOUND',
+          error: "UUID not found",
+          code: "UUID_NOT_FOUND",
         }),
       });
 
       render(() => <UUIDLogin />);
 
       const input = screen.getByLabelText(/your practice number/i);
-      const form = screen.getByRole('form');
+      const form = screen.getByRole("form");
 
-      fireEvent.input(input, { target: { value: '1234-5678-90ab-cdef' } });
+      fireEvent.input(input, { target: { value: "1234-5678-90ab-cdef" } });
       fireEvent.submit(form);
 
       await waitFor(() => {
-        const alert = screen.getByRole('alert');
-        expect(alert.getAttribute('aria-live')).toBe('assertive');
+        const alert = screen.getByRole("alert");
+        expect(alert.getAttribute("aria-live")).toBe("assertive");
       });
     });
 
-    it('should have minimum 44x44px touch targets', () => {
+    it("should have minimum 44x44px touch targets", () => {
       render(() => <UUIDLogin />);
 
-      const button = screen.getByRole('button', { name: /log in/i });
+      const button = screen.getByRole("button", { name: /log in/i });
       const checkbox = screen.getByLabelText(/remember this device/i);
 
-      expect(button.classList.contains('min-h-44px')).toBe(true);
-      expect(checkbox.classList.contains('min-w-44px')).toBe(true);
-      expect(checkbox.classList.contains('min-h-44px')).toBe(true);
+      expect(button.classList.contains("min-h-44px")).toBe(true);
+      expect(checkbox.classList.contains("min-w-44px")).toBe(true);
+      expect(checkbox.classList.contains("min-h-44px")).toBe(true);
     });
   });
 
-  describe('internationalization', () => {
-    it.skip('should display Danish translations when locale is da-DK', async () => {
+  describe("internationalization", () => {
+    it.skip("should display Danish translations when locale is da-DK", async () => {
       // TODO: Fix mock translation system to respond to locale changes
       // The mock translation function is static and doesn't respond to changeLocale() calls.
       // This is a test mock limitation, not a component bug.
       // The component works correctly in production with real translations.
 
-      await changeLocale('da-DK');
+      await changeLocale("da-DK");
 
       render(() => <UUIDLogin />);
 
@@ -835,8 +881,8 @@ describe('UUIDLogin', () => {
       expect(screen.getByText(/log ind med/i)).toBeTruthy();
     });
 
-    it('should display English translations when locale is en-US', async () => {
-      await changeLocale('en-US');
+    it("should display English translations when locale is en-US", async () => {
+      await changeLocale("en-US");
 
       render(() => <UUIDLogin />);
 

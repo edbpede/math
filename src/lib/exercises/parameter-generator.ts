@@ -9,7 +9,11 @@
  * - 11.2: Support parameter domains, relationships, and constraint specifications
  */
 
-import type { ParameterConstraints, ParameterConstraint, ParameterType } from './types';
+import type {
+  ParameterConstraints,
+  ParameterConstraint,
+  ParameterType,
+} from "./types";
 
 /**
  * Error thrown when parameter generation fails
@@ -21,7 +25,7 @@ export class ParameterGenerationError extends Error {
     public cause?: unknown,
   ) {
     super(`Parameter generation failed for '${parameterName}': ${message}`);
-    this.name = 'ParameterGenerationError';
+    this.name = "ParameterGenerationError";
   }
 }
 
@@ -34,8 +38,10 @@ export class ConstraintViolationError extends Error {
     public parameterName: string,
     public value: unknown,
   ) {
-    super(`Constraint violation for '${parameterName}' (value: ${value}): ${message}`);
-    this.name = 'ConstraintViolationError';
+    super(
+      `Constraint violation for '${parameterName}' (value: ${value}): ${message}`,
+    );
+    this.name = "ConstraintViolationError";
   }
 }
 
@@ -65,7 +71,7 @@ export class SeededRandom {
 
   constructor(seed: number) {
     // Ensure seed is a 32-bit unsigned integer
-    this.state = (seed >>> 0) || 1;
+    this.state = seed >>> 0 || 1;
   }
 
   /**
@@ -90,10 +96,10 @@ export class SeededRandom {
    */
   nextInt(min: number, max: number): number {
     if (!Number.isInteger(min) || !Number.isInteger(max)) {
-      throw new Error('nextInt requires integer bounds');
+      throw new Error("nextInt requires integer bounds");
     }
     if (min > max) {
-      throw new Error('min must be less than or equal to max');
+      throw new Error("min must be less than or equal to max");
     }
     return Math.floor(this.next() * (max - min + 1)) + min;
   }
@@ -107,7 +113,7 @@ export class SeededRandom {
    */
   nextFloat(min: number, max: number): number {
     if (min >= max) {
-      throw new Error('min must be less than max');
+      throw new Error("min must be less than max");
     }
     return this.next() * (max - min) + min;
   }
@@ -120,7 +126,7 @@ export class SeededRandom {
    */
   choice<T>(array: T[]): T {
     if (array.length === 0) {
-      throw new Error('Cannot select from empty array');
+      throw new Error("Cannot select from empty array");
     }
     return array[Math.floor(this.next() * array.length)];
   }
@@ -201,7 +207,7 @@ export class ParameterGenerator {
 
     throw new ParameterGenerationError(
       `Failed to generate parameters after ${this.config.maxAttempts} attempts`,
-      'unknown',
+      "unknown",
     );
   }
 
@@ -230,7 +236,7 @@ export class ParameterGenerator {
     }
 
     // Range validation for numeric types
-    if (constraint.type === 'integer' || constraint.type === 'decimal') {
+    if (constraint.type === "integer" || constraint.type === "decimal") {
       const numValue = value as number;
 
       if (constraint.min !== undefined && numValue < constraint.min) {
@@ -278,7 +284,7 @@ export class ParameterGenerator {
       const testParams = { ...params, [paramName]: value };
       if (!constraint.constraint(testParams)) {
         throw new ConstraintViolationError(
-          'Custom constraint function returned false',
+          "Custom constraint function returned false",
           paramName,
           value,
         );
@@ -319,7 +325,7 @@ export class ParameterGenerator {
   private generateParameter(
     paramName: string,
     constraint: ParameterConstraint,
-    existingParams: Record<string, unknown>,
+    _existingParams: Record<string, unknown>,
   ): unknown {
     try {
       // If options are provided, select randomly from options
@@ -329,16 +335,16 @@ export class ParameterGenerator {
 
       // Generate based on type
       switch (constraint.type) {
-        case 'integer':
+        case "integer":
           return this.generateInteger(constraint);
 
-        case 'decimal':
+        case "decimal":
           return this.generateDecimal(constraint);
 
-        case 'fraction':
+        case "fraction":
           return this.generateFraction(constraint);
 
-        case 'string':
+        case "string":
           return this.generateString(constraint);
 
         default:
@@ -428,7 +434,7 @@ export class ParameterGenerator {
   private generateString(constraint: ParameterConstraint): string {
     // For string type, options should be provided
     if (!constraint.options || constraint.options.length === 0) {
-      throw new Error('String parameters must have options defined');
+      throw new Error("String parameters must have options defined");
     }
 
     return this.rng.choice(constraint.options) as string;
@@ -443,17 +449,17 @@ export class ParameterGenerator {
    */
   private validateType(value: unknown, type: ParameterType): boolean {
     switch (type) {
-      case 'integer':
-        return typeof value === 'number' && Number.isInteger(value);
+      case "integer":
+        return typeof value === "number" && Number.isInteger(value);
 
-      case 'decimal':
-        return typeof value === 'number';
+      case "decimal":
+        return typeof value === "number";
 
-      case 'fraction':
-        return typeof value === 'string' && /^\d+\/\d+$/.test(value);
+      case "fraction":
+        return typeof value === "string" && /^\d+\/\d+$/.test(value);
 
-      case 'string':
-        return typeof value === 'string';
+      case "string":
+        return typeof value === "string";
 
       default:
         return false;
@@ -483,7 +489,7 @@ export class ParameterGenerator {
 
       if (visiting.has(paramName)) {
         throw new ParameterGenerationError(
-          'Circular dependency detected',
+          "Circular dependency detected",
           paramName,
         );
       }

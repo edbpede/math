@@ -9,11 +9,14 @@
  * - 8.5: Include visual aids in feedback when relevant
  */
 
-import { Match, Switch, Show, For, createMemo } from 'solid-js';
-import type { VisualAid } from '@/lib/exercises/types';
-import { useStore } from '@nanostores/solid';
-import { $t } from '@/lib/i18n';
-import { generateVisualAidDescription, generateLongDescription } from '@/lib/accessibility/visual-aid-descriptions';
+import { Match, Switch, Show, For, createMemo } from "solid-js";
+import type { VisualAid } from "@/lib/exercises/types";
+import { useStore } from "@nanostores/solid";
+import { $t } from "@/lib/i18n";
+import {
+  generateVisualAidDescription,
+  generateLongDescription,
+} from "@/lib/accessibility/visual-aid-descriptions";
 
 export interface VisualAidRendererProps {
   /** The visual aid to render */
@@ -59,7 +62,7 @@ export default function VisualAidRenderer(props: VisualAidRendererProps) {
   const descriptionId = `visual-aid-desc-${Math.random().toString(36).substring(2, 9)}`;
 
   return (
-    <div class={`visual-aid ${props.class || ''}`}>
+    <div class={`visual-aid ${props.class || ""}`}>
       {/* Main visual aid with aria-label and optional aria-describedby */}
       <div
         role="img"
@@ -67,16 +70,16 @@ export default function VisualAidRenderer(props: VisualAidRendererProps) {
         aria-describedby={longDescription() ? descriptionId : undefined}
       >
         <Switch>
-          <Match when={props.visualAid.type === 'number-line'}>
+          <Match when={props.visualAid.type === "number-line"}>
             <NumberLineRenderer data={props.visualAid.data as NumberLineData} />
           </Match>
-          <Match when={props.visualAid.type === 'diagram'}>
+          <Match when={props.visualAid.type === "diagram"}>
             <DiagramRenderer data={props.visualAid.data as DiagramData} />
           </Match>
-          <Match when={props.visualAid.type === 'chart'}>
+          <Match when={props.visualAid.type === "chart"}>
             <ChartRenderer data={props.visualAid.data as ChartData} />
           </Match>
-          <Match when={props.visualAid.type === 'image'}>
+          <Match when={props.visualAid.type === "image"}>
             <ImageRenderer data={props.visualAid.data as ImageData} />
           </Match>
         </Switch>
@@ -101,12 +104,12 @@ interface NumberLineData {
 }
 
 interface DiagramData {
-  diagramType: 'place-value' | 'fraction' | 'generic';
+  diagramType: "place-value" | "fraction" | "generic";
   [key: string]: unknown;
 }
 
 interface ChartData {
-  chartType: 'bar' | 'line' | 'pie';
+  chartType: "bar" | "line" | "pie";
   [key: string]: unknown;
 }
 
@@ -125,7 +128,7 @@ function NumberLineRenderer(props: { data: NumberLineData }) {
   const [rangeStart, rangeEnd] = props.data.range;
   const points = rangeEnd - rangeStart + 1;
   const lineWidth = 500;
-  const pointSpacing = lineWidth / (points - 1);
+  // const pointSpacing = lineWidth / (points - 1);
 
   // Calculate positions
   const getXPosition = (value: number) => {
@@ -149,7 +152,7 @@ function NumberLineRenderer(props: { data: NumberLineData }) {
         viewBox={`0 0 ${lineWidth + 40} 120`}
         class="w-full h-auto"
         role="img"
-        aria-label={t()('solutions.numberLine')}
+        aria-label={t()("solutions.numberLine")}
       >
         {/* Main horizontal line */}
         <line
@@ -195,7 +198,7 @@ function NumberLineRenderer(props: { data: NumberLineData }) {
           {(hop, index) => {
             const startX = getXPosition(hop.start) + 20;
             const endX = getXPosition(hop.end) + 20;
-            const y = 35 - (index() * 10);
+            const y = 35 - index() * 10;
             const isPositive = hop.value > 0;
 
             return (
@@ -204,7 +207,7 @@ function NumberLineRenderer(props: { data: NumberLineData }) {
                 <path
                   d={`M ${startX} ${y} Q ${(startX + endX) / 2} ${y - 15} ${endX} ${y}`}
                   fill="none"
-                  stroke={isPositive ? 'rgb(34, 197, 94)' : 'rgb(239, 68, 68)'}
+                  stroke={isPositive ? "rgb(34, 197, 94)" : "rgb(239, 68, 68)"}
                   stroke-width="2"
                   marker-end="url(#arrowhead)"
                 />
@@ -214,9 +217,10 @@ function NumberLineRenderer(props: { data: NumberLineData }) {
                   y={y - 20}
                   text-anchor="middle"
                   class="text-sm font-bold"
-                  fill={isPositive ? 'rgb(34, 197, 94)' : 'rgb(239, 68, 68)'}
+                  fill={isPositive ? "rgb(34, 197, 94)" : "rgb(239, 68, 68)"}
                 >
-                  {isPositive ? '+' : ''}{hop.value}
+                  {isPositive ? "+" : ""}
+                  {hop.value}
                 </text>
               </>
             );
@@ -248,10 +252,10 @@ function DiagramRenderer(props: { data: DiagramData }) {
   return (
     <div class="diagram-container p-4">
       <Switch>
-        <Match when={props.data.diagramType === 'place-value'}>
+        <Match when={props.data.diagramType === "place-value"}>
           <PlaceValueDiagram data={props.data} />
         </Match>
-        <Match when={props.data.diagramType === 'fraction'}>
+        <Match when={props.data.diagramType === "fraction"}>
           <FractionDiagram data={props.data} />
         </Match>
         <Match when={true}>
@@ -277,26 +281,33 @@ function PlaceValueDiagram(props: { data: DiagramData }) {
       <For each={placeValues}>
         {([place, count]) => (
           <div class="place-column flex flex-col items-center gap-2">
-            <div class="text-sm font-bold text-gray-700 capitalize">{place}</div>
+            <div class="text-sm font-bold text-gray-700 capitalize">
+              {place}
+            </div>
             <div class="blocks flex flex-col-reverse gap-1">
               <For each={Array(count)}>
                 {() => (
                   <div
                     class="block w-16 h-16 rounded border-2 flex items-center justify-center font-bold text-lg"
                     classList={{
-                      'bg-blue-200 border-blue-500 text-blue-900': place === 'hundreds',
-                      'bg-green-200 border-green-500 text-green-900': place === 'tens',
-                      'bg-yellow-200 border-yellow-500 text-yellow-900': place === 'ones',
+                      "bg-blue-200 border-blue-500 text-blue-900":
+                        place === "hundreds",
+                      "bg-green-200 border-green-500 text-green-900":
+                        place === "tens",
+                      "bg-yellow-200 border-yellow-500 text-yellow-900":
+                        place === "ones",
                     }}
                   >
-                    {place === 'hundreds' ? '100' : place === 'tens' ? '10' : '1'}
+                    {place === "hundreds"
+                      ? "100"
+                      : place === "tens"
+                        ? "10"
+                        : "1"}
                   </div>
                 )}
               </For>
             </div>
-            <div class="text-lg font-bold text-gray-800">
-              {count}
-            </div>
+            <div class="text-lg font-bold text-gray-800">{count}</div>
           </div>
         )}
       </For>
@@ -310,9 +321,9 @@ function PlaceValueDiagram(props: { data: DiagramData }) {
 function FractionDiagram(props: { data: DiagramData }) {
   const numerator = props.data.numerator as number;
   const denominator = props.data.denominator as number;
-  const shapeType = props.data.shapeType as 'circle' | 'rectangle';
+  const shapeType = props.data.shapeType as "circle" | "rectangle";
 
-  if (shapeType === 'circle') {
+  if (shapeType === "circle") {
     return <FractionCircle numerator={numerator} denominator={denominator} />;
   }
 
@@ -328,7 +339,15 @@ function FractionCircle(props: { numerator: number; denominator: number }) {
 
   return (
     <svg viewBox="0 0 200 200" class="w-48 h-48 mx-auto">
-      <circle cx="100" cy="100" r="90" fill="white" stroke="currentColor" stroke-width="2" class="text-gray-700" />
+      <circle
+        cx="100"
+        cy="100"
+        r="90"
+        fill="white"
+        stroke="currentColor"
+        stroke-width="2"
+        class="text-gray-700"
+      />
       <For each={sections}>
         {(i) => {
           const startAngle = i * anglePerSection - 90;
@@ -342,7 +361,15 @@ function FractionCircle(props: { numerator: number; denominator: number }) {
 
           return (
             <>
-              <line x1="100" y1="100" x2={x1} y2={y1} stroke="currentColor" stroke-width="1" class="text-gray-700" />
+              <line
+                x1="100"
+                y1="100"
+                x2={x1}
+                y2={y1}
+                stroke="currentColor"
+                stroke-width="1"
+                class="text-gray-700"
+              />
               <Show when={i < props.numerator}>
                 <path
                   d={`M 100 100 L ${x1} ${y1} A 90 90 0 0 1 ${x2} ${y2} Z`}
@@ -363,11 +390,20 @@ function FractionCircle(props: { numerator: number; denominator: number }) {
  */
 function FractionRectangle(props: { numerator: number; denominator: number }) {
   const sections = Array.from({ length: props.denominator }, (_, i) => i);
-  const sectionWidth = 100 / props.denominator;
+  // const sectionWidth = 100 / props.denominator;
 
   return (
     <svg viewBox="0 0 200 80" class="w-full h-24 mx-auto">
-      <rect x="0" y="10" width="200" height="60" fill="white" stroke="currentColor" stroke-width="2" class="text-gray-700" />
+      <rect
+        x="0"
+        y="10"
+        width="200"
+        height="60"
+        fill="white"
+        stroke="currentColor"
+        stroke-width="2"
+        class="text-gray-700"
+      />
       <For each={sections}>
         {(i) => {
           const x = (i * 200) / props.denominator;
@@ -376,10 +412,25 @@ function FractionRectangle(props: { numerator: number; denominator: number }) {
           return (
             <>
               <Show when={i > 0}>
-                <line x1={x} y1="10" x2={x} y2="70" stroke="currentColor" stroke-width="1" class="text-gray-700" />
+                <line
+                  x1={x}
+                  y1="10"
+                  x2={x}
+                  y2="70"
+                  stroke="currentColor"
+                  stroke-width="1"
+                  class="text-gray-700"
+                />
               </Show>
               <Show when={i < props.numerator}>
-                <rect x={x + 1} y="11" width={width - 2} height="58" fill="rgb(147, 51, 234)" opacity="0.7" />
+                <rect
+                  x={x + 1}
+                  y="11"
+                  width={width - 2}
+                  height="58"
+                  fill="rgb(147, 51, 234)"
+                  opacity="0.7"
+                />
               </Show>
             </>
           );
@@ -396,7 +447,9 @@ function ChartRenderer(props: { data: ChartData }) {
   const t = useStore($t);
   return (
     <div class="chart-container p-4 bg-gray-100 rounded text-center">
-      <p class="text-gray-600">{t()('solutions.chartType')}: {props.data.chartType}</p>
+      <p class="text-gray-600">
+        {t()("solutions.chartType")}: {props.data.chartType}
+      </p>
       <p class="text-sm text-gray-500">(Chart visualization coming soon)</p>
     </div>
   );

@@ -9,16 +9,16 @@
  * - 2.4: Store language preference in Supabase user record and synchronize across devices
  */
 
-import { createSignal, Show, onMount } from 'solid-js';
-import { useStore } from '@nanostores/solid';
-import { $t, $locale, changeLocale, type Locale } from '@/lib/i18n';
-import { getCurrentUser, updateUser } from '@/lib/auth';
+import { createSignal, Show } from "solid-js";
+import { useStore } from "@nanostores/solid";
+import { $t, $locale, changeLocale, type Locale } from "@/lib/i18n";
+import { getCurrentUser, updateUser } from "@/lib/auth";
 
 export interface LanguageSelectorProps {
   /** Display variant: 'compact' shows flags only, 'full' shows flags with labels */
-  variant?: 'compact' | 'full';
+  variant?: "compact" | "full";
   /** Layout direction */
-  layout?: 'horizontal' | 'vertical';
+  layout?: "horizontal" | "vertical";
   /** Optional CSS class for styling */
   class?: string;
 }
@@ -45,8 +45,8 @@ export default function LanguageSelector(props: LanguageSelectorProps) {
   const [isChanging, setIsChanging] = createSignal(false);
   const [error, setError] = createSignal<string | null>(null);
 
-  const variant = () => props.variant || 'full';
-  const layout = () => props.layout || 'horizontal';
+  const variant = () => props.variant || "full";
+  const layout = () => props.layout || "horizontal";
 
   /**
    * Handles language change
@@ -70,17 +70,20 @@ export default function LanguageSelector(props: LanguageSelectorProps) {
         if (user) {
           const result = await updateUser(user.id, { locale: newLocale });
           if (!result.success) {
-            console.warn('Failed to persist language preference to Supabase:', result.error);
+            console.warn(
+              "Failed to persist language preference to Supabase:",
+              result.error,
+            );
             // Don't show error to user - locale change still succeeded in UI
           }
         }
       } catch (persistError) {
         // Log but don't fail - the language has already changed in the UI
-        console.warn('Error persisting language preference:', persistError);
+        console.warn("Error persisting language preference:", persistError);
       }
     } catch (changeError) {
-      console.error('Error changing language:', changeError);
-      setError('Failed to change language');
+      console.error("Error changing language:", changeError);
+      setError("Failed to change language");
     } finally {
       setIsChanging(false);
     }
@@ -90,9 +93,9 @@ export default function LanguageSelector(props: LanguageSelectorProps) {
 
   const baseButtonClass = () => {
     const common =
-      'flex items-center gap-2 p-3 rounded-lg transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-300 min-w-44px min-h-44px disabled:opacity-50 disabled:cursor-not-allowed';
+      "flex items-center gap-2 p-3 rounded-lg transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-300 min-w-44px min-h-44px disabled:opacity-50 disabled:cursor-not-allowed";
 
-    if (variant() === 'compact') {
+    if (variant() === "compact") {
       return `${common} justify-center`;
     }
     return common;
@@ -109,26 +112,27 @@ export default function LanguageSelector(props: LanguageSelectorProps) {
   };
 
   const containerClass = () => {
-    const base = 'language-selector';
-    const layoutClass = layout() === 'horizontal' ? 'flex flex-row gap-2' : 'flex flex-col gap-2';
-    return `${base} ${layoutClass} ${props.class || ''}`;
+    const base = "language-selector";
+    const layoutClass =
+      layout() === "horizontal" ? "flex flex-row gap-2" : "flex flex-col gap-2";
+    return `${base} ${layoutClass} ${props.class || ""}`;
   };
 
   return (
     <div
       class={containerClass()}
       role="group"
-      aria-label={t()('common.language.selector.title')}
+      aria-label={t()("common.language.selector.title")}
     >
       {/* Danish Button */}
       <button
         type="button"
-        onClick={() => handleLanguageChange('da-DK')}
+        onClick={() => handleLanguageChange("da-DK")}
         disabled={isChanging()}
-        class={buttonClass('da-DK')}
-        aria-label={t()('common.language.selector.danish')}
-        aria-pressed={isActive('da-DK')}
-        title={t()('common.language.selector.danish')}
+        class={buttonClass("da-DK")}
+        aria-label={t()("common.language.selector.danish")}
+        aria-pressed={isActive("da-DK")}
+        title={t()("common.language.selector.danish")}
       >
         {/* Danish Flag SVG */}
         <svg
@@ -145,25 +149,30 @@ export default function LanguageSelector(props: LanguageSelectorProps) {
           <rect y="12" width="37" height="4" fill="white" />
         </svg>
 
-        <Show when={variant() === 'full'}>
-          <span class="font-medium">{t()('common.language.selector.danish')}</span>
+        <Show when={variant() === "full"}>
+          <span class="font-medium">
+            {t()("common.language.selector.danish")}
+          </span>
         </Show>
 
         {/* Active indicator for compact mode */}
-        <Show when={variant() === 'compact' && isActive('da-DK')}>
-          <span class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white" aria-hidden="true"></span>
+        <Show when={variant() === "compact" && isActive("da-DK")}>
+          <span
+            class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"
+            aria-hidden="true"
+          ></span>
         </Show>
       </button>
 
       {/* English Button */}
       <button
         type="button"
-        onClick={() => handleLanguageChange('en-US')}
+        onClick={() => handleLanguageChange("en-US")}
         disabled={isChanging()}
-        class={buttonClass('en-US')}
-        aria-label={t()('common.language.selector.english')}
-        aria-pressed={isActive('en-US')}
-        title={t()('common.language.selector.english')}
+        class={buttonClass("en-US")}
+        aria-label={t()("common.language.selector.english")}
+        aria-pressed={isActive("en-US")}
+        title={t()("common.language.selector.english")}
       >
         {/* US Flag SVG (simplified) */}
         <svg
@@ -185,13 +194,18 @@ export default function LanguageSelector(props: LanguageSelectorProps) {
           <rect width="15" height="12" fill="#3C3B6E" />
         </svg>
 
-        <Show when={variant() === 'full'}>
-          <span class="font-medium">{t()('common.language.selector.english')}</span>
+        <Show when={variant() === "full"}>
+          <span class="font-medium">
+            {t()("common.language.selector.english")}
+          </span>
         </Show>
 
         {/* Active indicator for compact mode */}
-        <Show when={variant() === 'compact' && isActive('en-US')}>
-          <span class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white" aria-hidden="true"></span>
+        <Show when={variant() === "compact" && isActive("en-US")}>
+          <span
+            class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"
+            aria-hidden="true"
+          ></span>
         </Show>
       </button>
 
@@ -222,7 +236,7 @@ export default function LanguageSelector(props: LanguageSelectorProps) {
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
             />
           </svg>
-          <span>{t()('common.language.selector.changingLanguage')}</span>
+          <span>{t()("common.language.selector.changingLanguage")}</span>
         </div>
       </Show>
 
@@ -239,4 +253,3 @@ export default function LanguageSelector(props: LanguageSelectorProps) {
     </div>
   );
 }
-

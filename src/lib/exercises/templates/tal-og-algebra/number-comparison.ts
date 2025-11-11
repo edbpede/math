@@ -1,33 +1,39 @@
 /**
  * Number Comparison Exercise Templates
- * 
+ *
  * Templates for number comparison exercises aligned with Danish Fælles Mål curriculum
  * for grades 0-3 (klassetrin 0-3).
- * 
+ *
  * Competency Area: Tal og Algebra (Numbers and Algebra)
  * Skills Area: Tal (Numbers)
- * 
+ *
  * Requirements:
  * - 3.1: Organize content according to Tal og Algebra competency area
  * - 3.2: Map templates to specific curriculum elements
  * - 3.5: Three difficulty levels (A, B, C)
  */
 
-import type { ExerciseTemplate, ValidationResult, Answer } from '../../types';
+import type { ExerciseTemplate, ValidationResult, Answer } from "../../types";
 
 /**
  * Custom validation for comparison operators
  * Handles string comparison operators and their word equivalents
  */
-function validateComparisonAnswer(userAnswer: string, correctAnswer: Answer): ValidationResult {
+function validateComparisonAnswer(
+  userAnswer: string,
+  correctAnswer: Answer,
+): ValidationResult {
   const normalized = userAnswer.trim().toLowerCase();
   const correctValue = String(correctAnswer.value).trim();
-  
+
   // Check direct match
-  if (normalized === correctValue || normalized === correctValue.toLowerCase()) {
+  if (
+    normalized === correctValue ||
+    normalized === correctValue.toLowerCase()
+  ) {
     return { correct: true, normalized };
   }
-  
+
   // Check equivalents
   if (correctAnswer.equivalents) {
     for (const equivalent of correctAnswer.equivalents) {
@@ -37,35 +43,35 @@ function validateComparisonAnswer(userAnswer: string, correctAnswer: Answer): Va
       }
     }
   }
-  
+
   return { correct: false, normalized };
 }
 
 /**
  * Number Comparison Template - Difficulty A (Introductory)
- * 
+ *
  * Compare two numbers in range 0-20 using >, <, or =
  * For early learners beginning to understand number magnitude
  */
 export const numberComparisonA: ExerciseTemplate = {
-  id: 'tal-algebra-comparison-0-3-A',
-  name: 'Number Comparison (Basic)',
+  id: "tal-algebra-comparison-0-3-A",
+  name: "Number Comparison (Basic)",
   metadata: {
-    competencyAreaId: 'tal-og-algebra',
-    skillsAreaId: 'tal',
-    gradeRange: '0-3',
-    difficulty: 'A',
+    competencyAreaId: "tal-og-algebra",
+    skillsAreaId: "tal",
+    gradeRange: "0-3",
+    difficulty: "A",
     isBinding: true,
-    tags: ['comparison', 'number-sense', 'magnitude', 'basic'],
+    tags: ["comparison", "number-sense", "magnitude", "basic"],
   },
   parameters: {
     a: {
-      type: 'integer',
+      type: "integer",
       min: 0,
       max: 20,
     },
     b: {
-      type: 'integer',
+      type: "integer",
       min: 0,
       max: 20,
     },
@@ -73,35 +79,41 @@ export const numberComparisonA: ExerciseTemplate = {
   generate: (params, locale) => {
     const a = params.a as number;
     const b = params.b as number;
-    
+
     let answer: string;
     let answerValue: string;
     if (a > b) {
-      answer = '>';
-      answerValue = '>';
+      answer = ">";
+      answerValue = ">";
     } else if (a < b) {
-      answer = '<';
-      answerValue = '<';
+      answer = "<";
+      answerValue = "<";
     } else {
-      answer = '=';
-      answerValue = '=';
+      answer = "=";
+      answerValue = "=";
     }
 
-    const questionText = locale === 'da-DK'
-      ? `{{a}} ___ {{b}}\n\nIndsæt >, < eller =`
-      : `{{a}} ___ {{b}}\n\nInsert >, < or =`;
+    const questionText =
+      locale === "da-DK"
+        ? `{{a}} ___ {{b}}\n\nIndsæt >, < eller =`
+        : `{{a}} ___ {{b}}\n\nInsert >, < or =`;
 
     return {
       questionText,
       correctAnswer: {
         value: answerValue,
-        equivalents: locale === 'da-DK'
-          ? answer === '>' ? ['>', 'større end', 'større', 'gt']
-          : answer === '<' ? ['<', 'mindre end', 'mindre', 'lt']
-          : ['=', 'lig med', 'lige', 'eq']
-          : answer === '>' ? ['>', 'greater than', 'greater', 'gt']
-          : answer === '<' ? ['<', 'less than', 'less', 'lt']
-          : ['=', 'equal to', 'equal', 'equals', 'eq'],
+        equivalents:
+          locale === "da-DK"
+            ? answer === ">"
+              ? [">", "større end", "større", "gt"]
+              : answer === "<"
+                ? ["<", "mindre end", "mindre", "lt"]
+                : ["=", "lig med", "lige", "eq"]
+            : answer === ">"
+              ? [">", "greater than", "greater", "gt"]
+              : answer === "<"
+                ? ["<", "less than", "less", "lt"]
+                : ["=", "equal to", "equal", "equals", "eq"],
       },
     };
   },
@@ -111,7 +123,7 @@ export const numberComparisonA: ExerciseTemplate = {
   hints: [
     // Level 1: General strategy
     (params, locale) => {
-      if (locale === 'da-DK') {
+      if (locale === "da-DK") {
         return 'Tænk på hvilken pile der peger mod det mindste tal. Det store tal "spiser" det lille tal.';
       }
       return 'Think about which arrow points to the smaller number. The big number "eats" the small number.';
@@ -120,7 +132,7 @@ export const numberComparisonA: ExerciseTemplate = {
     (params, locale) => {
       const a = params.a as number;
       const b = params.b as number;
-      if (locale === 'da-DK') {
+      if (locale === "da-DK") {
         if (a === b) {
           return `${a} og ${b} er det samme tal, så de er lige store.`;
         } else if (a > b) {
@@ -141,7 +153,7 @@ export const numberComparisonA: ExerciseTemplate = {
     (params, locale) => {
       const a = params.a as number;
       const b = params.b as number;
-      if (locale === 'da-DK') {
+      if (locale === "da-DK") {
         if (a === b) {
           return `${a} = ${b} fordi begge tal er ens.`;
         } else if (a > b) {
@@ -171,34 +183,34 @@ export const numberComparisonA: ExerciseTemplate = {
       }
     },
   ],
-  contextType: 'abstract',
+  contextType: "abstract",
 };
 
 /**
  * Number Comparison Template - Difficulty B (Developing)
- * 
+ *
  * Compare two numbers in range 0-100 using >, <, or =
  * For students developing understanding of larger numbers
  */
 export const numberComparisonB: ExerciseTemplate = {
-  id: 'tal-algebra-comparison-0-3-B',
-  name: 'Number Comparison (Developing)',
+  id: "tal-algebra-comparison-0-3-B",
+  name: "Number Comparison (Developing)",
   metadata: {
-    competencyAreaId: 'tal-og-algebra',
-    skillsAreaId: 'tal',
-    gradeRange: '0-3',
-    difficulty: 'B',
+    competencyAreaId: "tal-og-algebra",
+    skillsAreaId: "tal",
+    gradeRange: "0-3",
+    difficulty: "B",
     isBinding: true,
-    tags: ['comparison', 'number-sense', 'magnitude', 'two-digit'],
+    tags: ["comparison", "number-sense", "magnitude", "two-digit"],
   },
   parameters: {
     a: {
-      type: 'integer',
+      type: "integer",
       min: 0,
       max: 100,
     },
     b: {
-      type: 'integer',
+      type: "integer",
       min: 0,
       max: 100,
     },
@@ -206,35 +218,41 @@ export const numberComparisonB: ExerciseTemplate = {
   generate: (params, locale) => {
     const a = params.a as number;
     const b = params.b as number;
-    
+
     let answer: string;
     let answerValue: string;
     if (a > b) {
-      answer = '>';
-      answerValue = '>';
+      answer = ">";
+      answerValue = ">";
     } else if (a < b) {
-      answer = '<';
-      answerValue = '<';
+      answer = "<";
+      answerValue = "<";
     } else {
-      answer = '=';
-      answerValue = '=';
+      answer = "=";
+      answerValue = "=";
     }
 
-    const questionText = locale === 'da-DK'
-      ? `{{a}} ___ {{b}}\n\nIndsæt >, < eller =`
-      : `{{a}} ___ {{b}}\n\nInsert >, < or =`;
+    const questionText =
+      locale === "da-DK"
+        ? `{{a}} ___ {{b}}\n\nIndsæt >, < eller =`
+        : `{{a}} ___ {{b}}\n\nInsert >, < or =`;
 
     return {
       questionText,
       correctAnswer: {
         value: answerValue,
-        equivalents: locale === 'da-DK'
-          ? answer === '>' ? ['>', 'større end', 'større', 'gt']
-          : answer === '<' ? ['<', 'mindre end', 'mindre', 'lt']
-          : ['=', 'lig med', 'lige', 'eq']
-          : answer === '>' ? ['>', 'greater than', 'greater', 'gt']
-          : answer === '<' ? ['<', 'less than', 'less', 'lt']
-          : ['=', 'equal to', 'equal', 'equals', 'eq'],
+        equivalents:
+          locale === "da-DK"
+            ? answer === ">"
+              ? [">", "større end", "større", "gt"]
+              : answer === "<"
+                ? ["<", "mindre end", "mindre", "lt"]
+                : ["=", "lig med", "lige", "eq"]
+            : answer === ">"
+              ? [">", "greater than", "greater", "gt"]
+              : answer === "<"
+                ? ["<", "less than", "less", "lt"]
+                : ["=", "equal to", "equal", "equals", "eq"],
       },
     };
   },
@@ -244,10 +262,10 @@ export const numberComparisonB: ExerciseTemplate = {
   hints: [
     // Level 1: General strategy
     (params, locale) => {
-      if (locale === 'da-DK') {
-        return 'Sammenlign tallene ved at se på titalværdien først, derefter entalværdien.';
+      if (locale === "da-DK") {
+        return "Sammenlign tallene ved at se på titalværdien først, derefter entalværdien.";
       }
-      return 'Compare the numbers by looking at the tens value first, then the ones value.';
+      return "Compare the numbers by looking at the tens value first, then the ones value.";
     },
     // Level 2: Specific technique
     (params, locale) => {
@@ -257,8 +275,8 @@ export const numberComparisonB: ExerciseTemplate = {
       const bTens = Math.floor(b / 10);
       const aOnes = a % 10;
       const bOnes = b % 10;
-      
-      if (locale === 'da-DK') {
+
+      if (locale === "da-DK") {
         if (a === b) {
           return `${a} og ${b} er det samme tal.`;
         } else if (aTens !== bTens) {
@@ -283,25 +301,25 @@ export const numberComparisonB: ExerciseTemplate = {
       const bTens = Math.floor(b / 10);
       const aOnes = a % 10;
       const bOnes = b % 10;
-      
-      if (locale === 'da-DK') {
+
+      if (locale === "da-DK") {
         if (a === b) {
           return `${a} = ${b}`;
         } else if (aTens !== bTens) {
-          const comparison = aTens > bTens ? '>' : '<';
+          const comparison = aTens > bTens ? ">" : "<";
           return `Tiere: ${aTens} ${comparison} ${bTens}\nDerfor: ${a} ${comparison} ${b}`;
         } else {
-          const comparison = aOnes > bOnes ? '>' : '<';
+          const comparison = aOnes > bOnes ? ">" : "<";
           return `Tiere er ens (${aTens}), så sammenlign enere:\n${aOnes} ${comparison} ${bOnes}\nDerfor: ${a} ${comparison} ${b}`;
         }
       }
       if (a === b) {
         return `${a} = ${b}`;
       } else if (aTens !== bTens) {
-        const comparison = aTens > bTens ? '>' : '<';
+        const comparison = aTens > bTens ? ">" : "<";
         return `Tens: ${aTens} ${comparison} ${bTens}\nTherefore: ${a} ${comparison} ${b}`;
       } else {
-        const comparison = aOnes > bOnes ? '>' : '<';
+        const comparison = aOnes > bOnes ? ">" : "<";
         return `Tens are equal (${aTens}), so compare ones:\n${aOnes} ${comparison} ${bOnes}\nTherefore: ${a} ${comparison} ${b}`;
       }
     },
@@ -318,34 +336,34 @@ export const numberComparisonB: ExerciseTemplate = {
       }
     },
   ],
-  contextType: 'abstract',
+  contextType: "abstract",
 };
 
 /**
  * Number Comparison Template - Difficulty C (Advanced)
- * 
+ *
  * Compare two numbers in range 0-1000 using >, <, or =
  * For students ready to work with three-digit numbers
  */
 export const numberComparisonC: ExerciseTemplate = {
-  id: 'tal-algebra-comparison-0-3-C',
-  name: 'Number Comparison (Advanced)',
+  id: "tal-algebra-comparison-0-3-C",
+  name: "Number Comparison (Advanced)",
   metadata: {
-    competencyAreaId: 'tal-og-algebra',
-    skillsAreaId: 'tal',
-    gradeRange: '0-3',
-    difficulty: 'C',
+    competencyAreaId: "tal-og-algebra",
+    skillsAreaId: "tal",
+    gradeRange: "0-3",
+    difficulty: "C",
     isBinding: true,
-    tags: ['comparison', 'number-sense', 'magnitude', 'three-digit'],
+    tags: ["comparison", "number-sense", "magnitude", "three-digit"],
   },
   parameters: {
     a: {
-      type: 'integer',
+      type: "integer",
       min: 0,
       max: 1000,
     },
     b: {
-      type: 'integer',
+      type: "integer",
       min: 0,
       max: 1000,
     },
@@ -353,35 +371,41 @@ export const numberComparisonC: ExerciseTemplate = {
   generate: (params, locale) => {
     const a = params.a as number;
     const b = params.b as number;
-    
+
     let answer: string;
     let answerValue: string;
     if (a > b) {
-      answer = '>';
-      answerValue = '>';
+      answer = ">";
+      answerValue = ">";
     } else if (a < b) {
-      answer = '<';
-      answerValue = '<';
+      answer = "<";
+      answerValue = "<";
     } else {
-      answer = '=';
-      answerValue = '=';
+      answer = "=";
+      answerValue = "=";
     }
 
-    const questionText = locale === 'da-DK'
-      ? `{{a}} ___ {{b}}\n\nIndsæt >, < eller =`
-      : `{{a}} ___ {{b}}\n\nInsert >, < or =`;
+    const questionText =
+      locale === "da-DK"
+        ? `{{a}} ___ {{b}}\n\nIndsæt >, < eller =`
+        : `{{a}} ___ {{b}}\n\nInsert >, < or =`;
 
     return {
       questionText,
       correctAnswer: {
         value: answerValue,
-        equivalents: locale === 'da-DK'
-          ? answer === '>' ? ['>', 'større end', 'større', 'gt']
-          : answer === '<' ? ['<', 'mindre end', 'mindre', 'lt']
-          : ['=', 'lig med', 'lige', 'eq']
-          : answer === '>' ? ['>', 'greater than', 'greater', 'gt']
-          : answer === '<' ? ['<', 'less than', 'less', 'lt']
-          : ['=', 'equal to', 'equal', 'equals', 'eq'],
+        equivalents:
+          locale === "da-DK"
+            ? answer === ">"
+              ? [">", "større end", "større", "gt"]
+              : answer === "<"
+                ? ["<", "mindre end", "mindre", "lt"]
+                : ["=", "lig med", "lige", "eq"]
+            : answer === ">"
+              ? [">", "greater than", "greater", "gt"]
+              : answer === "<"
+                ? ["<", "less than", "less", "lt"]
+                : ["=", "equal to", "equal", "equals", "eq"],
       },
     };
   },
@@ -391,10 +415,10 @@ export const numberComparisonC: ExerciseTemplate = {
   hints: [
     // Level 1: General strategy
     (params, locale) => {
-      if (locale === 'da-DK') {
-        return 'Sammenlign tallene ved at se på hundrederne først, derefter tierne, og til sidst enerne.';
+      if (locale === "da-DK") {
+        return "Sammenlign tallene ved at se på hundrederne først, derefter tierne, og til sidst enerne.";
       }
-      return 'Compare the numbers by looking at the hundreds first, then the tens, and finally the ones.';
+      return "Compare the numbers by looking at the hundreds first, then the tens, and finally the ones.";
     },
     // Level 2: Specific technique
     (params, locale) => {
@@ -404,8 +428,8 @@ export const numberComparisonC: ExerciseTemplate = {
       const bHundreds = Math.floor(b / 100);
       const aTens = Math.floor((a % 100) / 10);
       const bTens = Math.floor((b % 100) / 10);
-      
-      if (locale === 'da-DK') {
+
+      if (locale === "da-DK") {
         if (a === b) {
           return `${a} og ${b} er det samme tal.`;
         } else if (aHundreds !== bHundreds) {
@@ -436,31 +460,31 @@ export const numberComparisonC: ExerciseTemplate = {
       const bTens = Math.floor((b % 100) / 10);
       const aOnes = a % 10;
       const bOnes = b % 10;
-      
-      if (locale === 'da-DK') {
+
+      if (locale === "da-DK") {
         if (a === b) {
           return `${a} = ${b}`;
         } else if (aHundreds !== bHundreds) {
-          const comparison = aHundreds > bHundreds ? '>' : '<';
+          const comparison = aHundreds > bHundreds ? ">" : "<";
           return `Hundreder: ${aHundreds} ${comparison} ${bHundreds}\nDerfor: ${a} ${comparison} ${b}`;
         } else if (aTens !== bTens) {
-          const comparison = aTens > bTens ? '>' : '<';
+          const comparison = aTens > bTens ? ">" : "<";
           return `Hundreder er ens (${aHundreds}), sammenlign tiere:\n${aTens} ${comparison} ${bTens}\nDerfor: ${a} ${comparison} ${b}`;
         } else {
-          const comparison = aOnes > bOnes ? '>' : '<';
+          const comparison = aOnes > bOnes ? ">" : "<";
           return `Hundreder (${aHundreds}) og tiere (${aTens}) er ens, sammenlign enere:\n${aOnes} ${comparison} ${bOnes}\nDerfor: ${a} ${comparison} ${b}`;
         }
       }
       if (a === b) {
         return `${a} = ${b}`;
       } else if (aHundreds !== bHundreds) {
-        const comparison = aHundreds > bHundreds ? '>' : '<';
+        const comparison = aHundreds > bHundreds ? ">" : "<";
         return `Hundreds: ${aHundreds} ${comparison} ${bHundreds}\nTherefore: ${a} ${comparison} ${b}`;
       } else if (aTens !== bTens) {
-        const comparison = aTens > bTens ? '>' : '<';
+        const comparison = aTens > bTens ? ">" : "<";
         return `Hundreds are equal (${aHundreds}), compare tens:\n${aTens} ${comparison} ${bTens}\nTherefore: ${a} ${comparison} ${b}`;
       } else {
-        const comparison = aOnes > bOnes ? '>' : '<';
+        const comparison = aOnes > bOnes ? ">" : "<";
         return `Hundreds (${aHundreds}) and tens (${aTens}) are equal, compare ones:\n${aOnes} ${comparison} ${bOnes}\nTherefore: ${a} ${comparison} ${b}`;
       }
     },
@@ -477,7 +501,7 @@ export const numberComparisonC: ExerciseTemplate = {
       }
     },
   ],
-  contextType: 'abstract',
+  contextType: "abstract",
 };
 
 // Export all number comparison templates
@@ -486,4 +510,3 @@ export const numberComparisonTemplates = [
   numberComparisonB,
   numberComparisonC,
 ];
-

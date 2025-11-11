@@ -11,11 +11,11 @@
  * - 11.4: Generate 20-30 instances in batch <200ms
  */
 
-import type { ExerciseInstance } from './types';
-import type { TemplateSelectionCriteria } from './template-registry';
-import type { Locale } from '../i18n/types';
-import { offlineStorage } from '../offline/storage';
-import type { WorkerMessage, WorkerResponse } from './pool-worker';
+import type { ExerciseInstance } from "./types";
+import type { TemplateSelectionCriteria } from "./template-registry";
+import type { Locale } from "../i18n/types";
+import { offlineStorage } from "../offline/storage";
+import type { WorkerMessage, WorkerResponse } from "./pool-worker";
 
 /**
  * Pool configuration
@@ -34,10 +34,10 @@ export class PoolManagerError extends Error {
   constructor(
     message: string,
     public operation: string,
-    public cause?: unknown
+    public cause?: unknown,
   ) {
     super(`Pool manager error during ${operation}: ${message}`);
-    this.name = 'PoolManagerError';
+    this.name = "PoolManagerError";
   }
 }
 
@@ -90,10 +90,12 @@ export class ExercisePoolManager {
       await offlineStorage.init();
 
       // Initialize Web Worker
-      if (typeof Worker !== 'undefined') {
+      if (typeof Worker !== "undefined") {
         this.initializeWorker();
       } else {
-        console.warn('[PoolManager] Web Workers not supported, falling back to main thread');
+        console.warn(
+          "[PoolManager] Web Workers not supported, falling back to main thread",
+        );
       }
 
       this.initialized = true;
@@ -102,13 +104,13 @@ export class ExercisePoolManager {
       const stats = await this.getStats();
       if (stats.unusedExercises < POOL_CONFIG.MIN_BUFFER_SIZE) {
         // Don't await - let it fill in background
-        this.fillPool({ gradeRange: '4-6' }, 'da-DK').catch(console.error);
+        this.fillPool({ gradeRange: "4-6" }, "da-DK").catch(console.error);
       }
     } catch (error) {
       throw new PoolManagerError(
-        'Failed to initialize pool manager',
-        'initialize',
-        error
+        "Failed to initialize pool manager",
+        "initialize",
+        error,
       );
     }
   }
@@ -124,21 +126,24 @@ export class ExercisePoolManager {
         importScripts('/src/lib/exercises/pool-worker.ts');
       `;
 
-      const blob = new Blob([workerCode], { type: 'application/javascript' });
+      const blob = new Blob([workerCode], { type: "application/javascript" });
       const workerUrl = URL.createObjectURL(blob);
-      
-      this.worker = new Worker(workerUrl, { type: 'module' });
 
-      this.worker.addEventListener('message', (event: MessageEvent<WorkerResponse>) => {
-        this.handleWorkerMessage(event.data);
-      });
+      this.worker = new Worker(workerUrl, { type: "module" });
 
-      this.worker.addEventListener('error', (error) => {
-        console.error('[PoolManager] Worker error:', error);
+      this.worker.addEventListener(
+        "message",
+        (event: MessageEvent<WorkerResponse>) => {
+          this.handleWorkerMessage(event.data);
+        },
+      );
+
+      this.worker.addEventListener("error", (error) => {
+        console.error("[PoolManager] Worker error:", error);
         this.workerReady = false;
       });
     } catch (error) {
-      console.error('[PoolManager] Failed to create worker:', error);
+      console.error("[PoolManager] Failed to create worker:", error);
       this.worker = null;
     }
   }
@@ -147,28 +152,27 @@ export class ExercisePoolManager {
    * Handle worker message
    */
   private handleWorkerMessage(response: WorkerResponse): void {
-    if ('type' in response && response.type === 'ready') {
-      this.workerReady = true;
-      console.log('[PoolManager] Worker ready');
-      return;
-    }
-
     const request = this.pendingRequests.get(response.id);
     if (!request) {
-      console.warn('[PoolManager] Received response for unknown request:', response.id);
+      console.warn(
+        "[PoolManager] Received response for unknown request:",
+        response.id,
+      );
       return;
     }
 
     this.pendingRequests.delete(response.id);
 
-    if (response.type === 'batch-complete') {
-      console.log(`[PoolManager] Batch generated in ${response.duration.toFixed(2)}ms`);
+    if (response.type === "batch-complete") {
+      console.log(
+        `[PoolManager] Batch generated in ${response.duration.toFixed(2)}ms`,
+      );
       request.resolve(response.instances);
-    } else if (response.type === 'error') {
+    } else if (response.type === "error") {
       const error = new PoolManagerError(
         response.error,
-        'worker-generation',
-        response.stack
+        "worker-generation",
+        response.stack,
       );
       request.reject(error);
     }
@@ -183,34 +187,37 @@ export class ExercisePoolManager {
    */
   async getExercises(
     count: number,
-    criteria?: Partial<TemplateSelectionCriteria>
+    criteria?: Partial<TemplateSelectionCriteria>,
   ): Promise<ExerciseInstance[]> {
     try {
       const exercises = await offlineStorage.getUnusedExercises(count);
 
       // Mark exercises as used
       await Promise.all(
-        exercises.map((ex) => offlineStorage.markExerciseUsed(ex.id))
+        exercises.map((ex) => offlineStorage.markExerciseUsed(ex.id)),
       );
 
       // Check if we need to refill pool
       const stats = await this.getStats();
-      if (stats.unusedExercises < POOL_CONFIG.MIN_BUFFER_SIZE && !this.generationInProgress) {
+      if (
+        stats.unusedExercises < POOL_CONFIG.MIN_BUFFER_SIZE &&
+        !this.generationInProgress
+      ) {
         // Refill in background
         const fillCriteria: TemplateSelectionCriteria = {
-          gradeRange: criteria?.gradeRange || '4-6',
+          gradeRange: criteria?.gradeRange || "4-6",
           competencyAreaId: criteria?.competencyAreaId,
           difficulty: criteria?.difficulty,
         };
-        this.fillPool(fillCriteria, 'da-DK').catch(console.error);
+        this.fillPool(fillCriteria, "da-DK").catch(console.error);
       }
 
       return exercises;
     } catch (error) {
       throw new PoolManagerError(
-        'Failed to get exercises from pool',
-        'getExercises',
-        error
+        "Failed to get exercises from pool",
+        "getExercises",
+        error,
       );
     }
   }
@@ -224,10 +231,10 @@ export class ExercisePoolManager {
    */
   async fillPool(
     criteria: TemplateSelectionCriteria,
-    locale: Locale = 'da-DK'
+    locale: Locale = "da-DK",
   ): Promise<ExerciseInstance[]> {
     if (this.generationInProgress) {
-      console.log('[PoolManager] Generation already in progress, skipping');
+      console.log("[PoolManager] Generation already in progress, skipping");
       return [];
     }
 
@@ -239,7 +246,7 @@ export class ExercisePoolManager {
       const needed = POOL_CONFIG.MAX_BUFFER_SIZE - stats.unusedExercises;
 
       if (needed <= 0) {
-        console.log('[PoolManager] Pool is full, skipping generation');
+        console.log("[PoolManager] Pool is full, skipping generation");
         return [];
       }
 
@@ -256,8 +263,8 @@ export class ExercisePoolManager {
 
       return instances;
     } catch (error) {
-      console.error('[PoolManager] Failed to fill pool:', error);
-      throw new PoolManagerError('Failed to fill pool', 'fillPool', error);
+      console.error("[PoolManager] Failed to fill pool:", error);
+      throw new PoolManagerError("Failed to fill pool", "fillPool", error);
     } finally {
       this.generationInProgress = false;
     }
@@ -271,7 +278,7 @@ export class ExercisePoolManager {
   private async generateBatch(
     criteria: TemplateSelectionCriteria,
     count: number,
-    locale: Locale
+    locale: Locale,
   ): Promise<ExerciseInstance[]> {
     if (this.worker && this.workerReady) {
       return this.generateBatchWithWorker(criteria, count, locale);
@@ -286,7 +293,7 @@ export class ExercisePoolManager {
   private generateBatchWithWorker(
     criteria: TemplateSelectionCriteria,
     count: number,
-    locale: Locale
+    locale: Locale,
   ): Promise<ExerciseInstance[]> {
     return new Promise((resolve, reject) => {
       const id = `batch-${Date.now()}-${Math.random()}`;
@@ -300,7 +307,7 @@ export class ExercisePoolManager {
       });
 
       const message: WorkerMessage = {
-        type: 'generate-batch',
+        type: "generate-batch",
         id,
         criteria,
         count,
@@ -318,10 +325,10 @@ export class ExercisePoolManager {
   private async generateBatchMainThread(
     criteria: TemplateSelectionCriteria,
     count: number,
-    locale: Locale
+    locale: Locale,
   ): Promise<ExerciseInstance[]> {
     // Dynamic import to avoid loading generator on initial page load
-    const { generateBatch } = await import('./generator');
+    const { generateBatch } = await import("./generator");
 
     return generateBatch(criteria, count, {
       locale,
@@ -344,7 +351,7 @@ export class ExercisePoolManager {
         workerActive: this.workerReady,
       };
     } catch (error) {
-      throw new PoolManagerError('Failed to get stats', 'getStats', error);
+      throw new PoolManagerError("Failed to get stats", "getStats", error);
     }
   }
 
@@ -363,7 +370,7 @@ export class ExercisePoolManager {
 
       return removed;
     } catch (error) {
-      throw new PoolManagerError('Failed to cleanup', 'cleanup', error);
+      throw new PoolManagerError("Failed to cleanup", "cleanup", error);
     }
   }
 
@@ -373,9 +380,9 @@ export class ExercisePoolManager {
   async clear(): Promise<void> {
     try {
       await offlineStorage.clearExercisePool();
-      console.log('[PoolManager] Pool cleared');
+      console.log("[PoolManager] Pool cleared");
     } catch (error) {
-      throw new PoolManagerError('Failed to clear pool', 'clear', error);
+      throw new PoolManagerError("Failed to clear pool", "clear", error);
     }
   }
 
@@ -387,7 +394,7 @@ export class ExercisePoolManager {
       this.worker.terminate();
       this.worker = null;
       this.workerReady = false;
-      console.log('[PoolManager] Worker terminated');
+      console.log("[PoolManager] Worker terminated");
     }
   }
 }
@@ -400,9 +407,8 @@ export const poolManager = new ExercisePoolManager();
 /**
  * Initialize pool manager on module load (async)
  */
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   poolManager.initialize().catch((error) => {
-    console.error('[PoolManager] Failed to initialize:', error);
+    console.error("[PoolManager] Failed to initialize:", error);
   });
 }
-

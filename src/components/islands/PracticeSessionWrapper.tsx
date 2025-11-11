@@ -11,18 +11,27 @@
  * - 8.1: Validate answer and display feedback within 1 second
  */
 
-import { createSignal, createMemo, onMount, Show, Match, Switch } from 'solid-js';
-import type { CompetencyAreaId, GradeRange, Difficulty } from '@/lib/curriculum/types';
-import type { ExerciseInstance } from '@/lib/exercises/types';
-import type { Locale } from '@/lib/i18n/types';
-import { generateBatch } from '@/lib/exercises/generator';
-import { startSession, endSession, updateSession, logExerciseAttempt } from '@/lib/supabase/progress';
-import SessionSetup from './SessionSetup';
-import ExercisePractice from './ExercisePractice';
-import SessionSummary from './SessionSummary';
-import type { SessionConfig } from './SessionSetup';
-import type { SessionStats } from './SessionSummary';
-import type { ExerciseAttempt as ExercisePracticeAttempt } from './ExercisePractice';
+import { createSignal, createMemo, Match, Switch } from "solid-js";
+import type {
+  CompetencyAreaId,
+  GradeRange,
+  Difficulty,
+} from "@/lib/curriculum/types";
+import type { ExerciseInstance } from "@/lib/exercises/types";
+import type { Locale } from "@/lib/i18n/types";
+import { generateBatch } from "@/lib/exercises/generator";
+import {
+  startSession,
+  endSession,
+  updateSession,
+  logExerciseAttempt,
+} from "@/lib/supabase/progress";
+import SessionSetup from "./SessionSetup";
+import ExercisePractice from "./ExercisePractice";
+import SessionSummary from "./SessionSummary";
+import type { SessionConfig } from "./SessionSetup";
+import type { SessionStats } from "./SessionSummary";
+import type { ExerciseAttempt as ExercisePracticeAttempt } from "./ExercisePractice";
 
 /**
  * Props for PracticeSessionWrapper component
@@ -50,7 +59,7 @@ export interface PracticeSessionWrapperProps {
 /**
  * Session flow states
  */
-type SessionState = 'setup' | 'practicing' | 'complete' | 'error';
+type SessionState = "setup" | "practicing" | "complete" | "error";
 
 /**
  * PracticeSessionWrapper - Main session orchestrator
@@ -72,13 +81,15 @@ type SessionState = 'setup' | 'practicing' | 'complete' | 'error';
  * />
  * ```
  */
-export default function PracticeSessionWrapper(props: PracticeSessionWrapperProps) {
+export default function PracticeSessionWrapper(
+  props: PracticeSessionWrapperProps,
+) {
   // State management
-  const [sessionState, setSessionState] = createSignal<SessionState>('setup');
-  const [sessionId, setSessionId] = createSignal<string>('');
+  const [sessionState, setSessionState] = createSignal<SessionState>("setup");
+  const [sessionId, setSessionId] = createSignal<string>("");
   const [exercises, setExercises] = createSignal<ExerciseInstance[]>([]);
   const [currentIndex, setCurrentIndex] = createSignal(0);
-  const [errorMessage, setErrorMessage] = createSignal('');
+  const [errorMessage, setErrorMessage] = createSignal("");
 
   // Statistics tracking
   const [correctCount, setCorrectCount] = createSignal(0);
@@ -107,30 +118,31 @@ export default function PracticeSessionWrapper(props: PracticeSessionWrapperProp
       const session = await startSession(
         props.userId,
         props.gradeRange,
-        props.competencyAreaId
+        props.competencyAreaId,
       );
       setSessionId(session.id);
 
       // Generate exercise batch
-      const difficulty = config.difficulty === 'Auto' ? undefined : config.difficulty;
+      const difficulty =
+        config.difficulty === "Auto" ? undefined : config.difficulty;
       const generatedExercises = await generateBatch(
         {
           competencyAreaId: props.competencyAreaId,
           gradeRange: props.gradeRange,
-          difficulty
+          difficulty,
         },
         config.exerciseCount,
-        { locale: props.locale }
+        { locale: props.locale },
       );
 
       setExercises(generatedExercises);
       setCurrentIndex(0);
       setExerciseStartTime(Date.now());
-      setSessionState('practicing');
+      setSessionState("practicing");
     } catch (error) {
-      console.error('Failed to start session:', error);
-      setErrorMessage('Failed to start session. Please try again.');
-      setSessionState('error');
+      console.error("Failed to start session:", error);
+      setErrorMessage("Failed to start session. Please try again.");
+      setSessionState("error");
     }
   };
 
@@ -158,13 +170,13 @@ export default function PracticeSessionWrapper(props: PracticeSessionWrapperProp
         sessionId: sessionId(),
         templateId: exercise.templateId,
         competencyAreaId: props.competencyAreaId,
-        skillId: exercise.metadata.skillId || 'unknown',
+        skillId: exercise.metadata.skillId || "unknown",
         difficulty: exercise.metadata.difficulty,
         isBinding: exercise.metadata.isBinding,
         correct: attempt.correct,
         timeSpentSeconds: timeSpent,
         hintsUsed: attempt.hintsUsed,
-        userAnswer: attempt.userAnswer
+        userAnswer: attempt.userAnswer,
       });
 
       // Update session every 5 exercises for persistence
@@ -181,7 +193,7 @@ export default function PracticeSessionWrapper(props: PracticeSessionWrapperProp
         setExerciseStartTime(Date.now());
       }
     } catch (error) {
-      console.error('Failed to log exercise attempt:', error);
+      console.error("Failed to log exercise attempt:", error);
       // Continue despite error (graceful degradation)
       if (isLastExercise()) {
         await completeSession();
@@ -214,13 +226,13 @@ export default function PracticeSessionWrapper(props: PracticeSessionWrapperProp
         sessionId: sessionId(),
         templateId: exercise.templateId,
         competencyAreaId: props.competencyAreaId,
-        skillId: exercise.metadata.skillId || 'unknown',
+        skillId: exercise.metadata.skillId || "unknown",
         difficulty: exercise.metadata.difficulty,
         isBinding: exercise.metadata.isBinding,
         correct: false,
         timeSpentSeconds: timeSpent,
         hintsUsed: attempt.hintsUsed,
-        userAnswer: attempt.userAnswer || ''
+        userAnswer: attempt.userAnswer || "",
       });
 
       // Move to next exercise or complete session
@@ -231,7 +243,7 @@ export default function PracticeSessionWrapper(props: PracticeSessionWrapperProp
         setExerciseStartTime(Date.now());
       }
     } catch (error) {
-      console.error('Failed to log skipped exercise:', error);
+      console.error("Failed to log skipped exercise:", error);
       // Continue despite error
       if (isLastExercise()) {
         await completeSession();
@@ -248,17 +260,18 @@ export default function PracticeSessionWrapper(props: PracticeSessionWrapperProp
   const completeSession = async () => {
     try {
       const totalExercises = exercises().length;
-      const avgTime = totalExercises > 0 ? totalTimeSeconds() / totalExercises : 0;
+      const avgTime =
+        totalExercises > 0 ? totalTimeSeconds() / totalExercises : 0;
 
       // End session in database
       await endSession(sessionId(), totalExercises, correctCount(), avgTime);
 
       // Transition to summary state
-      setSessionState('complete');
+      setSessionState("complete");
     } catch (error) {
-      console.error('Failed to end session:', error);
+      console.error("Failed to end session:", error);
       // Show summary anyway (graceful degradation)
-      setSessionState('complete');
+      setSessionState("complete");
     }
   };
 
@@ -267,28 +280,28 @@ export default function PracticeSessionWrapper(props: PracticeSessionWrapperProp
    */
   const handlePracticeAgain = () => {
     // Reset all state and return to setup
-    setSessionId('');
+    setSessionId("");
     setExercises([]);
     setCurrentIndex(0);
     setCorrectCount(0);
     setHintsUsed(0);
     setSkippedCount(0);
     setTotalTimeSeconds(0);
-    setSessionState('setup');
+    setSessionState("setup");
   };
 
   /**
    * Handle "View Progress" action from summary
    */
   const handleViewProgress = () => {
-    window.location.href = '/dashboard';
+    window.location.href = "/dashboard";
   };
 
   /**
    * Handle "Return to Dashboard" action from summary
    */
   const handleReturnToDashboard = () => {
-    window.location.href = '/dashboard';
+    window.location.href = "/dashboard";
   };
 
   /**
@@ -297,16 +310,19 @@ export default function PracticeSessionWrapper(props: PracticeSessionWrapperProp
   const sessionStats = createMemo<SessionStats>(() => ({
     totalExercises: exercises().length,
     correctCount: correctCount(),
-    avgTimeSeconds: exercises().length > 0 ? totalTimeSeconds() / exercises().length : 0,
+    avgTimeSeconds:
+      exercises().length > 0 ? totalTimeSeconds() / exercises().length : 0,
     hintsUsed: hintsUsed(),
-    skippedCount: skippedCount()
+    skippedCount: skippedCount(),
   }));
 
   return (
-    <div class={`practice-session-wrapper max-w-4xl mx-auto px-4 py-8 ${props.class || ''}`}>
+    <div
+      class={`practice-session-wrapper max-w-4xl mx-auto px-4 py-8 ${props.class || ""}`}
+    >
       <Switch>
         {/* Setup state */}
-        <Match when={sessionState() === 'setup'}>
+        <Match when={sessionState() === "setup"}>
           <SessionSetup
             isFirstTime={props.isFirstTime}
             onStart={handleStartSession}
@@ -314,7 +330,7 @@ export default function PracticeSessionWrapper(props: PracticeSessionWrapperProp
         </Match>
 
         {/* Practicing state */}
-        <Match when={sessionState() === 'practicing' && currentExercise()}>
+        <Match when={sessionState() === "practicing" && currentExercise()}>
           <ExercisePractice
             exercises={exercises()}
             currentIndex={currentIndex()}
@@ -326,7 +342,7 @@ export default function PracticeSessionWrapper(props: PracticeSessionWrapperProp
         </Match>
 
         {/* Complete state */}
-        <Match when={sessionState() === 'complete'}>
+        <Match when={sessionState() === "complete"}>
           <SessionSummary
             stats={sessionStats()}
             onPracticeAgain={handlePracticeAgain}
@@ -336,15 +352,13 @@ export default function PracticeSessionWrapper(props: PracticeSessionWrapperProp
         </Match>
 
         {/* Error state */}
-        <Match when={sessionState() === 'error'}>
+        <Match when={sessionState() === "error"}>
           <div class="text-center py-12">
-            <div class="text-red-600 text-xl font-semibold mb-4">
-              Error
-            </div>
+            <div class="text-red-600 text-xl font-semibold mb-4">Error</div>
             <p class="text-gray-700 mb-6">{errorMessage()}</p>
             <button
               type="button"
-              onClick={() => setSessionState('setup')}
+              onClick={() => setSessionState("setup")}
               class="
                 py-3 px-6 bg-blue-600 hover:bg-blue-700
                 text-white font-semibold rounded-lg

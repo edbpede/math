@@ -10,39 +10,38 @@
  * - 9.2: Display preferences (theme, font size, dyslexia font, high contrast)
  */
 
-import { createSignal, createEffect, Show, For } from 'solid-js'
-import { useStore } from '@nanostores/solid'
-import { $t } from '@/lib/i18n'
-import { updateUser } from '@/lib/auth'
-import type {
-  UserPreferences,
-  Theme,
-  FontSize,
-} from '@/lib/types/preferences'
-import { mergeWithDefaults, validatePreferences } from '@/lib/types/preferences'
-import { $preferences, updatePreferences } from '@/lib/preferences'
+import { createSignal, Show, For } from "solid-js";
+import { useStore } from "@nanostores/solid";
+import { $t } from "@/lib/i18n";
+import { updateUser } from "@/lib/auth";
+import type { UserPreferences, Theme, FontSize } from "@/lib/types/preferences";
+import {
+  mergeWithDefaults,
+  validatePreferences,
+} from "@/lib/types/preferences";
+import { $preferences, updatePreferences } from "@/lib/preferences";
 
 export interface SettingsFormProps {
   /** Current user ID */
-  userId: string
+  userId: string;
   /** Current grade range */
-  initialGradeRange: '0-3' | '4-6' | '7-9'
+  initialGradeRange: "0-3" | "4-6" | "7-9";
   /** Current user preferences */
-  initialPreferences: UserPreferences | Record<string, unknown>
+  initialPreferences: UserPreferences | Record<string, unknown>;
   /** Optional CSS class */
-  class?: string
+  class?: string;
 }
 
 // Discriminated union for form state
 type FormState =
-  | { status: 'idle' }
-  | { status: 'saving' }
-  | { status: 'saved' }
-  | { status: 'error'; message: string }
+  | { status: "idle" }
+  | { status: "saving" }
+  | { status: "saved" }
+  | { status: "error"; message: string };
 
 // Debounce timeout handle
-let saveTimeout: ReturnType<typeof setTimeout> | null = null
-const DEBOUNCE_MS = 1000
+let saveTimeout: ReturnType<typeof setTimeout> | null = null;
+const DEBOUNCE_MS = 1000;
 
 /**
  * SettingsForm - Interactive form for user settings
@@ -65,17 +64,17 @@ const DEBOUNCE_MS = 1000
  * ```
  */
 export default function SettingsForm(props: SettingsFormProps) {
-  const t = useStore($t)
-  const preferences = useStore($preferences)
+  const t = useStore($t);
+  const preferences = useStore($preferences);
 
   // Form state
-  const [gradeRange, setGradeRange] = createSignal(props.initialGradeRange)
-  const [state, setState] = createSignal<FormState>({ status: 'idle' })
-  const [hasUnsavedChanges, setHasUnsavedChanges] = createSignal(false)
+  const [gradeRange, setGradeRange] = createSignal(props.initialGradeRange);
+  const [state, setState] = createSignal<FormState>({ status: "idle" });
+  const [hasUnsavedChanges, setHasUnsavedChanges] = createSignal(false);
 
   // Previous values for rollback on error
-  let previousGradeRange = props.initialGradeRange
-  let previousPreferences = preferences()
+  let previousGradeRange = props.initialGradeRange;
+  let previousPreferences = preferences();
 
   /**
    * Save settings to Supabase with debouncing
@@ -83,139 +82,151 @@ export default function SettingsForm(props: SettingsFormProps) {
   const saveSettings = async () => {
     // Cancel any pending save
     if (saveTimeout) {
-      clearTimeout(saveTimeout)
-      saveTimeout = null
+      clearTimeout(saveTimeout);
+      saveTimeout = null;
     }
 
-    setState({ status: 'saving' })
-    setHasUnsavedChanges(false)
+    setState({ status: "saving" });
+    setHasUnsavedChanges(false);
 
-    const newPreferences = preferences()
+    const newPreferences = preferences();
 
     // Validate preferences
     if (!validatePreferences(newPreferences)) {
       setState({
-        status: 'error',
-        message: t()('settings.messages.saveError'),
-      })
-      return
+        status: "error",
+        message: t()("settings.messages.saveError"),
+      });
+      return;
     }
 
     // Save current values for potential rollback
-    const currentGradeRange = gradeRange()
-    const currentPreferences = newPreferences
+    const currentGradeRange = gradeRange();
+    const currentPreferences = newPreferences;
 
     try {
       const result = await updateUser(props.userId, {
         gradeRange: currentGradeRange,
         preferences: newPreferences,
-      })
+      });
 
       if (!result.success) {
         // Rollback on error
-        setGradeRange(previousGradeRange)
-        updatePreferences(previousPreferences)
+        setGradeRange(previousGradeRange);
+        updatePreferences(previousPreferences);
 
         setState({
-          status: 'error',
-          message: result.error || t()('settings.messages.saveError'),
-        })
-        return
+          status: "error",
+          message: result.error || t()("settings.messages.saveError"),
+        });
+        return;
       }
 
       // Update previous values for next save
-      previousGradeRange = currentGradeRange
-      previousPreferences = currentPreferences
+      previousGradeRange = currentGradeRange;
+      previousPreferences = currentPreferences;
 
-      setState({ status: 'saved' })
+      setState({ status: "saved" });
 
       // Clear saved status after 3 seconds
       setTimeout(() => {
         setState((current) =>
-          current.status === 'saved' ? { status: 'idle' } : current
-        )
-      }, 3000)
+          current.status === "saved" ? { status: "idle" } : current,
+        );
+      }, 3000);
 
       // Note: DOM updates are handled automatically by the preferences manager
       // via the store subscription in init.ts
     } catch (error) {
-      console.error('Error saving settings:', error)
+      console.error("Error saving settings:", error);
 
       // Rollback on error
-      setGradeRange(previousGradeRange)
-      updatePreferences(previousPreferences)
+      setGradeRange(previousGradeRange);
+      updatePreferences(previousPreferences);
 
       setState({
-        status: 'error',
-        message: t()('settings.messages.saveError'),
-      })
+        status: "error",
+        message: t()("settings.messages.saveError"),
+      });
     }
-  }
+  };
 
   /**
    * Debounced save triggered by any settings change
    */
   const debouncedSave = () => {
-    setHasUnsavedChanges(true)
+    setHasUnsavedChanges(true);
 
     if (saveTimeout) {
-      clearTimeout(saveTimeout)
+      clearTimeout(saveTimeout);
     }
 
     saveTimeout = setTimeout(() => {
-      saveSettings()
-    }, DEBOUNCE_MS)
-  }
+      saveSettings();
+    }, DEBOUNCE_MS);
+  };
 
   // Note: Preferences are automatically applied to DOM by the preferences manager
   // via the subscription in init.ts, so we don't need a local applyPreferencesToDOM
 
   // Grade range options
   const gradeOptions = [
-    { value: '0-3', labelKey: 'settings.gradeLevel.options.0-3.label', descKey: 'settings.gradeLevel.options.0-3.description' },
-    { value: '4-6', labelKey: 'settings.gradeLevel.options.4-6.label', descKey: 'settings.gradeLevel.options.4-6.description' },
-    { value: '7-9', labelKey: 'settings.gradeLevel.options.7-9.label', descKey: 'settings.gradeLevel.options.7-9.description' },
-  ] as const
+    {
+      value: "0-3",
+      labelKey: "settings.gradeLevel.options.0-3.label",
+      descKey: "settings.gradeLevel.options.0-3.description",
+    },
+    {
+      value: "4-6",
+      labelKey: "settings.gradeLevel.options.4-6.label",
+      descKey: "settings.gradeLevel.options.4-6.description",
+    },
+    {
+      value: "7-9",
+      labelKey: "settings.gradeLevel.options.7-9.label",
+      descKey: "settings.gradeLevel.options.7-9.description",
+    },
+  ] as const;
 
   // Theme options
   const themeOptions = [
-    { value: 'light', labelKey: 'settings.display.theme.options.light' },
-    { value: 'dark', labelKey: 'settings.display.theme.options.dark' },
-    { value: 'system', labelKey: 'settings.display.theme.options.system' },
-  ] as const
+    { value: "light", labelKey: "settings.display.theme.options.light" },
+    { value: "dark", labelKey: "settings.display.theme.options.dark" },
+    { value: "system", labelKey: "settings.display.theme.options.system" },
+  ] as const;
 
   // Font size options
   const fontSizeOptions = [
-    { value: 'small', labelKey: 'settings.display.fontSize.options.small' },
-    { value: 'medium', labelKey: 'settings.display.fontSize.options.medium' },
-    { value: 'large', labelKey: 'settings.display.fontSize.options.large' },
-  ] as const
+    { value: "small", labelKey: "settings.display.fontSize.options.small" },
+    { value: "medium", labelKey: "settings.display.fontSize.options.medium" },
+    { value: "large", labelKey: "settings.display.fontSize.options.large" },
+  ] as const;
 
   return (
-    <div class={`settings-form ${props.class || ''}`}>
+    <div class={`settings-form ${props.class || ""}`}>
       {/* Status message */}
-      <Show when={state().status !== 'idle'}>
+      <Show when={state().status !== "idle"}>
         <div
           class={`
             mb-6 rounded-lg border p-4
             ${
-              state().status === 'saving'
-                ? 'border-blue-300 bg-blue-50 text-blue-800'
-                : state().status === 'saved'
-                  ? 'border-green-300 bg-green-50 text-green-800'
-                  : 'border-red-300 bg-red-50 text-red-800'
+              state().status === "saving"
+                ? "border-blue-300 bg-blue-50 text-blue-800"
+                : state().status === "saved"
+                  ? "border-green-300 bg-green-50 text-green-800"
+                  : "border-red-300 bg-red-50 text-red-800"
             }
           `}
           role="status"
           aria-live="polite"
         >
-          <Show when={state().status === 'saving'}>
+          <Show when={state().status === "saving"}>
             <div class="flex items-center gap-2">
               <div class="h-4 w-4 animate-spin rounded-full border-2 border-blue-800 border-t-transparent" />
-              <span>{t()('settings.display.autoSave')}</span>
+              <span>{t()("settings.display.autoSave")}</span>
             </div>
           </Show>
-          <Show when={state().status === 'saved'}>
+          <Show when={state().status === "saved"}>
             <div class="flex items-center gap-2">
               <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                 <path
@@ -224,10 +235,10 @@ export default function SettingsForm(props: SettingsFormProps) {
                   clip-rule="evenodd"
                 />
               </svg>
-              <span>{t()('settings.display.saved')}</span>
+              <span>{t()("settings.display.saved")}</span>
             </div>
           </Show>
-          <Show when={state().status === 'error'}>
+          <Show when={state().status === "error"}>
             <div class="flex items-center gap-2">
               <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                 <path
@@ -236,7 +247,9 @@ export default function SettingsForm(props: SettingsFormProps) {
                   clip-rule="evenodd"
                 />
               </svg>
-              <span>{(state() as { status: 'error'; message: string }).message}</span>
+              <span>
+                {(state() as { status: "error"; message: string }).message}
+              </span>
             </div>
           </Show>
         </div>
@@ -245,14 +258,14 @@ export default function SettingsForm(props: SettingsFormProps) {
       {/* Grade Level Section */}
       <section class="mb-8">
         <h3 class="mb-2 text-lg font-semibold text-gray-900">
-          {t()('settings.sections.gradeLevel.title')}
+          {t()("settings.sections.gradeLevel.title")}
         </h3>
         <p class="mb-4 text-sm text-gray-600">
-          {t()('settings.sections.gradeLevel.description')}
+          {t()("settings.sections.gradeLevel.description")}
         </p>
 
         <fieldset class="space-y-3">
-          <legend class="sr-only">{t()('settings.gradeLevel.label')}</legend>
+          <legend class="sr-only">{t()("settings.gradeLevel.label")}</legend>
           <For each={gradeOptions}>
             {(option) => (
               <label
@@ -261,8 +274,8 @@ export default function SettingsForm(props: SettingsFormProps) {
                   transition-all duration-200
                   ${
                     gradeRange() === option.value
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 bg-white hover:border-blue-300'
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 bg-white hover:border-blue-300"
                   }
                 `}
               >
@@ -272,8 +285,8 @@ export default function SettingsForm(props: SettingsFormProps) {
                   value={option.value}
                   checked={gradeRange() === option.value}
                   onChange={() => {
-                    setGradeRange(option.value)
-                    debouncedSave()
+                    setGradeRange(option.value);
+                    debouncedSave();
                   }}
                   class="mt-1 h-5 w-5 cursor-pointer text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 />
@@ -281,9 +294,7 @@ export default function SettingsForm(props: SettingsFormProps) {
                   <div class="font-medium text-gray-900">
                     {t()(option.labelKey)}
                   </div>
-                  <div class="text-sm text-gray-600">
-                    {t()(option.descKey)}
-                  </div>
+                  <div class="text-sm text-gray-600">{t()(option.descKey)}</div>
                 </div>
               </label>
             )}
@@ -294,20 +305,20 @@ export default function SettingsForm(props: SettingsFormProps) {
       {/* Display Preferences Section */}
       <section class="mb-8">
         <h3 class="mb-2 text-lg font-semibold text-gray-900">
-          {t()('settings.sections.display.title')}
+          {t()("settings.sections.display.title")}
         </h3>
         <p class="mb-4 text-sm text-gray-600">
-          {t()('settings.sections.display.description')}
+          {t()("settings.sections.display.description")}
         </p>
 
         <div class="space-y-6">
           {/* Theme Selection */}
           <div>
             <label class="mb-2 block text-sm font-medium text-gray-700">
-              {t()('settings.display.theme.label')}
+              {t()("settings.display.theme.label")}
             </label>
             <p class="mb-3 text-sm text-gray-600">
-              {t()('settings.display.theme.description')}
+              {t()("settings.display.theme.description")}
             </p>
             <div class="grid grid-cols-3 gap-3">
               <For each={themeOptions}>
@@ -315,8 +326,8 @@ export default function SettingsForm(props: SettingsFormProps) {
                   <button
                     type="button"
                     onClick={() => {
-                      updatePreferences({ theme: option.value })
-                      debouncedSave()
+                      updatePreferences({ theme: option.value });
+                      debouncedSave();
                     }}
                     class={`
                       rounded-lg border-2 px-4 py-3 text-sm font-medium
@@ -325,8 +336,8 @@ export default function SettingsForm(props: SettingsFormProps) {
                       touch-target
                       ${
                         preferences().theme === option.value
-                          ? 'border-blue-500 bg-blue-50 text-blue-700'
-                          : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300'
+                          ? "border-blue-500 bg-blue-50 text-blue-700"
+                          : "border-gray-200 bg-white text-gray-700 hover:border-blue-300"
                       }
                     `}
                     aria-pressed={preferences().theme === option.value}
@@ -341,10 +352,10 @@ export default function SettingsForm(props: SettingsFormProps) {
           {/* Font Size Selection */}
           <div>
             <label class="mb-2 block text-sm font-medium text-gray-700">
-              {t()('settings.display.fontSize.label')}
+              {t()("settings.display.fontSize.label")}
             </label>
             <p class="mb-3 text-sm text-gray-600">
-              {t()('settings.display.fontSize.description')}
+              {t()("settings.display.fontSize.description")}
             </p>
             <div class="grid grid-cols-3 gap-3">
               <For each={fontSizeOptions}>
@@ -352,8 +363,8 @@ export default function SettingsForm(props: SettingsFormProps) {
                   <button
                     type="button"
                     onClick={() => {
-                      updatePreferences({ fontSize: option.value })
-                      debouncedSave()
+                      updatePreferences({ fontSize: option.value });
+                      debouncedSave();
                     }}
                     class={`
                       rounded-lg border-2 px-4 py-3 text-sm font-medium
@@ -362,8 +373,8 @@ export default function SettingsForm(props: SettingsFormProps) {
                       touch-target
                       ${
                         preferences().fontSize === option.value
-                          ? 'border-blue-500 bg-blue-50 text-blue-700'
-                          : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300'
+                          ? "border-blue-500 bg-blue-50 text-blue-700"
+                          : "border-gray-200 bg-white text-gray-700 hover:border-blue-300"
                       }
                     `}
                     aria-pressed={preferences().fontSize === option.value}
@@ -382,8 +393,8 @@ export default function SettingsForm(props: SettingsFormProps) {
               id="dyslexia-font"
               checked={preferences().dyslexiaFont}
               onChange={(e) => {
-                updatePreferences({ dyslexiaFont: e.currentTarget.checked })
-                debouncedSave()
+                updatePreferences({ dyslexiaFont: e.currentTarget.checked });
+                debouncedSave();
               }}
               class="mt-1 h-5 w-5 cursor-pointer rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             />
@@ -392,10 +403,10 @@ export default function SettingsForm(props: SettingsFormProps) {
                 for="dyslexia-font"
                 class="block cursor-pointer font-medium text-gray-900"
               >
-                {t()('settings.display.dyslexiaFont.label')}
+                {t()("settings.display.dyslexiaFont.label")}
               </label>
               <p class="mt-1 text-sm text-gray-600">
-                {t()('settings.display.dyslexiaFont.description')}
+                {t()("settings.display.dyslexiaFont.description")}
               </p>
             </div>
           </div>
@@ -407,8 +418,8 @@ export default function SettingsForm(props: SettingsFormProps) {
               id="high-contrast"
               checked={preferences().highContrast}
               onChange={(e) => {
-                updatePreferences({ highContrast: e.currentTarget.checked })
-                debouncedSave()
+                updatePreferences({ highContrast: e.currentTarget.checked });
+                debouncedSave();
               }}
               class="mt-1 h-5 w-5 cursor-pointer rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             />
@@ -417,10 +428,10 @@ export default function SettingsForm(props: SettingsFormProps) {
                 for="high-contrast"
                 class="block cursor-pointer font-medium text-gray-900"
               >
-                {t()('settings.display.highContrast.label')}
+                {t()("settings.display.highContrast.label")}
               </label>
               <p class="mt-1 text-sm text-gray-600">
-                {t()('settings.display.highContrast.description')}
+                {t()("settings.display.highContrast.description")}
               </p>
             </div>
           </div>
@@ -429,15 +440,10 @@ export default function SettingsForm(props: SettingsFormProps) {
 
       {/* Unsaved changes indicator */}
       <Show when={hasUnsavedChanges()}>
-        <div
-          class="text-sm text-gray-600"
-          role="status"
-          aria-live="polite"
-        >
-          {t()('settings.display.autoSave')}
+        <div class="text-sm text-gray-600" role="status" aria-live="polite">
+          {t()("settings.display.autoSave")}
         </div>
       </Show>
     </div>
-  )
+  );
 }
-

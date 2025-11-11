@@ -1,135 +1,137 @@
 /**
  * Font Subsetting Script
- * 
+ *
  * Subsets OpenDyslexic fonts to include only needed characters
  * and generates WOFF2 format for better compression.
- * 
+ *
  * Character sets:
  * - Basic Latin (A-Z, a-z)
  * - Numbers (0-9)
  * - Danish special characters (æ, ø, å, Æ, Ø, Å)
  * - Mathematical symbols (+, -, ×, ÷, =, <, >, etc.)
  * - Common punctuation
- * 
+ *
  * Requirements: 13.4 - Subset fonts to needed characters
- * 
+ *
  * Note: This script requires external tools like pyftsubset (fonttools)
  * or a Node.js font subsetting library. For this implementation,
  * we'll document the process and provide the unicode ranges.
- * 
+ *
  * Usage:
  * 1. Install fonttools: pip install fonttools brotli
  * 2. Run subsetting commands (see below)
  * 3. Copy subsetted fonts to public/fonts/opendyslexic/
  */
 
-import { readFileSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { writeFileSync } from "node:fs";
+import { join } from "node:path";
 
-const FONTS_DIR = join(process.cwd(), 'public', 'fonts', 'opendyslexic')
+const FONTS_DIR = join(process.cwd(), "public", "fonts", "opendyslexic");
 
 /**
  * Unicode ranges for characters to include in the subset
  */
 const UNICODE_RANGES = {
   // Basic Latin (A-Z, a-z)
-  basicLatin: 'U+0041-005A,U+0061-007A',
-  
+  basicLatin: "U+0041-005A,U+0061-007A",
+
   // Numbers (0-9)
-  numbers: 'U+0030-0039',
-  
+  numbers: "U+0030-0039",
+
   // Danish special characters
-  danish: 'U+00C6,U+00D8,U+00C5,U+00E6,U+00F8,U+00E5',
-  
+  danish: "U+00C6,U+00D8,U+00C5,U+00E6,U+00F8,U+00E5",
+
   // Mathematical symbols
-  math: 'U+002B,U+002D,U+00D7,U+00F7,U+003D,U+003C,U+003E,U+00B1,U+00D7,U+00F7,U+221A,U+221E,U+2260,U+2264,U+2265',
-  
+  math: "U+002B,U+002D,U+00D7,U+00F7,U+003D,U+003C,U+003E,U+00B1,U+00D7,U+00F7,U+221A,U+221E,U+2260,U+2264,U+2265",
+
   // Common punctuation
-  punctuation: 'U+0020-002F,U+003A-0040,U+005B-0060,U+007B-007E',
-  
+  punctuation: "U+0020-002F,U+003A-0040,U+005B-0060,U+007B-007E",
+
   // Fractions
-  fractions: 'U+00BC-00BE,U+2153-215E',
-}
+  fractions: "U+00BC-00BE,U+2153-215E",
+};
 
 /**
  * Generate combined unicode range string
  */
 function getCombinedUnicodeRange(): string {
-  return Object.values(UNICODE_RANGES).join(',')
+  return Object.values(UNICODE_RANGES).join(",");
 }
 
 /**
  * Generate subsetting commands for manual execution
  */
 function generateSubsettingCommands() {
-  const unicodeRange = getCombinedUnicodeRange()
+  const unicodeRange = getCombinedUnicodeRange();
   const fonts = [
-    'OpenDyslexic-Regular.woff',
-    'OpenDyslexic-Bold.woff',
-    'OpenDyslexic-Italic.woff',
-    'OpenDyslexic-BoldItalic.woff',
-  ]
-  
-  const commands: string[] = []
-  
+    "OpenDyslexic-Regular.woff",
+    "OpenDyslexic-Bold.woff",
+    "OpenDyslexic-Italic.woff",
+    "OpenDyslexic-BoldItalic.woff",
+  ];
+
+  const commands: string[] = [];
+
   for (const font of fonts) {
-    const inputPath = join(FONTS_DIR, font)
-    const baseName = font.replace('.woff', '')
-    const outputWoff2 = join(FONTS_DIR, `${baseName}.subset.woff2`)
-    
+    const inputPath = join(FONTS_DIR, font);
+    const baseName = font.replace(".woff", "");
+    const outputWoff2 = join(FONTS_DIR, `${baseName}.subset.woff2`);
+
     // Command for pyftsubset (fonttools)
-    commands.push(`# Subset ${font}`)
-    commands.push(`pyftsubset "${inputPath}" \\`)
-    commands.push(`  --unicodes="${unicodeRange}" \\`)
-    commands.push(`  --flavor=woff2 \\`)
-    commands.push(`  --output-file="${outputWoff2}" \\`)
-    commands.push(`  --layout-features="*" \\`)
-    commands.push(`  --no-hinting`)
-    commands.push('')
+    commands.push(`# Subset ${font}`);
+    commands.push(`pyftsubset "${inputPath}" \\`);
+    commands.push(`  --unicodes="${unicodeRange}" \\`);
+    commands.push(`  --flavor=woff2 \\`);
+    commands.push(`  --output-file="${outputWoff2}" \\`);
+    commands.push(`  --layout-features="*" \\`);
+    commands.push(`  --no-hinting`);
+    commands.push("");
   }
-  
-  return commands
+
+  return commands;
 }
 
 /**
  * Main execution
  */
 function main() {
-  console.log('🔤 Font Subsetting Script\n')
-  console.log('This script generates subsetting commands for OpenDyslexic fonts.')
-  console.log('To subset fonts, you need fonttools installed:\n')
-  console.log('  pip install fonttools brotli\n')
-  console.log('Unicode ranges to include:')
-  console.log(`  ${getCombinedUnicodeRange()}\n`)
-  console.log('Commands to run:\n')
-  
-  const commands = generateSubsettingCommands()
-  console.log(commands.join('\n'))
-  
+  console.log("🔤 Font Subsetting Script\n");
+  console.log(
+    "This script generates subsetting commands for OpenDyslexic fonts.",
+  );
+  console.log("To subset fonts, you need fonttools installed:\n");
+  console.log("  pip install fonttools brotli\n");
+  console.log("Unicode ranges to include:");
+  console.log(`  ${getCombinedUnicodeRange()}\n`);
+  console.log("Commands to run:\n");
+
+  const commands = generateSubsettingCommands();
+  console.log(commands.join("\n"));
+
   // Save commands to a shell script
-  const scriptPath = join(process.cwd(), 'scripts', 'subset-fonts.sh')
+  const scriptPath = join(process.cwd(), "scripts", "subset-fonts.sh");
   const shellScript = [
-    '#!/bin/bash',
-    '# Font Subsetting Script',
-    '# Generated by subset-fonts.ts',
-    '',
-    'set -e',
-    '',
+    "#!/bin/bash",
+    "# Font Subsetting Script",
+    "# Generated by subset-fonts.ts",
+    "",
+    "set -e",
+    "",
     'echo "Subsetting OpenDyslexic fonts..."',
-    '',
+    "",
     ...commands,
-    '',
+    "",
     'echo "✅ Font subsetting complete!"',
     'echo "Subsetted fonts saved with .subset.woff2 extension"',
-  ].join('\n')
-  
-  writeFileSync(scriptPath, shellScript, 'utf-8')
-  console.log(`\n✅ Commands saved to: ${scriptPath}`)
-  console.log('   Make it executable: chmod +x scripts/subset-fonts.sh')
-  console.log('   Run it: ./scripts/subset-fonts.sh')
-  
+  ].join("\n");
+
+  writeFileSync(scriptPath, shellScript, "utf-8");
+  console.log(`\n✅ Commands saved to: ${scriptPath}`);
+  console.log("   Make it executable: chmod +x scripts/subset-fonts.sh");
+  console.log("   Run it: ./scripts/subset-fonts.sh");
+
   // Generate CSS @font-face declarations
-  generateFontFaceCSS()
+  generateFontFaceCSS();
 }
 
 /**
@@ -139,14 +141,14 @@ function generateFontFaceCSS() {
   const css = `
 /**
  * OpenDyslexic Font Faces (Subsetted)
- * 
+ *
  * Subsetted to include:
  * - Basic Latin (A-Z, a-z)
  * - Numbers (0-9)
  * - Danish characters (æ, ø, å, Æ, Ø, Å)
  * - Mathematical symbols
  * - Common punctuation
- * 
+ *
  * Format: WOFF2 for best compression (~50% smaller than WOFF)
  */
 
@@ -185,14 +187,13 @@ function generateFontFaceCSS() {
   font-style: italic;
   font-display: swap;
 }
-`
-  
-  const cssPath = join(process.cwd(), 'src', 'styles', 'fonts-optimized.css')
-  writeFileSync(cssPath, css.trim() + '\n', 'utf-8')
-  console.log(`\n✅ Optimized @font-face CSS saved to: ${cssPath}`)
-  console.log('   Import this in accessibility.css after fonts are subsetted')
+`;
+
+  const cssPath = join(process.cwd(), "src", "styles", "fonts-optimized.css");
+  writeFileSync(cssPath, css.trim() + "\n", "utf-8");
+  console.log(`\n✅ Optimized @font-face CSS saved to: ${cssPath}`);
+  console.log("   Import this in accessibility.css after fonts are subsetted");
 }
 
 // Run the script
-main()
-
+main();

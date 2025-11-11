@@ -52,7 +52,7 @@ interface NavItem {
  */
 export default function MobileNav(props: MobileNavProps) {
   const t = useStore($t);
-  const locale = useStore($locale);
+  // const locale = useStore($locale);
   const [isOpen, setIsOpen] = createSignal(false);
   let drawerRef: HTMLDivElement | undefined;
   let firstFocusableRef: HTMLButtonElement | undefined;
@@ -152,11 +152,8 @@ export default function MobileNav(props: MobileNavProps) {
   /**
    * Handle focus trap within drawer
    */
-  const handleFocusTrap = (e: KeyboardEvent) => {
+  const handleFocusTrap = (e: FocusEvent) => {
     if (!isOpen() || !drawerRef || typeof document === "undefined") return;
-
-    // Only trap focus on Tab key
-    if (e.key !== "Tab") return;
 
     const focusableElements = drawerRef.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
@@ -167,10 +164,8 @@ export default function MobileNav(props: MobileNavProps) {
       focusableElements.length - 1
     ] as HTMLElement;
 
-    if (e.shiftKey && document.activeElement === firstElement) {
-      e.preventDefault();
-      lastElement?.focus();
-    } else if (!e.shiftKey && document.activeElement === lastElement) {
+    // If focus moves outside the drawer, bring it back to the first element
+    if (!drawerRef.contains(e.target as Node)) {
       e.preventDefault();
       firstElement?.focus();
     }

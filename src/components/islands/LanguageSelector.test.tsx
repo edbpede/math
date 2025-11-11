@@ -10,28 +10,29 @@
  * - Keyboard navigation and accessibility
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@solidjs/testing-library';
-import LanguageSelector from './LanguageSelector';
-import * as i18n from '@/lib/i18n';
-import * as auth from '@/lib/auth';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@solidjs/testing-library";
+import LanguageSelector from "./LanguageSelector";
+import * as i18n from "@/lib/i18n";
+import * as auth from "@/lib/auth";
 
 // Mock the i18n module with complete mock (avoid importActual to prevent loading translation files)
-vi.mock('@/lib/i18n', () => {
-  const createTranslationFunction = () => (key: string, params?: Record<string, string>) => {
-    const translations: Record<string, string> = {
-      'common.language.selector.title': 'Language selector',
-      'common.language.selector.danish': 'Dansk',
-      'common.language.selector.english': 'English',
-      'common.language.selector.changingLanguage': 'Changing language...',
-      'common.errors.generic': 'An error occurred',
+vi.mock("@/lib/i18n", () => {
+  const createTranslationFunction =
+    () => (key: string, _params?: Record<string, string>) => {
+      const translations: Record<string, string> = {
+        "common.language.selector.title": "Language selector",
+        "common.language.selector.danish": "Dansk",
+        "common.language.selector.english": "English",
+        "common.language.selector.changingLanguage": "Changing language...",
+        "common.errors.generic": "An error occurred",
+      };
+      return translations[key] || key;
     };
-    return translations[key] || key;
-  };
 
   const tFunc = createTranslationFunction();
 
-  let currentLocale: string = 'en-US';
+  let currentLocale: string = "en-US";
 
   return {
     $t: {
@@ -43,7 +44,9 @@ vi.mock('@/lib/i18n', () => {
     },
     $locale: {
       get: () => currentLocale,
-      set: (value: string) => { currentLocale = value; },
+      set: (value: string) => {
+        currentLocale = value;
+      },
       subscribe: (fn: Function) => {
         fn(currentLocale);
         return () => {};
@@ -58,20 +61,20 @@ vi.mock('@/lib/i18n', () => {
 });
 
 // Mock useStore from Nanostores
-vi.mock('@nanostores/solid', () => ({
+vi.mock("@nanostores/solid", () => ({
   useStore: (store: any) => {
     // Check if it's the $locale store by checking if it has get/set methods
-    if (store && typeof store.get === 'function') {
+    if (store && typeof store.get === "function") {
       return () => store.get();
     }
     // For $t store, return a function that returns the translation function
-    return () => (key: string, params?: Record<string, string>) => {
+    return () => (key: string, _params?: Record<string, string>) => {
       const translations: Record<string, string> = {
-        'common.language.selector.title': 'Language selector',
-        'common.language.selector.danish': 'Dansk',
-        'common.language.selector.english': 'English',
-        'common.language.selector.changingLanguage': 'Changing language...',
-        'common.errors.generic': 'An error occurred',
+        "common.language.selector.title": "Language selector",
+        "common.language.selector.danish": "Dansk",
+        "common.language.selector.english": "English",
+        "common.language.selector.changingLanguage": "Changing language...",
+        "common.errors.generic": "An error occurred",
       };
       return translations[key] || key;
     };
@@ -79,8 +82,8 @@ vi.mock('@nanostores/solid', () => ({
 }));
 
 // Mock the auth module
-vi.mock('@/lib/auth', async () => {
-  const actual = await vi.importActual('@/lib/auth');
+vi.mock("@/lib/auth", async () => {
+  const actual = await vi.importActual("@/lib/auth");
   return {
     ...actual,
     getCurrentUser: vi.fn(),
@@ -88,8 +91,7 @@ vi.mock('@/lib/auth', async () => {
   };
 });
 
-describe('LanguageSelector', () => {
-
+describe("LanguageSelector", () => {
   beforeEach(async () => {
     // Clear mocks first
     vi.clearAllMocks();
@@ -97,12 +99,15 @@ describe('LanguageSelector', () => {
     // Reset mock implementations to default (resolves successfully)
     vi.mocked(i18n.changeLocale).mockResolvedValue();
     vi.mocked(auth.getCurrentUser).mockResolvedValue(null);
-    vi.mocked(auth.updateUser).mockResolvedValue({ success: true, data: { user: null as any } });
+    vi.mocked(auth.updateUser).mockResolvedValue({
+      success: true,
+      data: { user: null as any },
+    });
 
     // Since we're fully mocking i18n, we don't need to actually call these
     // The mocked changeLocale will update the internal currentLocale
     const mockChangeLocale = vi.mocked(i18n.changeLocale);
-    await mockChangeLocale('en-US');
+    await mockChangeLocale("en-US");
 
     // Clear the mock calls from setup so tests start with clean slate
     vi.clearAllMocks();
@@ -114,8 +119,8 @@ describe('LanguageSelector', () => {
     vi.clearAllMocks();
   });
 
-  describe('Rendering', () => {
-    it('should render both language options', async () => {
+  describe("Rendering", () => {
+    it("should render both language options", async () => {
       render(() => <LanguageSelector />);
 
       // Check for Danish and English buttons
@@ -126,51 +131,57 @@ describe('LanguageSelector', () => {
       expect(englishButton).toBeInTheDocument();
     });
 
-    it('should render in compact mode without labels', async () => {
-      const { container } = render(() => <LanguageSelector variant="compact" />);
+    it("should render in compact mode without labels", async () => {
+      const { container } = render(() => (
+        <LanguageSelector variant="compact" />
+      ));
 
       // In compact mode, labels should not be visible
-      const labels = container.querySelectorAll('span.font-medium');
+      const labels = container.querySelectorAll("span.font-medium");
       expect(labels.length).toBe(0);
     });
 
-    it('should render in full mode with labels', async () => {
+    it("should render in full mode with labels", async () => {
       render(() => <LanguageSelector variant="full" />);
 
       // In full mode, both language labels should be visible
-      const danishLabel = await screen.findByText('Dansk');
-      const englishLabel = await screen.findByText('English');
+      const danishLabel = await screen.findByText("Dansk");
+      const englishLabel = await screen.findByText("English");
 
       expect(danishLabel).toBeInTheDocument();
       expect(englishLabel).toBeInTheDocument();
     });
 
-    it('should apply horizontal layout by default', async () => {
+    it("should apply horizontal layout by default", async () => {
       const { container } = render(() => <LanguageSelector />);
 
-      const selector = container.querySelector('.language-selector');
-      expect(selector?.classList.contains('flex-row')).toBe(true);
+      const selector = container.querySelector(".language-selector");
+      expect(selector?.classList.contains("flex-row")).toBe(true);
     });
 
-    it('should apply vertical layout when specified', async () => {
-      const { container } = render(() => <LanguageSelector layout="vertical" />);
+    it("should apply vertical layout when specified", async () => {
+      const { container } = render(() => (
+        <LanguageSelector layout="vertical" />
+      ));
 
-      const selector = container.querySelector('.language-selector');
-      expect(selector?.classList.contains('flex-col')).toBe(true);
+      const selector = container.querySelector(".language-selector");
+      expect(selector?.classList.contains("flex-col")).toBe(true);
     });
 
-    it('should apply custom CSS class', async () => {
-      const { container } = render(() => <LanguageSelector class="custom-class" />);
+    it("should apply custom CSS class", async () => {
+      const { container } = render(() => (
+        <LanguageSelector class="custom-class" />
+      ));
 
-      const selector = container.querySelector('.language-selector');
-      expect(selector?.classList.contains('custom-class')).toBe(true);
+      const selector = container.querySelector(".language-selector");
+      expect(selector?.classList.contains("custom-class")).toBe(true);
     });
   });
 
-  describe('Current Language Highlighting', () => {
-    it('should highlight the current language', async () => {
+  describe("Current Language Highlighting", () => {
+    it("should highlight the current language", async () => {
       // Mock current locale as Danish
-      vi.spyOn(i18n.$locale, 'get').mockReturnValue('da-DK');
+      vi.spyOn(i18n.$locale, "get").mockReturnValue("da-DK");
 
       render(() => <LanguageSelector />);
 
@@ -178,30 +189,30 @@ describe('LanguageSelector', () => {
       const englishButton = await screen.findByLabelText(/english/i);
 
       // Danish button should have active styling (bg-blue-600)
-      expect(danishButton.classList.contains('bg-blue-600')).toBe(true);
+      expect(danishButton.classList.contains("bg-blue-600")).toBe(true);
       // English button should not have active styling
-      expect(englishButton.classList.contains('bg-white')).toBe(true);
+      expect(englishButton.classList.contains("bg-white")).toBe(true);
     });
 
-    it('should set aria-pressed correctly for active language', async () => {
-      vi.spyOn(i18n.$locale, 'get').mockReturnValue('en-US');
+    it("should set aria-pressed correctly for active language", async () => {
+      vi.spyOn(i18n.$locale, "get").mockReturnValue("en-US");
 
       render(() => <LanguageSelector />);
 
       const danishButton = await screen.findByLabelText(/dansk/i);
       const englishButton = await screen.findByLabelText(/english/i);
 
-      expect(danishButton.getAttribute('aria-pressed')).toBe('false');
-      expect(englishButton.getAttribute('aria-pressed')).toBe('true');
+      expect(danishButton.getAttribute("aria-pressed")).toBe("false");
+      expect(englishButton.getAttribute("aria-pressed")).toBe("true");
     });
   });
 
-  describe('Language Switching', () => {
-    it('should call changeLocale when clicking a different language', async () => {
+  describe("Language Switching", () => {
+    it("should call changeLocale when clicking a different language", async () => {
       const changeLocaleMock = vi.mocked(i18n.changeLocale);
       const getCurrentUserMock = vi.mocked(auth.getCurrentUser);
 
-      vi.spyOn(i18n.$locale, 'get').mockReturnValue('da-DK');
+      vi.spyOn(i18n.$locale, "get").mockReturnValue("da-DK");
       getCurrentUserMock.mockResolvedValue(null); // Not authenticated
 
       render(() => <LanguageSelector />);
@@ -210,14 +221,14 @@ describe('LanguageSelector', () => {
       fireEvent.click(englishButton);
 
       await waitFor(() => {
-        expect(changeLocaleMock).toHaveBeenCalledWith('en-US');
+        expect(changeLocaleMock).toHaveBeenCalledWith("en-US");
       });
     });
 
-    it('should not call changeLocale when clicking current language', async () => {
+    it("should not call changeLocale when clicking current language", async () => {
       const changeLocaleMock = vi.mocked(i18n.changeLocale);
 
-      vi.spyOn(i18n.$locale, 'get').mockReturnValue('da-DK');
+      vi.spyOn(i18n.$locale, "get").mockReturnValue("da-DK");
 
       render(() => <LanguageSelector />);
 
@@ -228,17 +239,17 @@ describe('LanguageSelector', () => {
       expect(changeLocaleMock).not.toHaveBeenCalled();
     });
 
-    it('should show loading state during language change', async () => {
+    it("should show loading state during language change", async () => {
       const changeLocaleMock = vi.mocked(i18n.changeLocale);
       const getCurrentUserMock = vi.mocked(auth.getCurrentUser);
 
       // Make changeLocale async and slow
       changeLocaleMock.mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
+        () => new Promise((resolve) => setTimeout(resolve, 100)),
       );
       getCurrentUserMock.mockResolvedValue(null);
 
-      vi.spyOn(i18n.$locale, 'get').mockReturnValue('da-DK');
+      vi.spyOn(i18n.$locale, "get").mockReturnValue("da-DK");
 
       render(() => <LanguageSelector />);
 
@@ -246,36 +257,43 @@ describe('LanguageSelector', () => {
       fireEvent.click(englishButton);
 
       // Should show loading indicator
-      const loadingText = await screen.findByText(/changing language|skifter sprog/i);
+      const loadingText = await screen.findByText(
+        /changing language|skifter sprog/i,
+      );
       expect(loadingText).toBeInTheDocument();
 
       // Wait for loading to complete
       await waitFor(() => {
-        expect(screen.queryByText(/changing language|skifter sprog/i)).not.toBeInTheDocument();
+        expect(
+          screen.queryByText(/changing language|skifter sprog/i),
+        ).not.toBeInTheDocument();
       });
     });
   });
 
-  describe('Supabase Persistence', () => {
-    it('should persist language preference for authenticated users', async () => {
+  describe("Supabase Persistence", () => {
+    it("should persist language preference for authenticated users", async () => {
       const changeLocaleMock = vi.mocked(i18n.changeLocale);
       const getCurrentUserMock = vi.mocked(auth.getCurrentUser);
       const updateUserMock = vi.mocked(auth.updateUser);
 
       const mockUser = {
-        id: 'test-user-id',
+        id: "test-user-id",
         createdAt: new Date(),
         lastActiveAt: new Date(),
-        gradeRange: '0-3' as const,
-        locale: 'da-DK' as const,
+        gradeRange: "0-3" as const,
+        locale: "da-DK" as const,
         preferences: {},
       };
 
       changeLocaleMock.mockResolvedValue();
       getCurrentUserMock.mockResolvedValue(mockUser);
-      updateUserMock.mockResolvedValue({ success: true, data: { user: mockUser } });
+      updateUserMock.mockResolvedValue({
+        success: true,
+        data: { user: mockUser },
+      });
 
-      vi.spyOn(i18n.$locale, 'get').mockReturnValue('da-DK');
+      vi.spyOn(i18n.$locale, "get").mockReturnValue("da-DK");
 
       render(() => <LanguageSelector />);
 
@@ -283,13 +301,13 @@ describe('LanguageSelector', () => {
       fireEvent.click(englishButton);
 
       await waitFor(() => {
-        expect(updateUserMock).toHaveBeenCalledWith('test-user-id', {
-          locale: 'en-US',
+        expect(updateUserMock).toHaveBeenCalledWith("test-user-id", {
+          locale: "en-US",
         });
       });
     });
 
-    it('should not persist for non-authenticated users', async () => {
+    it("should not persist for non-authenticated users", async () => {
       const changeLocaleMock = vi.mocked(i18n.changeLocale);
       const getCurrentUserMock = vi.mocked(auth.getCurrentUser);
       const updateUserMock = vi.mocked(auth.updateUser);
@@ -297,7 +315,7 @@ describe('LanguageSelector', () => {
       changeLocaleMock.mockResolvedValue();
       getCurrentUserMock.mockResolvedValue(null); // Not authenticated
 
-      vi.spyOn(i18n.$locale, 'get').mockReturnValue('da-DK');
+      vi.spyOn(i18n.$locale, "get").mockReturnValue("da-DK");
 
       render(() => <LanguageSelector />);
 
@@ -312,17 +330,17 @@ describe('LanguageSelector', () => {
       expect(updateUserMock).not.toHaveBeenCalled();
     });
 
-    it('should continue even if persistence fails', async () => {
+    it("should continue even if persistence fails", async () => {
       const changeLocaleMock = vi.mocked(i18n.changeLocale);
       const getCurrentUserMock = vi.mocked(auth.getCurrentUser);
       const updateUserMock = vi.mocked(auth.updateUser);
 
       const mockUser = {
-        id: 'test-user-id',
+        id: "test-user-id",
         createdAt: new Date(),
         lastActiveAt: new Date(),
-        gradeRange: '0-3' as const,
-        locale: 'da-DK' as const,
+        gradeRange: "0-3" as const,
+        locale: "da-DK" as const,
         preferences: {},
       };
 
@@ -330,11 +348,11 @@ describe('LanguageSelector', () => {
       getCurrentUserMock.mockResolvedValue(mockUser);
       updateUserMock.mockResolvedValue({
         success: false,
-        error: 'Network error',
-        code: 'UPDATE_FAILED',
+        error: "Network error",
+        code: "UPDATE_FAILED",
       });
 
-      vi.spyOn(i18n.$locale, 'get').mockReturnValue('da-DK');
+      vi.spyOn(i18n.$locale, "get").mockReturnValue("da-DK");
 
       render(() => <LanguageSelector />);
 
@@ -347,19 +365,21 @@ describe('LanguageSelector', () => {
       });
 
       // Should not show error to user - language change succeeded
-      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     });
   });
 
-  describe('Error Handling', () => {
-    it('should display error message if language change fails', async () => {
+  describe("Error Handling", () => {
+    it("should display error message if language change fails", async () => {
       const changeLocaleMock = vi.mocked(i18n.changeLocale);
       const getCurrentUserMock = vi.mocked(auth.getCurrentUser);
 
-      changeLocaleMock.mockRejectedValue(new Error('Failed to load translations'));
+      changeLocaleMock.mockRejectedValue(
+        new Error("Failed to load translations"),
+      );
       getCurrentUserMock.mockResolvedValue(null);
 
-      vi.spyOn(i18n.$locale, 'get').mockReturnValue('da-DK');
+      vi.spyOn(i18n.$locale, "get").mockReturnValue("da-DK");
 
       render(() => <LanguageSelector />);
 
@@ -367,34 +387,34 @@ describe('LanguageSelector', () => {
       fireEvent.click(englishButton);
 
       // Should show error message
-      const errorAlert = await screen.findByRole('alert');
+      const errorAlert = await screen.findByRole("alert");
       expect(errorAlert).toBeInTheDocument();
-      expect(errorAlert.textContent).toContain('Failed to change language');
+      expect(errorAlert.textContent).toContain("Failed to change language");
     });
   });
 
-  describe('Accessibility', () => {
-    it('should have proper ARIA labels', async () => {
+  describe("Accessibility", () => {
+    it("should have proper ARIA labels", async () => {
       render(() => <LanguageSelector />);
 
-      const group = screen.getByRole('group');
-      expect(group).toHaveAttribute('aria-label');
+      const group = screen.getByRole("group");
+      expect(group).toHaveAttribute("aria-label");
 
       const danishButton = await screen.findByLabelText(/dansk/i);
       const englishButton = await screen.findByLabelText(/english/i);
 
-      expect(danishButton).toHaveAttribute('aria-label');
-      expect(englishButton).toHaveAttribute('aria-label');
+      expect(danishButton).toHaveAttribute("aria-label");
+      expect(englishButton).toHaveAttribute("aria-label");
     });
 
-    it('should be keyboard navigable', async () => {
+    it("should be keyboard navigable", async () => {
       const changeLocaleMock = vi.mocked(i18n.changeLocale);
       const getCurrentUserMock = vi.mocked(auth.getCurrentUser);
 
       changeLocaleMock.mockResolvedValue();
       getCurrentUserMock.mockResolvedValue(null);
 
-      vi.spyOn(i18n.$locale, 'get').mockReturnValue('da-DK');
+      vi.spyOn(i18n.$locale, "get").mockReturnValue("da-DK");
 
       render(() => <LanguageSelector />);
 
@@ -405,28 +425,28 @@ describe('LanguageSelector', () => {
       expect(document.activeElement).toBe(englishButton);
 
       // Should trigger on Enter key
-      fireEvent.keyDown(englishButton, { key: 'Enter', code: 'Enter' });
+      fireEvent.keyDown(englishButton, { key: "Enter", code: "Enter" });
 
       // Note: fireEvent.keyDown doesn't trigger click automatically in testing-library
       // In real browsers, Enter key on a button triggers click
       fireEvent.click(englishButton);
 
       await waitFor(() => {
-        expect(changeLocaleMock).toHaveBeenCalledWith('en-US');
+        expect(changeLocaleMock).toHaveBeenCalledWith("en-US");
       });
     });
 
-    it('should disable buttons during loading', async () => {
+    it("should disable buttons during loading", async () => {
       const changeLocaleMock = vi.mocked(i18n.changeLocale);
       const getCurrentUserMock = vi.mocked(auth.getCurrentUser);
 
       // Make changeLocale async and slow
       changeLocaleMock.mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
+        () => new Promise((resolve) => setTimeout(resolve, 100)),
       );
       getCurrentUserMock.mockResolvedValue(null);
 
-      vi.spyOn(i18n.$locale, 'get').mockReturnValue('da-DK');
+      vi.spyOn(i18n.$locale, "get").mockReturnValue("da-DK");
 
       render(() => <LanguageSelector />);
 
@@ -442,36 +462,35 @@ describe('LanguageSelector', () => {
       });
     });
 
-    it('should have proper touch target sizes', async () => {
+    it("should have proper touch target sizes", async () => {
       render(() => <LanguageSelector />);
 
       const danishButton = await screen.findByLabelText(/dansk/i);
       const englishButton = await screen.findByLabelText(/english/i);
 
       // Check for min-h-44px and min-w-44px classes
-      expect(danishButton.classList.contains('min-h-44px')).toBe(true);
-      expect(danishButton.classList.contains('min-w-44px')).toBe(true);
-      expect(englishButton.classList.contains('min-h-44px')).toBe(true);
-      expect(englishButton.classList.contains('min-w-44px')).toBe(true);
+      expect(danishButton.classList.contains("min-h-44px")).toBe(true);
+      expect(danishButton.classList.contains("min-w-44px")).toBe(true);
+      expect(englishButton.classList.contains("min-h-44px")).toBe(true);
+      expect(englishButton.classList.contains("min-w-44px")).toBe(true);
     });
   });
 
-  describe('Flag Icons', () => {
-    it('should render flag SVG icons for both languages', async () => {
+  describe("Flag Icons", () => {
+    it("should render flag SVG icons for both languages", async () => {
       const { container } = render(() => <LanguageSelector />);
 
       const flags = container.querySelectorAll('svg[viewBox="0 0 37 28"]');
       expect(flags.length).toBe(2); // Danish and English flags
     });
 
-    it('should have aria-hidden on flag icons', async () => {
+    it("should have aria-hidden on flag icons", async () => {
       const { container } = render(() => <LanguageSelector />);
 
       const flags = container.querySelectorAll('svg[viewBox="0 0 37 28"]');
       flags.forEach((flag) => {
-        expect(flag.getAttribute('aria-hidden')).toBe('true');
+        expect(flag.getAttribute("aria-hidden")).toBe("true");
       });
     });
   });
 });
-

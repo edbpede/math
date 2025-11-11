@@ -103,7 +103,7 @@ export async function createUser(
 
     const { data, error } = await supabase
       .from("users")
-      .insert(insertData)
+      .insert([insertData])
       .select()
       .single<UserRow>();
 
@@ -229,10 +229,7 @@ export async function signInWithUUID(
 
     // Update last active timestamp
     const updateData: UserUpdate = { last_active_at: new Date().toISOString() };
-    await supabase
-      .from("users")
-      .update(updateData as UserUpdate)
-      .eq("id", normalizedUUID);
+    await supabase.from("users").update(updateData).eq("id", normalizedUUID);
 
     // Convert database row to User type
     const user: User = {
@@ -362,7 +359,7 @@ export async function updateUser(
 
     const { data, error } = await supabase
       .from("users")
-      .update(updateData as UserUpdate)
+      .update(updateData)
       .eq("id", userId)
       .select()
       .single<UserRow>();
