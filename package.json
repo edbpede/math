@@ -37,7 +37,7 @@
     "fake-indexeddb": "^6.2.5",
     "happy-dom": "^20.0.10",
     "jsdom": "^27.1.0",
-    "sharp": "^0.33.2",
+    "sharp": "^0.34.0",
     "unocss": "^66.5.4",
     "vite-plugin-solid": "^2.11.10",
     "vitest": "^4.0.7"
