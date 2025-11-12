@@ -39,7 +39,7 @@ vi.mock('../supabase/progress', () => ({
 // Mock sync manager
 vi.mock('../offline/sync-manager', () => ({
   syncManager: {
-    queue: vi.fn().mockResolvedValue(undefined),
+    addToQueue: vi.fn().mockResolvedValue(1),
   },
 }))
 
@@ -233,7 +233,7 @@ describe('Progress Persistence Layer', () => {
 
       // Should have queued for sync manager
       const { syncManager } = await import('../offline/sync-manager')
-      expect(syncManager.queue).toHaveBeenCalledWith(
+      expect(syncManager.addToQueue).toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'exercise-attempt',
           data: testExerciseAttempt,
@@ -411,7 +411,7 @@ describe('Progress Persistence Layer', () => {
 
       // Should have queued for sync manager
       const { syncManager } = await import('../offline/sync-manager')
-      expect(syncManager.queue).toHaveBeenCalledWith(
+      expect(syncManager.addToQueue).toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'skill-progress-batch',
           data: expect.objectContaining({
@@ -518,7 +518,9 @@ describe('Progress Persistence Layer', () => {
       const result = queueCompetencyProgressUpdate(testCompetencyProgress)
 
       expect(result.status).toBe('error')
-      expect(result.message).toContain('not initialized')
+      if (result.status === 'error') {
+        expect(result.message).toContain('not initialized')
+      }
     })
 
     it('should handle empty flush gracefully', async () => {

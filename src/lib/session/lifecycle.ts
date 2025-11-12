@@ -13,7 +13,6 @@
 
 import {
   startSession as startSessionInDB,
-  updateSession as updateSessionInDB,
   endSession as endSessionInDB,
   fetchActiveSession,
 } from '../supabase/progress'
@@ -148,16 +147,15 @@ export async function startPracticeSession(
         avgTimePerExerciseSeconds: undefined,
       }
 
-      // Queue session start for sync
-      await syncManager.queue({
-        type: 'session-start',
+      // Queue session start for sync (using progress_update type)
+      await syncManager.addToQueue({
+        type: 'progress_update',
         data: {
           userId: options.userId,
-          gradeRange: options.gradeRange,
-          competencyAreaId: options.competencyAreaId,
-          tempSessionId,
+          // Session start doesn't need progress data, just user tracking
         },
         timestamp: new Date(),
+        retries: 0,
       })
     }
 
@@ -183,22 +181,23 @@ export async function startPracticeSession(
     }
 
     const seed = Date.now()
-    const firstInstance = generateInstance(
-      firstPlannedExercise.templateId,
-      seed,
-      'da-DK' // TODO: Get from user preferences
-    )
+    try {
+      const firstInstance = await generateInstance(
+        firstPlannedExercise.templateId,
+        seed,
+        { locale: 'da-DK' } // TODO: Get from user preferences
+      )
 
-    if (firstInstance.status !== 'success') {
+      setCurrentExercise(firstInstance, 1)
+    } catch (error) {
       setSessionError('Failed to generate first exercise')
       setLifecycleState('idle')
       return {
         status: 'error',
         message: 'Failed to generate first exercise',
+        error: error instanceof Error ? error : new Error(String(error)),
       }
     }
-
-    setCurrentExercise(firstInstance.instance, 1)
 
     // Step 6: Set lifecycle to active
     setLifecycleState('active')
@@ -370,15 +369,17 @@ export async function endPracticeSession(): Promise<
       console.warn('[SessionLifecycle] Failed to update session record, queuing for offline sync:', error)
 
       // Queue session end for sync
-      await syncManager.queue({
-        type: 'session-end',
+      await syncManager.addToQueue({
+        type: 'session_end',
         data: {
           sessionId: state.session.id,
+          endedAt: new Date(),
           totalExercises: completed,
           correctCount: correct,
           avgTimePerExerciseSeconds: avgTimePerExercise,
         },
         timestamp: new Date(),
+        retries: 0,
       })
     }
 

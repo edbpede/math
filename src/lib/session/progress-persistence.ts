@@ -22,7 +22,6 @@ import {
   batchUpdateCompetencyProgress,
   batchUpdateSkillProgress,
   logExerciseAttempt,
-  type ProgressError,
 } from '../supabase/progress'
 import type {
   CompetencyProgress,
@@ -388,10 +387,11 @@ export async function queueExerciseAttempt(
     )
 
     // Queue for offline sync
-    await syncManager.queue({
-      type: 'exercise-attempt',
+    await syncManager.addToQueue({
+      type: 'exercise_complete',
       data: attempt,
       timestamp: new Date(),
+      retries: 0,
     })
 
     return {
@@ -522,13 +522,14 @@ async function performBatchWrite(): Promise<ProgressUpdateResult> {
         )
 
         // Queue for offline sync
-        await syncManager.queue({
-          type: 'competency-progress-batch',
+        await syncManager.addToQueue({
+          type: 'progress_update',
           data: {
             userId: currentUserId,
-            progressList: competencyList,
+            competencyProgress: competencyList,
           },
           timestamp: new Date(),
+          retries: 0,
         })
 
         // Clear pending updates since they're queued
@@ -551,13 +552,14 @@ async function performBatchWrite(): Promise<ProgressUpdateResult> {
         )
 
         // Queue for offline sync
-        await syncManager.queue({
-          type: 'skill-progress-batch',
+        await syncManager.addToQueue({
+          type: 'progress_update',
           data: {
             userId: currentUserId,
-            progressList: skillList,
+            skillsProgress: skillList,
           },
           timestamp: new Date(),
+          retries: 0,
         })
 
         // Clear pending updates since they're queued

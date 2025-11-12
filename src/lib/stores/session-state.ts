@@ -12,7 +12,7 @@
 
 import { atom, computed } from 'nanostores'
 import type { PracticeSession } from '../mastery/types'
-import type { CompetencyAreaId, GradeRange } from '../curriculum/types'
+import type { GradeRange } from '../curriculum/types'
 import type { ExerciseInstance } from '../exercises/types'
 import type { SessionPlan } from '../session/types'
 

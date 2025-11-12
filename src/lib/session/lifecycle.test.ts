@@ -19,7 +19,6 @@ import * as progressModule from '../supabase/progress'
 import * as composerModule from './composer'
 import * as generatorModule from '../exercises/generator'
 import type { SkillProgress } from '../mastery/types'
-import type { ExerciseTemplate } from '../exercises/types'
 
 // Mock dependencies
 vi.mock('../supabase/progress')
@@ -71,7 +70,12 @@ describe('Session Lifecycle Management', () => {
     questionText: 'What is 5 + 3?',
     correctAnswer: { value: 8, type: 'number' as const },
     distractors: ['6', '7', '9'],
-    hints: ['Start from 5', 'Add 3 more', 'Count: 5, 6, 7, 8', 'The answer is 8'],
+    hints: [
+      { level: 1 as const, text: 'Start from 5' },
+      { level: 2 as const, text: 'Add 3 more' },
+      { level: 3 as const, text: 'Count: 5, 6, 7, 8' },
+      { level: 4 as const, text: 'The answer is 8' },
+    ],
     metadata: {
       competencyAreaId: 'tal-og-algebra' as const,
       skillsAreaId: 'addition-within-100',
@@ -80,7 +84,11 @@ describe('Session Lifecycle Management', () => {
       isBinding: true,
       tags: ['addition', 'basic'],
     },
-    contextType: 'abstract' as const,
+    context: {
+      locale: 'da-DK' as const,
+      contextType: 'abstract' as const,
+    },
+    seed: 12345,
   }
 
   beforeEach(async () => {
@@ -136,10 +144,7 @@ describe('Session Lifecycle Management', () => {
       },
     })
 
-    vi.spyOn(generatorModule, 'generateInstance').mockReturnValue({
-      status: 'success',
-      instance: mockExerciseInstance,
-    })
+    vi.spyOn(generatorModule, 'generateInstance').mockResolvedValue(mockExerciseInstance)
   })
 
   afterEach(() => {
@@ -156,8 +161,10 @@ describe('Session Lifecycle Management', () => {
       })
 
       expect(result.status).toBe('success')
-      expect(result.data).toBeDefined()
-      expect(result.data?.session).toEqual(mockSession)
+      if (result.status === 'success') {
+        expect(result.data).toBeDefined()
+        expect(result.data.session).toEqual(mockSession)
+      }
 
       // Check state was updated
       const state = $sessionState.get()
@@ -183,7 +190,9 @@ describe('Session Lifecycle Management', () => {
       })
 
       expect(result.status).toBe('error')
-      expect(result.message).toContain('Not enough content')
+      if (result.status === 'error') {
+        expect(result.message).toContain('Not enough content')
+      }
 
       const state = $sessionState.get()
       expect(state.lifecycle).toBe('idle')
@@ -231,7 +240,9 @@ describe('Session Lifecycle Management', () => {
       const result = await pausePracticeSession()
 
       expect(result.status).toBe('error')
-      expect(result.message).toContain('no active session')
+      if (result.status === 'error') {
+        expect(result.message).toContain('no active session')
+      }
     })
 
     it('should persist paused state to IndexedDB', async () => {
@@ -272,7 +283,9 @@ describe('Session Lifecycle Management', () => {
       const result = await resumePracticeSession() // Try to resume again
 
       expect(result.status).toBe('error')
-      expect(result.message).toContain('not paused')
+      if (result.status === 'error') {
+        expect(result.message).toContain('not paused')
+      }
     })
 
     it('should persist resumed state to IndexedDB', async () => {
@@ -300,8 +313,10 @@ describe('Session Lifecycle Management', () => {
       const result = await endPracticeSession()
 
       expect(result.status).toBe('success')
-      expect(result.data).toBeDefined()
-      expect(result.data?.sessionId).toBe(mockSession.id)
+      if (result.status === 'success') {
+        expect(result.data).toBeDefined()
+        expect(result.data.sessionId).toBe(mockSession.id)
+      }
 
       const state = $sessionState.get()
       expect(state.lifecycle).toBe('completed')
@@ -336,7 +351,9 @@ describe('Session Lifecycle Management', () => {
       const result = await endPracticeSession()
 
       expect(result.status).toBe('error')
-      expect(result.message).toContain('no active session')
+      if (result.status === 'error') {
+        expect(result.message).toContain('no active session')
+      }
     })
   })
 
@@ -356,9 +373,11 @@ describe('Session Lifecycle Management', () => {
       const result = await recoverSession(mockUserId)
 
       expect(result.status).toBe('success')
-      expect(result.data).toBeDefined()
-      expect(result.data?.session).toBeDefined()
-      expect(result.data?.plan).toBeDefined()
+      if (result.status === 'success') {
+        expect(result.data).toBeDefined()
+        expect(result.data?.session).toBeDefined()
+        expect(result.data?.plan).toBeDefined()
+      }
 
       const state = $sessionState.get()
       expect(state.lifecycle).toBe('active')
@@ -369,7 +388,9 @@ describe('Session Lifecycle Management', () => {
       const result = await recoverSession(mockUserId)
 
       expect(result.status).toBe('success')
-      expect(result.data).toBeNull()
+      if (result.status === 'success') {
+        expect(result.data).toBeNull()
+      }
     })
 
     it('should ignore stale persisted sessions (> 24 hours)', async () => {
@@ -393,7 +414,9 @@ describe('Session Lifecycle Management', () => {
       const result = await recoverSession(mockUserId)
 
       expect(result.status).toBe('success')
-      expect(result.data).toBeNull() // Should ignore old session
+      if (result.status === 'success') {
+        expect(result.data).toBeNull() // Should ignore old session
+      }
     })
   })
 
