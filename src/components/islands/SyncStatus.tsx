@@ -94,9 +94,9 @@ export default function SyncStatus(props: SyncStatusProps) {
 
     setIsSyncing(true);
     try {
-      // TODO: Implement actual sync logic when sync manager is built
-      // For now, just simulate sync
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Import sync manager dynamically to avoid SSR issues
+      const { triggerManualSync } = await import("@/lib/stores/network-status");
+      await triggerManualSync();
       setLastSync(new Date());
     } catch (error) {
       console.error("Sync failed:", error);

@@ -56,6 +56,28 @@
     "queueAddFailed": "Kunne ikke tilføje til synkroniseringskø",
     "unknownError": "Ukendt synkroniseringsfejl",
     "tooManyRetries": "For mange fejlede forsøg. Element fjernet fra kø."
+  },
+  "realtime": {
+    "status": {
+      "disconnected": "Ikke forbundet",
+      "connecting": "Forbinder...",
+      "connected": "Forbundet",
+      "error": "Forbindelsesfejl"
+    },
+    "messages": {
+      "crossDeviceEnabled": "Synkronisering på tværs af enheder er aktiveret",
+      "progressUpdated": "Fremskridt opdateret fra en anden enhed",
+      "competencyUpdated": "Kompetenceområde opdateret",
+      "skillUpdated": "Færdighed opdateret",
+      "connectionLost": "Realtidsforbindelse mistet",
+      "connectionRestored": "Realtidsforbindelse genoprettet"
+    },
+    "ui": {
+      "enable": "Aktiver synkronisering på tværs af enheder",
+      "disable": "Deaktiver synkronisering på tværs af enheder",
+      "description": "Opdater automatisk fremskridt på alle dine enheder",
+      "activeDevices": "{count} aktive enhed{er}"
+    }
   }
 }
 

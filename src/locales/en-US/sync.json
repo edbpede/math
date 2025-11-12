@@ -56,6 +56,28 @@
     "queueAddFailed": "Could not add to sync queue",
     "unknownError": "Unknown sync error",
     "tooManyRetries": "Too many failed attempts. Item removed from queue."
+  },
+  "realtime": {
+    "status": {
+      "disconnected": "Disconnected",
+      "connecting": "Connecting...",
+      "connected": "Connected",
+      "error": "Connection error"
+    },
+    "messages": {
+      "crossDeviceEnabled": "Cross-device sync is enabled",
+      "progressUpdated": "Progress updated from another device",
+      "competencyUpdated": "Competency area updated",
+      "skillUpdated": "Skill updated",
+      "connectionLost": "Real-time connection lost",
+      "connectionRestored": "Real-time connection restored"
+    },
+    "ui": {
+      "enable": "Enable cross-device sync",
+      "disable": "Disable cross-device sync",
+      "description": "Automatically update progress across all your devices",
+      "activeDevices": "{count} active device{s}"
+    }
   }
 }
 
