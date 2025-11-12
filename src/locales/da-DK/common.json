@@ -108,6 +108,75 @@
       "error": "Installation mislykkedes. Prøv igen senere."
     }
   },
+  "onboarding": {
+    "welcome": {
+      "title": "Velkommen!",
+      "subtitle": "Lad os komme i gang med matematik øvelse",
+      "description": "Det tager kun et øjeblik at komme i gang. Ingen personlige oplysninger påkrævet."
+    },
+    "gradeSelection": {
+      "title": "Vælg dit klassetrin",
+      "subtitle": "Dette hjælper os med at give dig de rette opgaver",
+      "grades": {
+        "0-3": {
+          "label": "0-3 klasse",
+          "description": "Indskoling - grundlæggende matematik"
+        },
+        "4-6": {
+          "label": "4-6 klasse",
+          "description": "Mellemtrin - opbygning af færdigheder"
+        },
+        "7-9": {
+          "label": "7-9 klasse",
+          "description": "Udskoling - avanceret matematik"
+        }
+      }
+    },
+    "competencyIntro": {
+      "title": "Udforsk kompetenceområder",
+      "subtitle": "Vælg et område at øve i",
+      "badge": {
+        "binding": "Bindende",
+        "advisory": "Rådgivende"
+      },
+      "recommended": "Anbefalet til dit klassetrin"
+    },
+    "tutorial": {
+      "title": "Sådan fungerer det",
+      "skip": "Spring vejledning over",
+      "next": "Næste",
+      "previous": "Forrige",
+      "done": "Forstået!",
+      "steps": {
+        "1": {
+          "title": "Svar på opgaver",
+          "description": "Tast dit svar og tryk 'Indsend' for at tjekke om det er korrekt"
+        },
+        "2": {
+          "title": "Få hjælp når du har brug for det",
+          "description": "Klik på 'Tip'-knappen for at få progressive hints der guider dig"
+        },
+        "3": {
+          "title": "Følg din fremgang",
+          "description": "Se dit mestringsniveau stige når du øver mere"
+        },
+        "4": {
+          "title": "Virker offline",
+          "description": "Øv hvor som helst - dine svar gemmes og synkroniseres senere"
+        }
+      }
+    },
+    "steps": {
+      "welcome": "Velkommen",
+      "uuid": "Dit øvelsesnummer",
+      "grade": "Vælg klassetrin",
+      "competency": "Vælg område",
+      "tutorial": "Vejledning"
+    },
+    "progress": {
+      "stepOf": "Trin {{current}} af {{total}}"
+    }
+  },
   "progress": {
     "dashboard": {
       "pageTitle": "Min Fremgang",

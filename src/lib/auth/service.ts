@@ -453,6 +453,22 @@ export async function deleteUser(
 }
 
 /**
+ * Updates a user's grade range
+ *
+ * Convenience function specifically for updating grade range during onboarding.
+ *
+ * @param userId - User's UUID
+ * @param gradeRange - New grade range
+ * @returns Result indicating success or failure
+ */
+export async function updateUserGradeRange(
+    userId: string,
+    gradeRange: "0-3" | "4-6" | "7-9",
+): Promise<AuthResult<{ user: User }>> {
+    return updateUser(userId, { gradeRange });
+}
+
+/**
  * Gets the current authenticated user from the session
  *
  * This is a client-side function that calls the /api/auth/session endpoint.

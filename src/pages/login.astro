@@ -1,0 +1,112 @@
+---
+/**
+ * Login Page
+ *
+ * Entry point for returning users to sign in with their UUID.
+ *
+ * Requirements:
+ * - 1.4: UUID entry for returning users
+ * - 15.2: Returning user flow
+ *
+ * Task: 15.2
+ */
+
+import MainLayout from '@/components/layouts/MainLayout.astro'
+import UUIDLogin from '@/components/islands/UUIDLogin'
+import LanguageSelector from '@/components/islands/LanguageSelector'
+import { $t, initI18n, detectBrowserLocale } from '@/lib/i18n'
+
+// Detect browser language and initialize i18n
+const browserLocale = detectBrowserLocale()
+await initI18n(browserLocale)
+
+// Get translations
+const t = await $t.get()
+
+// Check if user is already authenticated
+const user = Astro.locals.user
+if (user) {
+  return Astro.redirect('/dashboard')
+}
+---
+
+<MainLayout
+  hideNav={true}
+  title={t('auth.login.title')}
+  description={t('auth.login.subtitle')}
+>
+  <div class="min-h-screen flex flex-col bg-gradient-to-b from-white to-gray-50">
+    <!-- Header with Language Selector -->
+    <div class="w-full bg-white border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex justify-between items-center">
+          <!-- Logo/Title -->
+          <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <svg
+              class="w-8 h-8 text-blue-600"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+            >
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+              <path d="M2 17l10 5 10-5"/>
+              <path d="M2 12l10 5 10-5"/>
+            </svg>
+            <h1 class="text-xl font-bold text-gray-900 sm:text-2xl">
+              {t('common.app.title')}
+            </h1>
+          </a>
+
+          <!-- Language Selector -->
+          <div class="flex-shrink-0">
+            <LanguageSelector variant="compact" layout="horizontal" client:idle />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col justify-center px-4 sm:px-6 lg:px-8 py-12">
+      <div class="max-w-md w-full mx-auto">
+        <!-- Login Header -->
+        <div class="text-center mb-8">
+          <h2 class="text-3xl font-bold text-gray-900 mb-2">
+            {t('auth.login.title')}
+          </h2>
+          <p class="text-lg text-gray-600">
+            {t('auth.login.subtitle')}
+          </p>
+        </div>
+
+        <!-- UUID Login Component -->
+        <div class="bg-white rounded-lg shadow-lg p-8 border border-gray-200">
+          <UUIDLogin client:load />
+        </div>
+
+        <!-- New User Link -->
+        <div class="text-center mt-6">
+          <p class="text-sm text-gray-600">
+            {t('auth.login.newUser', { link: '' }).split('{{link}}')[0]}
+            <a
+              href="/onboarding"
+              class="font-semibold text-blue-600 hover:text-blue-700 underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-1"
+            >
+              {t('auth.login.newUserLink')}
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 py-6">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <p class="text-center text-sm text-gray-600">
+          {t('common.app.tagline')}
+        </p>
+      </div>
+    </footer>
+  </div>
+</MainLayout>

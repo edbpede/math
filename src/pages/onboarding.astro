@@ -1,0 +1,48 @@
+---
+/**
+ * Onboarding Page
+ *
+ * Multi-step onboarding flow for new users:
+ * 1. Welcome screen
+ * 2. UUID generation and save
+ * 3. Grade level selection
+ * 4. Competency area introduction
+ * 5. Optional tutorial overlay
+ *
+ * Requirements:
+ * - 14.1: Clean landing page with brief explanation
+ * - 14.2: UUID generation and save flow
+ * - 14.3: Grade level selection
+ * - 14.4: Competency area introduction
+ * - 14.5: Optional tutorial overlay
+ *
+ * Task: 15.1
+ */
+
+import MainLayout from '@/components/layouts/MainLayout.astro'
+import OnboardingFlow from '@/components/islands/OnboardingFlow'
+import { $t, initI18n, detectBrowserLocale } from '@/lib/i18n'
+
+// Detect browser language and initialize i18n
+const browserLocale = detectBrowserLocale()
+await initI18n(browserLocale)
+
+// Get translations
+const t = await $t.get()
+
+// Check if user is authenticated (should redirect)
+const user = Astro.locals.user
+if (user) {
+  return Astro.redirect('/dashboard')
+}
+---
+
+<MainLayout
+  hideNav={true}
+  title={t('onboarding.welcome.title')}
+  description={t('onboarding.welcome.description')}
+>
+  <div class="min-h-screen bg-gradient-to-b from-white to-gray-50">
+    <OnboardingFlow client:load />
+  </div>
+</MainLayout>

@@ -108,6 +108,75 @@
       "error": "Installation failed. Please try again later."
     }
   },
+  "onboarding": {
+    "welcome": {
+      "title": "Welcome!",
+      "subtitle": "Let's get started with mathematics practice",
+      "description": "It only takes a moment to get started. No personal information required."
+    },
+    "gradeSelection": {
+      "title": "Choose your grade level",
+      "subtitle": "This helps us give you the right exercises",
+      "grades": {
+        "0-3": {
+          "label": "Grades 0-3",
+          "description": "Primary school - basic mathematics"
+        },
+        "4-6": {
+          "label": "Grades 4-6",
+          "description": "Middle school - building skills"
+        },
+        "7-9": {
+          "label": "Grades 7-9",
+          "description": "Secondary school - advanced mathematics"
+        }
+      }
+    },
+    "competencyIntro": {
+      "title": "Explore competency areas",
+      "subtitle": "Choose an area to practice",
+      "badge": {
+        "binding": "Binding",
+        "advisory": "Advisory"
+      },
+      "recommended": "Recommended for your grade level"
+    },
+    "tutorial": {
+      "title": "How it works",
+      "skip": "Skip tutorial",
+      "next": "Next",
+      "previous": "Previous",
+      "done": "Got it!",
+      "steps": {
+        "1": {
+          "title": "Answer questions",
+          "description": "Type your answer and press 'Submit' to check if it's correct"
+        },
+        "2": {
+          "title": "Get help when you need it",
+          "description": "Click the 'Hint' button to get progressive hints that guide you"
+        },
+        "3": {
+          "title": "Track your progress",
+          "description": "Watch your mastery level grow as you practice more"
+        },
+        "4": {
+          "title": "Works offline",
+          "description": "Practice anywhere - your answers are saved and synced later"
+        }
+      }
+    },
+    "steps": {
+      "welcome": "Welcome",
+      "uuid": "Your practice number",
+      "grade": "Choose grade",
+      "competency": "Choose area",
+      "tutorial": "Tutorial"
+    },
+    "progress": {
+      "stepOf": "Step {{current}} of {{total}}"
+    }
+  },
   "progress": {
     "dashboard": {
       "pageTitle": "My Progress",
