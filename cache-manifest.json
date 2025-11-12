@@ -1,6 +1,6 @@
 {
-  "version": "2025-11-12T19:59:20.078Z",
-  "generatedAt": "2025-11-12T19:59:20.078Z",
+  "version": "2025-11-12T21:54:26.649Z",
+  "generatedAt": "2025-11-12T21:54:26.649Z",
   "assets": [
     {
       "path": "/_astro/auth.Bs-kKy4E.js",
@@ -21,14 +21,14 @@
       "critical": true
     },
     {
-      "path": "/_astro/common.DdIz3n71.js",
-      "size": 4012,
+      "path": "/_astro/common.BNaZ5rVQ.js",
+      "size": 5433,
       "type": "application/javascript",
       "critical": true
     },
     {
-      "path": "/_astro/common.Deq5yspO.js",
-      "size": 4073,
+      "path": "/_astro/common.myOQpa2h.js",
+      "size": 5557,
       "type": "application/javascript",
       "critical": true
     },
@@ -57,8 +57,8 @@
       "critical": true
     },
     {
-      "path": "/_astro/dashboard.C_IKu-sF.css",
-      "size": 50649,
+      "path": "/_astro/dashboard.BhDVue8z.css",
+      "size": 52538,
       "type": "text/css",
       "critical": true
     },
@@ -87,14 +87,14 @@
       "critical": true
     },
     {
-      "path": "/_astro/exercises.DgCluh1K.js",
-      "size": 26638,
+      "path": "/_astro/exercises.f_a8eqX8.js",
+      "size": 3731,
       "type": "application/javascript",
       "critical": true
     },
     {
-      "path": "/_astro/exercises.f_a8eqX8.js",
-      "size": 3731,
+      "path": "/_astro/exercises.qBB0Fcdg.js",
+      "size": 26645,
       "type": "application/javascript",
       "critical": true
     },
@@ -129,55 +129,55 @@
       "critical": true
     },
     {
-      "path": "/_astro/InstallPrompt.Bzfoo2ay.js",
+      "path": "/_astro/InstallPrompt.DTImqvlZ.js",
       "size": 5673,
       "type": "application/javascript",
       "critical": true
     },
     {
-      "path": "/_astro/island-dashboard.bEGyKmZ3.js",
+      "path": "/_astro/island-dashboard.BXXnSGgj.js",
       "size": 19280,
       "type": "application/javascript",
       "critical": true
     },
     {
-      "path": "/_astro/island-practice.aaVD3onJ.js",
+      "path": "/_astro/island-practice.hdHbQYU8.js",
       "size": 39291,
       "type": "application/javascript",
       "critical": true
     },
     {
-      "path": "/_astro/island-settings.CeeMt4Rk.js",
+      "path": "/_astro/island-settings.DLBMkqS-.js",
       "size": 11465,
       "type": "application/javascript",
       "critical": true
     },
     {
-      "path": "/_astro/island-uuid-gen.BJDN-n5t.js",
+      "path": "/_astro/island-uuid-gen.BJN5fue1.js",
       "size": 10877,
       "type": "application/javascript",
       "critical": true
     },
     {
-      "path": "/_astro/island-uuid-login.BW7RSFdC.js",
+      "path": "/_astro/island-uuid-login.B1uxEbdT.js",
       "size": 8609,
       "type": "application/javascript",
       "critical": true
     },
     {
-      "path": "/_astro/LanguageSelector.Dl9hw7k8.js",
+      "path": "/_astro/LanguageSelector.liFEBYUQ.js",
       "size": 4713,
       "type": "application/javascript",
       "critical": true
     },
     {
-      "path": "/_astro/mastery.C6TVri_y.js",
+      "path": "/_astro/mastery.Dl1Tnavr.js",
       "size": 5934,
       "type": "application/javascript",
       "critical": true
     },
     {
-      "path": "/_astro/MobileNav.D0FopX6X.js",
+      "path": "/_astro/MobileNav.CosZLifB.js",
       "size": 6715,
       "type": "application/javascript",
       "critical": true
@@ -195,31 +195,43 @@
       "critical": true
     },
     {
-      "path": "/_astro/network-status.fja7vUzo.js",
-      "size": 1923,
+      "path": "/_astro/network-status.BrKK7yR3.js",
+      "size": 2228,
       "type": "application/javascript",
       "critical": true
     },
     {
-      "path": "/_astro/offline.Be4NG-P-.js",
+      "path": "/_astro/offline.Cje6W5Yz.js",
       "size": 13543,
       "type": "application/javascript",
       "critical": true
     },
     {
-      "path": "/_astro/OfflineIndicator.COxCldAn.js",
-      "size": 1224,
+      "path": "/_astro/OfflineIndicator.DVgswkFY.js",
+      "size": 1258,
       "type": "application/javascript",
       "critical": true
     },
     {
-      "path": "/_astro/PracticeSessionWrapper.BEZdJfpX.js",
+      "path": "/_astro/OnboardingFlow.BWtFqZO1.js",
+      "size": 18715,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/PracticeRecommendations.CZjmE-Qv.js",
+      "size": 6090,
+      "type": "application/javascript",
+      "critical": true
+    },
+    {
+      "path": "/_astro/PracticeSessionWrapper.BcEcj77G.js",
       "size": 13492,
       "type": "application/javascript",
       "critical": true
     },
     {
-      "path": "/_astro/ProgressDashboard.DMccl73l.js",
+      "path": "/_astro/ProgressDashboard.2tpDlRGR.js",
       "size": 358,
       "type": "application/javascript",
       "critical": true
@@ -231,7 +243,7 @@
       "critical": true
     },
     {
-      "path": "/_astro/SettingsForm.Dr3E4q-u.js",
+      "path": "/_astro/SettingsForm.B6eVqy5d.js",
       "size": 280,
       "type": "application/javascript",
       "critical": true
@@ -249,31 +261,31 @@
       "critical": true
     },
     {
-      "path": "/_astro/SyncStatus.Dh955cJS.js",
-      "size": 3694,
+      "path": "/_astro/SyncStatus.Dv-T0nUh.js",
+      "size": 4246,
       "type": "application/javascript",
       "critical": true
     },
     {
-      "path": "/_astro/SyncStatusIndicator.DzTcHC_m.js",
-      "size": 5299,
+      "path": "/_astro/SyncStatusIndicator.1hzVrf4I.js",
+      "size": 5378,
       "type": "application/javascript",
       "critical": true
     },
     {
-      "path": "/_astro/UUIDGenerator.tKpNeghd.js",
+      "path": "/_astro/UUIDGenerator.8xBqaIR8.js",
       "size": 180,
       "type": "application/javascript",
       "critical": true
     },
     {
-      "path": "/_astro/UUIDLogin.BJvE5XW0.js",
+      "path": "/_astro/UUIDLogin.Db-KquGG.js",
       "size": 320,
       "type": "application/javascript",
       "critical": true
     },
     {
-      "path": "/_astro/UUIDManagement.BLcTSIT1.js",
+      "path": "/_astro/UUIDManagement.K3fYMDxB.js",
       "size": 11508,
       "type": "application/javascript",
       "critical": true
@@ -489,9 +501,21 @@
       "critical": false
     },
     {
+      "path": "/login/index.html",
+      "size": 20296,
+      "type": "text/html",
+      "critical": false
+    },
+    {
       "path": "/manifest.json",
       "size": 2063,
       "type": "application/json",
+      "critical": false
+    },
+    {
+      "path": "/onboarding/index.html",
+      "size": 17746,
+      "type": "text/html",
       "critical": false
     },
     {
