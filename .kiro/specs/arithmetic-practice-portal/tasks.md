@@ -385,7 +385,7 @@
     - Create optional tutorial overlay (dismissible)
     - _Requirements: 14.1, 14.2, 14.3, 14.4, 14.5_
   
-  - [ ] 15.2 Add returning user flow
+  - [x] 15.2 Add returning user flow
     - Build UUID entry interface
     - Implement session restoration
     - Create personalized dashboard

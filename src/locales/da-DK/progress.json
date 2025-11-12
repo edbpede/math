@@ -1,7 +1,25 @@
 {
   "dashboard": {
     "title": "Din Fremgang",
-    "subtitle": "Følg din beherskelse på tværs af alle kompetenceområder"
+    "subtitle": "Følg din beherskelse på tværs af alle kompetenceområder",
+    "welcome": "Velkommen tilbage!",
+    "welcomeFirstTime": "Velkommen! Klar til at øve?",
+    "pageTitle": "Oversigt - Matematik Øvelses Portal",
+    "pageDescription": "Se din fremgang og fortsæt med at øve matematik"
+  },
+  "recommendations": {
+    "title": "Anbefalede Øvelser",
+    "subtitle": "Baseret på din fremgang og øvelsesplan",
+    "noDue": "Godt arbejde! Ingen øvelser forfalden lige nu.",
+    "practiceNow": "Øv Nu",
+    "overdueReviews": "Du har {{count}} forsinket gennemgang",
+    "overdueReviewsPlural": "Du har {{count}} forsinkede gennemgange",
+    "todayReviews": "{{count}} øvelse forfalden i dag",
+    "todayReviewsPlural": "{{count}} øvelser forfalden i dag",
+    "continueWith": "Fortsæt med {{competency}}",
+    "exploreNew": "Udforsk Nyt Område",
+    "reviewReady": "Klar til gennemgang",
+    "newContent": "Nyt indhold"
   },
   "sections": {
     "overview": "Oversigt",

@@ -7,15 +7,17 @@
  *
  * Requirements:
  * - 15.1: Retrieve and display complete progress data (mastery, history, preferences)
+ * - 15.2: Personalized dashboard with welcome message and recommendations
  * - 5.7: Visual mastery display with color coding
  *
- * Task: 9.3
+ * Task: 9.3, 15.2
  */
 
 import MainLayout from '@/components/layouts/MainLayout.astro'
 import ProgressDashboard from '@/components/islands/ProgressDashboard'
+import PracticeRecommendations from '@/components/islands/PracticeRecommendations'
 import { $t, initI18n } from '@/lib/i18n'
-import { fetchActiveSession } from '@/lib/supabase/progress'
+import { fetchActiveSession, fetchCompetencyProgress } from '@/lib/supabase/progress'
 
 // Check authentication - redirect if not authenticated
 const user = Astro.locals.user
@@ -38,6 +40,15 @@ try {
   console.error('Failed to fetch active session:', error)
 }
 
+// Check if user is new (no competency progress yet)
+let isNewUser = false
+try {
+  const competencies = await fetchCompetencyProgress(user.id)
+  isNewUser = competencies.length === 0
+} catch (error) {
+  console.error('Failed to check user progress:', error)
+}
+
 // Page metadata
 const title = t('progress.dashboard.pageTitle')
 const description = t('progress.dashboard.pageDescription')
@@ -49,6 +60,18 @@ const description = t('progress.dashboard.pageDescription')
   currentPath="/dashboard"
 >
   <div class="min-h-screen bg-gray-50">
+    <!-- Welcome Banner -->
+    <div class="border-b border-gray-200 bg-white shadow-sm">
+      <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <h1 class="text-3xl font-bold text-gray-900">
+          {isNewUser ? t('progress.dashboard.welcomeFirstTime') : t('progress.dashboard.welcome')}
+        </h1>
+        <p class="mt-1 text-gray-600">
+          {t('progress.dashboard.subtitle')}
+        </p>
+      </div>
+    </div>
+
     <!-- Quick Continue Section (if active session exists) -->
     {activeSession && (
       <div class="bg-blue-600 text-white shadow-md">
@@ -75,11 +98,24 @@ const description = t('progress.dashboard.pageDescription')
       </div>
     )}
 
-    <!-- Main Dashboard Content -->
-    <ProgressDashboard
-      userId={user.id}
-      gradeRange={user.gradeRange}
-      client:idle
-    />
+    <!-- Main Content -->
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <!-- Practice Recommendations -->
+      <div class="mb-8">
+        <PracticeRecommendations
+          userId={user.id}
+          gradeRange={user.gradeRange}
+          maxRecommendations={3}
+          client:idle
+        />
+      </div>
+
+      <!-- Progress Dashboard -->
+      <ProgressDashboard
+        userId={user.id}
+        gradeRange={user.gradeRange}
+        client:idle
+      />
+    </div>
   </div>
 </MainLayout>

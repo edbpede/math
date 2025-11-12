@@ -1,7 +1,25 @@
 {
   "dashboard": {
     "title": "Your Progress",
-    "subtitle": "Track your mastery across all competency areas"
+    "subtitle": "Track your mastery across all competency areas",
+    "welcome": "Welcome back!",
+    "welcomeFirstTime": "Welcome! Ready to practice?",
+    "pageTitle": "Dashboard - Math Practice Portal",
+    "pageDescription": "View your progress and continue practicing mathematics"
+  },
+  "recommendations": {
+    "title": "Recommended Practice",
+    "subtitle": "Based on your progress and review schedule",
+    "noDue": "Great work! No exercises due right now.",
+    "practiceNow": "Practice Now",
+    "overdueReviews": "You have {{count}} overdue review",
+    "overdueReviewsPlural": "You have {{count}} overdue reviews",
+    "todayReviews": "{{count}} exercise due today",
+    "todayReviewsPlural": "{{count}} exercises due today",
+    "continueWith": "Continue with {{competency}}",
+    "exploreNew": "Explore New Area",
+    "reviewReady": "Ready for review",
+    "newContent": "New content"
   },
   "sections": {
     "overview": "Overview",
