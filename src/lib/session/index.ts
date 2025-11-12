@@ -5,6 +5,7 @@
  * - Session lifecycle (start, pause, resume, end)
  * - Session state management (Nanostores)
  * - Session composition and planning
+ * - Progress persistence (debounced batch writes)
  * - Offline persistence and recovery
  */
 
@@ -63,3 +64,27 @@ export {
   type CategoryAllocation,
   DEFAULT_SESSION_CONFIG,
 } from './types'
+
+// Progress persistence
+export {
+  initializeProgressPersistence,
+  resetProgressPersistence,
+  destroyProgressPersistence,
+  queueCompetencyProgressUpdate,
+  queueSkillProgressUpdate,
+  queueExerciseAttempt,
+  flushProgressUpdates,
+  getCachedCompetencyProgress,
+  getCachedSkillProgress,
+  populateProgressCache,
+  $progressQueueState,
+  $competencyProgressCache,
+  $skillProgressCache,
+  $isSyncInProgress,
+  $hasPendingUpdates,
+  $timeUntilNextSync,
+  type ProgressPersistenceConfig,
+  type ProgressUpdateStatus,
+  type ProgressQueueState,
+  type ProgressUpdateResult,
+} from './progress-persistence'
