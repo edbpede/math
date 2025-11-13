@@ -14,8 +14,11 @@
     "syncStarted": "Synkronisering startet",
     "syncSuccess": "Synkronisering gennemført: {count} elementer",
     "syncFailed": "Synkronisering mislykkedes. Vil prøve igen automatisk.",
+    "syncFailedWithRetry": "Synkronisering mislykkedes. Prøver igen om {seconds} sekunder...",
     "queueFull": "Synkroniseringskø er fuld. Kontakt support hvis dette fortsætter.",
-    "offlineMode": "Offline-tilstand: Dine svar gemmes lokalt"
+    "offlineMode": "Offline-tilstand: Dine svar gemmes lokalt",
+    "retryingIn": "Prøver igen om {seconds}s",
+    "manualRetryAvailable": "Synkronisering mislykkedes. Tryk på synkroniseringsknappen for at prøve igen."
   },
   "ui": {
     "manualSync": "Synkroniser nu",

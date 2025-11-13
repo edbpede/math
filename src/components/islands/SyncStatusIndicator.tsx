@@ -181,10 +181,34 @@ export default function SyncStatusIndicator() {
             {t()("sync.ui.lastSync", { time: timeSinceSync() })}
           </div>
 
-          {/* Error message */}
+          {/* Error message with retry info */}
           <Show when={syncStatus().error || error()}>
-            <div class="mb-3 p-2 bg-red-50 dark:bg-red-900/20 rounded text-sm text-red-800 dark:text-red-200">
-              {syncStatus().error || error()}
+            <div class="mb-3 p-3 bg-red-50 dark:bg-red-900/20 rounded border border-red-200 dark:border-red-800">
+              <div class="flex items-start gap-2">
+                <svg
+                  class="flex-shrink-0 w-5 h-5 text-red-600 dark:text-red-400 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <div class="flex-1">
+                  <p class="text-sm font-medium text-red-800 dark:text-red-200">
+                    {syncStatus().error || error()}
+                  </p>
+                  <Show when={networkStatus().online && syncStatus().queueCount > 0}>
+                    <p class="text-xs text-red-700 dark:text-red-300 mt-1">
+                      {t()("sync.messages.manualRetryAvailable")}
+                    </p>
+                  </Show>
+                </div>
+              </div>
             </div>
           </Show>
 
@@ -198,11 +222,24 @@ export default function SyncStatusIndicator() {
                 syncing() ||
                 syncStatus().queueCount === 0
               }
-              class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded transition-colors"
+              class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              aria-label={t()("sync.ui.manualSync")}
             >
               <Show
                 when={syncStatus().syncing || syncing()}
-                fallback={t()("sync.ui.manualSync")}
+                fallback={
+                  <span class="flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
+                    </svg>
+                    {t()("sync.ui.manualSync")}
+                  </span>
+                }
               >
                 <span class="flex items-center justify-center gap-2">
                   <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24">
@@ -227,10 +264,34 @@ export default function SyncStatusIndicator() {
             </button>
           </Show>
 
-          {/* Offline message */}
+          {/* Offline message with queue info */}
           <Show when={!networkStatus().online}>
-            <div class="text-sm text-center text-gray-500 dark:text-gray-400 py-2">
-              {t()("sync.messages.offlineMode")}
+            <div class="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-800">
+              <div class="flex items-start gap-2">
+                <svg
+                  class="flex-shrink-0 w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <div class="flex-1">
+                  <p class="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                    {t()("sync.messages.offlineMode")}
+                  </p>
+                  <Show when={syncStatus().queueCount > 0}>
+                    <p class="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
+                      {t()("sync.ui.queueCount", { count: syncStatus().queueCount })}
+                    </p>
+                  </Show>
+                </div>
+              </div>
             </div>
           </Show>
         </div>

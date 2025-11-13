@@ -6,6 +6,7 @@
  *
  * Requirements:
  * - 6.3: Display clear offline status indication
+ * - 6.4: Automatic background sync when connection restored
  * - 15.4: Display last sync timestamp and online/offline status
  */
 
@@ -13,6 +14,7 @@ import { atom, computed } from 'nanostores'
 import { syncManager } from '../offline/sync-manager'
 import type { SyncEvent } from '../offline/sync-manager'
 import { offlineStorage } from '../offline/storage'
+import { $t } from '../i18n'
 
 /**
  * Network status store
@@ -164,12 +166,29 @@ async function updateSyncStatus(): Promise<void> {
  * Handle sync manager events
  */
 function handleSyncEvent(event: SyncEvent): void {
-  console.log('[NetworkStatus] Sync event:', event.type)
+  console.log('[NetworkStatus] Sync event:', event.type, event)
 
   switch (event.type) {
     case 'network-change':
       updateNetworkStatus()
       updateSyncStatus()
+
+      // Show toast notification for network changes
+      if (typeof window !== 'undefined') {
+        const online = syncManager.getOnlineStatus()
+        const t = $t.get()
+
+        // Dynamically import toast to avoid SSR issues
+        import('../../components/islands/ToastNotification').then(({ toast }) => {
+          if (online) {
+            toast.info(t('sync.messages.connectionRestored'), 3000)
+          } else {
+            toast.warning(t('sync.messages.connectionLost'), 5000)
+          }
+        }).catch(err => {
+          console.warn('[NetworkStatus] Could not show toast:', err)
+        })
+      }
       break
 
     case 'sync-start':
@@ -190,6 +209,19 @@ function handleSyncEvent(event: SyncEvent): void {
       })
       // Persist last sync time to IndexedDB
       persistLastSyncTime(event.timestamp)
+
+      // Show success toast for manual syncs or large batches
+      if (typeof window !== 'undefined' && event.itemsSynced && event.itemsSynced > 0) {
+        const t = $t.get()
+        import('../../components/islands/ToastNotification').then(({ toast }) => {
+          toast.success(
+            t('sync.messages.syncSuccess', { count: event.itemsSynced?.toString() ?? '0' }),
+            3000
+          )
+        }).catch(err => {
+          console.warn('[NetworkStatus] Could not show toast:', err)
+        })
+      }
       break
 
     case 'sync-error':
@@ -198,6 +230,35 @@ function handleSyncEvent(event: SyncEvent): void {
         syncing: false,
         error: event.error ?? 'Unknown error',
       })
+
+      // Show error toast with retry information
+      if (typeof window !== 'undefined') {
+        const t = $t.get()
+        import('../../components/islands/ToastNotification').then(({ toast }) => {
+          toast.error(
+            event.error ?? t('sync.errors.syncFailed'),
+            7000 // Longer duration for errors
+          )
+        }).catch(err => {
+          console.warn('[NetworkStatus] Could not show toast:', err)
+        })
+      }
+      break
+
+    case 'item-retry':
+      // Show retry notification for failed items
+      if (typeof window !== 'undefined' && event.retryAttempt) {
+        const t = $t.get()
+        import('../../components/islands/ToastNotification').then(({ toast }) => {
+          const delaySeconds = Math.round((event.nextRetryDelayMs ?? 0) / 1000)
+          toast.warning(
+            t('sync.messages.syncFailedWithRetry', { seconds: delaySeconds.toString() }),
+            5000
+          )
+        }).catch(err => {
+          console.warn('[NetworkStatus] Could not show toast:', err)
+        })
+      }
       break
 
     case 'sync-complete':

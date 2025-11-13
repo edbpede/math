@@ -14,8 +14,11 @@
     "syncStarted": "Sync started",
     "syncSuccess": "Sync completed: {count} items",
     "syncFailed": "Sync failed. Will retry automatically.",
+    "syncFailedWithRetry": "Sync failed. Retrying in {seconds} seconds...",
     "queueFull": "Sync queue is full. Contact support if this persists.",
-    "offlineMode": "Offline mode: Your answers are saved locally"
+    "offlineMode": "Offline mode: Your answers are saved locally",
+    "retryingIn": "Retrying in {seconds}s",
+    "manualRetryAvailable": "Sync failed. Tap the sync button to retry manually."
   },
   "ui": {
     "manualSync": "Sync now",

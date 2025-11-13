@@ -24,7 +24,7 @@ import { syncQueueItem } from './sync-operations'
 /**
  * Sync event types for status updates
  */
-export type SyncEventType = 'sync-start' | 'sync-success' | 'sync-error' | 'sync-complete' | 'network-change'
+export type SyncEventType = 'sync-start' | 'sync-success' | 'sync-error' | 'sync-complete' | 'network-change' | 'item-retry'
 
 /**
  * Sync event data
@@ -35,6 +35,9 @@ export interface SyncEvent {
   queueCount?: number
   error?: string
   itemsSynced?: number
+  itemId?: number
+  retryAttempt?: number
+  nextRetryDelayMs?: number
 }
 
 /**
@@ -54,6 +57,10 @@ export interface SyncManagerConfig {
   syncDebounceMs: number
   /** Initial retry delay in milliseconds (default: 1000) */
   initialRetryDelayMs: number
+  /** Maximum retry delay in milliseconds (default: 30000 = 30s) */
+  maxRetryDelayMs: number
+  /** Backoff multiplier for exponential backoff (default: 2) */
+  backoffMultiplier: number
   /** Enable automatic sync on connection restore (default: true) */
   autoSync: boolean
 }
@@ -66,6 +73,8 @@ const DEFAULT_CONFIG: SyncManagerConfig = {
   maxRetries: 3,
   syncDebounceMs: 2000,
   initialRetryDelayMs: 1000,
+  maxRetryDelayMs: 30000, // 30 seconds max
+  backoffMultiplier: 2,
   autoSync: true,
 }
 
@@ -357,9 +366,22 @@ export class SyncManager {
           // Increment retry count
           await offlineStorage.incrementSyncRetries(item.id!)
 
-          // Exponential backoff delay before next retry
-          const delay = this.config.initialRetryDelayMs * Math.pow(2, item.retries)
-          console.log(`[SyncManager] Will retry item ${item.id} after ${delay}ms`)
+          // Calculate exponential backoff delay with max cap
+          const delay = Math.min(
+            this.config.initialRetryDelayMs * Math.pow(this.config.backoffMultiplier, item.retries),
+            this.config.maxRetryDelayMs
+          )
+          console.log(`[SyncManager] Will retry item ${item.id} after ${delay}ms (attempt ${item.retries + 1}/${this.config.maxRetries})`)
+
+          // Emit retry event for UI feedback
+          this.emitEvent({
+            type: 'item-retry',
+            timestamp: new Date(),
+            itemId: item.id!,
+            retryAttempt: item.retries + 1,
+            nextRetryDelayMs: delay,
+            error: lastError,
+          })
         }
       }
     } catch (error) {

@@ -13,7 +13,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@solidjs/testing-library";
 import "@testing-library/jest-dom";
 import ErrorRecovery, { type RecoveryAction } from "./ErrorRecovery";
-import { atom } from "nanostores";
 
 // Mock i18n with proper nanostore
 vi.mock("@/lib/i18n", () => {
