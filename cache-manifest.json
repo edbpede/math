@@ -1,6 +1,6 @@
 {
-  "version": "2025-11-12T21:54:26.649Z",
-  "generatedAt": "2025-11-12T21:54:26.649Z",
+  "version": "2025-11-13T10:55:55.465Z",
+  "generatedAt": "2025-11-13T10:55:55.465Z",
   "assets": [
     {
       "path": "/_astro/auth.Bs-kKy4E.js",
@@ -57,14 +57,14 @@
       "critical": true
     },
     {
-      "path": "/_astro/dashboard.BhDVue8z.css",
-      "size": 52538,
+      "path": "/_astro/dashboard.Br72Hzzn.css",
+      "size": 95757,
       "type": "text/css",
       "critical": true
     },
     {
-      "path": "/_astro/dashboard.CTHo95h8.css",
-      "size": 8180,
+      "path": "/_astro/dashboard.BWYbGfAn.css",
+      "size": 14117,
       "type": "text/css",
       "critical": true
     },
@@ -322,7 +322,7 @@
     },
     {
       "path": "/cache-manifest.json",
-      "size": 9313,
+      "size": 12714,
       "type": "application/json",
       "critical": false
     },
