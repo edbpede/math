@@ -18,9 +18,13 @@ export default defineConfig({
 
   vite: {
     build: {
+      // Enable source maps for production debugging (Requirement 18.1)
+      // Source maps are separate files, only loaded when DevTools is open
+      sourcemap: true,
+
       rollupOptions: {
         output: {
-          // Configure manual chunks for better code splitting
+          // Configure manual chunks for better code splitting (Requirement 13.3)
           manualChunks(id) {
             // Vendor chunks: separate large dependencies
             if (id.includes("node_modules")) {
@@ -64,7 +68,7 @@ export default defineConfig({
               return "offline";
             }
 
-            // Large island components
+            // Large island components (lazy loaded)
             if (id.includes("ExercisePractice.tsx")) {
               return "island-practice";
             }
@@ -90,9 +94,11 @@ export default defineConfig({
           },
         },
       },
+
       // Set chunk size warning limit (500kb)
       chunkSizeWarningLimit: 500,
-      // Enable minification and compression
+
+      // Enable minification and compression (Requirement 13.5)
       minify: "terser",
       terserOptions: {
         compress: {
@@ -105,12 +111,15 @@ export default defineConfig({
           comments: false, // Remove comments
         },
       },
-      // Enable CSS minification
+
+      // Enable CSS minification (Requirement 13.5)
       cssMinify: true,
-      // Report compressed size
+
+      // Report compressed size for monitoring
       reportCompressedSize: true,
-      // Chunk size threshold
-      assetsInlineLimit: 4096, // Inline assets smaller than 4KB
+
+      // Inline assets smaller than 4KB (Requirement 13.4)
+      assetsInlineLimit: 4096,
     },
   },
 });
