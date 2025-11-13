@@ -3,23 +3,60 @@
     "offline": "Cannot connect. Your answers are saved locally and will sync later.",
     "timeout": "Request took too long. Please check your internet connection.",
     "serverError": "There's a problem with the server. Try again in a bit.",
-    "connectionLost": "Connection lost. Working offline..."
+    "connectionLost": "Connection lost. Working offline...",
+    "retryFailed": "Could not restore connection. Try again later."
   },
   "auth": {
     "invalidUuid": "This practice number does not exist. Please check if you entered it correctly.",
     "sessionExpired": "Your session has expired. Please log in again.",
-    "unauthorized": "You do not have permission to access this resource."
+    "unauthorized": "You do not have permission to access this resource.",
+    "generationFailed": "Could not create practice number. Try again.",
+    "loginFailed": "Login failed. Check your practice number and try again."
   },
   "exercise": {
     "generationFailed": "Could not create exercise. Trying another...",
     "templateNotFound": "Exercise template was not found.",
-    "validationError": "An error occurred while validating your answer."
+    "validationError": "An error occurred while validating your answer.",
+    "loadFailed": "Could not load exercise. Try reloading the page.",
+    "submitFailed": "Could not submit answer. Your answer is saved locally."
   },
   "data": {
     "loadFailed": "Could not load data. Try reloading the page.",
     "saveFailed": "Could not save changes. Your data is saved locally.",
     "syncFailed": "Synchronization failed. Will try again automatically.",
     "corruptedData": "Data appears to be corrupted. Reloading from server..."
+  },
+  "settings": {
+    "saveFailed": "Could not save settings. Try again.",
+    "loadFailed": "Could not load settings.",
+    "managementFailed": "Could not manage practice number."
+  },
+  "onboarding": {
+    "failed": "Could not complete onboarding. Try again.",
+    "gradeSelectionRequired": "Please select a grade level to continue."
+  },
+  "session": {
+    "setupFailed": "Could not create practice session. Try again.",
+    "summaryFailed": "Could not display session summary.",
+    "loadFailed": "Could not load session."
+  },
+  "validation": {
+    "required": "This field is required.",
+    "invalidFormat": "Invalid format. Please check your input.",
+    "tooShort": "Input is too short.",
+    "tooLong": "Input is too long.",
+    "invalidCharacters": "Invalid characters found.",
+    "numberRequired": "Please enter a number.",
+    "positiveNumberRequired": "Please enter a positive number."
+  },
+  "recovery": {
+    "reload": "Reload page",
+    "retry": "Try again",
+    "goBack": "Go back",
+    "goHome": "Go to home",
+    "contactSupport": "Contact support",
+    "clearCache": "Clear cache",
+    "syncNow": "Sync now"
   },
   "general": {
     "unexpected": "Something went wrong. Please try again.",

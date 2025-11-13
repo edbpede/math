@@ -3,23 +3,60 @@
     "offline": "Kan ikke oprette forbindelse. Dine svar gemmes lokalt og synkroniseres senere.",
     "timeout": "Anmodningen tog for lang tid. Tjek venligst din internetforbindelse.",
     "serverError": "Der er et problem med serveren. Prøv igen om lidt.",
-    "connectionLost": "Forbindelse mistet. Arbejder offline..."
+    "connectionLost": "Forbindelse mistet. Arbejder offline...",
+    "retryFailed": "Kunne ikke genoprette forbindelsen. Prøv igen senere."
   },
   "auth": {
     "invalidUuid": "Dette øvelsesnummer findes ikke. Tjek venligst om du har indtastet det korrekt.",
     "sessionExpired": "Din session er udløbet. Log venligst ind igen.",
-    "unauthorized": "Du har ikke tilladelse til at få adgang til denne ressource."
+    "unauthorized": "Du har ikke tilladelse til at få adgang til denne ressource.",
+    "generationFailed": "Kunne ikke oprette øvelsesnummer. Prøv igen.",
+    "loginFailed": "Login mislykkedes. Tjek dit øvelsesnummer og prøv igen."
   },
   "exercise": {
     "generationFailed": "Kunne ikke oprette opgave. Prøver en anden...",
     "templateNotFound": "Opgaveskabelon blev ikke fundet.",
-    "validationError": "Der opstod en fejl ved validering af dit svar."
+    "validationError": "Der opstod en fejl ved validering af dit svar.",
+    "loadFailed": "Kunne ikke indlæse opgave. Prøv at genindlæse siden.",
+    "submitFailed": "Kunne ikke indsende svar. Dit svar er gemt lokalt."
   },
   "data": {
     "loadFailed": "Kunne ikke indlæse data. Prøv at genindlæse siden.",
     "saveFailed": "Kunne ikke gemme ændringer. Dine data er gemt lokalt.",
     "syncFailed": "Synkronisering mislykkedes. Vil prøve igen automatisk.",
     "corruptedData": "Data ser ud til at være beskadiget. Genindlæser fra serveren..."
+  },
+  "settings": {
+    "saveFailed": "Kunne ikke gemme indstillinger. Prøv igen.",
+    "loadFailed": "Kunne ikke indlæse indstillinger.",
+    "managementFailed": "Kunne ikke administrere øvelsesnummer."
+  },
+  "onboarding": {
+    "failed": "Kunne ikke fuldføre onboarding. Prøv igen.",
+    "gradeSelectionRequired": "Vælg venligst et klassetrin for at fortsætte."
+  },
+  "session": {
+    "setupFailed": "Kunne ikke oprette øvelsessession. Prøv igen.",
+    "summaryFailed": "Kunne ikke vise sessionsoversigt.",
+    "loadFailed": "Kunne ikke indlæse session."
+  },
+  "validation": {
+    "required": "Dette felt er påkrævet.",
+    "invalidFormat": "Ugyldigt format. Tjek venligst din indtastning.",
+    "tooShort": "Indtastningen er for kort.",
+    "tooLong": "Indtastningen er for lang.",
+    "invalidCharacters": "Ugyldige tegn fundet.",
+    "numberRequired": "Indtast venligst et tal.",
+    "positiveNumberRequired": "Indtast venligst et positivt tal."
+  },
+  "recovery": {
+    "reload": "Genindlæs siden",
+    "retry": "Prøv igen",
+    "goBack": "Gå tilbage",
+    "goHome": "Gå til forsiden",
+    "contactSupport": "Kontakt support",
+    "clearCache": "Ryd cache",
+    "syncNow": "Synkroniser nu"
   },
   "general": {
     "unexpected": "Noget gik galt. Prøv venligst igen.",
