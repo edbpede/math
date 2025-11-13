@@ -3,12 +3,15 @@
  *
  * Main stylesheet that imports all global CSS including accessibility features.
  * This file is imported in MainLayout.astro to apply styles across the entire application.
- * 
+ *
  * Note: Critical CSS is now inlined in MainLayout.astro for faster initial rendering.
  * Non-critical animations and print styles are in deferred.css.
  */
 
 /* Import accessibility styles (fonts, themes, high contrast, focus indicators) */
 @import './accessibility.css';
+
+/* Import component styles (animations, custom form elements, complex selectors) */
+@import './components.css';
 
 /* Additional global styles can be added here */

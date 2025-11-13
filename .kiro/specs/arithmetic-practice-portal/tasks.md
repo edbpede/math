@@ -160,7 +160,7 @@
     - Build template selection with SRS priority weighting
     - _Requirements: 5.6_
 
-- [ ] 8. Create core UI components with SolidJS
+- [x] 8. Create core UI components with SolidJS
   - [x] 8.1 Build UUID generation and display component
     - Create UUIDGenerator island component
     - Implement copy to clipboard functionality
@@ -376,7 +376,7 @@
     - Create manual sync trigger
     - _Requirements: 15.2, 15.5_
 
-- [ ] 15. Implement first-time user experience
+- [x] 15. Implement first-time user experience
   - [x] 15.1 Build onboarding flow
     - Create welcome screen with brief explanation
     - Implement UUID generation and save flow
@@ -393,14 +393,14 @@
     - _Requirements: 1.4, 15.1_
 
 - [ ] 16. Add UnoCSS styling system
-  - [ ] 16.1 Configure UnoCSS with presets
+  - [x] 16.1 Configure UnoCSS with presets
     - Set up UnoCSS configuration file
     - Add utility presets (typography, colors, spacing)
     - Configure custom theme colors
     - Add responsive breakpoints
     - _Requirements: 9.1, 9.2_
   
-  - [ ] 16.2 Create component styles
+  - [x] 16.2 Create component styles
     - Build button styles with variants
     - Create card component styles
     - Add form input styles
