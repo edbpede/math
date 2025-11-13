@@ -19,6 +19,7 @@ import { createSignal, Show, onMount } from "solid-js";
 import { useStore } from "@nanostores/solid";
 import { $t } from "@/lib/i18n";
 import { validateUUID } from "@/lib/auth/uuid";
+import { ErrorBoundaryWrapper } from "./ErrorBoundary";
 
 // LocalStorage key for remembered UUIDs
 const REMEMBER_UUID_KEY = "math-remember-uuid";
@@ -69,7 +70,7 @@ export interface UUIDLoginProps {
 }
 
 /**
- * UUIDLogin - Login form with UUID input, formatting, and validation
+ * UUIDLogin Component (Internal)
  *
  * Provides a secure login form for returning users with:
  * - Real-time UUID formatting as user types
@@ -79,15 +80,10 @@ export interface UUIDLoginProps {
  * - Comprehensive error messaging
  * - Full keyboard navigation and screen reader support
  *
- * @example
- * ```tsx
- * <UUIDLogin
- *   redirectTo="/dashboard"
- *   class="max-w-md mx-auto"
- * />
- * ```
+ * Note: This is the internal component. Use the default export which
+ * includes error boundary protection.
  */
-export default function UUIDLogin(props: UUIDLoginProps) {
+const UUIDLoginComponent = (props: UUIDLoginProps) => {
   const t = useStore($t);
   const [state, setState] = createSignal<LoginState>({ status: "idle" });
   const [uuidInput, setUuidInput] = createSignal("");
@@ -605,5 +601,29 @@ export default function UUIDLogin(props: UUIDLoginProps) {
         </div>
       </div>
     </div>
+  );
+};
+
+/**
+ * UUIDLogin wrapped with ErrorBoundary
+ *
+ * Default export includes error boundary for robust error handling.
+ *
+ * @example
+ * ```tsx
+ * <UUIDLogin
+ *   redirectTo="/dashboard"
+ *   class="max-w-md mx-auto"
+ * />
+ * ```
+ */
+export default function UUIDLogin(props: UUIDLoginProps) {
+  return (
+    <ErrorBoundaryWrapper
+      componentName="UUIDLogin"
+      errorMessageKey="errors.auth.loginFailed"
+    >
+      <UUIDLoginComponent {...props} />
+    </ErrorBoundaryWrapper>
   );
 }

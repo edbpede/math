@@ -18,6 +18,7 @@ import { formatUUID } from "@/lib/auth/uuid";
 import { deleteUser } from "@/lib/auth";
 import { createFocusTrap } from "@/lib/accessibility";
 import QRCode from "qrcode";
+import { ErrorBoundaryWrapper } from "./ErrorBoundary";
 
 export interface UUIDManagementProps {
   /** User's UUID */
@@ -34,7 +35,7 @@ type ComponentState =
   | { status: "error"; message: string };
 
 /**
- * UUIDManagement - Display and manage user UUID and account
+ * UUIDManagement Component (Internal)
  *
  * Features:
  * - Masked UUID display with show/hide toggle
@@ -44,12 +45,10 @@ type ComponentState =
  * - Account deletion with confirmation modal
  * - Full keyboard navigation and ARIA support
  *
- * @example
- * ```tsx
- * <UUIDManagement uuid={user.id} />
- * ```
+ * Note: This is the internal component. Use the default export which
+ * includes error boundary protection.
  */
-export default function UUIDManagement(props: UUIDManagementProps) {
+const UUIDManagementComponent = (props: UUIDManagementProps) => {
   const t = useStore($t);
 
   const [state, setState] = createSignal<ComponentState>({ status: "idle" });
@@ -480,5 +479,26 @@ export default function UUIDManagement(props: UUIDManagementProps) {
         </div>
       </Show>
     </div>
+  );
+};
+
+/**
+ * UUIDManagement wrapped with ErrorBoundary
+ *
+ * Default export includes error boundary for robust error handling.
+ *
+ * @example
+ * ```tsx
+ * <UUIDManagement uuid={user.id} />
+ * ```
+ */
+export default function UUIDManagement(props: UUIDManagementProps) {
+  return (
+    <ErrorBoundaryWrapper
+      componentName="UUIDManagement"
+      errorMessageKey="errors.settings.managementFailed"
+    >
+      <UUIDManagementComponent {...props} />
+    </ErrorBoundaryWrapper>
   );
 }

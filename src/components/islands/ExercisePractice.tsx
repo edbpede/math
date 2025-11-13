@@ -22,6 +22,7 @@ import { $t } from "@/lib/i18n";
 import { createKeyboardShortcuts, announce } from "@/lib/accessibility";
 import type { ExerciseInstance } from "@/lib/exercises/types";
 import { batchUpdates } from "@/lib/utils/reactivity";
+import { ErrorBoundaryWrapper } from "./ErrorBoundary";
 import HintSystem from "./HintSystem";
 import FeedbackDisplay from "./FeedbackDisplay";
 import MathExpression from "./MathExpression";
@@ -92,7 +93,7 @@ type ValidationState =
  * />
  * ```
  */
-export default function ExercisePractice(props: ExercisePracticeProps) {
+function ExercisePracticeComponent(props: ExercisePracticeProps) {
   const t = useStore($t);
 
   // State management
@@ -630,5 +631,21 @@ export default function ExercisePractice(props: ExercisePracticeProps) {
         )}
       </Show>
     </div>
+  );
+}
+
+/**
+ * ExercisePractice wrapped with ErrorBoundary
+ *
+ * Default export includes error boundary for robust error handling.
+ */
+export default function ExercisePractice(props: ExercisePracticeProps) {
+  return (
+    <ErrorBoundaryWrapper
+      componentName="ExercisePractice"
+      errorMessageKey="errors.exercise.generationFailed"
+    >
+      <ExercisePracticeComponent {...props} />
+    </ErrorBoundaryWrapper>
   );
 }

@@ -15,6 +15,7 @@ import { createSignal, Show } from 'solid-js';
 import { useStore } from '@nanostores/solid';
 import { $t } from '@/lib/i18n';
 import type { Difficulty } from '@/lib/curriculum/types';
+import { ErrorBoundaryWrapper } from './ErrorBoundary';
 
 /**
  * Session configuration data
@@ -39,20 +40,15 @@ export interface SessionSetupProps {
 }
 
 /**
- * SessionSetup - Pre-session configuration interface
+ * SessionSetup Component (Internal)
  *
  * Provides UI for selecting difficulty level and exercise count.
  * Implements Requirement 14.5 by defaulting to difficulty A for first-time users.
  *
- * @example
- * ```tsx
- * <SessionSetup
- *   isFirstTime={true}
- *   onStart={(config) => handleStart(config)}
- * />
- * ```
+ * Note: This is the internal component. Use the default export which
+ * includes error boundary protection.
  */
-export default function SessionSetup(props: SessionSetupProps) {
+const SessionSetupComponent = (props: SessionSetupProps) => {
   const t = useStore($t);
 
   // Default to 'A' for first-time users (Requirement 14.5), otherwise 'Auto'
@@ -247,5 +243,29 @@ export default function SessionSetup(props: SessionSetupProps) {
         </button>
       </div>
     </div>
+  );
+};
+
+/**
+ * SessionSetup wrapped with ErrorBoundary
+ *
+ * Default export includes error boundary for robust error handling.
+ *
+ * @example
+ * ```tsx
+ * <SessionSetup
+ *   isFirstTime={true}
+ *   onStart={(config) => handleStart(config)}
+ * />
+ * ```
+ */
+export default function SessionSetup(props: SessionSetupProps) {
+  return (
+    <ErrorBoundaryWrapper
+      componentName="SessionSetup"
+      errorMessageKey="errors.session.setupFailed"
+    >
+      <SessionSetupComponent {...props} />
+    </ErrorBoundaryWrapper>
   );
 }

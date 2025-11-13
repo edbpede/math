@@ -13,6 +13,7 @@
 import { createMemo, For, Show } from 'solid-js';
 import { useStore } from '@nanostores/solid';
 import { $t } from '@/lib/i18n';
+import { ErrorBoundaryWrapper } from './ErrorBoundary';
 
 /**
  * Session statistics data
@@ -49,22 +50,15 @@ export interface SessionSummaryProps {
 }
 
 /**
- * SessionSummary - Post-session results and celebration
+ * SessionSummary Component (Internal)
  *
  * Displays session statistics with positive reinforcement messaging,
  * highlights achievements, and provides navigation options.
  *
- * @example
- * ```tsx
- * <SessionSummary
- *   stats={{ totalExercises: 20, correctCount: 16, avgTimeSeconds: 45, hintsUsed: 3, skippedCount: 1 }}
- *   onPracticeAgain={() => restart()}
- *   onViewProgress={() => navigate('/progress')}
- *   onReturnToDashboard={() => navigate('/dashboard')}
- * />
- * ```
+ * Note: This is the internal component. Use the default export which
+ * includes error boundary protection.
  */
-export default function SessionSummary(props: SessionSummaryProps) {
+const SessionSummaryComponent = (props: SessionSummaryProps) => {
   const t = useStore($t);
 
   // Calculate accuracy percentage
@@ -268,5 +262,31 @@ export default function SessionSummary(props: SessionSummaryProps) {
         </button>
       </div>
     </div>
+  );
+};
+
+/**
+ * SessionSummary wrapped with ErrorBoundary
+ *
+ * Default export includes error boundary for robust error handling.
+ *
+ * @example
+ * ```tsx
+ * <SessionSummary
+ *   stats={{ totalExercises: 20, correctCount: 16, avgTimeSeconds: 45, hintsUsed: 3, skippedCount: 1 }}
+ *   onPracticeAgain={() => restart()}
+ *   onViewProgress={() => navigate('/progress')}
+ *   onReturnToDashboard={() => navigate('/dashboard')}
+ * />
+ * ```
+ */
+export default function SessionSummary(props: SessionSummaryProps) {
+  return (
+    <ErrorBoundaryWrapper
+      componentName="SessionSummary"
+      errorMessageKey="errors.session.summaryFailed"
+    >
+      <SessionSummaryComponent {...props} />
+    </ErrorBoundaryWrapper>
   );
 }

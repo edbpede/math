@@ -18,6 +18,7 @@ import GradeSelector from "./GradeSelector";
 import CompetencyAreaIntro from "./CompetencyAreaIntro";
 import TutorialOverlay from "./TutorialOverlay";
 import LanguageSelector from "./LanguageSelector";
+import { ErrorBoundaryWrapper } from "./ErrorBoundary";
 
 type OnboardingStep =
   | "welcome"
@@ -27,7 +28,7 @@ type OnboardingStep =
   | "tutorial";
 
 /**
- * OnboardingFlow - Complete onboarding experience
+ * OnboardingFlow Component (Internal)
  *
  * Guides new users through account creation, preference selection,
  * and introduction to the platform features.
@@ -39,8 +40,11 @@ type OnboardingStep =
  * 4. Competency introduction
  * 5. Tutorial (optional)
  * 6. Redirect to practice session
+ *
+ * Note: This is the internal component. Use the default export which
+ * includes error boundary protection.
  */
-export default function OnboardingFlow() {
+const OnboardingFlowComponent = () => {
   const t = useStore($t);
   const locale = useStore($locale);
   const [currentStep, setCurrentStep] = createSignal<OnboardingStep>("welcome");
@@ -334,5 +338,21 @@ export default function OnboardingFlow() {
         </Show>
       </div>
     </div>
+  );
+};
+
+/**
+ * OnboardingFlow wrapped with ErrorBoundary
+ *
+ * Default export includes error boundary for robust error handling.
+ */
+export default function OnboardingFlow() {
+  return (
+    <ErrorBoundaryWrapper
+      componentName="OnboardingFlow"
+      errorMessageKey="errors.onboarding.failed"
+    >
+      <OnboardingFlowComponent />
+    </ErrorBoundaryWrapper>
   );
 }

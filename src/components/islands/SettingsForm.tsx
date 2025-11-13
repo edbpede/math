@@ -17,6 +17,7 @@ import { updateUser } from "@/lib/auth";
 import type { UserPreferences } from "@/lib/types/preferences";
 import { validatePreferences } from "@/lib/types/preferences";
 import { $preferences, updatePreferences } from "@/lib/preferences";
+import { ErrorBoundaryWrapper } from "./ErrorBoundary";
 
 export interface SettingsFormProps {
   /** Current user ID */
@@ -41,26 +42,20 @@ let saveTimeout: ReturnType<typeof setTimeout> | null = null;
 const DEBOUNCE_MS = 1000;
 
 /**
- * SettingsForm - Interactive form for user settings
+ * SettingsForm Component (Internal)
  *
  * Features:
  * - Grade level selection with radio buttons
  * - Display preferences (theme, font size, dyslexia font, high contrast)
  * - Automatic save with debouncing (1 second after last change)
  * - Optimistic UI updates with error rollback
+ *
+ * Note: This is the internal component. Use the default export which
+ * includes error boundary protection.
  * - Full keyboard navigation and ARIA support
  * - Loading states and error handling
- *
- * @example
- * ```tsx
- * <SettingsForm
- *   userId={user.id}
- *   initialGradeRange={user.gradeRange}
- *   initialPreferences={user.preferences}
- * />
- * ```
  */
-export default function SettingsForm(props: SettingsFormProps) {
+const SettingsFormComponent = (props: SettingsFormProps) => {
   const t = useStore($t);
   const preferences = useStore($preferences);
 
@@ -442,5 +437,30 @@ export default function SettingsForm(props: SettingsFormProps) {
         </div>
       </Show>
     </div>
+  );
+};
+
+/**
+ * SettingsForm wrapped with ErrorBoundary
+ *
+ * Default export includes error boundary for robust error handling.
+ *
+ * @example
+ * ```tsx
+ * <SettingsForm
+ *   userId={user.id}
+ *   initialGradeRange={user.gradeRange}
+ *   initialPreferences={user.preferences}
+ * />
+ * ```
+ */
+export default function SettingsForm(props: SettingsFormProps) {
+  return (
+    <ErrorBoundaryWrapper
+      componentName="SettingsForm"
+      errorMessageKey="errors.settings.saveFailed"
+    >
+      <SettingsFormComponent {...props} />
+    </ErrorBoundaryWrapper>
   );
 }

@@ -200,6 +200,32 @@ const userId = user?.id
         initializePreferencesSystem(userId)
       }
     </script>
+
+    {/* Global error handler initialization */}
+    <script>
+      import { initializeGlobalErrorHandler } from '@/lib/error/global-handler'
+
+      // Initialize global error handler after DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+          const cleanup = initializeGlobalErrorHandler({
+            showToast: true,
+            logToConsole: import.meta.env.DEV
+          })
+
+          // Cleanup on page unload
+          window.addEventListener('beforeunload', cleanup)
+        })
+      } else {
+        const cleanup = initializeGlobalErrorHandler({
+          showToast: true,
+          logToConsole: import.meta.env.DEV
+        })
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', cleanup)
+      }
+    </script>
   </head>
   
   <body class="h-full flex flex-col bg-gray-50 text-gray-900">

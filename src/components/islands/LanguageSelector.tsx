@@ -13,6 +13,7 @@ import { createSignal, Show } from "solid-js";
 import { useStore } from "@nanostores/solid";
 import { $t, $locale, changeLocale, type Locale } from "@/lib/i18n";
 import { getCurrentUser, updateUser } from "@/lib/auth";
+import { ErrorBoundaryWrapper } from "./ErrorBoundary";
 
 export interface LanguageSelectorProps {
   /** Display variant: 'compact' shows flags only, 'full' shows flags with labels */
@@ -24,7 +25,7 @@ export interface LanguageSelectorProps {
 }
 
 /**
- * LanguageSelector - Allows instant switching between supported languages
+ * LanguageSelector Component (Internal)
  *
  * Features:
  * - Instant language switching without page reload
@@ -34,12 +35,10 @@ export interface LanguageSelectorProps {
  * - Keyboard accessible with ARIA support
  * - Flag icons for visual language identification
  *
- * @example
- * ```tsx
- * <LanguageSelector variant="full" layout="horizontal" />
- * ```
+ * Note: This is the internal component. Use the default export which
+ * includes error boundary protection.
  */
-export default function LanguageSelector(props: LanguageSelectorProps) {
+const LanguageSelectorComponent = (props: LanguageSelectorProps) => {
   const t = useStore($t);
   const locale = useStore($locale);
   const [isChanging, setIsChanging] = createSignal(false);
@@ -251,5 +250,26 @@ export default function LanguageSelector(props: LanguageSelectorProps) {
         </div>
       </Show>
     </div>
+  );
+};
+
+/**
+ * LanguageSelector wrapped with ErrorBoundary
+ *
+ * Default export includes error boundary for robust error handling.
+ *
+ * @example
+ * ```tsx
+ * <LanguageSelector variant="full" layout="horizontal" />
+ * ```
+ */
+export default function LanguageSelector(props: LanguageSelectorProps) {
+  return (
+    <ErrorBoundaryWrapper
+      componentName="LanguageSelector"
+      errorMessageKey="errors.general.unexpected"
+    >
+      <LanguageSelectorComponent {...props} />
+    </ErrorBoundaryWrapper>
   );
 }

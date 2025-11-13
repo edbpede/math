@@ -14,6 +14,7 @@ import { createSignal, Show, onMount } from "solid-js";
 import { useStore } from "@nanostores/solid";
 import { $t } from "@/lib/i18n";
 import QRCode from "qrcode";
+import { ErrorBoundaryWrapper } from "./ErrorBoundary";
 
 // Discriminated union for component state
 type GeneratorState =
@@ -36,23 +37,16 @@ export interface UUIDGeneratorProps {
 }
 
 /**
- * UUIDGenerator - Generates and displays UUID with multiple save options
+ * UUIDGenerator Component (Internal)
  *
  * Creates a new anonymous user account and displays the UUID prominently
  * with copy, download, and QR code save options. Follows privacy-first
  * design principles with clear user instructions.
  *
- * @example
- * ```tsx
- * <UUIDGenerator
- *   gradeRange="0-3"
- *   locale="da-DK"
- *   autoGenerate={true}
- *   onComplete={(uuid) => console.log('Generated:', uuid)}
- * />
- * ```
+ * Note: This is the internal component. Use the default export which
+ * includes error boundary protection.
  */
-export default function UUIDGenerator(props: UUIDGeneratorProps) {
+const UUIDGeneratorComponent = (props: UUIDGeneratorProps) => {
   const t = useStore($t);
   const [state, setState] = createSignal<GeneratorState>({ status: "idle" });
   const [copied, setCopied] = createSignal(false);
@@ -500,5 +494,31 @@ Grade Range: ${props.gradeRange}
         }}
       </Show>
     </div>
+  );
+};
+
+/**
+ * UUIDGenerator wrapped with ErrorBoundary
+ *
+ * Default export includes error boundary for robust error handling.
+ *
+ * @example
+ * ```tsx
+ * <UUIDGenerator
+ *   gradeRange="0-3"
+ *   locale="da-DK"
+ *   autoGenerate={true}
+ *   onComplete={(uuid) => console.log('Generated:', uuid)}
+ * />
+ * ```
+ */
+export default function UUIDGenerator(props: UUIDGeneratorProps) {
+  return (
+    <ErrorBoundaryWrapper
+      componentName="UUIDGenerator"
+      errorMessageKey="errors.auth.generationFailed"
+    >
+      <UUIDGeneratorComponent {...props} />
+    </ErrorBoundaryWrapper>
   );
 }
