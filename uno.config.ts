@@ -245,6 +245,169 @@ export default defineConfig({
 
     // Skip links (visible only when focused)
     'skip-link': 'sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-tooltip focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded focus:shadow-lg',
+
+    // =============================================================================
+    // CONTAINER UTILITIES - Supporting Requirement 9.1 (Responsive Layout)
+    // =============================================================================
+
+    // Responsive container with auto margins and padding
+    'container': 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8',
+    'container-fluid': 'w-full px-4 sm:px-6 lg:px-8',
+    'container-narrow': 'max-w-3xl mx-auto px-4 sm:px-6',
+
+    // Fixed max-width containers
+    'container-sm': 'max-w-640px mx-auto px-4',
+    'container-md': 'max-w-768px mx-auto px-4 sm:px-6',
+    'container-lg': 'max-w-1024px mx-auto px-4 sm:px-6 lg:px-8',
+    'container-xl': 'max-w-1280px mx-auto px-4 sm:px-6 lg:px-8',
+    'container-2xl': 'max-w-1536px mx-auto px-4 sm:px-6 lg:px-8',
+
+    // =============================================================================
+    // FLEXBOX COMPOSITION SHORTCUTS - Supporting Requirement 9.1
+    // =============================================================================
+
+    // Common flex patterns
+    'flex-center': 'flex items-center justify-center',
+    'flex-between': 'flex items-center justify-between',
+    'flex-start': 'flex items-center justify-start',
+    'flex-end': 'flex items-center justify-end',
+    'flex-col-center': 'flex flex-col items-center justify-center',
+    'flex-col-start': 'flex flex-col items-start',
+    'flex-col-between': 'flex flex-col justify-between',
+
+    // Responsive flex with wrapping
+    'flex-wrap-responsive': 'flex flex-wrap gap-4',
+    'flex-wrap-center': 'flex flex-wrap items-center justify-center gap-4',
+    'flex-wrap-between': 'flex flex-wrap items-center justify-between gap-4',
+
+    // =============================================================================
+    // GRID LAYOUT SHORTCUTS - Supporting Requirement 9.1
+    // =============================================================================
+
+    // Responsive grid patterns (mobile-first)
+    'grid-responsive-2': 'grid grid-cols-1 md:grid-cols-2 gap-4',
+    'grid-responsive-3': 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4',
+    'grid-responsive-4': 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4',
+    'grid-responsive-6': 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4',
+
+    // Auto-fit grids with minimum card size
+    'grid-auto-fit': 'grid gap-4',
+    'grid-auto-fit-sm': 'grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4',
+    'grid-auto-fit-md': 'grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4',
+    'grid-auto-fit-lg': 'grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-4',
+
+    // Sidebar layouts
+    'grid-sidebar': 'grid md:grid-cols-[250px_1fr] gap-6',
+    'grid-sidebar-wide': 'grid lg:grid-cols-[300px_1fr] gap-8',
+    'grid-sidebar-right': 'grid md:grid-cols-[1fr_250px] gap-6',
+
+    // Grid gap variations
+    'grid-gap-sm': 'gap-2',
+    'grid-gap-md': 'gap-4',
+    'grid-gap-lg': 'gap-6',
+    'grid-gap-xl': 'gap-8',
+
+    // =============================================================================
+    // SEMANTIC SPACING UTILITIES - Supporting Requirement 9.1
+    // =============================================================================
+
+    // Section spacing (vertical padding for page sections)
+    'section-spacing': 'py-12 md:py-16 lg:py-20',
+    'section-spacing-sm': 'py-8 md:py-10 lg:py-12',
+    'section-spacing-lg': 'py-16 md:py-20 lg:py-24',
+
+    // Content area spacing (consistent padding for main content)
+    'content-spacing': 'px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10',
+    'content-spacing-sm': 'px-3 py-4 sm:px-4 sm:py-5',
+    'content-spacing-lg': 'px-6 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12',
+
+    // Card internal spacing (responsive padding)
+    'card-spacing': 'p-4 sm:p-5 md:p-6',
+    'card-spacing-sm': 'p-3 sm:p-4',
+    'card-spacing-lg': 'p-6 sm:p-7 md:p-8',
+
+    // Page-level horizontal padding (consistent with container)
+    'page-padding': 'px-4 sm:px-6 lg:px-8',
+    'page-padding-sm': 'px-3 sm:px-4 lg:px-6',
+    'page-padding-lg': 'px-6 sm:px-8 lg:px-12',
+
+    // =============================================================================
+    // RESPONSIVE TYPOGRAPHY SHORTCUTS - Supporting Requirement 9.1
+    // =============================================================================
+
+    // Auto-scaling text sizes
+    'text-responsive-xs': 'text-xs sm:text-sm',
+    'text-responsive-sm': 'text-sm sm:text-base',
+    'text-responsive-base': 'text-base sm:text-lg',
+    'text-responsive-lg': 'text-lg sm:text-xl md:text-2xl',
+    'text-responsive-xl': 'text-xl sm:text-2xl md:text-3xl',
+    'text-responsive-2xl': 'text-2xl sm:text-3xl md:text-4xl lg:text-5xl',
+
+    // Semantic heading scales (responsive)
+    'heading-1': 'text-3xl sm:text-4xl md:text-5xl font-bold leading-tight',
+    'heading-2': 'text-2xl sm:text-3xl md:text-4xl font-bold leading-tight',
+    'heading-3': 'text-xl sm:text-2xl md:text-3xl font-semibold leading-snug',
+    'heading-4': 'text-lg sm:text-xl md:text-2xl font-semibold leading-snug',
+    'heading-5': 'text-base sm:text-lg md:text-xl font-semibold',
+    'heading-6': 'text-sm sm:text-base md:text-lg font-semibold',
+
+    // Body text variants
+    'body-sm': 'text-sm leading-relaxed',
+    'body-base': 'text-base leading-relaxed',
+    'body-lg': 'text-lg leading-relaxed',
+
+    // Lead text (introductory paragraphs)
+    'text-lead': 'text-lg sm:text-xl leading-relaxed text-gray-600 dark:text-gray-400',
+
+    // =============================================================================
+    // ASPECT RATIO UTILITIES - Supporting Requirement 9.1
+    // =============================================================================
+
+    // Common aspect ratios for images, cards, videos
+    'aspect-square': 'aspect-square',
+    'aspect-video': 'aspect-video',
+    'aspect-4/3': 'aspect-4/3',
+    'aspect-3/2': 'aspect-3/2',
+    'aspect-16/9': 'aspect-16/9',
+
+    // Aspect ratio containers with object-fit
+    'aspect-square-cover': 'aspect-square object-cover',
+    'aspect-video-cover': 'aspect-video object-cover',
+    'aspect-square-contain': 'aspect-square object-contain',
+    'aspect-video-contain': 'aspect-video object-contain',
+
+    // =============================================================================
+    // LAYOUT COMPOSITION PATTERNS - Supporting Requirement 9.1
+    // =============================================================================
+
+    // Vertical stack with consistent spacing between children
+    'stack-xs': 'flex flex-col gap-1',
+    'stack-sm': 'flex flex-col gap-2',
+    'stack': 'flex flex-col gap-4',
+    'stack-md': 'flex flex-col gap-4',
+    'stack-lg': 'flex flex-col gap-6',
+    'stack-xl': 'flex flex-col gap-8',
+
+    // Horizontal cluster with wrapping
+    'cluster-xs': 'flex flex-wrap gap-1',
+    'cluster-sm': 'flex flex-wrap gap-2',
+    'cluster': 'flex flex-wrap gap-4',
+    'cluster-md': 'flex flex-wrap gap-4',
+    'cluster-lg': 'flex flex-wrap gap-6',
+    'cluster-xl': 'flex flex-wrap gap-8',
+
+    // Split layout (50/50 responsive)
+    'split-layout': 'grid grid-cols-1 md:grid-cols-2 gap-6',
+    'split-layout-lg': 'grid grid-cols-1 lg:grid-cols-2 gap-8',
+
+    // Center layout (horizontally centered with max-width)
+    'center-layout': 'max-w-7xl mx-auto w-full',
+    'center-layout-narrow': 'max-w-3xl mx-auto w-full',
+    'center-layout-wide': 'max-w-screen-2xl mx-auto w-full',
+
+    // Full-height layouts
+    'full-height-layout': 'min-h-screen flex flex-col',
+    'full-height-centered': 'min-h-screen flex items-center justify-center',
   },
 
   theme: {
