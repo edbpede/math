@@ -1,0 +1,111 @@
+# Netlify Deployment Configuration
+# 
+# Arithmetic Practice Portal - Progressive Web App
+# 
+# This configuration enables:
+# - Automatic deployments from main branch
+# - Preview deployments for pull requests
+# - Build optimization and caching
+# - Custom headers for security and performance
+# - Redirects for SPA routing
+# 
+# Requirements: 18.2 - Deployment configuration for Netlify
+
+[build]
+  # Build command
+  command = "bun run build"
+  
+  # Output directory
+  publish = "dist"
+  
+  # Environment variables for build
+  # Note: Set these in Netlify UI under Site settings > Environment variables
+  # PUBLIC_SUPABASE_URL
+  # PUBLIC_SUPABASE_ANON_KEY
+
+[build.environment]
+  # Use Bun as package manager and runtime
+  NODE_VERSION = "20"
+  BUN_VERSION = "latest"
+
+# Build processing
+[build.processing]
+  # Skip Netlify's processing - we handle it in our build
+  skip_processing = false
+
+[build.processing.css]
+  # We use UnoCSS - no need for Netlify CSS processing
+  bundle = false
+  minify = false
+
+[build.processing.js]
+  # We use Vite/Terser - no need for Netlify JS processing
+  bundle = false
+  minify = false
+
+[build.processing.html]
+  # We use Astro - no need for Netlify HTML processing
+  pretty_urls = true
+
+[build.processing.images]
+  # We use Sharp - no need for Netlify image processing
+  compress = false
+
+# Deploy contexts
+[context.production]
+  command = "bun run build"
+  publish = "dist"
+
+[context.deploy-preview]
+  command = "bun run build"
+  publish = "dist"
+
+[context.branch-deploy]
+  command = "bun run build"
+  publish = "dist"
+
+# Redirects and rewrites
+# SPA fallback for client-side routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = false
+  conditions = {Role = ["admin"]}
+
+# API routes (if using SSR in future)
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# Headers are defined in public/_headers file
+# Netlify will automatically use that file
+
+# Plugin configuration
+[[plugins]]
+  package = "@netlify/plugin-lighthouse"
+  
+  [plugins.inputs]
+    # Run Lighthouse on every deploy
+    output_path = "reports/lighthouse.html"
+
+[[plugins]]
+  package = "netlify-plugin-cache"
+  
+  [plugins.inputs.cache_paths]
+    # Cache node_modules for faster builds
+    paths = ["node_modules", ".astro"]
+
+# Functions configuration (for future SSR)
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# Dev server configuration
+[dev]
+  command = "bun run dev"
+  port = 4321
+  targetPort = 4321
+  autoLaunch = false
+

@@ -38,10 +38,22 @@ All commands are run from the root of the project, from a terminal:
 | `bun run test`            | Run tests in watch mode (use this, not `bun test`!) |
 | `bun run test:run`        | Run tests once (CI mode)                         |
 | `bun run test:ui`         | Run tests with Vitest UI                         |
+| `bun run deploy:vercel`   | Deploy to Vercel (production)                    |
+| `bun run deploy:netlify`  | Deploy to Netlify (production)                   |
 | `bun run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `bun run astro -- --help` | Get help using the Astro CLI                     |
 
 > **⚠️ Important:** Use `bun run test`, NOT `bun test`. Bun's native test runner is incompatible with our SolidJS setup. See [TEST_RUNNER_GUIDE.md](TEST_RUNNER_GUIDE.md) for details.
+
+## 📦 Deployment
+
+The project supports multiple deployment platforms:
+
+- **GitHub Pages** (current): Automatic deployment on push to `main`
+- **Vercel**: `bun run deploy:vercel`
+- **Netlify**: `bun run deploy:netlify`
+
+For detailed deployment instructions, rollback procedures, and CI/CD configuration, see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ## 👀 Want to learn more?
 

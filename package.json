@@ -15,7 +15,13 @@
     "validate-translations": "bun run scripts/validate-translations.ts",
     "validate-translations:locale": "bun run scripts/validate-translations.ts --locale=",
     "validate-translations:component": "bun run scripts/validate-translations.ts --component=",
-    "sw:clear": "bun run scripts/uninstall-sw.ts"
+    "sw:clear": "bun run scripts/uninstall-sw.ts",
+    "deploy:vercel": "./scripts/deploy.sh vercel production",
+    "deploy:vercel:preview": "./scripts/deploy.sh vercel preview",
+    "deploy:netlify": "./scripts/deploy.sh netlify production",
+    "deploy:netlify:preview": "./scripts/deploy.sh netlify preview",
+    "rollback:vercel": "./scripts/rollback.sh vercel",
+    "rollback:netlify": "./scripts/rollback.sh netlify"
   },
   "dependencies": {
     "@astrojs/solid-js": "^5.1.2",
