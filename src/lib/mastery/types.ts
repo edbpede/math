@@ -1,15 +1,15 @@
 /**
  * Progress Tracking and Mastery Type Definitions
- * 
+ *
  * Type definitions for user progress tracking, mastery calculation,
  * and spaced repetition system (SRS) parameters.
- * 
+ *
  * Requirements:
  * - 3.1: Track mastery at multiple granularities
  * - 3.2: Implement spaced repetition system
  */
 
-import type { CompetencyAreaId, GradeRange, Difficulty } from '../curriculum/types';
+import type { CompetencyAreaId, Difficulty, GradeRange } from "../curriculum/types";
 
 export interface SRSParameters {
   easeFactor: number;
@@ -92,12 +92,7 @@ export interface SRSUpdateResult {
   nextReviewDate: Date;
 }
 
-export type MasteryLevel = 
-  | 'introduced'
-  | 'developing'
-  | 'progressing'
-  | 'proficient'
-  | 'mastered';
+export type MasteryLevel = "introduced" | "developing" | "progressing" | "proficient" | "mastered";
 
 export interface MasteryLevelBand {
   level: MasteryLevel;
@@ -107,9 +102,9 @@ export interface MasteryLevelBand {
 }
 
 export const MASTERY_LEVELS: MasteryLevelBand[] = [
-  { level: 'introduced', min: 0, max: 20, colorCode: 'red' },
-  { level: 'developing', min: 21, max: 40, colorCode: 'yellow' },
-  { level: 'progressing', min: 41, max: 60, colorCode: 'light-green' },
-  { level: 'proficient', min: 61, max: 80, colorCode: 'green' },
-  { level: 'mastered', min: 81, max: 100, colorCode: 'blue' },
+  { level: "introduced", min: 0, max: 20, colorCode: "red" },
+  { level: "developing", min: 21, max: 40, colorCode: "yellow" },
+  { level: "progressing", min: 41, max: 60, colorCode: "light-green" },
+  { level: "proficient", min: 61, max: 80, colorCode: "green" },
+  { level: "mastered", min: 81, max: 100, colorCode: "blue" },
 ];

@@ -4,16 +4,16 @@
  * Tests for touch target utility functions ensuring WCAG 2.1 AA compliance.
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
-  TOUCH_TARGET_MIN_SIZE,
-  TOUCH_TARGET_MIN_SPACING,
-  getTouchTargetClasses,
-  getTouchTargetStyles,
   ensureTouchTarget,
   getElementSize,
+  getTouchTargetClasses,
+  getTouchTargetStyles,
   hasSufficientSpacing,
   shouldUseInlineStyles,
+  TOUCH_TARGET_MIN_SIZE,
+  TOUCH_TARGET_MIN_SPACING,
 } from "./touch-targets";
 
 // Mock DOM element for testing
@@ -141,12 +141,8 @@ describe("ensureTouchTarget", () => {
 
   it("should use custom minimum dimensions", () => {
     const element = new MockHTMLElement(48, 48) as unknown as HTMLElement;
-    expect(ensureTouchTarget(element, { minWidth: 50, minHeight: 50 })).toBe(
-      false,
-    );
-    expect(ensureTouchTarget(element, { minWidth: 48, minHeight: 48 })).toBe(
-      true,
-    );
+    expect(ensureTouchTarget(element, { minWidth: 50, minHeight: 50 })).toBe(false);
+    expect(ensureTouchTarget(element, { minWidth: 48, minHeight: 48 })).toBe(true);
   });
 });
 
@@ -188,66 +184,26 @@ describe("hasSufficientSpacing", () => {
   });
 
   it("should return true when elements have sufficient horizontal spacing", () => {
-    const element1 = new MockHTMLElement(
-      44,
-      44,
-      0,
-      0,
-    ) as unknown as HTMLElement;
-    const element2 = new MockHTMLElement(
-      44,
-      44,
-      100,
-      0,
-    ) as unknown as HTMLElement;
+    const element1 = new MockHTMLElement(44, 44, 0, 0) as unknown as HTMLElement;
+    const element2 = new MockHTMLElement(44, 44, 100, 0) as unknown as HTMLElement;
     expect(hasSufficientSpacing(element1, element2)).toBe(true);
   });
 
   it("should return true when elements have sufficient vertical spacing", () => {
-    const element1 = new MockHTMLElement(
-      44,
-      44,
-      0,
-      0,
-    ) as unknown as HTMLElement;
-    const element2 = new MockHTMLElement(
-      44,
-      44,
-      0,
-      100,
-    ) as unknown as HTMLElement;
+    const element1 = new MockHTMLElement(44, 44, 0, 0) as unknown as HTMLElement;
+    const element2 = new MockHTMLElement(44, 44, 0, 100) as unknown as HTMLElement;
     expect(hasSufficientSpacing(element1, element2)).toBe(true);
   });
 
   it("should return false when elements are too close", () => {
-    const element1 = new MockHTMLElement(
-      44,
-      44,
-      0,
-      0,
-    ) as unknown as HTMLElement;
-    const element2 = new MockHTMLElement(
-      44,
-      44,
-      45,
-      0,
-    ) as unknown as HTMLElement;
+    const element1 = new MockHTMLElement(44, 44, 0, 0) as unknown as HTMLElement;
+    const element2 = new MockHTMLElement(44, 44, 45, 0) as unknown as HTMLElement;
     expect(hasSufficientSpacing(element1, element2)).toBe(false);
   });
 
   it("should use custom minimum spacing", () => {
-    const element1 = new MockHTMLElement(
-      44,
-      44,
-      0,
-      0,
-    ) as unknown as HTMLElement;
-    const element2 = new MockHTMLElement(
-      44,
-      44,
-      60,
-      0,
-    ) as unknown as HTMLElement;
+    const element1 = new MockHTMLElement(44, 44, 0, 0) as unknown as HTMLElement;
+    const element2 = new MockHTMLElement(44, 44, 60, 0) as unknown as HTMLElement;
 
     // With default spacing (8px), elements are sufficient (60 >= 44 + 8 = 52)
     expect(hasSufficientSpacing(element1, element2, 8)).toBe(true);
@@ -257,18 +213,8 @@ describe("hasSufficientSpacing", () => {
   });
 
   it("should handle elements of different sizes", () => {
-    const element1 = new MockHTMLElement(
-      60,
-      44,
-      0,
-      0,
-    ) as unknown as HTMLElement;
-    const element2 = new MockHTMLElement(
-      44,
-      60,
-      100,
-      0,
-    ) as unknown as HTMLElement;
+    const element1 = new MockHTMLElement(60, 44, 0, 0) as unknown as HTMLElement;
+    const element2 = new MockHTMLElement(44, 60, 100, 0) as unknown as HTMLElement;
     expect(hasSufficientSpacing(element1, element2)).toBe(true);
   });
 });

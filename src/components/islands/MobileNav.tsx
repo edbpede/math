@@ -10,15 +10,8 @@
  * - 9.4: ARIA labels and landmarks for screen readers
  */
 
-import {
-  createSignal,
-  createEffect,
-  onMount,
-  onCleanup,
-  Show,
-  For,
-} from "solid-js";
 import { useStore } from "@nanostores/solid";
+import { createEffect, createSignal, For, onCleanup, onMount, Show } from "solid-js";
 import { $t } from "@/lib/i18n";
 import LanguageSelector from "./LanguageSelector";
 
@@ -97,8 +90,7 @@ export default function MobileNav(props: MobileNavProps) {
    */
   const isActive = (href: string): boolean => {
     const currentPath =
-      props.currentPath ||
-      (typeof window !== "undefined" ? window.location.pathname : "/");
+      props.currentPath || (typeof window !== "undefined" ? window.location.pathname : "/");
     if (href === "/") {
       return currentPath === "/";
     }
@@ -230,9 +222,7 @@ export default function MobileNav(props: MobileNavProps) {
       >
         {/* Header with close button */}
         <div class="flex items-center justify-between p-4 border-b border-gray-200">
-          <h2 class="text-xl font-bold text-gray-900">
-            {t()("common.app.title")}
-          </h2>
+          <h2 class="text-xl font-bold text-gray-900">{t()("common.app.title")}</h2>
           <button
             ref={firstFocusableRef}
             type="button"
@@ -309,7 +299,7 @@ function getNavIcon(icon: string) {
   switch (icon) {
     case "home":
       return (
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -320,7 +310,7 @@ function getNavIcon(icon: string) {
       );
     case "dashboard":
       return (
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -331,7 +321,7 @@ function getNavIcon(icon: string) {
       );
     case "practice":
       return (
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -342,7 +332,7 @@ function getNavIcon(icon: string) {
       );
     case "progress":
       return (
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -353,7 +343,7 @@ function getNavIcon(icon: string) {
       );
     case "settings":
       return (
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -370,7 +360,7 @@ function getNavIcon(icon: string) {
       );
     case "help":
       return (
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
             stroke-linecap="round"
             stroke-linejoin="round"

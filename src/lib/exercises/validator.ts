@@ -19,10 +19,10 @@
  * - 8.1: Validation must complete within 1 second (target <10ms)
  */
 
-import type { Answer, ValidationResult } from './types';
-import type { Locale } from '../i18n/types';
-import { parseNumber, parseNumberAuto } from '../i18n/utils';
-import { sanitizeAnswer, detectMaliciousInput } from '../validation/sanitizer';
+import type { Locale } from "../i18n/types";
+import { parseNumber, parseNumberAuto } from "../i18n/utils";
+import { detectMaliciousInput, sanitizeAnswer } from "../validation/sanitizer";
+import type { Answer, ValidationResult } from "./types";
 
 /**
  * Options for answer validation
@@ -64,7 +64,7 @@ const MAX_FRACTION_DENOMINATOR = 1000;
 export function validateAnswer(
   userAnswer: string,
   correctAnswer: Answer,
-  options: ValidationOptions = {}
+  options: ValidationOptions = {},
 ): ValidationResult {
   // SECURITY: Sanitize user input first (defense-in-depth)
   // This removes HTML tags, script content, and dangerous characters
@@ -73,25 +73,25 @@ export function validateAnswer(
   // SECURITY: Detect malicious input patterns in sanitized input
   // Check sanitized input to catch any remaining malicious patterns
   if (detectMaliciousInput(sanitized)) {
-    console.warn('Malicious input pattern detected in answer:', userAnswer.substring(0, 50));
-    return { correct: false, normalized: '' };
+    console.warn("Malicious input pattern detected in answer:", userAnswer.substring(0, 50));
+    return { correct: false, normalized: "" };
   }
 
   // Check if sanitization removed all content
-  if (sanitized === '') {
-    return { correct: false, normalized: '' };
+  if (sanitized === "") {
+    return { correct: false, normalized: "" };
   }
 
   // Extract tolerance
   const tolerance = options.strict
     ? 0
-    : options.tolerance ?? correctAnswer.tolerance ?? DEFAULT_TOLERANCE;
+    : (options.tolerance ?? correctAnswer.tolerance ?? DEFAULT_TOLERANCE);
 
   // Parse the correct answer to a comparable format
   const correctValue = parseAnswerValue(correctAnswer.value);
 
   if (correctValue === null) {
-    console.warn('Failed to parse correct answer:', correctAnswer.value);
+    console.warn("Failed to parse correct answer:", correctAnswer.value);
     return { correct: false, normalized: sanitized };
   }
 
@@ -127,7 +127,7 @@ export function validateAnswer(
  * @returns Parsed number or null if invalid
  */
 function parseAnswerValue(value: string | number): number | null {
-  if (typeof value === 'number') {
+  if (typeof value === "number") {
     return isNaN(value) ? null : value;
   }
 
@@ -161,8 +161,8 @@ function parseUserAnswer(answer: string, locale?: Locale): number | null {
   const trimmed = answer.trim();
 
   // Check if it looks like a fraction or mixed number
-  const hasFractionSlash = trimmed.includes('/');
-  
+  const hasFractionSlash = trimmed.includes("/");
+
   // Try parsing as mixed number first (e.g., "1 1/2")
   const mixedValue = parseMixedNumber(trimmed);
   if (mixedValue !== null && isFinite(mixedValue)) {
@@ -189,9 +189,9 @@ function parseUserAnswer(answer: string, locale?: Locale): number | null {
 
   // Check if it's a locale-formatted number (contains comma as potential decimal separator)
   // Only try parseFloat if it doesn't look like a locale-formatted number
-  const hasComma = trimmed.includes(',');
+  const hasComma = trimmed.includes(",");
   const hasMultipleSeparators = (trimmed.match(/[.,]/g) || []).length > 1;
-  
+
   if (!hasComma || hasMultipleSeparators) {
     // Try parsing as plain number (handles English format and simple numbers)
     const plainValue = parseFloat(trimmed);
@@ -199,8 +199,8 @@ function parseUserAnswer(answer: string, locale?: Locale): number | null {
       // Verify that parseFloat consumed the entire string (or just trailing whitespace)
       // This prevents partial parsing
       const stringified = plainValue.toString();
-      const trimmedInput = trimmed.replace(/\s+/g, '');
-      if (trimmedInput === stringified || trimmedInput === '-' + stringified) {
+      const trimmedInput = trimmed.replace(/\s+/g, "");
+      if (trimmedInput === stringified || trimmedInput === "-" + stringified) {
         return plainValue;
       }
     }
@@ -245,13 +245,13 @@ function compareValues(value1: number, value2: number, tolerance: number): boole
 export function gcd(a: number, b: number): number {
   a = Math.abs(Math.floor(a));
   b = Math.abs(Math.floor(b));
-  
+
   while (b !== 0) {
     const temp = b;
     b = a % b;
     a = temp;
   }
-  
+
   return a;
 }
 
@@ -264,7 +264,7 @@ export function gcd(a: number, b: number): number {
  */
 export function simplifyFraction(numerator: number, denominator: number): [number, number] {
   if (denominator === 0) {
-    throw new Error('Denominator cannot be zero');
+    throw new Error("Denominator cannot be zero");
   }
 
   // Handle negative fractions (keep sign in numerator)
@@ -290,11 +290,11 @@ export function simplifyFraction(numerator: number, denominator: number): [numbe
  */
 export function parseFraction(input: string): number | null {
   const trimmed = input.trim();
-  
+
   // Match fraction pattern: optional sign, digits, slash, digits
   const fractionPattern = /^(-?\d+)\s*\/\s*(\d+)$/;
   const match = trimmed.match(fractionPattern);
-  
+
   if (!match) {
     return null;
   }
@@ -323,16 +323,16 @@ export function parseFraction(input: string): number | null {
  */
 export function parseMixedNumber(input: string): number | null {
   const trimmed = input.trim();
-  
+
   // Match mixed number pattern: optional sign, digits, space, digits/digits
   const mixedPattern = /^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/;
   const match = trimmed.match(mixedPattern);
-  
+
   if (!match) {
     return null;
   }
 
-  const sign = match[1] === '-' ? -1 : 1;
+  const sign = match[1] === "-" ? -1 : 1;
   const whole = parseInt(match[2], 10);
   const numerator = parseInt(match[3], 10);
   const denominator = parseInt(match[4], 10);
@@ -360,14 +360,14 @@ export function parseMixedNumber(input: string): number | null {
  */
 export function parsePercentage(input: string): number | null {
   const trimmed = input.trim();
-  
-  if (!trimmed.endsWith('%')) {
+
+  if (!trimmed.endsWith("%")) {
     return null;
   }
 
   const numPart = trimmed.slice(0, -1).trim();
   const value = parseFloat(numPart);
-  
+
   if (isNaN(value)) {
     return null;
   }
@@ -387,7 +387,7 @@ export function parsePercentage(input: string): number | null {
  */
 export function toFraction(
   decimal: number,
-  maxDenominator: number = MAX_FRACTION_DENOMINATOR
+  maxDenominator: number = MAX_FRACTION_DENOMINATOR,
 ): [number, number] | null {
   if (!isFinite(decimal)) {
     return null;
@@ -412,7 +412,7 @@ export function toFraction(
 
   for (let i = 0; i < 100; i++) {
     const a = Math.floor(x);
-    
+
     // Calculate next convergent
     const nextNum = a * currNum + prevNum;
     const nextDen = a * currDen + prevDen;
@@ -440,7 +440,7 @@ export function toFraction(
       break;
     }
     x = 1 / fractional;
-    
+
     if (!isFinite(x)) {
       break;
     }
@@ -457,7 +457,7 @@ export function toFraction(
 
   // Simplify the fraction
   const simplified = simplifyFraction(numerator, denominator);
-  
+
   return simplified;
 }
 
@@ -468,10 +468,7 @@ export function toFraction(
  * @param f2 - Second fraction as [numerator, denominator]
  * @returns True if fractions are equivalent
  */
-export function areFractionsEquivalent(
-  f1: [number, number],
-  f2: [number, number]
-): boolean {
+export function areFractionsEquivalent(f1: [number, number], f2: [number, number]): boolean {
   // Simplify both fractions
   const [n1, d1] = simplifyFraction(f1[0], f1[1]);
   const [n2, d2] = simplifyFraction(f2[0], f2[1]);
@@ -491,10 +488,10 @@ export function areFractionsEquivalent(
 export function isDecimalEquivalentToFraction(
   decimal: number,
   fraction: [number, number],
-  tolerance: number = 1e-10
+  tolerance: number = 1e-10,
 ): boolean {
   const [numerator, denominator] = fraction;
-  
+
   if (denominator === 0) {
     return false;
   }
@@ -512,11 +509,11 @@ export function isDecimalEquivalentToFraction(
  */
 export function formatFraction(numerator: number, denominator: number): string {
   const [n, d] = simplifyFraction(numerator, denominator);
-  
+
   if (d === 1) {
     return String(n);
   }
-  
+
   return `${n}/${d}`;
 }
 
@@ -529,14 +526,13 @@ export function formatFraction(numerator: number, denominator: number): string {
  */
 export function decimalToFractionString(
   decimal: number,
-  maxDenominator: number = 100
+  maxDenominator: number = 100,
 ): string | null {
   const fraction = toFraction(decimal, maxDenominator);
-  
+
   if (fraction === null) {
     return null;
   }
 
   return formatFraction(fraction[0], fraction[1]);
 }
-

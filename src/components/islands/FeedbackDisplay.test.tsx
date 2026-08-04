@@ -14,11 +14,11 @@
  * The component follows SolidJS patterns and TypeScript ensures type safety.
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { render, screen, fireEvent } from "@solidjs/testing-library";
-import FeedbackDisplay from "./FeedbackDisplay";
-import type { WorkedSolution, VisualAid } from "@/lib/exercises/types";
+import { fireEvent, render, screen } from "@solidjs/testing-library";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { VisualAid, WorkedSolution } from "@/lib/exercises/types";
 import { changeLocale } from "@/lib/i18n";
+import FeedbackDisplay from "./FeedbackDisplay";
 
 // Mock worked solution for testing
 const mockWorkedSolution: WorkedSolution = {
@@ -55,12 +55,7 @@ describe("FeedbackDisplay", () => {
   describe("correct answer feedback", () => {
     it("should render with green theme for correct answers", () => {
       render(() => (
-        <FeedbackDisplay
-          isCorrect={true}
-          message="Well done!"
-          correctAnswer="42"
-          userAnswer="42"
-        />
+        <FeedbackDisplay isCorrect={true} message="Well done!" correctAnswer="42" userAnswer="42" />
       ));
 
       const container = screen.getByRole("alert");
@@ -71,12 +66,7 @@ describe("FeedbackDisplay", () => {
 
     it("should display checkmark icon for correct answers", () => {
       render(() => (
-        <FeedbackDisplay
-          isCorrect={true}
-          message="Well done!"
-          correctAnswer="42"
-          userAnswer="42"
-        />
+        <FeedbackDisplay isCorrect={true} message="Well done!" correctAnswer="42" userAnswer="42" />
       ));
 
       // Check for checkmark path
@@ -101,12 +91,7 @@ describe("FeedbackDisplay", () => {
 
     it("should not display correct answer for correct responses", () => {
       render(() => (
-        <FeedbackDisplay
-          isCorrect={true}
-          message="Well done!"
-          correctAnswer="42"
-          userAnswer="42"
-        />
+        <FeedbackDisplay isCorrect={true} message="Well done!" correctAnswer="42" userAnswer="42" />
       ));
 
       expect(screen.queryByText(/The correct answer is/i)).toBeNull();
@@ -352,9 +337,7 @@ describe("FeedbackDisplay", () => {
       ));
 
       // Check for visual aid container (note: lowercase 'a' in translation)
-      const visualAidSection = screen
-        .getByText("Visual aid")
-        .closest(".visual-aid-section");
+      const visualAidSection = screen.getByText("Visual aid").closest(".visual-aid-section");
       expect(visualAidSection).toBeTruthy();
     });
 
@@ -402,12 +385,7 @@ describe("FeedbackDisplay", () => {
   describe("accessibility", () => {
     it('should have role="alert" on container', () => {
       render(() => (
-        <FeedbackDisplay
-          isCorrect={true}
-          message="Well done!"
-          correctAnswer="42"
-          userAnswer="42"
-        />
+        <FeedbackDisplay isCorrect={true} message="Well done!" correctAnswer="42" userAnswer="42" />
       ));
 
       const container = screen.getByRole("alert");
@@ -416,12 +394,7 @@ describe("FeedbackDisplay", () => {
 
     it('should have aria-live="polite" on container', () => {
       render(() => (
-        <FeedbackDisplay
-          isCorrect={true}
-          message="Well done!"
-          correctAnswer="42"
-          userAnswer="42"
-        />
+        <FeedbackDisplay isCorrect={true} message="Well done!" correctAnswer="42" userAnswer="42" />
       ));
 
       const container = screen.getByRole("alert");
@@ -430,12 +403,7 @@ describe("FeedbackDisplay", () => {
 
     it('should have aria-atomic="true" on container', () => {
       render(() => (
-        <FeedbackDisplay
-          isCorrect={true}
-          message="Well done!"
-          correctAnswer="42"
-          userAnswer="42"
-        />
+        <FeedbackDisplay isCorrect={true} message="Well done!" correctAnswer="42" userAnswer="42" />
       ));
 
       const container = screen.getByRole("alert");
@@ -491,9 +459,7 @@ describe("FeedbackDisplay", () => {
       ));
 
       const button = screen.getByRole("button", { name: /View Solution/i });
-      expect(button.getAttribute("aria-controls")).toBe(
-        "worked-solution-content",
-      );
+      expect(button.getAttribute("aria-controls")).toBe("worked-solution-content");
     });
   });
 
@@ -517,9 +483,7 @@ describe("FeedbackDisplay", () => {
       expect(screen.getByText("Not quite")).toBeTruthy();
       expect(screen.getByText(/The correct answer is: 42/i)).toBeTruthy();
       expect(screen.getByText("Visual aid")).toBeTruthy();
-      expect(
-        screen.getByRole("button", { name: /View Solution/i }),
-      ).toBeTruthy();
+      expect(screen.getByRole("button", { name: /View Solution/i })).toBeTruthy();
       expect(screen.getByText("Try again")).toBeTruthy();
     });
 
@@ -567,12 +531,7 @@ describe("FeedbackDisplay", () => {
   describe("animation and styling", () => {
     it("should have animation class on container", () => {
       render(() => (
-        <FeedbackDisplay
-          isCorrect={true}
-          message="Well done!"
-          correctAnswer="42"
-          userAnswer="42"
-        />
+        <FeedbackDisplay isCorrect={true} message="Well done!" correctAnswer="42" userAnswer="42" />
       ));
 
       const container = screen.getByRole("alert");
@@ -581,12 +540,7 @@ describe("FeedbackDisplay", () => {
 
     it("should have transition classes", () => {
       render(() => (
-        <FeedbackDisplay
-          isCorrect={true}
-          message="Well done!"
-          correctAnswer="42"
-          userAnswer="42"
-        />
+        <FeedbackDisplay isCorrect={true} message="Well done!" correctAnswer="42" userAnswer="42" />
       ));
 
       const container = screen.getByRole("alert");

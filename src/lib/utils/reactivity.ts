@@ -9,7 +9,7 @@
  * - Follows Astro-Solid-Stack guidelines (lines 28-37)
  */
 
-import { batch, untrack as solidUntrack, createEffect, onCleanup } from 'solid-js';
+import { batch, createEffect, onCleanup, untrack as solidUntrack } from "solid-js";
 
 /**
  * Batch multiple reactive updates
@@ -131,7 +131,7 @@ export function createBatchedEffect(fn: () => void, delay: number = 0): void {
  */
 export async function batchAsync<T>(
   operations: Array<() => Promise<T>>,
-  batchSize: number = 10
+  batchSize: number = 10,
 ): Promise<T[]> {
   const results: T[] = [];
 
@@ -170,7 +170,7 @@ export async function batchAsync<T>(
  */
 export function createBatchQueue<T>(
   processor: (items: T[]) => Promise<void> | void,
-  delay: number
+  delay: number,
 ): {
   enqueue: (item: T) => void;
   flush: () => Promise<void>;
@@ -232,7 +232,7 @@ export function createBatchQueue<T>(
  */
 export function createOptimizedComponent<P>(
   shouldUpdate: (prevProps: P, nextProps: P) => boolean,
-  component: (props: P) => any
+  component: (props: P) => any,
 ) {
   let prevProps: P | null = null;
   let prevResult: any = null;
@@ -265,13 +265,10 @@ export function createOptimizedComponent<P>(
  * });
  * ```
  */
-export function deferUntilIdle(
-  fn: () => void,
-  options: { timeout?: number } = {}
-): void {
+export function deferUntilIdle(fn: () => void, options: { timeout?: number } = {}): void {
   const { timeout = 2000 } = options;
 
-  if (typeof requestIdleCallback !== 'undefined') {
+  if (typeof requestIdleCallback !== "undefined") {
     requestIdleCallback(fn, { timeout });
   } else {
     // Fallback for browsers without requestIdleCallback
@@ -305,9 +302,8 @@ export function deferUntilIdle(
  */
 export function createBatchedUpdater<T>(
   updater: (items: T[]) => void,
-  delay: number
+  delay: number,
 ): (item: T) => void {
   const { enqueue } = createBatchQueue(updater, delay);
   return enqueue;
 }
-

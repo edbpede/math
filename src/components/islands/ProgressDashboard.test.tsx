@@ -10,17 +10,13 @@
  * - Accessibility
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@solidjs/testing-library";
 import { userEvent } from "@testing-library/user-event";
-import ProgressDashboard from "./ProgressDashboard";
-import type {
-  CompetencyProgress,
-  SkillProgress,
-  ExerciseAttempt,
-} from "@/lib/mastery/types";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { GradeRange } from "@/lib/curriculum/types";
-import { initI18n, changeLocale } from "@/lib/i18n";
+import { changeLocale, initI18n } from "@/lib/i18n";
+import type { CompetencyProgress, ExerciseAttempt, SkillProgress } from "@/lib/mastery/types";
+import ProgressDashboard from "./ProgressDashboard";
 
 // Mock modules
 vi.mock("@/lib/supabase/progress", () => ({
@@ -42,13 +38,13 @@ vi.mock("@/lib/i18n", async () => {
   };
 });
 
+import { getUpcomingReviews } from "@/lib/mastery/review-scheduler";
 // Import mocked functions
 import {
   fetchCompetencyProgress,
-  fetchSkillsProgress,
   fetchExerciseHistory,
+  fetchSkillsProgress,
 } from "@/lib/supabase/progress";
-import { getUpcomingReviews } from "@/lib/mastery/review-scheduler";
 
 describe("ProgressDashboard", () => {
   const mockUserId = "user-123";
@@ -184,17 +180,13 @@ describe("ProgressDashboard", () => {
 
   describe("Data Loading", () => {
     it("should display loading state initially", () => {
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       expect(screen.getByText(/loading/i)).toBeInTheDocument();
     });
 
     it("should fetch all required data on mount", async () => {
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
         expect(fetchCompetencyProgress).toHaveBeenCalledWith(mockUserId);
@@ -205,44 +197,30 @@ describe("ProgressDashboard", () => {
     });
 
     it("should display dashboard content after loading", async () => {
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
-        expect(
-          screen.getByText("progress.dashboard.title"),
-        ).toBeInTheDocument();
+        expect(screen.getByText("progress.dashboard.title")).toBeInTheDocument();
       });
     });
 
     it("should handle fetch errors gracefully", async () => {
-      (fetchCompetencyProgress as any).mockRejectedValue(
-        new Error("Network error"),
-      );
+      (fetchCompetencyProgress as any).mockRejectedValue(new Error("Network error"));
 
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
-        expect(
-          screen.getByText(/progress.errors.loadFailed/i),
-        ).toBeInTheDocument();
+        expect(screen.getByText(/progress.errors.loadFailed/i)).toBeInTheDocument();
       });
     });
   });
 
   describe("Practice Streak Display", () => {
     it("should calculate and display streak from exercise history", async () => {
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
-        expect(
-          screen.getByText(/progress.sections.streak/i),
-        ).toBeInTheDocument();
+        expect(screen.getByText(/progress.sections.streak/i)).toBeInTheDocument();
       });
     });
 
@@ -256,37 +234,27 @@ describe("ProgressDashboard", () => {
       ];
       (fetchExerciseHistory as any).mockResolvedValue(yesterdayExercises);
 
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
-        expect(
-          screen.getByText(/progress.streak.keepItGoing/i),
-        ).toBeInTheDocument();
+        expect(screen.getByText(/progress.streak.keepItGoing/i)).toBeInTheDocument();
       });
     });
 
     it("should show start message when no streak", async () => {
       (fetchExerciseHistory as any).mockResolvedValue([]);
 
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
-        expect(
-          screen.getByText(/progress.streak.noStreak/i),
-        ).toBeInTheDocument();
+        expect(screen.getByText(/progress.streak.noStreak/i)).toBeInTheDocument();
       });
     });
   });
 
   describe("Competency Area Cards", () => {
     it("should display all competency areas", async () => {
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
         expect(screen.getByText("tal-og-algebra")).toBeInTheDocument();
@@ -295,9 +263,7 @@ describe("ProgressDashboard", () => {
     });
 
     it("should display mastery percentage for each competency", async () => {
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
         expect(screen.getByText("75%")).toBeInTheDocument();
@@ -306,9 +272,7 @@ describe("ProgressDashboard", () => {
     });
 
     it("should display stats (attempts and success rate)", async () => {
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
         expect(screen.getByText("100")).toBeInTheDocument(); // attempts
@@ -317,17 +281,13 @@ describe("ProgressDashboard", () => {
     });
 
     it("should apply correct color coding for mastery levels", async () => {
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
         // Check that mastery levels are displayed (the component shows percentages)
         expect(screen.getByText("75%")).toBeInTheDocument(); // tal-og-algebra mastery
         expect(screen.getByText("45%")).toBeInTheDocument(); // geometri-og-maling mastery
-        const proficientElements = screen.getAllByText(
-          "progress.masteryLevels.proficient",
-        );
+        const proficientElements = screen.getAllByText("progress.masteryLevels.proficient");
         expect(proficientElements.length).toBeGreaterThan(0);
       });
     });
@@ -335,14 +295,10 @@ describe("ProgressDashboard", () => {
     it("should show empty state when no competencies", async () => {
       (fetchCompetencyProgress as any).mockResolvedValue([]);
 
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
-        expect(
-          screen.getByText("progress.empty.noCompetencies"),
-        ).toBeInTheDocument();
+        expect(screen.getByText("progress.empty.noCompetencies")).toBeInTheDocument();
       });
     });
   });
@@ -351,70 +307,52 @@ describe("ProgressDashboard", () => {
     it("should expand skills when clicking view button", async () => {
       const user = userEvent.setup();
 
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
         expect(screen.getByText("tal-og-algebra")).toBeInTheDocument();
       });
 
-      const viewButton = screen.getAllByText(
-        /progress.competencyCard.viewSkills/i,
-      )[0];
+      const viewButton = screen.getAllByText(/progress.competencyCard.viewSkills/i)[0];
       await user.click(viewButton!);
 
       await waitFor(() => {
-        expect(
-          screen.getByText(/progress.sections.skills/i),
-        ).toBeInTheDocument();
+        expect(screen.getByText(/progress.sections.skills/i)).toBeInTheDocument();
       });
     });
 
     it("should display skills with progress bars", async () => {
       const user = userEvent.setup();
 
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
         expect(screen.getByText("tal-og-algebra")).toBeInTheDocument();
       });
 
-      const viewButton = screen.getAllByText(
-        /progress.competencyCard.viewSkills/i,
-      )[0];
+      const viewButton = screen.getAllByText(/progress.competencyCard.viewSkills/i)[0];
       await user.click(viewButton!);
 
       await waitFor(() => {
         expect(screen.getByText("tal-og-algebra-addition")).toBeInTheDocument();
-        expect(
-          screen.getByText("tal-og-algebra-subtraction"),
-        ).toBeInTheDocument();
+        expect(screen.getByText("tal-og-algebra-subtraction")).toBeInTheDocument();
       });
     });
 
     it("should show next review date for skills", async () => {
       const user = userEvent.setup();
 
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
         expect(screen.getByText("tal-og-algebra")).toBeInTheDocument();
       });
 
-      const viewButton = screen.getAllByText(
-        /progress.competencyCard.viewSkills/i,
-      )[0];
+      const viewButton = screen.getAllByText(/progress.competencyCard.viewSkills/i)[0];
       await user.click(viewButton!);
 
       await waitFor(() => {
-        const nextReviewElements = screen.getAllByText(
-          /progress.skillsBreakdown.nextReview/i,
-        );
+        const nextReviewElements = screen.getAllByText(/progress.skillsBreakdown.nextReview/i);
         expect(nextReviewElements.length).toBeGreaterThan(0);
       });
     });
@@ -422,45 +360,33 @@ describe("ProgressDashboard", () => {
     it("should collapse skills when clicking hide button", async () => {
       const user = userEvent.setup();
 
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
         expect(screen.getByText("tal-og-algebra")).toBeInTheDocument();
       });
 
       // Expand
-      const viewButton = screen.getAllByText(
-        /progress.competencyCard.viewSkills/i,
-      )[0];
+      const viewButton = screen.getAllByText(/progress.competencyCard.viewSkills/i)[0];
       await user.click(viewButton!);
 
       await waitFor(() => {
-        expect(
-          screen.getByText(/progress.sections.skills/i),
-        ).toBeInTheDocument();
+        expect(screen.getByText(/progress.sections.skills/i)).toBeInTheDocument();
       });
 
       // Collapse
-      const hideButton = screen.getByText(
-        /progress.competencyCard.hideSkills/i,
-      );
+      const hideButton = screen.getByText(/progress.competencyCard.hideSkills/i);
       await user.click(hideButton);
 
       await waitFor(() => {
-        expect(
-          screen.queryByText(/progress.sections.skills/i),
-        ).not.toBeInTheDocument();
+        expect(screen.queryByText(/progress.sections.skills/i)).not.toBeInTheDocument();
       });
     });
   });
 
   describe("Review Schedule", () => {
     it("should display review schedule sections", async () => {
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
         expect(screen.getByText("progress.reviews.title")).toBeInTheDocument();
@@ -468,41 +394,29 @@ describe("ProgressDashboard", () => {
     });
 
     it("should show overdue reviews with priority", async () => {
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
-        const overdueElements = screen.getAllByText(
-          /progress.reviews.overdue/i,
-        );
+        const overdueElements = screen.getAllByText(/progress.reviews.overdue/i);
         expect(overdueElements.length).toBeGreaterThan(0);
         expect(screen.getByText("multiplication-basics")).toBeInTheDocument();
       });
     });
 
     it("should show reviews due today", async () => {
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
-        expect(
-          screen.getByText(/progress.reviews.dueToday/i),
-        ).toBeInTheDocument();
+        expect(screen.getByText(/progress.reviews.dueToday/i)).toBeInTheDocument();
         expect(screen.getByText("division-basics")).toBeInTheDocument();
       });
     });
 
     it("should show reviews due this week", async () => {
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
-        expect(
-          screen.getByText(/progress.reviews.dueThisWeek/i),
-        ).toBeInTheDocument();
+        expect(screen.getByText(/progress.reviews.dueThisWeek/i)).toBeInTheDocument();
         expect(screen.getByText("fractions-basics")).toBeInTheDocument();
       });
     });
@@ -516,26 +430,18 @@ describe("ProgressDashboard", () => {
         total: 0,
       });
 
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
-        expect(
-          screen.getByText("progress.reviews.noReviews"),
-        ).toBeInTheDocument();
+        expect(screen.getByText("progress.reviews.noReviews")).toBeInTheDocument();
       });
     });
 
     it("should display practice now buttons for overdue and today", async () => {
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
-        const practiceButtons = screen.getAllByText(
-          /progress.reviews.practiceNow/i,
-        );
+        const practiceButtons = screen.getAllByText(/progress.reviews.practiceNow/i);
         expect(practiceButtons.length).toBeGreaterThan(0);
       });
     });
@@ -551,9 +457,7 @@ describe("ProgressDashboard", () => {
       ];
       (fetchCompetencyProgress as any).mockResolvedValue(lowMastery);
 
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
         expect(screen.getByText("15%")).toBeInTheDocument();
@@ -569,9 +473,7 @@ describe("ProgressDashboard", () => {
       ];
       (fetchCompetencyProgress as any).mockResolvedValue(mediumLowMastery);
 
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
         expect(screen.getByText("30%")).toBeInTheDocument();
@@ -579,9 +481,7 @@ describe("ProgressDashboard", () => {
     });
 
     it("should apply light green for progressing level (41-60)", async () => {
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
         expect(screen.getByText("45%")).toBeInTheDocument();
@@ -589,9 +489,7 @@ describe("ProgressDashboard", () => {
     });
 
     it("should apply green for proficient level (61-80)", async () => {
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
         expect(screen.getByText("75%")).toBeInTheDocument();
@@ -607,9 +505,7 @@ describe("ProgressDashboard", () => {
       ];
       (fetchCompetencyProgress as any).mockResolvedValue(highMastery);
 
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
         expect(screen.getByText("90%")).toBeInTheDocument();
@@ -619,9 +515,7 @@ describe("ProgressDashboard", () => {
 
   describe("Accessibility", () => {
     it("should have proper ARIA labels for buttons", async () => {
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
         const buttons = screen.getAllByRole("button");
@@ -632,9 +526,7 @@ describe("ProgressDashboard", () => {
     it("should support keyboard navigation", async () => {
       const user = userEvent.setup();
 
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
         expect(screen.getByText("tal-og-algebra")).toBeInTheDocument();
@@ -649,9 +541,7 @@ describe("ProgressDashboard", () => {
     });
 
     it("should have aria-expanded attribute on toggle buttons", async () => {
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
         const toggleButtons = screen.getAllByRole("button");
@@ -665,9 +555,7 @@ describe("ProgressDashboard", () => {
 
   describe("Responsive Behavior", () => {
     it("should render grid layout for competency cards", async () => {
-      render(() => (
-        <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />
-      ));
+      render(() => <ProgressDashboard userId={mockUserId} gradeRange={mockGradeRange} />);
 
       await waitFor(() => {
         const cards = screen.getAllByText(/tal-og-algebra|geometri-og-maling/);

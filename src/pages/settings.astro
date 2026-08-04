@@ -12,26 +12,26 @@
  * Task: 9.5
  */
 
-import MainLayout from '@/components/layouts/MainLayout.astro'
-import SettingsForm from '@/components/islands/SettingsForm'
-import UUIDManagement from '@/components/islands/UUIDManagement'
-import { $t, initI18n } from '@/lib/i18n'
+import SettingsForm from "@/components/islands/SettingsForm";
+import UUIDManagement from "@/components/islands/UUIDManagement";
+import MainLayout from "@/components/layouts/MainLayout.astro";
+import { $t, initI18n } from "@/lib/i18n";
 
 // Check authentication - redirect if not authenticated
-const user = Astro.locals.user
+const user = Astro.locals.user;
 if (!user) {
-  return Astro.redirect('/demo-login')
+  return Astro.redirect("/demo-login");
 }
 
 // Initialize i18n with user's preferred locale
-await initI18n(user.locale)
+await initI18n(user.locale);
 
 // Get translations
-const t = await $t.get()
+const t = await $t.get();
 
 // Page metadata
-const title = t('settings.page.title')
-const description = t('settings.page.description')
+const title = t("settings.page.title");
+const description = t("settings.page.description");
 ---
 
 <MainLayout

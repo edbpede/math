@@ -11,13 +11,13 @@
  * - 9.1: WCAG 2.1 AA accessibility
  */
 
-import { createSignal, createEffect, Show } from "solid-js";
 import { useStore } from "@nanostores/solid";
-import { $t } from "@/lib/i18n";
-import { formatUUID } from "@/lib/auth/uuid";
-import { deleteUser } from "@/lib/auth";
-import { createFocusTrap } from "@/lib/accessibility";
 import QRCode from "qrcode";
+import { createEffect, createSignal, Show } from "solid-js";
+import { createFocusTrap } from "@/lib/accessibility";
+import { deleteUser } from "@/lib/auth";
+import { formatUUID } from "@/lib/auth/uuid";
+import { $t } from "@/lib/i18n";
 import { ErrorBoundaryWrapper } from "./ErrorBoundary";
 
 export interface UUIDManagementProps {
@@ -185,27 +185,21 @@ const UUIDManagementComponent = (props: UUIDManagementProps) => {
     <div class={`uuid-management ${props.class || ""}`}>
       {/* Error message */}
       <Show when={state().status === "error"}>
-        <div
-          class="mb-4 rounded-lg border border-red-300 bg-red-50 p-4 text-red-800"
-          role="alert"
-        >
+        <div class="mb-4 rounded-lg border border-red-300 bg-red-50 p-4 text-red-800" role="alert">
           {(state() as { status: "error"; message: string }).message}
         </div>
       </Show>
 
       {/* UUID Display Section */}
       <section class="mb-8 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-        <h3 class="mb-2 text-lg font-semibold text-gray-900">
-          {t()("settings.uuid.title")}
-        </h3>
-        <p class="mb-4 text-sm text-gray-600">
-          {t()("settings.uuid.description")}
-        </p>
+        <h3 class="mb-2 text-lg font-semibold text-gray-900">{t()("settings.uuid.title")}</h3>
+        <p class="mb-4 text-sm text-gray-600">{t()("settings.uuid.description")}</p>
 
         {/* Warning box */}
         <div class="mb-4 rounded-lg border border-amber-300 bg-amber-50 p-4">
           <div class="flex items-start gap-3">
             <svg
+              aria-hidden="true"
               class="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600"
               fill="currentColor"
               viewBox="0 0 20 20"
@@ -217,21 +211,17 @@ const UUIDManagementComponent = (props: UUIDManagementProps) => {
               />
             </svg>
             <div>
-              <p class="font-medium text-amber-900">
-                {t()("settings.uuid.warning.title")}
-              </p>
-              <p class="mt-1 text-sm text-amber-800">
-                {t()("settings.uuid.warning.message")}
-              </p>
+              <p class="font-medium text-amber-900">{t()("settings.uuid.warning.title")}</p>
+              <p class="mt-1 text-sm text-amber-800">{t()("settings.uuid.warning.message")}</p>
             </div>
           </div>
         </div>
 
         {/* UUID display with show/hide */}
         <div class="mb-4">
-          <label class="mb-2 block text-sm font-medium text-gray-700">
+          <span class="mb-2 block text-sm font-medium text-gray-700">
             {t()("settings.uuid.label")}
-          </label>
+          </span>
           <div class="flex items-center gap-3">
             <div
               class="flex-1 rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 font-mono text-lg tracking-wider"
@@ -243,15 +233,9 @@ const UUIDManagementComponent = (props: UUIDManagementProps) => {
               type="button"
               onClick={() => setShowUUID(!showUUID())}
               class="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-blue-300 touch-target"
-              aria-label={
-                showUUID()
-                  ? t()("settings.uuid.hide")
-                  : t()("settings.uuid.show")
-              }
+              aria-label={showUUID() ? t()("settings.uuid.hide") : t()("settings.uuid.show")}
             >
-              {showUUID()
-                ? t()("settings.uuid.hide")
-                : t()("settings.uuid.show")}
+              {showUUID() ? t()("settings.uuid.hide") : t()("settings.uuid.show")}
             </button>
           </div>
         </div>
@@ -269,6 +253,7 @@ const UUIDManagementComponent = (props: UUIDManagementProps) => {
               when={copied()}
               fallback={
                 <svg
+                  aria-hidden="true"
                   class="h-5 w-5"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -284,6 +269,7 @@ const UUIDManagementComponent = (props: UUIDManagementProps) => {
               }
             >
               <svg
+                aria-hidden="true"
                 class="h-5 w-5 text-green-600"
                 fill="currentColor"
                 viewBox="0 0 20 20"
@@ -295,11 +281,7 @@ const UUIDManagementComponent = (props: UUIDManagementProps) => {
                 />
               </svg>
             </Show>
-            <span>
-              {copied()
-                ? t()("settings.uuid.copied")
-                : t()("settings.uuid.copy")}
-            </span>
+            <span>{copied() ? t()("settings.uuid.copied") : t()("settings.uuid.copy")}</span>
           </button>
 
           {/* Export button */}
@@ -310,6 +292,7 @@ const UUIDManagementComponent = (props: UUIDManagementProps) => {
             aria-label={t()("settings.uuid.export")}
           >
             <svg
+              aria-hidden="true"
               class="h-5 w-5"
               fill="none"
               viewBox="0 0 24 24"
@@ -330,11 +313,7 @@ const UUIDManagementComponent = (props: UUIDManagementProps) => {
             type="button"
             onClick={toggleQRCode}
             class="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-blue-300 touch-target"
-            aria-label={
-              showQR()
-                ? t()("settings.uuid.hideQR")
-                : t()("settings.uuid.showQR")
-            }
+            aria-label={showQR() ? t()("settings.uuid.hideQR") : t()("settings.uuid.showQR")}
             aria-expanded={showQR()}
             disabled={state().status === "loading-qr"}
           >
@@ -345,6 +324,7 @@ const UUIDManagementComponent = (props: UUIDManagementProps) => {
               }
             >
               <svg
+                aria-hidden="true"
                 class="h-5 w-5"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -358,11 +338,7 @@ const UUIDManagementComponent = (props: UUIDManagementProps) => {
                 />
               </svg>
             </Show>
-            <span>
-              {showQR()
-                ? t()("settings.uuid.hideQR")
-                : t()("settings.uuid.showQR")}
-            </span>
+            <span>{showQR() ? t()("settings.uuid.hideQR") : t()("settings.uuid.showQR")}</span>
           </button>
         </div>
 
@@ -390,17 +366,11 @@ const UUIDManagementComponent = (props: UUIDManagementProps) => {
         <h3 class="mb-2 text-lg font-semibold text-red-900">
           {t()("settings.sections.dangerZone.title")}
         </h3>
-        <p class="mb-4 text-sm text-red-800">
-          {t()("settings.sections.dangerZone.description")}
-        </p>
+        <p class="mb-4 text-sm text-red-800">{t()("settings.sections.dangerZone.description")}</p>
 
         <div class="rounded-lg border border-red-300 bg-white p-4">
-          <h4 class="mb-2 font-semibold text-gray-900">
-            {t()("settings.deleteAccount.title")}
-          </h4>
-          <p class="mb-4 text-sm text-gray-600">
-            {t()("settings.deleteAccount.description")}
-          </p>
+          <h4 class="mb-2 font-semibold text-gray-900">{t()("settings.deleteAccount.title")}</h4>
+          <p class="mb-4 text-sm text-gray-600">{t()("settings.deleteAccount.description")}</p>
           <button
             type="button"
             onClick={() => setShowDeleteModal(true)}
@@ -413,6 +383,7 @@ const UUIDManagementComponent = (props: UUIDManagementProps) => {
 
       {/* Delete Confirmation Modal */}
       <Show when={showDeleteModal()}>
+        {/* biome-ignore lint/a11y/useKeyWithClickEvents: click-outside is a convenience only; the focus trap closes on Escape and the dialog has an explicit Cancel button */}
         <div
           class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
           role="dialog"
@@ -424,14 +395,8 @@ const UUIDManagementComponent = (props: UUIDManagementProps) => {
             }
           }}
         >
-          <div
-            ref={modalRef}
-            class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl"
-          >
-            <h3
-              id="delete-modal-title"
-              class="mb-4 text-xl font-bold text-gray-900"
-            >
+          <div ref={modalRef} class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+            <h3 id="delete-modal-title" class="mb-4 text-xl font-bold text-gray-900">
               {t()("settings.deleteAccount.confirm.title")}
             </h3>
             <p id="delete-modal-description" class="mb-4 text-gray-700">

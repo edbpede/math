@@ -4,14 +4,14 @@
  * Comprehensive tests for fraction representation exercise templates
  */
 
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
+import { ParameterGenerator } from "../../parameter-generator";
+import { TemplateRegistry } from "../../template-registry";
 import {
   fractionRepresentationA,
   fractionRepresentationB,
   fractionRepresentationC,
 } from "./fraction-representation";
-import { TemplateRegistry } from "../../template-registry";
-import { ParameterGenerator } from "../../parameter-generator";
 
 describe("Fraction Representation Templates", () => {
   let registry: TemplateRegistry;
@@ -22,15 +22,9 @@ describe("Fraction Representation Templates", () => {
 
   describe("fractionRepresentationA (Difficulty A)", () => {
     it("should have correct metadata", () => {
-      expect(fractionRepresentationA.id).toBe(
-        "tal-algebra-fraction-representation-4-6-A",
-      );
-      expect(fractionRepresentationA.metadata.competencyAreaId).toBe(
-        "tal-og-algebra",
-      );
-      expect(fractionRepresentationA.metadata.skillsAreaId).toBe(
-        "broker-og-procent",
-      );
+      expect(fractionRepresentationA.id).toBe("tal-algebra-fraction-representation-4-6-A");
+      expect(fractionRepresentationA.metadata.competencyAreaId).toBe("tal-og-algebra");
+      expect(fractionRepresentationA.metadata.skillsAreaId).toBe("broker-og-procent");
       expect(fractionRepresentationA.metadata.gradeRange).toBe("4-6");
       expect(fractionRepresentationA.metadata.difficulty).toBe("A");
       expect(fractionRepresentationA.metadata.isBinding).toBe(true);
@@ -65,18 +59,10 @@ describe("Fraction Representation Templates", () => {
     it("should validate correct answers including decimals", () => {
       const correctAnswer = { value: "1/2", equivalents: [0.5] };
 
-      expect(
-        fractionRepresentationA.validate("1/2", correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        fractionRepresentationA.validate("0.5", correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        fractionRepresentationA.validate("0,5", correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        fractionRepresentationA.validate("2/3", correctAnswer).correct,
-      ).toBe(false);
+      expect(fractionRepresentationA.validate("1/2", correctAnswer).correct).toBe(true);
+      expect(fractionRepresentationA.validate("0.5", correctAnswer).correct).toBe(true);
+      expect(fractionRepresentationA.validate("0,5", correctAnswer).correct).toBe(true);
+      expect(fractionRepresentationA.validate("2/3", correctAnswer).correct).toBe(false);
     });
 
     it("should provide 4 hint levels", () => {
@@ -110,13 +96,9 @@ describe("Fraction Representation Templates", () => {
 
   describe("fractionRepresentationB (Difficulty B)", () => {
     it("should have correct metadata", () => {
-      expect(fractionRepresentationB.id).toBe(
-        "tal-algebra-fraction-representation-4-6-B",
-      );
+      expect(fractionRepresentationB.id).toBe("tal-algebra-fraction-representation-4-6-B");
       expect(fractionRepresentationB.metadata.difficulty).toBe("B");
-      expect(fractionRepresentationB.metadata.tags).toContain(
-        "proper-fractions",
-      );
+      expect(fractionRepresentationB.metadata.tags).toContain("proper-fractions");
     });
 
     it("should register successfully", () => {
@@ -150,15 +132,9 @@ describe("Fraction Representation Templates", () => {
     it("should validate equivalent fractions", () => {
       const correctAnswer = { value: "2/4", equivalents: [0.5] };
 
-      expect(
-        fractionRepresentationB.validate("2/4", correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        fractionRepresentationB.validate("1/2", correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        fractionRepresentationB.validate("0.5", correctAnswer).correct,
-      ).toBe(true);
+      expect(fractionRepresentationB.validate("2/4", correctAnswer).correct).toBe(true);
+      expect(fractionRepresentationB.validate("1/2", correctAnswer).correct).toBe(true);
+      expect(fractionRepresentationB.validate("0.5", correctAnswer).correct).toBe(true);
     });
 
     it("should provide 4 hint levels", () => {
@@ -168,13 +144,9 @@ describe("Fraction Representation Templates", () => {
 
   describe("fractionRepresentationC (Difficulty C)", () => {
     it("should have correct metadata", () => {
-      expect(fractionRepresentationC.id).toBe(
-        "tal-algebra-fraction-representation-4-6-C",
-      );
+      expect(fractionRepresentationC.id).toBe("tal-algebra-fraction-representation-4-6-C");
       expect(fractionRepresentationC.metadata.difficulty).toBe("C");
-      expect(fractionRepresentationC.metadata.tags).toContain(
-        "improper-fractions",
-      );
+      expect(fractionRepresentationC.metadata.tags).toContain("improper-fractions");
     });
 
     it("should register successfully", () => {
@@ -212,15 +184,9 @@ describe("Fraction Representation Templates", () => {
     it("should validate mixed number format", () => {
       const correctAnswer = { value: "7/4", equivalents: [1.75, "1 3/4"] };
 
-      expect(
-        fractionRepresentationC.validate("7/4", correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        fractionRepresentationC.validate("1 3/4", correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        fractionRepresentationC.validate("1.75", correctAnswer).correct,
-      ).toBe(true);
+      expect(fractionRepresentationC.validate("7/4", correctAnswer).correct).toBe(true);
+      expect(fractionRepresentationC.validate("1 3/4", correctAnswer).correct).toBe(true);
+      expect(fractionRepresentationC.validate("1.75", correctAnswer).correct).toBe(true);
     });
 
     it("should provide 4 hint levels", () => {

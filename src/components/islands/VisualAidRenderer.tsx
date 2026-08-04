@@ -9,14 +9,14 @@
  * - 8.5: Include visual aids in feedback when relevant
  */
 
-import { Match, Switch, Show, For, createMemo } from "solid-js";
-import type { VisualAid } from "@/lib/exercises/types";
 import { useStore } from "@nanostores/solid";
-import { $t } from "@/lib/i18n";
+import { createMemo, For, Match, Show, Switch } from "solid-js";
 import {
-  generateVisualAidDescription,
   generateLongDescription,
+  generateVisualAidDescription,
 } from "@/lib/accessibility/visual-aid-descriptions";
+import type { VisualAid } from "@/lib/exercises/types";
+import { $t } from "@/lib/i18n";
 
 export interface VisualAidRendererProps {
   /** The visual aid to render */
@@ -180,12 +180,7 @@ function NumberLineRenderer(props: { data: NumberLineData }) {
                   stroke-width="2"
                   class="text-gray-700"
                 />
-                <text
-                  x={x}
-                  y="85"
-                  text-anchor="middle"
-                  class="text-sm font-medium fill-gray-700"
-                >
+                <text x={x} y="85" text-anchor="middle" class="text-sm font-medium fill-gray-700">
                   {tick}
                 </text>
               </>
@@ -281,28 +276,19 @@ function PlaceValueDiagram(props: { data: DiagramData }) {
       <For each={placeValues}>
         {([place, count]) => (
           <div class="place-column flex flex-col items-center gap-2">
-            <div class="text-sm font-bold text-gray-700 capitalize">
-              {place}
-            </div>
+            <div class="text-sm font-bold text-gray-700 capitalize">{place}</div>
             <div class="blocks flex flex-col-reverse gap-1">
               <For each={Array(count)}>
                 {() => (
                   <div
                     class="block w-16 h-16 rounded border-2 flex items-center justify-center font-bold text-lg"
                     classList={{
-                      "bg-blue-200 border-blue-500 text-blue-900":
-                        place === "hundreds",
-                      "bg-green-200 border-green-500 text-green-900":
-                        place === "tens",
-                      "bg-yellow-200 border-yellow-500 text-yellow-900":
-                        place === "ones",
+                      "bg-blue-200 border-blue-500 text-blue-900": place === "hundreds",
+                      "bg-green-200 border-green-500 text-green-900": place === "tens",
+                      "bg-yellow-200 border-yellow-500 text-yellow-900": place === "ones",
                     }}
                   >
-                    {place === "hundreds"
-                      ? "100"
-                      : place === "tens"
-                        ? "10"
-                        : "1"}
+                    {place === "hundreds" ? "100" : place === "tens" ? "10" : "1"}
                   </div>
                 )}
               </For>
@@ -338,7 +324,7 @@ function FractionCircle(props: { numerator: number; denominator: number }) {
   const sections = Array.from({ length: props.denominator }, (_, i) => i);
 
   return (
-    <svg viewBox="0 0 200 200" class="w-48 h-48 mx-auto">
+    <svg aria-hidden="true" viewBox="0 0 200 200" class="w-48 h-48 mx-auto">
       <circle
         cx="100"
         cy="100"
@@ -393,7 +379,7 @@ function FractionRectangle(props: { numerator: number; denominator: number }) {
   // const sectionWidth = 100 / props.denominator;
 
   return (
-    <svg viewBox="0 0 200 80" class="w-full h-24 mx-auto">
+    <svg aria-hidden="true" viewBox="0 0 200 80" class="w-full h-24 mx-auto">
       <rect
         x="0"
         y="10"

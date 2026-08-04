@@ -36,17 +36,17 @@ export function generateUUID(): string {
   // - Modern browsers (Chrome 92+, Firefox 95+, Safari 15.4+)
   // - Node.js 16.7.0+
   // - Deno 1.11+
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-    return crypto.randomUUID()
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
+    return crypto.randomUUID();
   }
 
   // Fallback for older environments (should rarely be needed)
   // This implements UUIDv4 format manually
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0
-    const v = c === 'x' ? r : (r & 0x3) | 0x8
-    return v.toString(16)
-  })
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
 }
 
 /**
@@ -68,13 +68,13 @@ export function generateUUID(): string {
  */
 export function formatUUID(uuid: string): string {
   // Remove all dashes and convert to lowercase
-  const clean = uuid.replace(/-/g, '').toLowerCase()
+  const clean = uuid.replace(/-/g, "").toLowerCase();
 
   // Take first 16 characters (64 bits of entropy)
-  const short = clean.substring(0, 16)
+  const short = clean.substring(0, 16);
 
   // Format as XXXX-XXXX-XXXX-XXXX
-  return `${short.substring(0, 4)}-${short.substring(4, 8)}-${short.substring(8, 12)}-${short.substring(12, 16)}`
+  return `${short.substring(0, 4)}-${short.substring(4, 8)}-${short.substring(8, 12)}-${short.substring(12, 16)}`;
 }
 
 /**
@@ -98,21 +98,20 @@ export function formatUUID(uuid: string): string {
  * validateUUID("7b3f-4c2a-8d1e")        // => false (too short)
  */
 export function validateUUID(uuid: string): boolean {
-  if (!uuid || typeof uuid !== 'string') {
-    return false
+  if (!uuid || typeof uuid !== "string") {
+    return false;
   }
 
   // Trim whitespace
-  const trimmed = uuid.trim()
+  const trimmed = uuid.trim();
 
   // Short format: XXXX-XXXX-XXXX-XXXX (19 characters)
-  const shortFormat = /^[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}$/i
+  const shortFormat = /^[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}$/i;
 
   // Standard UUID format (36 characters)
-  const standardFormat =
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  const standardFormat = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-  return shortFormat.test(trimmed) || standardFormat.test(trimmed)
+  return shortFormat.test(trimmed) || standardFormat.test(trimmed);
 }
 
 /**
@@ -131,24 +130,24 @@ export function validateUUID(uuid: string): boolean {
  */
 export function parseUUID(formattedUUID: string): string | null {
   if (!validateUUID(formattedUUID)) {
-    return null
+    return null;
   }
 
-  const clean = formattedUUID.replace(/-/g, '').toLowerCase()
+  const clean = formattedUUID.replace(/-/g, "").toLowerCase();
 
   // If it's already 32 characters, format as standard UUID
   if (clean.length === 32) {
-    return `${clean.substring(0, 8)}-${clean.substring(8, 12)}-${clean.substring(12, 16)}-${clean.substring(16, 20)}-${clean.substring(20, 32)}`
+    return `${clean.substring(0, 8)}-${clean.substring(8, 12)}-${clean.substring(12, 16)}-${clean.substring(16, 20)}-${clean.substring(20, 32)}`;
   }
 
   // If it's 16 characters (short format), pad to standard UUID
   if (clean.length === 16) {
     // Pad with zeros to make a valid UUID
-    const padded = clean + '0'.repeat(16)
-    return `${padded.substring(0, 8)}-${padded.substring(8, 12)}-${padded.substring(12, 16)}-${padded.substring(16, 20)}-${padded.substring(20, 32)}`
+    const padded = clean + "0".repeat(16);
+    return `${padded.substring(0, 8)}-${padded.substring(8, 12)}-${padded.substring(12, 16)}-${padded.substring(16, 20)}-${padded.substring(20, 32)}`;
   }
 
-  return null
+  return null;
 }
 
 /**
@@ -165,7 +164,7 @@ export function parseUUID(formattedUUID: string): string | null {
  * // => "7b3f4c2a-8d1e-9f6b-0000-000000000000"
  */
 export function normalizeUUID(uuid: string): string | null {
-  return parseUUID(uuid)
+  return parseUUID(uuid);
 }
 
 /**
@@ -183,18 +182,18 @@ export function normalizeUUID(uuid: string): string | null {
  */
 export function maskUUID(uuid: string): string {
   if (!validateUUID(uuid)) {
-    return '****-****-****-****'
+    return "****-****-****-****";
   }
 
-  const parts = uuid.split('-')
+  const parts = uuid.split("-");
 
   if (parts.length === 4) {
     // Short format
-    return `${parts[0]}-****-****-${parts[3]}`
+    return `${parts[0]}-****-****-${parts[3]}`;
   } else if (parts.length === 5) {
     // Standard format
-    return `${parts[0]}-****-****-****-${parts[4]}`
+    return `${parts[0]}-****-****-****-${parts[4]}`;
   }
 
-  return '****-****-****-****'
+  return "****-****-****-****";
 }

@@ -29,7 +29,9 @@ jobs:
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: latest
+          # Pinned via the committed `packageManager` field rather than `latest`,
+          # so CI cannot drift onto a Bun release the lockfile has not seen.
+          bun-version-file: package.json
 
       - name: Cache dependencies
         uses: actions/cache@v4
@@ -58,12 +60,14 @@ jobs:
 
       - name: Create CI summary
         run: |
-          echo "## ✅ CI Successful" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Tests:** Passed" >> $GITHUB_STEP_SUMMARY
-          echo "**Type Check:** Passed" >> $GITHUB_STEP_SUMMARY
-          echo "**Build:** Successful" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "---" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "_Deployments are handled automatically by Vercel_" >> $GITHUB_STEP_SUMMARY
+          cat >> "$GITHUB_STEP_SUMMARY" <<'EOF'
+          ## ✅ CI Successful
+
+          **Tests:** Passed
+          **Type Check:** Passed
+          **Build:** Successful
+
+          ---
+
+          _Deployments are handled automatically by Vercel_
+          EOF

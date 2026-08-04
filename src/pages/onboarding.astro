@@ -19,21 +19,21 @@
  * Task: 15.1
  */
 
-import MainLayout from '@/components/layouts/MainLayout.astro'
-import OnboardingFlow from '@/components/islands/OnboardingFlow'
-import { $t, initI18n, detectBrowserLocale } from '@/lib/i18n'
+import OnboardingFlow from "@/components/islands/OnboardingFlow";
+import MainLayout from "@/components/layouts/MainLayout.astro";
+import { $t, detectBrowserLocale, initI18n } from "@/lib/i18n";
 
 // Detect browser language and initialize i18n
-const browserLocale = detectBrowserLocale()
-await initI18n(browserLocale)
+const browserLocale = detectBrowserLocale();
+await initI18n(browserLocale);
 
 // Get translations
-const t = await $t.get()
+const t = await $t.get();
 
 // Check if user is authenticated (should redirect)
-const user = Astro.locals.user
+const user = Astro.locals.user;
 if (user) {
-  return Astro.redirect('/dashboard')
+  return Astro.redirect("/dashboard");
 }
 ---
 

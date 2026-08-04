@@ -23,69 +23,60 @@
  * For now, these tests are skipped pending proper SolidJS test environment setup.
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@solidjs/testing-library";
-import ExercisePractice, {
-  type ExercisePracticeProps,
-  type ExerciseAttempt,
-} from "./ExercisePractice";
+import { fireEvent, render, screen, waitFor } from "@solidjs/testing-library";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ExerciseInstance } from "@/lib/exercises/types";
-import { initI18n, changeLocale } from "@/lib/i18n";
+import { changeLocale, initI18n } from "@/lib/i18n";
+import ExercisePractice, {
+  type ExerciseAttempt,
+  type ExercisePracticeProps,
+} from "./ExercisePractice";
 
 // Mock i18n with Nanostores (must define function inside mock since mocks are hoisted)
 vi.mock("@/lib/i18n", () => {
-  const createTranslationFunction =
-    () => (key: string, params?: Record<string, string>) => {
-      const translations: Record<string, string> = {
-        "exercises.session.title": "Practice session",
-        "exercises.session.progress": `Exercise ${params?.current || "1"} of ${params?.total || "1"}`,
-        "exercises.session.complete": "Complete Session",
-        "exercises.session.confirmQuit":
-          "Are you sure you want to skip? This will count as incorrect.",
-        "exercises.exercise.question": "Question",
-        "exercises.exercise.yourAnswer": "Your answer",
-        "exercises.exercise.placeholder": "Enter your answer...",
-        "exercises.exercise.checkAnswer": "Check answer",
-        "exercises.exercise.nextExercise": "Next Exercise",
-        "exercises.exercise.skipExercise": "Skip",
-        "exercises.exercise.difficulty": `Difficulty: ${params?.level || "A"}`,
-        "exercises.exercise.bindingContent": "Binding content",
-        "exercises.validation.checking": "Checking...",
-        "feedback.correct.title": "Correct!",
-        "feedback.correct.messages": JSON.stringify([
-          "Well done!",
-          "Excellent!",
-          "Perfect!",
-        ]),
-        "feedback.correct.continue": "Next Exercise",
-        "feedback.incorrect.title": "Not quite",
-        "feedback.incorrect.messages": JSON.stringify([
-          "Try again!",
-          "Good try!",
-          "Keep trying!",
-        ]),
-        "feedback.incorrect.showCorrect": `The correct answer is: ${params?.answer || "42"}`,
-        "feedback.incorrect.tryAgain": "Try again",
-        "feedback.incorrect.viewSolution": "View Solution",
-        "feedback.incorrect.hideSolution": "Hide Solution",
-        "common.actions.confirm": "Confirm",
-        "common.actions.cancel": "Cancel",
-        "errors.exercise.notFound": "Exercise not found",
-      };
-
-      const value = translations[key] || key;
-
-      // Parse JSON arrays
-      if (value.startsWith("[") && value.endsWith("]")) {
-        try {
-          return JSON.parse(value);
-        } catch {
-          return value;
-        }
-      }
-
-      return value;
+  const createTranslationFunction = () => (key: string, params?: Record<string, string>) => {
+    const translations: Record<string, string> = {
+      "exercises.session.title": "Practice session",
+      "exercises.session.progress": `Exercise ${params?.current || "1"} of ${params?.total || "1"}`,
+      "exercises.session.complete": "Complete Session",
+      "exercises.session.confirmQuit":
+        "Are you sure you want to skip? This will count as incorrect.",
+      "exercises.exercise.question": "Question",
+      "exercises.exercise.yourAnswer": "Your answer",
+      "exercises.exercise.placeholder": "Enter your answer...",
+      "exercises.exercise.checkAnswer": "Check answer",
+      "exercises.exercise.nextExercise": "Next Exercise",
+      "exercises.exercise.skipExercise": "Skip",
+      "exercises.exercise.difficulty": `Difficulty: ${params?.level || "A"}`,
+      "exercises.exercise.bindingContent": "Binding content",
+      "exercises.validation.checking": "Checking...",
+      "feedback.correct.title": "Correct!",
+      "feedback.correct.messages": JSON.stringify(["Well done!", "Excellent!", "Perfect!"]),
+      "feedback.correct.continue": "Next Exercise",
+      "feedback.incorrect.title": "Not quite",
+      "feedback.incorrect.messages": JSON.stringify(["Try again!", "Good try!", "Keep trying!"]),
+      "feedback.incorrect.showCorrect": `The correct answer is: ${params?.answer || "42"}`,
+      "feedback.incorrect.tryAgain": "Try again",
+      "feedback.incorrect.viewSolution": "View Solution",
+      "feedback.incorrect.hideSolution": "Hide Solution",
+      "common.actions.confirm": "Confirm",
+      "common.actions.cancel": "Cancel",
+      "errors.exercise.notFound": "Exercise not found",
     };
+
+    const value = translations[key] || key;
+
+    // Parse JSON arrays
+    if (value.startsWith("[") && value.endsWith("]")) {
+      try {
+        return JSON.parse(value);
+      } catch {
+        return value;
+      }
+    }
+
+    return value;
+  };
 
   const tFunc = createTranslationFunction();
   return {
@@ -137,18 +128,10 @@ vi.mock("@nanostores/solid", () => ({
         "exercises.exercise.bindingContent": "Binding content",
         "exercises.validation.checking": "Checking...",
         "feedback.correct.title": "Correct!",
-        "feedback.correct.messages": JSON.stringify([
-          "Well done!",
-          "Excellent!",
-          "Perfect!",
-        ]),
+        "feedback.correct.messages": JSON.stringify(["Well done!", "Excellent!", "Perfect!"]),
         "feedback.correct.continue": "Next Exercise",
         "feedback.incorrect.title": "Not quite",
-        "feedback.incorrect.messages": JSON.stringify([
-          "Try again!",
-          "Good try!",
-          "Keep trying!",
-        ]),
+        "feedback.incorrect.messages": JSON.stringify(["Try again!", "Good try!", "Keep trying!"]),
         "feedback.incorrect.showCorrect": `The correct answer is: ${params?.answer || "42"}`,
         "feedback.incorrect.tryAgain": "Try again",
         "feedback.incorrect.viewSolution": "View Solution",
@@ -200,9 +183,7 @@ vi.mock("./FeedbackDisplay", () => ({
         data-testid="feedback-display"
       >
         <h3 class="text-xl font-bold mb-2">
-          {props.isCorrect
-            ? t()("feedback.correct.title")
-            : t()("feedback.incorrect.title")}
+          {props.isCorrect ? t()("feedback.correct.title") : t()("feedback.incorrect.title")}
         </h3>
         <p class="text-lg mb-4">{props.message}</p>
 
@@ -217,6 +198,7 @@ vi.mock("./FeedbackDisplay", () => ({
         <div class="flex gap-3">
           {props.isCorrect && props.onContinue && (
             <button
+              type="button"
               onClick={props.onContinue}
               class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700"
             >
@@ -226,6 +208,7 @@ vi.mock("./FeedbackDisplay", () => ({
 
           {!props.isCorrect && props.onTryAgain && (
             <button
+              type="button"
               onClick={props.onTryAgain}
               class="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700"
             >
@@ -254,10 +237,7 @@ vi.mock("./MathExpression", () => ({
 }));
 
 // Helper to create mock exercise instance
-const createMockExercise = (
-  id: string,
-  answer: string | number,
-): ExerciseInstance => ({
+const createMockExercise = (id: string, answer: string | number): ExerciseInstance => ({
   id,
   templateId: "test-template",
   questionText: `What is ${answer}?`,
@@ -485,8 +465,8 @@ describe("ExercisePractice", () => {
         );
       });
 
-      const call = (mockProps.onExerciseComplete as ReturnType<typeof vi.fn>)
-        .mock.calls[0][0] as ExerciseAttempt;
+      const call = (mockProps.onExerciseComplete as ReturnType<typeof vi.fn>).mock
+        .calls[0][0] as ExerciseAttempt;
       expect(call.timeSpentSeconds).toBeGreaterThanOrEqual(0);
     });
   });
@@ -577,9 +557,7 @@ describe("ExercisePractice", () => {
       fireEvent.click(skipButton);
 
       expect(
-        screen.getByText(
-          "Are you sure you want to skip? This will count as incorrect.",
-        ),
+        screen.getByText("Are you sure you want to skip? This will count as incorrect."),
       ).toBeInTheDocument();
       expect(screen.getByText("Confirm")).toBeInTheDocument();
       expect(screen.getByText("Cancel")).toBeInTheDocument();
@@ -622,9 +600,7 @@ describe("ExercisePractice", () => {
       render(() => <ExercisePractice {...mockProps} />);
 
       // The real HintSystem component renders a button with class="hint-button"
-      const hintButton = document.querySelector(
-        ".hint-button",
-      ) as HTMLButtonElement;
+      const hintButton = document.querySelector(".hint-button") as HTMLButtonElement;
       expect(hintButton).toBeTruthy();
 
       // Request a hint
@@ -681,9 +657,7 @@ describe("ExercisePractice", () => {
       expect(screen.getByText("33%")).toBeInTheDocument();
 
       // Re-render with updated props to test different state
-      const { unmount } = render(() => (
-        <ExercisePractice {...mockProps} currentIndex={1} />
-      ));
+      const { unmount } = render(() => <ExercisePractice {...mockProps} currentIndex={1} />);
       expect(screen.getByText("Exercise 2 of 3")).toBeInTheDocument();
       expect(screen.getByText("67%")).toBeInTheDocument();
       unmount();
@@ -694,10 +668,7 @@ describe("ExercisePractice", () => {
     it("should have proper ARIA labels", () => {
       render(() => <ExercisePractice {...mockProps} />);
 
-      expect(screen.getByRole("main")).toHaveAttribute(
-        "aria-label",
-        "Practice session",
-      );
+      expect(screen.getByRole("main")).toHaveAttribute("aria-label", "Practice session");
       expect(screen.getByRole("progressbar")).toBeInTheDocument();
       expect(screen.getByLabelText("Your answer")).toBeInTheDocument();
     });
@@ -710,9 +681,7 @@ describe("ExercisePractice", () => {
       expect(form).toBeInTheDocument();
 
       // Should have button elements
-      expect(
-        screen.getByRole("button", { name: /Check answer/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /Check answer/i })).toBeInTheDocument();
     });
 
     it("should manage focus properly", async () => {
@@ -773,9 +742,7 @@ describe("ExercisePractice", () => {
       const { createSignal } = await import("solid-js");
       const [currentIndex, setCurrentIndex] = createSignal(0);
 
-      render(() => (
-        <ExercisePractice {...mockProps} currentIndex={currentIndex()} />
-      ));
+      render(() => <ExercisePractice {...mockProps} currentIndex={currentIndex()} />);
 
       const input = screen.getByPlaceholderText("Enter your answer...");
       fireEvent.input(input, { target: { value: "test answer" } });

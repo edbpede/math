@@ -9,12 +9,12 @@
  * - Reset functionality
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent } from "@solidjs/testing-library";
+import { fireEvent, render, screen } from "@solidjs/testing-library";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom";
-import { ErrorBoundaryWrapper } from "./ErrorBoundary";
-import * as logger from "@/lib/error/logger";
 import * as announcer from "@/lib/accessibility/announcer";
+import * as logger from "@/lib/error/logger";
+import { ErrorBoundaryWrapper } from "./ErrorBoundary";
 
 // Mock the logger
 vi.mock("@/lib/error/logger", () => ({
@@ -60,9 +60,7 @@ describe("ErrorBoundaryWrapper", () => {
         </ErrorBoundaryWrapper>
       ));
 
-      expect(
-        screen.getByText("Component rendered successfully"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Component rendered successfully")).toBeInTheDocument();
     });
 
     it("should not call error handlers when no error occurs", () => {
@@ -88,9 +86,7 @@ describe("ErrorBoundaryWrapper", () => {
       ));
 
       // Check for error message in fallback UI
-      expect(
-        screen.getByText(/Noget gik galt|Something went wrong/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Noget gik galt|Something went wrong/i)).toBeInTheDocument();
     });
 
     it("should call logError when error occurs", () => {
@@ -128,10 +124,7 @@ describe("ErrorBoundaryWrapper", () => {
 
     it("should not announce error when announceErrors is false", () => {
       render(() => (
-        <ErrorBoundaryWrapper
-          componentName="TestComponent"
-          announceErrors={false}
-        >
+        <ErrorBoundaryWrapper componentName="TestComponent" announceErrors={false}>
           <ThrowError shouldThrow={true} />
         </ErrorBoundaryWrapper>
       ));
@@ -148,10 +141,7 @@ describe("ErrorBoundaryWrapper", () => {
         </ErrorBoundaryWrapper>
       ));
 
-      expect(onError).toHaveBeenCalledWith(
-        expect.any(Error),
-        expect.any(Function),
-      );
+      expect(onError).toHaveBeenCalledWith(expect.any(Error), expect.any(Function));
     });
   });
 
@@ -199,24 +189,21 @@ describe("ErrorBoundaryWrapper", () => {
       const customFallback = (error: Error, reset: () => void) => (
         <div>
           <p>Custom error: {error.message}</p>
-          <button onClick={reset}>Custom reset</button>
+          <button type="button" onClick={reset}>
+            Custom reset
+          </button>
         </div>
       );
 
       render(() => (
-        <ErrorBoundaryWrapper
-          componentName="TestComponent"
-          fallback={customFallback}
-        >
+        <ErrorBoundaryWrapper componentName="TestComponent" fallback={customFallback}>
           <ThrowError shouldThrow={true} message="Custom error message" />
         </ErrorBoundaryWrapper>
       ));
 
       expect(screen.getByText(/Custom error:/)).toBeInTheDocument();
       expect(screen.getByText(/Custom error message/)).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: /Custom reset/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /Custom reset/i })).toBeInTheDocument();
     });
   });
 
@@ -233,9 +220,7 @@ describe("ErrorBoundaryWrapper", () => {
       render(() => <TestWrapper />);
 
       // Error should be displayed
-      expect(
-        screen.getByText(/Noget gik galt|Something went wrong/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Noget gik galt|Something went wrong/i)).toBeInTheDocument();
 
       // Fix the error
       shouldThrow = false;
@@ -262,6 +247,7 @@ describe("ErrorBoundaryWrapper", () => {
       const resetSpy = vi.fn();
       const customFallback = (_error: Error, reset: () => void) => (
         <button
+          type="button"
           onClick={() => {
             resetSpy();
             reset();
@@ -272,10 +258,7 @@ describe("ErrorBoundaryWrapper", () => {
       );
 
       render(() => (
-        <ErrorBoundaryWrapper
-          componentName="TestComponent"
-          fallback={customFallback}
-        >
+        <ErrorBoundaryWrapper componentName="TestComponent" fallback={customFallback}>
           <ThrowError shouldThrow={true} />
         </ErrorBoundaryWrapper>
       ));

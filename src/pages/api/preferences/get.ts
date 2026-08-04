@@ -22,61 +22,61 @@
  * @see Requirements 9.2
  */
 
-import type { APIRoute } from 'astro'
-import { getUserByUUID } from '@/lib/auth/service'
-import { createSecurityHeaders } from '@/lib/security'
+import type { APIRoute } from "astro";
+import { getUserByUUID } from "@/lib/auth/service";
+import { createSecurityHeaders } from "@/lib/security";
 
 export const GET: APIRoute = async ({ url }) => {
   // Determine if in development mode (for security header configuration)
-  const isDevelopment = import.meta.env.DEV
+  const isDevelopment = import.meta.env.DEV;
 
   try {
     // Get userId from query params
-    const userId = url.searchParams.get('userId')
+    const userId = url.searchParams.get("userId");
 
     if (!userId) {
       const headers = createSecurityHeaders(isDevelopment, {
-        'Content-Type': 'application/json',
-      })
+        "Content-Type": "application/json",
+      });
 
       return new Response(
         JSON.stringify({
           success: false,
-          error: 'Missing userId parameter',
-          code: 'MISSING_USER_ID',
+          error: "Missing userId parameter",
+          code: "MISSING_USER_ID",
         }),
         {
           status: 400,
           headers,
-        }
-      )
+        },
+      );
     }
 
     // Get user data including preferences
-    const result = await getUserByUUID(userId)
+    const result = await getUserByUUID(userId);
 
     if (!result.success || !result.data) {
       const headers = createSecurityHeaders(isDevelopment, {
-        'Content-Type': 'application/json',
-      })
+        "Content-Type": "application/json",
+      });
 
       return new Response(
         JSON.stringify({
           success: false,
-          error: 'User not found',
-          code: 'USER_NOT_FOUND',
+          error: "User not found",
+          code: "USER_NOT_FOUND",
         }),
         {
           status: 404,
           headers,
-        }
-      )
+        },
+      );
     }
 
     // Return preferences
     const headers = createSecurityHeaders(isDevelopment, {
-      'Content-Type': 'application/json',
-    })
+      "Content-Type": "application/json",
+    });
 
     return new Response(
       JSON.stringify({
@@ -86,24 +86,24 @@ export const GET: APIRoute = async ({ url }) => {
       {
         status: 200,
         headers,
-      }
-    )
+      },
+    );
   } catch (error) {
-    console.error('Error in /api/preferences/get:', error)
+    console.error("Error in /api/preferences/get:", error);
     const headers = createSecurityHeaders(isDevelopment, {
-      'Content-Type': 'application/json',
-    })
+      "Content-Type": "application/json",
+    });
 
     return new Response(
       JSON.stringify({
         success: false,
-        error: 'An unexpected error occurred',
-        code: 'UNEXPECTED_ERROR',
+        error: "An unexpected error occurred",
+        code: "UNEXPECTED_ERROR",
       }),
       {
         status: 500,
         headers,
-      }
-    )
+      },
+    );
   }
-}
+};

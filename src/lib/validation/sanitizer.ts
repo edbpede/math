@@ -14,13 +14,13 @@
  * HTML entities that must be escaped to prevent XSS
  */
 const HTML_ENTITIES: Record<string, string> = {
-  '&': '&amp;',
-  '<': '&lt;',
-  '>': '&gt;',
-  '"': '&quot;',
-  "'": '&#x27;',
-  '/': '&#x2F;',
-}
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#x27;",
+  "/": "&#x2F;",
+};
 
 /**
  * Escapes HTML entities in user input
@@ -36,7 +36,7 @@ const HTML_ENTITIES: Record<string, string> = {
  * // Returns: '&lt;script&gt;alert(&quot;XSS&quot;)&lt;&#x2F;script&gt;'
  */
 export function escapeHtml(input: string): string {
-  return input.replace(/[&<>"'/]/g, (char) => HTML_ENTITIES[char] || char)
+  return input.replace(/[&<>"'/]/g, (char) => HTML_ENTITIES[char] || char);
 }
 
 /**
@@ -55,45 +55,45 @@ export function escapeHtml(input: string): string {
  */
 export function sanitizeAnswer(answer: string): string {
   // Trim whitespace
-  let sanitized = answer.trim()
+  let sanitized = answer.trim();
 
   // Remove all HTML tags (including script tags), but preserve content
   // This removes <script>, </script>, <div>, etc., but keeps what's between them
-  sanitized = sanitized.replace(/<[^>]*>/g, '')
+  sanitized = sanitized.replace(/<[^>]*>/g, "");
 
   // Remove javascript: protocol and everything after it until semicolon or space
-  sanitized = sanitized.replace(/javascript:[^\s;]*/gi, '')
+  sanitized = sanitized.replace(/javascript:[^\s;]*/gi, "");
 
   // Remove event handlers with their values (onclick=, onerror=, etc.)
-  sanitized = sanitized.replace(/on\w+\s*=[^\s;]*/gi, '')
+  sanitized = sanitized.replace(/on\w+\s*=[^\s;]*/gi, "");
 
   // Remove data: URLs
-  sanitized = sanitized.replace(/data:[^,\s]*,[^\s;]*/gi, '')
+  sanitized = sanitized.replace(/data:[^,\s]*,[^\s;]*/gi, "");
 
   // Remove any alphabetic words that might be function names or SQL keywords
   // Keep only math-related patterns
-  sanitized = sanitized.replace(/[a-zA-Z]+/g, '')
+  sanitized = sanitized.replace(/[a-zA-Z]+/g, "");
 
   // Only allow safe characters for math answers
   // Allows: digits, spaces, decimal point, comma, minus, plus, divide, percent, parentheses
-  sanitized = sanitized.replace(/[^0-9.,\-+\/%\s()]/g, '')
+  sanitized = sanitized.replace(/[^0-9.,\-+/%\s()]/g, "");
 
   // Remove standalone operators/parentheses that have no digits
   if (!/\d/.test(sanitized)) {
     // No digits found, clear everything
-    sanitized = ''
+    sanitized = "";
   } else {
     // Remove leading spaces, but preserve leading minus for negative numbers
-    sanitized = sanitized.replace(/^[\s.,+\/()]+/, '')
+    sanitized = sanitized.replace(/^[\s.,+/()]+/, "");
 
     // Remove trailing spaces and operators (but not % which is valid after a digit)
-    sanitized = sanitized.replace(/[\s.,\-+\/()]+$/, '')
+    sanitized = sanitized.replace(/[\s.,\-+/()]+$/, "");
   }
 
   // Normalize multiple spaces to single space
-  sanitized = sanitized.replace(/\s+/g, ' ')
+  sanitized = sanitized.replace(/\s+/g, " ");
 
-  return sanitized.trim()
+  return sanitized.trim();
 }
 
 /**
@@ -110,22 +110,22 @@ export function sanitizeAnswer(answer: string): string {
  */
 export function sanitizeUUID(uuid: string): string {
   // Trim and lowercase
-  let sanitized = uuid.trim().toLowerCase()
+  let sanitized = uuid.trim().toLowerCase();
 
   // Remove HTML tags first (to avoid keeping hex chars from tag names like 'c' from <script>)
-  sanitized = sanitized.replace(/<[^>]*>/g, '')
+  sanitized = sanitized.replace(/<[^>]*>/g, "");
 
   // Only allow hex characters and hyphens
-  sanitized = sanitized.replace(/[^0-9a-f-]/g, '')
+  sanitized = sanitized.replace(/[^0-9a-f-]/g, "");
 
   // Ensure correct format (4-4-4-4)
-  const parts = sanitized.split('-').filter((part) => part.length > 0)
+  const parts = sanitized.split("-").filter((part) => part.length > 0);
   if (parts.length === 4 && parts.every((part) => part.length === 4)) {
-    return parts.join('-')
+    return parts.join("-");
   }
 
   // Return sanitized but potentially invalid format (validation will catch it)
-  return sanitized
+  return sanitized;
 }
 
 /**
@@ -142,24 +142,24 @@ export function sanitizeUUID(uuid: string): string {
  */
 export function sanitizeText(text: string): string {
   // Trim whitespace
-  let sanitized = text.trim()
+  let sanitized = text.trim();
 
   // Remove script content first (before removing tags)
-  sanitized = sanitized.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+  sanitized = sanitized.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
 
   // Remove HTML tags
-  sanitized = sanitized.replace(/<[^>]*>/g, '')
+  sanitized = sanitized.replace(/<[^>]*>/g, "");
 
   // Remove javascript: protocol and everything after it
-  sanitized = sanitized.replace(/javascript:[^\s;]*/gi, '')
+  sanitized = sanitized.replace(/javascript:[^\s;]*/gi, "");
 
   // Remove event handlers with their values
-  sanitized = sanitized.replace(/on\w+\s*=[^\s;]*/gi, '')
+  sanitized = sanitized.replace(/on\w+\s*=[^\s;]*/gi, "");
 
   // Escape remaining HTML entities
-  sanitized = escapeHtml(sanitized)
+  sanitized = escapeHtml(sanitized);
 
-  return sanitized.trim()
+  return sanitized.trim();
 }
 
 /**
@@ -175,7 +175,7 @@ export function sanitizeText(text: string): string {
  * // Returns: '123456'
  */
 export function stripNonNumeric(input: string): string {
-  return input.replace(/[^0-9]/g, '')
+  return input.replace(/[^0-9]/g, "");
 }
 
 /**
@@ -193,25 +193,25 @@ export function stripNonNumeric(input: string): string {
  */
 export function sanitizeFilePath(path: string): string {
   // Remove directory traversal attempts (.. and ./)
-  let sanitized = path.replace(/\.\.+/g, '')
-  sanitized = sanitized.replace(/\.\//g, '')
+  let sanitized = path.replace(/\.\.+/g, "");
+  sanitized = sanitized.replace(/\.\//g, "");
 
   // Remove leading slashes (prevent absolute paths)
-  sanitized = sanitized.replace(/^\/+/, '')
+  sanitized = sanitized.replace(/^\/+/, "");
 
   // Remove multiple consecutive slashes but keep single slashes for now
-  sanitized = sanitized.replace(/\/+/g, '/')
+  sanitized = sanitized.replace(/\/+/g, "/");
 
   // After removing .., if there are leading slashes from traversal, remove them
-  sanitized = sanitized.replace(/^\/+/, '')
+  sanitized = sanitized.replace(/^\/+/, "");
 
   // Only allow alphanumeric, dash, underscore, dot, slash
-  sanitized = sanitized.replace(/[^a-zA-Z0-9\-_./]/g, '')
+  sanitized = sanitized.replace(/[^a-zA-Z0-9\-_./]/g, "");
 
   // Remove any remaining dots at the beginning
-  sanitized = sanitized.replace(/^\.+/, '')
+  sanitized = sanitized.replace(/^\.+/, "");
 
-  return sanitized.trim()
+  return sanitized.trim();
 }
 
 /**
@@ -232,13 +232,13 @@ export function sanitizeFilePath(path: string): string {
 export function sanitizeJSON(input: string): string | null {
   try {
     // Parse and re-serialize to ensure valid JSON
-    const parsed = JSON.parse(input)
+    const parsed = JSON.parse(input);
 
     // Re-serialize with no whitespace
-    return JSON.stringify(parsed)
+    return JSON.stringify(parsed);
   } catch {
     // Invalid JSON
-    return null
+    return null;
   }
 }
 
@@ -257,10 +257,10 @@ export function sanitizeJSON(input: string): string | null {
  */
 export function limitLength(input: string, maxLength: number): string {
   if (input.length <= maxLength) {
-    return input
+    return input;
   }
 
-  return input.substring(0, maxLength)
+  return input.substring(0, maxLength);
 }
 
 /**
@@ -281,11 +281,11 @@ export function limitLength(input: string, maxLength: number): string {
  * // Returns: 'Hello World!'
  */
 export function sanitizeInput(input: string, maxLength: number = 1000): string {
-  let sanitized = input.trim()
-  sanitized = limitLength(sanitized, maxLength)
-  sanitized = sanitized.replace(/<[^>]*>/g, '')
-  sanitized = escapeHtml(sanitized)
-  return sanitized
+  let sanitized = input.trim();
+  sanitized = limitLength(sanitized, maxLength);
+  sanitized = sanitized.replace(/<[^>]*>/g, "");
+  sanitized = escapeHtml(sanitized);
+  return sanitized;
 }
 
 /**
@@ -315,9 +315,9 @@ export function detectMaliciousInput(input: string): boolean {
     /<embed[\s\S]*?>/gi, // Embed tags
     /vbscript:/gi, // VBScript protocol
     /data:text\/html/gi, // Data URLs with HTML
-  ]
+  ];
 
-  return maliciousPatterns.some((pattern) => pattern.test(input))
+  return maliciousPatterns.some((pattern) => pattern.test(input));
 }
 
 /**
@@ -332,5 +332,5 @@ export function detectMaliciousInput(input: string): boolean {
  * }
  */
 export function isSafeInput(input: string): boolean {
-  return !detectMaliciousInput(input) && input.length <= 10000
+  return !detectMaliciousInput(input) && input.length <= 10000;
 }

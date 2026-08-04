@@ -9,19 +9,19 @@
  * - 3.4: Generate plausible distractors for multiple choice exercises
  */
 
-import type { Answer } from './types';
-import { SeededRandom } from './parameter-generator';
+import { SeededRandom } from "./parameter-generator";
+import type { Answer } from "./types";
 
 /**
  * Distractor generation strategy
  */
 export type DistractorStrategy =
-  | 'off-by-one'
-  | 'wrong-operation'
-  | 'sign-error'
-  | 'place-value'
-  | 'factor-multiple'
-  | 'common-mistake';
+  | "off-by-one"
+  | "wrong-operation"
+  | "sign-error"
+  | "place-value"
+  | "factor-multiple"
+  | "common-mistake";
 
 /**
  * Options for distractor generation
@@ -42,38 +42,36 @@ export interface DistractorOptions {
  */
 export function generateNumericDistractors(
   correctAnswer: Answer,
-  options: DistractorOptions = {}
+  options: DistractorOptions = {},
 ): string[] {
-  const {
-    count = 3,
-    strategies,
-    seed = Date.now(),
-    excludeValues = [],
-  } = options;
+  const { count = 3, strategies, seed = Date.now(), excludeValues = [] } = options;
 
   const rng = new SeededRandom(seed);
   const distractors = new Set<string>();
-  const correctValue = typeof correctAnswer.value === 'number'
-    ? correctAnswer.value
-    : parseFloat(correctAnswer.value.toString());
+  const correctValue =
+    typeof correctAnswer.value === "number"
+      ? correctAnswer.value
+      : parseFloat(correctAnswer.value.toString());
 
   // Add correct answer and equivalents to exclusion set
   const excluded = new Set<string>([
     correctAnswer.value.toString(),
-    ...excludeValues.map(v => v.toString()),
+    ...excludeValues.map((v) => v.toString()),
   ]);
 
   if (correctAnswer.equivalents) {
-    correctAnswer.equivalents.forEach(eq => excluded.add(eq.toString()));
+    correctAnswer.equivalents.forEach((eq) => {
+      excluded.add(eq.toString());
+    });
   }
 
   // Available strategies
   const allStrategies: DistractorStrategy[] = strategies || [
-    'off-by-one',
-    'wrong-operation',
-    'sign-error',
-    'place-value',
-    'factor-multiple',
+    "off-by-one",
+    "wrong-operation",
+    "sign-error",
+    "place-value",
+    "factor-multiple",
   ];
 
   // Generate distractors using various strategies
@@ -85,11 +83,7 @@ export function generateNumericDistractors(
 
     // Select a random strategy
     const strategy = rng.choice(allStrategies);
-    const distractor = generateDistractorByStrategy(
-      correctValue,
-      strategy,
-      rng
-    );
+    const distractor = generateDistractorByStrategy(correctValue, strategy, rng);
 
     const distractorStr = distractor.toString();
 
@@ -130,25 +124,25 @@ export function generateNumericDistractors(
 function generateDistractorByStrategy(
   correctValue: number,
   strategy: DistractorStrategy,
-  rng: SeededRandom
+  rng: SeededRandom,
 ): number {
   switch (strategy) {
-    case 'off-by-one':
+    case "off-by-one":
       return offByOneDistractor(correctValue, rng);
 
-    case 'wrong-operation':
+    case "wrong-operation":
       return wrongOperationDistractor(correctValue, rng);
 
-    case 'sign-error':
+    case "sign-error":
       return signErrorDistractor(correctValue);
 
-    case 'place-value':
+    case "place-value":
       return placeValueDistractor(correctValue, rng);
 
-    case 'factor-multiple':
+    case "factor-multiple":
       return factorMultipleDistractor(correctValue, rng);
 
-    case 'common-mistake':
+    case "common-mistake":
       return commonMistakeDistractor(correctValue, rng);
 
     default:
@@ -263,13 +257,9 @@ function commonMistakeDistractor(value: number, rng: SeededRandom): number {
  */
 export function generateFractionDistractors(
   correctAnswer: Answer,
-  options: DistractorOptions = {}
+  options: DistractorOptions = {},
 ): string[] {
-  const {
-    count = 3,
-    seed = Date.now(),
-    excludeValues = [],
-  } = options;
+  const { count = 3, seed = Date.now(), excludeValues = [] } = options;
 
   const rng = new SeededRandom(seed);
   const distractors = new Set<string>();
@@ -290,32 +280,34 @@ export function generateFractionDistractors(
   // Add correct answer and equivalents to exclusion set
   const excluded = new Set<string>([
     correctAnswer.value.toString(),
-    ...excludeValues.map(v => v.toString()),
+    ...excludeValues.map((v) => v.toString()),
   ]);
 
   if (correctAnswer.equivalents) {
-    correctAnswer.equivalents.forEach(eq => excluded.add(eq.toString()));
+    correctAnswer.equivalents.forEach((eq) => {
+      excluded.add(eq.toString());
+    });
   }
 
   // Common fraction mistakes
   const strategies = [
     // Swap numerator and denominator
     () => `${denominator}/${numerator}`,
-    
+
     // Off by one in numerator
     () => `${numerator + 1}/${denominator}`,
     () => `${numerator - 1}/${denominator}`,
-    
+
     // Off by one in denominator
     () => `${numerator}/${denominator + 1}`,
     () => `${numerator}/${denominator - 1}`,
-    
+
     // Multiply both by same factor (non-simplified)
     () => {
       const factor = rng.nextInt(2, 4);
       return `${numerator * factor}/${denominator * factor + 1}`; // Intentionally wrong
     },
-    
+
     // Wrong simplification
     () => {
       const factor = rng.nextInt(2, 3);
@@ -354,14 +346,9 @@ export function generateFractionDistractors(
  */
 export function generateStringDistractors(
   correctAnswer: Answer,
-  options: DistractorOptions & { alternatives?: string[] } = {}
+  options: DistractorOptions & { alternatives?: string[] } = {},
 ): string[] {
-  const {
-    count = 3,
-    seed = Date.now(),
-    excludeValues = [],
-    alternatives = [],
-  } = options;
+  const { count = 3, seed = Date.now(), excludeValues = [], alternatives = [] } = options;
 
   const rng = new SeededRandom(seed);
   const distractors = new Set<string>();
@@ -369,11 +356,13 @@ export function generateStringDistractors(
   // Add correct answer and equivalents to exclusion set
   const excluded = new Set<string>([
     correctAnswer.value.toString(),
-    ...excludeValues.map(v => v.toString()),
+    ...excludeValues.map((v) => v.toString()),
   ]);
 
   if (correctAnswer.equivalents) {
-    correctAnswer.equivalents.forEach(eq => excluded.add(eq.toString()));
+    correctAnswer.equivalents.forEach((eq) => {
+      excluded.add(eq.toString());
+    });
   }
 
   // Use provided alternatives if available
@@ -399,16 +388,16 @@ export function generateStringDistractors(
  */
 export function generateDistractors(
   correctAnswer: Answer,
-  options: DistractorOptions & { alternatives?: string[] } = {}
+  options: DistractorOptions & { alternatives?: string[] } = {},
 ): string[] {
   const value = correctAnswer.value;
 
   // Determine answer type and use appropriate strategy
-  if (typeof value === 'number') {
+  if (typeof value === "number") {
     return generateNumericDistractors(correctAnswer, options);
   }
 
-  if (typeof value === 'string') {
+  if (typeof value === "string") {
     // Check if it's a fraction
     if (value.match(/^\d+\/\d+$/)) {
       return generateFractionDistractors(correctAnswer, options);
@@ -421,4 +410,3 @@ export function generateDistractors(
   // Default: return empty array
   return [];
 }
-

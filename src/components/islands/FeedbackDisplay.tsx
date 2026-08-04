@@ -15,12 +15,12 @@
  * - 9.3: Touch targets minimum 44x44 pixels
  */
 
-import { createSignal, Show } from 'solid-js';
-import { useStore } from '@nanostores/solid';
-import { $t } from '@/lib/i18n';
-import type { WorkedSolution, VisualAid } from '@/lib/exercises/types';
-import WorkedSolutionDisplay from './WorkedSolutionDisplay';
-import VisualAidRenderer from './VisualAidRenderer';
+import { useStore } from "@nanostores/solid";
+import { createSignal, Show } from "solid-js";
+import type { VisualAid, WorkedSolution } from "@/lib/exercises/types";
+import { $t } from "@/lib/i18n";
+import VisualAidRenderer from "./VisualAidRenderer";
+import WorkedSolutionDisplay from "./WorkedSolutionDisplay";
 
 /**
  * Props for FeedbackDisplay component
@@ -28,28 +28,28 @@ import VisualAidRenderer from './VisualAidRenderer';
 export interface FeedbackDisplayProps {
   /** Whether the answer was correct */
   isCorrect: boolean;
-  
+
   /** Feedback message (random reinforcement or correction) */
   message: string;
-  
+
   /** The correct answer to display (for incorrect responses) */
   correctAnswer: string;
-  
+
   /** The user's submitted answer */
   userAnswer: string;
-  
+
   /** Optional worked solution (shown behind button toggle) */
   workedSolution?: WorkedSolution;
-  
+
   /** Optional visual aid (shown automatically when present) */
   visualAid?: VisualAid;
-  
+
   /** Callback when Continue button is clicked (correct answers) */
   onContinue?: () => void;
-  
+
   /** Callback when Try Again button is clicked (incorrect answers) */
   onTryAgain?: () => void;
-  
+
   /** Optional CSS class for styling */
   class?: string;
 }
@@ -78,23 +78,23 @@ export interface FeedbackDisplayProps {
  */
 export default function FeedbackDisplay(props: FeedbackDisplayProps) {
   const t = useStore($t);
-  
+
   // Toggle state for worked solution display
   const [showSolution, setShowSolution] = createSignal(false);
-  
+
   /**
    * Toggle worked solution visibility
    */
   const handleToggleSolution = () => {
     setShowSolution((prev) => !prev);
   };
-  
+
   return (
     <div
-      class={`feedback-display-container mb-6 p-6 rounded-lg border-2 transition-all duration-300 animate-slide-in ${props.class || ''}`}
+      class={`feedback-display-container mb-6 p-6 rounded-lg border-2 transition-all duration-300 animate-slide-in ${props.class || ""}`}
       classList={{
-        'bg-green-50 border-green-400': props.isCorrect,
-        'bg-orange-50 border-orange-400': !props.isCorrect,
+        "bg-green-50 border-green-400": props.isCorrect,
+        "bg-orange-50 border-orange-400": !props.isCorrect,
       }}
       role="alert"
       aria-live="polite"
@@ -140,61 +140,62 @@ export default function FeedbackDisplay(props: FeedbackDisplayProps) {
               </svg>
             </Show>
           </div>
-          
+
           {/* Title and message */}
           <div class="flex-1">
             <h4
               class="text-lg font-bold mb-2"
               classList={{
-                'text-green-900': props.isCorrect,
-                'text-orange-900': !props.isCorrect,
+                "text-green-900": props.isCorrect,
+                "text-orange-900": !props.isCorrect,
               }}
             >
-              {props.isCorrect ? t()('feedback.correct.title') : t()('feedback.incorrect.title')}
+              {props.isCorrect ? t()("feedback.correct.title") : t()("feedback.incorrect.title")}
             </h4>
             <p
               class="text-base mb-3"
               classList={{
-                'text-green-800': props.isCorrect,
-                'text-orange-800': !props.isCorrect,
+                "text-green-800": props.isCorrect,
+                "text-orange-800": !props.isCorrect,
               }}
             >
               {props.message}
             </p>
-            
+
             {/* Show correct answer for incorrect responses */}
             <Show when={!props.isCorrect}>
               <p class="text-base font-semibold text-orange-900 mt-2">
-                {t()('feedback.incorrect.showCorrect', { answer: props.correctAnswer })}
+                {t()("feedback.incorrect.showCorrect", { answer: props.correctAnswer })}
               </p>
             </Show>
           </div>
         </div>
-        
+
         {/* Visual Aid Section (auto-display when present) */}
         <Show when={props.visualAid}>
           <div class="visual-aid-section mb-6 p-4 bg-white rounded-lg border-2 border-gray-200 shadow-sm">
             <div class="text-sm font-medium text-gray-700 mb-3">
-              {t()('hints.common.visualAid')}
+              {t()("hints.common.visualAid")}
             </div>
             <VisualAidRenderer visualAid={props.visualAid!} />
           </div>
         </Show>
-        
+
         {/* Worked Solution Section (button-triggered) */}
         <Show when={props.workedSolution}>
           <div class="worked-solution-section mb-6">
             <button
+              type="button"
               onClick={handleToggleSolution}
               class="mb-4 px-5 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all flex items-center gap-2"
-              style={{ 'min-width': '44px', 'min-height': '44px' }}
+              style={{ "min-width": "44px", "min-height": "44px" }}
               aria-expanded={showSolution()}
               aria-controls="worked-solution-content"
             >
               <svg
                 class="w-5 h-5 transition-transform duration-200"
                 classList={{
-                  'rotate-180': showSolution(),
+                  "rotate-180": showSolution(),
                 }}
                 fill="none"
                 stroke="currentColor"
@@ -210,11 +211,11 @@ export default function FeedbackDisplay(props: FeedbackDisplayProps) {
               </svg>
               <span>
                 {showSolution()
-                  ? t()('feedback.incorrect.hideSolution')
-                  : t()('feedback.incorrect.viewSolution')}
+                  ? t()("feedback.incorrect.hideSolution")
+                  : t()("feedback.incorrect.viewSolution")}
               </span>
             </button>
-            
+
             <div id="worked-solution-content">
               <Show when={showSolution()}>
                 <div class="p-4 bg-white rounded-lg border-2 border-purple-200 shadow-sm">
@@ -224,7 +225,7 @@ export default function FeedbackDisplay(props: FeedbackDisplayProps) {
             </div>
           </div>
         </Show>
-        
+
         {/* Action Buttons */}
         <div class="action-buttons flex gap-3 flex-wrap">
           <Show
@@ -232,24 +233,26 @@ export default function FeedbackDisplay(props: FeedbackDisplayProps) {
             fallback={
               <Show when={props.onTryAgain}>
                 <button
+                  type="button"
                   onClick={props.onTryAgain}
                   class="px-6 py-3 bg-orange-600 text-white font-semibold rounded-lg hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all"
-                  style={{ 'min-width': '44px', 'min-height': '44px' }}
-                  aria-label={t()('feedback.incorrect.tryAgain')}
+                  style={{ "min-width": "44px", "min-height": "44px" }}
+                  aria-label={t()("feedback.incorrect.tryAgain")}
                 >
-                  {t()('feedback.incorrect.tryAgain')}
+                  {t()("feedback.incorrect.tryAgain")}
                 </button>
               </Show>
             }
           >
             <Show when={props.onContinue}>
               <button
+                type="button"
                 onClick={props.onContinue}
                 class="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all"
-                style={{ 'min-width': '44px', 'min-height': '44px' }}
-                aria-label={t()('feedback.correct.continue')}
+                style={{ "min-width": "44px", "min-height": "44px" }}
+                aria-label={t()("feedback.correct.continue")}
               >
-                {t()('feedback.correct.continue')}
+                {t()("feedback.correct.continue")}
               </button>
             </Show>
           </Show>
@@ -258,4 +261,3 @@ export default function FeedbackDisplay(props: FeedbackDisplayProps) {
     </div>
   );
 }
-

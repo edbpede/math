@@ -12,8 +12,8 @@
  * Usage: bun run scripts/optimize-svg.ts
  */
 
-import { readFileSync, writeFileSync, readdirSync, statSync } from "node:fs";
-import { join, extname } from "node:path";
+import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { extname, join } from "node:path";
 
 const PUBLIC_DIR = join(process.cwd(), "public");
 // const ICONS_DIR = join(PUBLIC_DIR, 'icons')
@@ -137,15 +137,11 @@ function main() {
     totalOptimized += optimized;
 
     const savings = (((original - optimized) / original) * 100).toFixed(1);
-    console.log(
-      `    ${formatSize(original)} → ${formatSize(optimized)} (${savings}% reduction)`,
-    );
+    console.log(`    ${formatSize(original)} → ${formatSize(optimized)} (${savings}% reduction)`);
   }
 
   console.log(`\n✅ Optimization complete!`);
-  console.log(
-    `   Total: ${formatSize(totalOriginal)} → ${formatSize(totalOptimized)}`,
-  );
+  console.log(`   Total: ${formatSize(totalOriginal)} → ${formatSize(totalOptimized)}`);
   console.log(
     `   Saved: ${formatSize(totalOriginal - totalOptimized)} (${(((totalOriginal - totalOptimized) / totalOriginal) * 100).toFixed(1)}%)`,
   );

@@ -13,45 +13,45 @@
  * Task: 9.3, 15.2
  */
 
-import MainLayout from '@/components/layouts/MainLayout.astro'
-import ProgressDashboard from '@/components/islands/ProgressDashboard'
-import PracticeRecommendations from '@/components/islands/PracticeRecommendations'
-import { $t, initI18n } from '@/lib/i18n'
-import { fetchActiveSession, fetchCompetencyProgress } from '@/lib/supabase/progress'
+import PracticeRecommendations from "@/components/islands/PracticeRecommendations";
+import ProgressDashboard from "@/components/islands/ProgressDashboard";
+import MainLayout from "@/components/layouts/MainLayout.astro";
+import { $t, initI18n } from "@/lib/i18n";
+import { fetchActiveSession, fetchCompetencyProgress } from "@/lib/supabase/progress";
 
 // Check authentication - redirect if not authenticated
-const user = Astro.locals.user
+const user = Astro.locals.user;
 if (!user) {
-  return Astro.redirect('/login')
+  return Astro.redirect("/login");
 }
 
 // Initialize i18n with user's preferred locale
-await initI18n(user.locale)
+await initI18n(user.locale);
 
 // Get translations
-const t = await $t.get()
+const t = await $t.get();
 
 // Check for active session (for quick continue functionality)
-let activeSession = null
+let activeSession = null;
 try {
-  activeSession = await fetchActiveSession(user.id)
+  activeSession = await fetchActiveSession(user.id);
 } catch (error) {
   // Silently fail - active session is optional
-  console.error('Failed to fetch active session:', error)
+  console.error("Failed to fetch active session:", error);
 }
 
 // Check if user is new (no competency progress yet)
-let isNewUser = false
+let isNewUser = false;
 try {
-  const competencies = await fetchCompetencyProgress(user.id)
-  isNewUser = competencies.length === 0
+  const competencies = await fetchCompetencyProgress(user.id);
+  isNewUser = competencies.length === 0;
 } catch (error) {
-  console.error('Failed to check user progress:', error)
+  console.error("Failed to check user progress:", error);
 }
 
 // Page metadata
-const title = t('progress.dashboard.pageTitle')
-const description = t('progress.dashboard.pageDescription')
+const title = t("progress.dashboard.pageTitle");
+const description = t("progress.dashboard.pageDescription");
 ---
 
 <MainLayout

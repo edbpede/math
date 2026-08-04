@@ -1,59 +1,54 @@
 ---
 /**
  * MainLayout Component
- * 
+ *
  * Base layout template for all pages with responsive header/footer,
  * i18n support, and semantic HTML structure.
- * 
+ *
  * Requirements:
  * - 2.1: Multi-language support with i18n
  * - 9.1: Keyboard navigation and accessibility
  * - 9.4: Semantic HTML with ARIA landmarks
  */
 
-import { $t, getCurrentLocale } from '@/lib/i18n'
-import Header from '@/components/static/Header.astro'
-import Footer from '@/components/static/Footer.astro'
-import SkipNavigation from '@/components/static/SkipNavigation.astro'
-import OfflineIndicator from '@/components/islands/OfflineIndicator'
-import SyncStatusIndicator from '@/components/islands/SyncStatusIndicator'
-import InstallPrompt from '@/components/islands/InstallPrompt'
+import InstallPrompt from "@/components/islands/InstallPrompt";
+import OfflineIndicator from "@/components/islands/OfflineIndicator";
+import SyncStatusIndicator from "@/components/islands/SyncStatusIndicator";
+import Footer from "@/components/static/Footer.astro";
+import Header from "@/components/static/Header.astro";
+import SkipNavigation from "@/components/static/SkipNavigation.astro";
+import { $t, getCurrentLocale } from "@/lib/i18n";
 
 // Import global styles including accessibility features
-import '@/styles/global.css'
+import "@/styles/global.css";
 
 interface Props {
   /** Page title (will be appended to site title) */
-  title?: string
+  title?: string;
   /** Page meta description */
-  description?: string
+  description?: string;
   /** Hide navigation (for landing/onboarding pages) */
-  hideNav?: boolean
+  hideNav?: boolean;
   /** Current page path for active nav state */
-  currentPath?: string
+  currentPath?: string;
 }
 
-const { 
-  title, 
-  description, 
-  hideNav = false,
-  currentPath 
-} = Astro.props
+const { title, description, hideNav = false, currentPath } = Astro.props;
 
-const locale = await getCurrentLocale()
-const translations = await $t.get()
+const locale = await getCurrentLocale();
+const translations = await $t.get();
 
 // Build full page title
-const siteTitle = translations('common.app.title')
-const fullTitle = title ? `${title} | ${siteTitle}` : siteTitle
+const siteTitle = translations("common.app.title");
+const fullTitle = title ? `${title} | ${siteTitle}` : siteTitle;
 
 // Default description
-const defaultDescription = translations('common.app.tagline')
-const metaDescription = description || defaultDescription
+const defaultDescription = translations("common.app.tagline");
+const metaDescription = description || defaultDescription;
 
 // Get user ID for preferences sync
-const user = Astro.locals.user
-const userId = user?.id
+const user = Astro.locals.user;
+const userId = user?.id;
 ---
 
 <!DOCTYPE html>

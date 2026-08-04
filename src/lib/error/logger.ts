@@ -134,9 +134,7 @@ export function logError(entry: ErrorLogEntry): void {
 
   // Development logging (detailed)
   if (import.meta.env.DEV) {
-    console.group(
-      `🔴 Error [${entry.category || "GENERAL"}] - ${entry.error.message}`,
-    );
+    console.group(`🔴 Error [${entry.category || "GENERAL"}] - ${entry.error.message}`);
     console.error("Error:", entry.error);
     console.log("Category:", entry.category || ErrorCategory.GENERAL);
     console.log("Severity:", entry.severity || ErrorSeverity.MEDIUM);
@@ -147,13 +145,10 @@ export function logError(entry: ErrorLogEntry): void {
     console.groupEnd();
   } else {
     // Production logging (minimal)
-    console.error(
-      `[${entry.category || "GENERAL"}] ${entry.error.message}`,
-      {
-        component: enrichedContext.component,
-        timestamp: enrichedContext.timestamp,
-      },
-    );
+    console.error(`[${entry.category || "GENERAL"}] ${entry.error.message}`, {
+      component: enrichedContext.component,
+      timestamp: enrichedContext.timestamp,
+    });
   }
 
   // Future: Send to error tracking service
@@ -233,9 +228,7 @@ export function getErrorLogSummary(): {
  * @param category - Error category to filter by
  * @returns Filtered error log entries
  */
-export function getErrorsByCategory(
-  category: ErrorCategory,
-): ErrorLogEntry[] {
+export function getErrorsByCategory(category: ErrorCategory): ErrorLogEntry[] {
   return errorLog.filter((entry) => entry.category === category);
 }
 
@@ -245,9 +238,7 @@ export function getErrorsByCategory(
  * @param severity - Error severity to filter by
  * @returns Filtered error log entries
  */
-export function getErrorsBySeverity(
-  severity: ErrorSeverity,
-): ErrorLogEntry[] {
+export function getErrorsBySeverity(severity: ErrorSeverity): ErrorLogEntry[] {
   return errorLog.filter((entry) => entry.severity === severity);
 }
 
@@ -260,17 +251,12 @@ export function getErrorsBySeverity(
  * @param withinMs - Time window in milliseconds (default: 5000ms)
  * @returns Whether error was logged recently
  */
-export function wasErrorLoggedRecently(
-  errorMessage: string,
-  withinMs: number = 5000,
-): boolean {
+export function wasErrorLoggedRecently(errorMessage: string, withinMs: number = 5000): boolean {
   const now = Date.now();
   const threshold = now - withinMs;
 
   return errorLog.some((entry) => {
-    const entryTime = entry.context?.timestamp
-      ? new Date(entry.context.timestamp).getTime()
-      : 0;
+    const entryTime = entry.context?.timestamp ? new Date(entry.context.timestamp).getTime() : 0;
     return entry.error.message === errorMessage && entryTime > threshold;
   });
 }

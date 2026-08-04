@@ -11,17 +11,17 @@
  * - 9.3: Touch targets minimum 44x44 pixels
  */
 
-import { createSignal, Show } from 'solid-js';
-import { useStore } from '@nanostores/solid';
-import { $t } from '@/lib/i18n';
-import type { Difficulty } from '@/lib/curriculum/types';
-import { ErrorBoundaryWrapper } from './ErrorBoundary';
+import { useStore } from "@nanostores/solid";
+import { createSignal, Show } from "solid-js";
+import type { Difficulty } from "@/lib/curriculum/types";
+import { $t } from "@/lib/i18n";
+import { ErrorBoundaryWrapper } from "./ErrorBoundary";
 
 /**
  * Session configuration data
  */
 export interface SessionConfig {
-  difficulty: Difficulty | 'Auto';
+  difficulty: Difficulty | "Auto";
   exerciseCount: 10 | 20 | 30;
 }
 
@@ -52,41 +52,39 @@ const SessionSetupComponent = (props: SessionSetupProps) => {
   const t = useStore($t);
 
   // Default to 'A' for first-time users (Requirement 14.5), otherwise 'Auto'
-  const [selectedDifficulty, setSelectedDifficulty] = createSignal<Difficulty | 'Auto'>(
-    props.isFirstTime ? 'A' : 'Auto'
+  const [selectedDifficulty, setSelectedDifficulty] = createSignal<Difficulty | "Auto">(
+    props.isFirstTime ? "A" : "Auto",
   );
   const [selectedCount, setSelectedCount] = createSignal<10 | 20 | 30>(20);
 
   const handleStart = () => {
     props.onStart({
       difficulty: selectedDifficulty(),
-      exerciseCount: selectedCount()
+      exerciseCount: selectedCount(),
     });
   };
 
-  const difficultyOptions: Array<{ value: Difficulty | 'Auto'; key: string }> = [
-    { value: 'Auto', key: 'auto' },
-    { value: 'A', key: 'a' },
-    { value: 'B', key: 'b' },
-    { value: 'C', key: 'c' }
+  const difficultyOptions: Array<{ value: Difficulty | "Auto"; key: string }> = [
+    { value: "Auto", key: "auto" },
+    { value: "A", key: "a" },
+    { value: "B", key: "b" },
+    { value: "C", key: "c" },
   ];
 
   const countOptions: Array<{ value: 10 | 20 | 30; key: string }> = [
-    { value: 10, key: '10' },
-    { value: 20, key: '20' },
-    { value: 30, key: '30' }
+    { value: 10, key: "10" },
+    { value: 20, key: "20" },
+    { value: 30, key: "30" },
   ];
 
   return (
-    <div class={`session-setup ${props.class || ''}`}>
+    <div class={`session-setup ${props.class || ""}`}>
       {/* Header */}
       <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900 mb-2">
-          {t()('exercises.session.setup.title')}
+          {t()("exercises.session.setup.title")}
         </h1>
-        <p class="text-lg text-gray-600">
-          {t()('exercises.session.setup.subtitle')}
-        </p>
+        <p class="text-lg text-gray-600">{t()("exercises.session.setup.subtitle")}</p>
       </div>
 
       {/* First-time notice */}
@@ -96,28 +94,20 @@ const SessionSetupComponent = (props: SessionSetupProps) => {
           role="status"
           aria-live="polite"
         >
-          <p class="text-blue-800 text-sm">
-            {t()('exercises.session.setup.firstTimeNotice')}
-          </p>
+          <p class="text-blue-800 text-sm">{t()("exercises.session.setup.firstTimeNotice")}</p>
         </div>
       </Show>
 
       {/* Difficulty selection */}
       <div class="mb-8">
-        <label
-          id="difficulty-label"
-          class="block text-lg font-semibold text-gray-800 mb-4"
-        >
-          {t()('exercises.session.setup.difficulty.label')}
-        </label>
-        <div
-          role="radiogroup"
-          aria-labelledby="difficulty-label"
-          class="space-y-3"
-        >
+        <span id="difficulty-label" class="block text-lg font-semibold text-gray-800 mb-4">
+          {t()("exercises.session.setup.difficulty.label")}
+        </span>
+        <div role="radiogroup" aria-labelledby="difficulty-label" class="space-y-3">
           {difficultyOptions.map((option) => {
             const isSelected = () => selectedDifficulty() === option.value;
             return (
+              // biome-ignore lint/a11y/useSemanticElements: the ARIA role is equivalent for assistive tech here; swapping in the native element would change layout and behaviour - tracked as separate a11y work
               <button
                 type="button"
                 role="radio"
@@ -126,9 +116,10 @@ const SessionSetupComponent = (props: SessionSetupProps) => {
                 class={`
                   w-full text-left p-4 rounded-lg border-2 transition-all
                   min-h-[44px] cursor-pointer
-                  ${isSelected()
-                    ? 'border-blue-500 bg-blue-50 shadow-md'
-                    : 'border-gray-300 bg-white hover:border-blue-300 hover:bg-blue-50'
+                  ${
+                    isSelected()
+                      ? "border-blue-500 bg-blue-50 shadow-md"
+                      : "border-gray-300 bg-white hover:border-blue-300 hover:bg-blue-50"
                   }
                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
                 `}
@@ -137,10 +128,7 @@ const SessionSetupComponent = (props: SessionSetupProps) => {
                   <div
                     class={`
                       flex-shrink-0 w-5 h-5 rounded-full border-2 mt-0.5 mr-3
-                      ${isSelected()
-                        ? 'border-blue-500 bg-blue-500'
-                        : 'border-gray-400 bg-white'
-                      }
+                      ${isSelected() ? "border-blue-500 bg-blue-500" : "border-gray-400 bg-white"}
                     `}
                     aria-hidden="true"
                   >
@@ -165,20 +153,14 @@ const SessionSetupComponent = (props: SessionSetupProps) => {
 
       {/* Exercise count selection */}
       <div class="mb-8">
-        <label
-          id="count-label"
-          class="block text-lg font-semibold text-gray-800 mb-4"
-        >
-          {t()('exercises.session.setup.exerciseCount.label')}
-        </label>
-        <div
-          role="radiogroup"
-          aria-labelledby="count-label"
-          class="space-y-3"
-        >
+        <span id="count-label" class="block text-lg font-semibold text-gray-800 mb-4">
+          {t()("exercises.session.setup.exerciseCount.label")}
+        </span>
+        <div role="radiogroup" aria-labelledby="count-label" class="space-y-3">
           {countOptions.map((option) => {
             const isSelected = () => selectedCount() === option.value;
             return (
+              // biome-ignore lint/a11y/useSemanticElements: the ARIA role is equivalent for assistive tech here; swapping in the native element would change layout and behaviour - tracked as separate a11y work
               <button
                 type="button"
                 role="radio"
@@ -187,9 +169,10 @@ const SessionSetupComponent = (props: SessionSetupProps) => {
                 class={`
                   w-full text-left p-4 rounded-lg border-2 transition-all
                   min-h-[44px] cursor-pointer
-                  ${isSelected()
-                    ? 'border-blue-500 bg-blue-50 shadow-md'
-                    : 'border-gray-300 bg-white hover:border-blue-300 hover:bg-blue-50'
+                  ${
+                    isSelected()
+                      ? "border-blue-500 bg-blue-50 shadow-md"
+                      : "border-gray-300 bg-white hover:border-blue-300 hover:bg-blue-50"
                   }
                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
                 `}
@@ -198,10 +181,7 @@ const SessionSetupComponent = (props: SessionSetupProps) => {
                   <div
                     class={`
                       flex-shrink-0 w-5 h-5 rounded-full border-2 mt-0.5 mr-3
-                      ${isSelected()
-                        ? 'border-blue-500 bg-blue-500'
-                        : 'border-gray-400 bg-white'
-                      }
+                      ${isSelected() ? "border-blue-500 bg-blue-500" : "border-gray-400 bg-white"}
                     `}
                     aria-hidden="true"
                   >
@@ -239,7 +219,7 @@ const SessionSetupComponent = (props: SessionSetupProps) => {
             shadow-md hover:shadow-lg
           "
         >
-          {t()('exercises.session.setup.startButton')}
+          {t()("exercises.session.setup.startButton")}
         </button>
       </div>
     </div>
@@ -261,10 +241,7 @@ const SessionSetupComponent = (props: SessionSetupProps) => {
  */
 export default function SessionSetup(props: SessionSetupProps) {
   return (
-    <ErrorBoundaryWrapper
-      componentName="SessionSetup"
-      errorMessageKey="errors.session.setupFailed"
-    >
+    <ErrorBoundaryWrapper componentName="SessionSetup" errorMessageKey="errors.session.setupFailed">
       <SessionSetupComponent {...props} />
     </ErrorBoundaryWrapper>
   );

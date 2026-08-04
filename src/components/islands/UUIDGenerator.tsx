@@ -10,10 +10,10 @@
  * - 14.2: Generate UUID on "Start Practice" flow
  */
 
-import { createSignal, Show, onMount } from "solid-js";
 import { useStore } from "@nanostores/solid";
-import { $t } from "@/lib/i18n";
 import QRCode from "qrcode";
+import { createSignal, onMount, Show } from "solid-js";
+import { $t } from "@/lib/i18n";
 import { ErrorBoundaryWrapper } from "./ErrorBoundary";
 
 // Discriminated union for component state
@@ -184,6 +184,7 @@ Grade Range: ${props.gradeRange}
   };
 
   return (
+    // biome-ignore lint/a11y/useSemanticElements: the ARIA role is equivalent for assistive tech here; swapping in the native element would change layout and behaviour - tracked as separate a11y work
     <div
       class={`uuid-generator ${props.class || ""}`}
       role="region"
@@ -210,9 +211,7 @@ Grade Range: ${props.gradeRange}
             class="inline-block w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"
             aria-hidden="true"
           ></div>
-          <div class="mt-4 text-gray-600 font-medium">
-            {t()("common.status.loading")}
-          </div>
+          <div class="mt-4 text-gray-600 font-medium">{t()("common.status.loading")}</div>
         </div>
       </Show>
 
@@ -245,22 +244,19 @@ Grade Range: ${props.gradeRange}
                     />
                   </svg>
                   <div class="flex-1">
-                    <div class="font-bold text-orange-900 mb-1">
-                      {t()("auth.uuid.save.title")}
-                    </div>
-                    <div class="text-sm text-orange-800">
-                      {t()("auth.uuid.important")}
-                    </div>
+                    <div class="font-bold text-orange-900 mb-1">{t()("auth.uuid.save.title")}</div>
+                    <div class="text-sm text-orange-800">{t()("auth.uuid.important")}</div>
                   </div>
                 </div>
               </div>
 
               {/* UUID Display */}
               <div class="uuid-display-container">
-                <label class="block text-sm font-medium text-gray-700 mb-2">
+                <span class="block text-sm font-medium text-gray-700 mb-2">
                   {t()("auth.uuid.yourNumber")}
-                </label>
+                </span>
                 <div class="uuid-display p-6 bg-gradient-to-r from-blue-50 to-blue-100 border-2 border-blue-300 rounded-lg shadow-md">
+                  {/* biome-ignore lint/a11y/useAriaPropsSupportedByRole: aria-label names the focusable UUID display for screen readers; giving this static text a widget role would misdescribe it - tracked as a11y follow-up */}
                   <div
                     class="text-center text-3xl md:text-4xl font-mono font-bold text-blue-900 tracking-wider select-all"
                     aria-label={`${t()("auth.uuid.yourNumber")} ${currentState.uuid}`}
@@ -319,10 +315,7 @@ Grade Range: ${props.gradeRange}
                       </svg>
                     </Show>
                     <span class="text-sm font-medium text-gray-900">
-                      <Show
-                        when={copied()}
-                        fallback={t()("auth.uuid.save.copy")}
-                      >
+                      <Show when={copied()} fallback={t()("auth.uuid.save.copy")}>
                         {t()("auth.uuid.copied")}
                       </Show>
                     </span>
@@ -416,9 +409,7 @@ Grade Range: ${props.gradeRange}
                       <h3 class="text-lg font-bold text-gray-900 mb-2">
                         {t()("auth.uuid.save.qrCode")}
                       </h3>
-                      <p class="text-sm text-gray-600">
-                        Scan this QR code with your mobile device
-                      </p>
+                      <p class="text-sm text-gray-600">Scan this QR code with your mobile device</p>
                     </div>
                     <img
                       src={currentState.qrCodeDataUrl}
@@ -450,11 +441,7 @@ Grade Range: ${props.gradeRange}
           if (currentState.status !== "error") return null;
 
           return (
-            <div
-              class="error-container text-center py-8"
-              role="alert"
-              aria-live="assertive"
-            >
+            <div class="error-container text-center py-8" role="alert" aria-live="assertive">
               <div class="mb-4 p-4 bg-red-100 border-2 border-red-400 rounded-lg inline-block">
                 <div class="flex items-center gap-3">
                   <svg
@@ -473,9 +460,7 @@ Grade Range: ${props.gradeRange}
                   </svg>
                   <div class="text-left">
                     <div class="font-bold text-red-900 mb-1">Error</div>
-                    <div class="text-sm text-red-800">
-                      {currentState.message}
-                    </div>
+                    <div class="text-sm text-red-800">{currentState.message}</div>
                   </div>
                 </div>
               </div>

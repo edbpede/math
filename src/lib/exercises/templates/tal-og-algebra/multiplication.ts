@@ -407,10 +407,7 @@ export const multiplicationC: ExerciseTemplate = {
           return `${a} × 9 = (${a} × 10) - ${a} = ${step1} - ${a} = ${step2}`;
         }
         // Default: show repeated addition
-        const steps = Array.from(
-          { length: Math.min(b, 5) },
-          (_, i) => a * (i + 1),
-        );
+        const steps = Array.from({ length: Math.min(b, 5) }, (_, i) => a * (i + 1));
         return `Tæl i ${a}'ere: ${steps.join(", ")}${b > 5 ? "..." : ""}`;
       }
 
@@ -431,10 +428,7 @@ export const multiplicationC: ExerciseTemplate = {
         return `${a} × 9 = (${a} × 10) - ${a} = ${step1} - ${a} = ${step2}`;
       }
       // Default: show repeated addition
-      const steps = Array.from(
-        { length: Math.min(b, 5) },
-        (_, i) => a * (i + 1),
-      );
+      const steps = Array.from({ length: Math.min(b, 5) }, (_, i) => a * (i + 1));
       return `Count by ${a}s: ${steps.join(", ")}${b > 5 ? "..." : ""}`;
     },
     // Level 4: Complete solution
@@ -452,8 +446,4 @@ export const multiplicationC: ExerciseTemplate = {
 };
 
 // Export all multiplication templates
-export const multiplicationTemplates = [
-  multiplicationA,
-  multiplicationB,
-  multiplicationC,
-];
+export const multiplicationTemplates = [multiplicationA, multiplicationB, multiplicationC];

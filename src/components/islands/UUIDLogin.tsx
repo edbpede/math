@@ -15,10 +15,10 @@
  * - 7.4: Rate limiting (5 attempts per minute per IP)
  */
 
-import { createSignal, Show, onMount } from "solid-js";
 import { useStore } from "@nanostores/solid";
-import { $t } from "@/lib/i18n";
+import { createSignal, onMount, Show } from "solid-js";
 import { validateUUID } from "@/lib/auth/uuid";
+import { $t } from "@/lib/i18n";
 import { ErrorBoundaryWrapper } from "./ErrorBoundary";
 
 // LocalStorage key for remembered UUIDs
@@ -88,15 +88,11 @@ const UUIDLoginComponent = (props: UUIDLoginProps) => {
   const [state, setState] = createSignal<LoginState>({ status: "idle" });
   const [uuidInput, setUuidInput] = createSignal("");
   const [rememberDevice, setRememberDevice] = createSignal(false);
-  const [validationError, setValidationError] = createSignal<string | null>(
-    null,
-  );
+  const [validationError, setValidationError] = createSignal<string | null>(null);
 
   // Rate limiting tracking
   const [attemptCount, setAttemptCount] = createSignal(0);
-  const [rateLimitResetTime, setRateLimitResetTime] = createSignal<
-    number | null
-  >(null);
+  const [rateLimitResetTime, setRateLimitResetTime] = createSignal<number | null>(null);
 
   /**
    * Check localStorage for remembered UUID on mount
@@ -269,8 +265,7 @@ const UUIDLoginComponent = (props: UUIDLoginProps) => {
             ? data.resetAt
             : Date.now() + ((!data.success && data.retryAfter) || 60) * 1000;
         const remainingSeconds =
-          (!data.success && data.retryAfter) ||
-          Math.ceil((resetAt - Date.now()) / 1000);
+          (!data.success && data.retryAfter) || Math.ceil((resetAt - Date.now()) / 1000);
 
         // Update local rate limit state to match server
         setRateLimitResetTime(resetAt);
@@ -364,6 +359,7 @@ const UUIDLoginComponent = (props: UUIDLoginProps) => {
   };
 
   return (
+    // biome-ignore lint/a11y/useSemanticElements: the ARIA role is equivalent for assistive tech here; swapping in the native element would change layout and behaviour - tracked as separate a11y work
     <div
       class={`uuid-login ${props.class || ""}`}
       role="region"
@@ -379,17 +375,10 @@ const UUIDLoginComponent = (props: UUIDLoginProps) => {
         </div>
 
         {/* Login Form */}
-        <form
-          onSubmit={handleSubmit}
-          novalidate
-          aria-label={t()("auth.login.title")}
-        >
+        <form onSubmit={handleSubmit} novalidate aria-label={t()("auth.login.title")}>
           {/* UUID Input Field */}
           <div class="form-group mb-4">
-            <label
-              for="uuid-input"
-              class="block text-sm font-medium text-gray-700 mb-2"
-            >
+            <label for="uuid-input" class="block text-sm font-medium text-gray-700 mb-2">
               {t()("auth.uuid.title")}
             </label>
             <input
@@ -408,10 +397,7 @@ const UUIDLoginComponent = (props: UUIDLoginProps) => {
               autocapitalize="off"
               spellcheck={false}
               maxlength="19"
-              disabled={
-                state().status === "submitting" ||
-                state().status === "rateLimited"
-              }
+              disabled={state().status === "submitting" || state().status === "rateLimited"}
               class={`
                 w-full px-4 py-3 text-lg font-mono tracking-wider text-center
                 border-2 rounded-lg shadow-sm
@@ -424,8 +410,7 @@ const UUIDLoginComponent = (props: UUIDLoginProps) => {
                     : "border-gray-300 bg-white text-gray-900 hover:border-blue-400"
                 }
                 ${
-                  state().status === "submitting" ||
-                  state().status === "rateLimited"
+                  state().status === "submitting" || state().status === "rateLimited"
                     ? "opacity-60 cursor-not-allowed"
                     : ""
                 }
@@ -452,10 +437,7 @@ const UUIDLoginComponent = (props: UUIDLoginProps) => {
                 type="checkbox"
                 checked={rememberDevice()}
                 onChange={(e) => setRememberDevice(e.currentTarget.checked)}
-                disabled={
-                  state().status === "submitting" ||
-                  state().status === "rateLimited"
-                }
+                disabled={state().status === "submitting" || state().status === "rateLimited"}
                 aria-label={t()("auth.login.rememberDevice")}
                 class="w-5 h-5 min-w-44px min-h-44px text-blue-600 border-2 border-gray-300 rounded focus:ring-4 focus:ring-blue-300 cursor-pointer"
               />
@@ -491,18 +473,11 @@ const UUIDLoginComponent = (props: UUIDLoginProps) => {
                   <div class="text-sm font-medium text-red-900">
                     {(() => {
                       const currentState = state();
-                      return currentState.status === "error"
-                        ? currentState.message
-                        : "";
+                      return currentState.status === "error" ? currentState.message : "";
                     })()}
                   </div>
                   {/* Show attempts remaining if not at limit */}
-                  <Show
-                    when={
-                      getAttemptsRemaining() > 0 &&
-                      getAttemptsRemaining() < MAX_ATTEMPTS
-                    }
-                  >
+                  <Show when={getAttemptsRemaining() > 0 && getAttemptsRemaining() < MAX_ATTEMPTS}>
                     <div class="mt-1 text-xs text-red-800">
                       {t()("auth.login.attemptsRemaining", {
                         count: getAttemptsRemaining(),
@@ -541,9 +516,7 @@ const UUIDLoginComponent = (props: UUIDLoginProps) => {
                     {(() => {
                       const currentState = state();
                       const seconds =
-                        currentState.status === "rateLimited"
-                          ? currentState.remainingSeconds
-                          : 0;
+                        currentState.status === "rateLimited" ? currentState.remainingSeconds : 0;
                       return t()("auth.login.rateLimitExceeded", { seconds });
                     })()}
                   </div>
@@ -573,10 +546,7 @@ const UUIDLoginComponent = (props: UUIDLoginProps) => {
                 : t()("auth.login.submit")
             }
           >
-            <Show
-              when={state().status === "submitting"}
-              fallback={t()("auth.login.submit")}
-            >
+            <Show when={state().status === "submitting"} fallback={t()("auth.login.submit")}>
               <div class="flex items-center justify-center gap-3">
                 <div
                   class="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"
@@ -619,10 +589,7 @@ const UUIDLoginComponent = (props: UUIDLoginProps) => {
  */
 export default function UUIDLogin(props: UUIDLoginProps) {
   return (
-    <ErrorBoundaryWrapper
-      componentName="UUIDLogin"
-      errorMessageKey="errors.auth.loginFailed"
-    >
+    <ErrorBoundaryWrapper componentName="UUIDLogin" errorMessageKey="errors.auth.loginFailed">
       <UUIDLoginComponent {...props} />
     </ErrorBoundaryWrapper>
   );

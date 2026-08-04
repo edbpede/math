@@ -4,14 +4,14 @@
  * Comprehensive tests for fraction equivalence exercise templates
  */
 
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
+import { ParameterGenerator } from "../../parameter-generator";
+import { TemplateRegistry } from "../../template-registry";
 import {
   fractionEquivalenceA,
   fractionEquivalenceB,
   fractionEquivalenceC,
 } from "./fraction-equivalence";
-import { TemplateRegistry } from "../../template-registry";
-import { ParameterGenerator } from "../../parameter-generator";
 
 describe("Fraction Equivalence Templates", () => {
   let registry: TemplateRegistry;
@@ -22,15 +22,9 @@ describe("Fraction Equivalence Templates", () => {
 
   describe("fractionEquivalenceA (Difficulty A)", () => {
     it("should have correct metadata", () => {
-      expect(fractionEquivalenceA.id).toBe(
-        "tal-algebra-fraction-equivalence-4-6-A",
-      );
-      expect(fractionEquivalenceA.metadata.competencyAreaId).toBe(
-        "tal-og-algebra",
-      );
-      expect(fractionEquivalenceA.metadata.skillsAreaId).toBe(
-        "broker-og-procent",
-      );
+      expect(fractionEquivalenceA.id).toBe("tal-algebra-fraction-equivalence-4-6-A");
+      expect(fractionEquivalenceA.metadata.competencyAreaId).toBe("tal-og-algebra");
+      expect(fractionEquivalenceA.metadata.skillsAreaId).toBe("broker-og-procent");
       expect(fractionEquivalenceA.metadata.gradeRange).toBe("4-6");
       expect(fractionEquivalenceA.metadata.difficulty).toBe("A");
       expect(fractionEquivalenceA.metadata.isBinding).toBe(true);
@@ -76,21 +70,11 @@ describe("Fraction Equivalence Templates", () => {
     it("should validate equivalent fractions", () => {
       const correctAnswer = { value: "2/4", equivalents: [0.5, "1/2"] };
 
-      expect(fractionEquivalenceA.validate("2/4", correctAnswer).correct).toBe(
-        true,
-      );
-      expect(fractionEquivalenceA.validate("1/2", correctAnswer).correct).toBe(
-        true,
-      );
-      expect(fractionEquivalenceA.validate("4/8", correctAnswer).correct).toBe(
-        true,
-      );
-      expect(fractionEquivalenceA.validate("0.5", correctAnswer).correct).toBe(
-        true,
-      );
-      expect(fractionEquivalenceA.validate("3/4", correctAnswer).correct).toBe(
-        false,
-      );
+      expect(fractionEquivalenceA.validate("2/4", correctAnswer).correct).toBe(true);
+      expect(fractionEquivalenceA.validate("1/2", correctAnswer).correct).toBe(true);
+      expect(fractionEquivalenceA.validate("4/8", correctAnswer).correct).toBe(true);
+      expect(fractionEquivalenceA.validate("0.5", correctAnswer).correct).toBe(true);
+      expect(fractionEquivalenceA.validate("3/4", correctAnswer).correct).toBe(false);
     });
 
     it("should provide 4 hint levels", () => {
@@ -132,13 +116,9 @@ describe("Fraction Equivalence Templates", () => {
 
   describe("fractionEquivalenceB (Difficulty B)", () => {
     it("should have correct metadata", () => {
-      expect(fractionEquivalenceB.id).toBe(
-        "tal-algebra-fraction-equivalence-4-6-B",
-      );
+      expect(fractionEquivalenceB.id).toBe("tal-algebra-fraction-equivalence-4-6-B");
       expect(fractionEquivalenceB.metadata.difficulty).toBe("B");
-      expect(fractionEquivalenceB.metadata.tags).toContain(
-        "proportional-reasoning",
-      );
+      expect(fractionEquivalenceB.metadata.tags).toContain("proportional-reasoning");
     });
 
     it("should register successfully", () => {
@@ -198,12 +178,8 @@ describe("Fraction Equivalence Templates", () => {
     it("should validate correct answers", () => {
       const correctAnswer = { value: 8 };
 
-      expect(fractionEquivalenceB.validate("8", correctAnswer).correct).toBe(
-        true,
-      );
-      expect(fractionEquivalenceB.validate("7", correctAnswer).correct).toBe(
-        false,
-      );
+      expect(fractionEquivalenceB.validate("8", correctAnswer).correct).toBe(true);
+      expect(fractionEquivalenceB.validate("7", correctAnswer).correct).toBe(false);
     });
 
     it("should provide 4 hint levels", () => {
@@ -213,9 +189,7 @@ describe("Fraction Equivalence Templates", () => {
 
   describe("fractionEquivalenceC (Difficulty C)", () => {
     it("should have correct metadata", () => {
-      expect(fractionEquivalenceC.id).toBe(
-        "tal-algebra-fraction-equivalence-4-6-C",
-      );
+      expect(fractionEquivalenceC.id).toBe("tal-algebra-fraction-equivalence-4-6-C");
       expect(fractionEquivalenceC.metadata.difficulty).toBe("C");
       expect(fractionEquivalenceC.metadata.tags).toContain("simplification");
     });
@@ -260,21 +234,11 @@ describe("Fraction Equivalence Templates", () => {
     it("should validate simplified fractions", () => {
       const correctAnswer = { value: "1/2", equivalents: [0.5, "2/4"] };
 
-      expect(fractionEquivalenceC.validate("1/2", correctAnswer).correct).toBe(
-        true,
-      );
-      expect(fractionEquivalenceC.validate("2/4", correctAnswer).correct).toBe(
-        true,
-      );
-      expect(fractionEquivalenceC.validate("3/6", correctAnswer).correct).toBe(
-        true,
-      );
-      expect(fractionEquivalenceC.validate("0.5", correctAnswer).correct).toBe(
-        true,
-      );
-      expect(fractionEquivalenceC.validate("1/3", correctAnswer).correct).toBe(
-        false,
-      );
+      expect(fractionEquivalenceC.validate("1/2", correctAnswer).correct).toBe(true);
+      expect(fractionEquivalenceC.validate("2/4", correctAnswer).correct).toBe(true);
+      expect(fractionEquivalenceC.validate("3/6", correctAnswer).correct).toBe(true);
+      expect(fractionEquivalenceC.validate("0.5", correctAnswer).correct).toBe(true);
+      expect(fractionEquivalenceC.validate("1/3", correctAnswer).correct).toBe(false);
     });
 
     it("should provide 4 hint levels", () => {

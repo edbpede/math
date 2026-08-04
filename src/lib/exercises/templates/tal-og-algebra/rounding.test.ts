@@ -4,10 +4,10 @@
  * Comprehensive tests for rounding exercise templates
  */
 
-import { describe, it, expect, beforeEach } from "vitest";
-import { roundingA, roundingB, roundingC } from "./rounding";
-import { TemplateRegistry } from "../../template-registry";
+import { beforeEach, describe, expect, it } from "vitest";
 import { ParameterGenerator } from "../../parameter-generator";
+import { TemplateRegistry } from "../../template-registry";
+import { roundingA, roundingB, roundingC } from "./rounding";
 
 describe("Rounding Templates", () => {
   let registry: TemplateRegistry;
@@ -90,9 +90,7 @@ describe("Rounding Templates", () => {
       const result = roundingA.generate(params, "da-DK");
 
       expect(roundingA.validate("50", result.correctAnswer).correct).toBe(true);
-      expect(roundingA.validate("40", result.correctAnswer).correct).toBe(
-        false,
-      );
+      expect(roundingA.validate("40", result.correctAnswer).correct).toBe(false);
     });
 
     it("should provide 4 hint levels", () => {
@@ -183,9 +181,7 @@ describe("Rounding Templates", () => {
       const result = roundingB.generate(params, "da-DK");
 
       expect(roundingB.validate("90", result.correctAnswer).correct).toBe(true);
-      expect(roundingB.validate("80", result.correctAnswer).correct).toBe(
-        false,
-      );
+      expect(roundingB.validate("80", result.correctAnswer).correct).toBe(false);
     });
 
     it("should provide 4 hint levels", () => {
@@ -273,12 +269,8 @@ describe("Rounding Templates", () => {
       const params = { number: 567 };
       const result = roundingC.generate(params, "da-DK");
 
-      expect(roundingC.validate("600", result.correctAnswer).correct).toBe(
-        true,
-      );
-      expect(roundingC.validate("500", result.correctAnswer).correct).toBe(
-        false,
-      );
+      expect(roundingC.validate("600", result.correctAnswer).correct).toBe(true);
+      expect(roundingC.validate("500", result.correctAnswer).correct).toBe(false);
     });
 
     it("should provide 4 hint levels", () => {

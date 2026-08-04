@@ -10,9 +10,9 @@
  */
 
 export {
-  SECURITY_HEADERS,
+  createSecurityHeaders,
   getContentSecurityPolicy,
   getSecurityHeaders,
+  SECURITY_HEADERS,
   withSecurityHeaders,
-  createSecurityHeaders,
-} from './headers'
+} from "./headers";

@@ -16,12 +16,13 @@
  * The component follows SolidJS patterns and TypeScript ensures type safety.
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { render, screen, fireEvent } from "@solidjs/testing-library";
+import { fireEvent, render, screen } from "@solidjs/testing-library";
 import { createSignal } from "solid-js";
-import HintSystem from "./HintSystem";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Hint } from "@/lib/exercises/types";
 import { changeLocale, initI18n } from "@/lib/i18n";
+import HintSystem from "./HintSystem";
+
 // Accessibility module is mocked below
 
 // Mock announce function
@@ -68,9 +69,7 @@ describe("HintSystem", () => {
   describe("initial render", () => {
     it("should render with no hints shown initially", () => {
       const onHintRequested = vi.fn();
-      render(() => (
-        <HintSystem hints={mockHints} onHintRequested={onHintRequested} />
-      ));
+      render(() => <HintSystem hints={mockHints} onHintRequested={onHintRequested} />);
 
       // Button should be visible
       const button = screen.getByRole("button");
@@ -84,18 +83,14 @@ describe("HintSystem", () => {
 
     it("should not call onHintRequested on initial render", () => {
       const onHintRequested = vi.fn();
-      render(() => (
-        <HintSystem hints={mockHints} onHintRequested={onHintRequested} />
-      ));
+      render(() => <HintSystem hints={mockHints} onHintRequested={onHintRequested} />);
 
       expect(onHintRequested).not.toHaveBeenCalled();
     });
 
     it("should have proper ARIA labels", () => {
       const onHintRequested = vi.fn();
-      render(() => (
-        <HintSystem hints={mockHints} onHintRequested={onHintRequested} />
-      ));
+      render(() => <HintSystem hints={mockHints} onHintRequested={onHintRequested} />);
 
       const region = screen.getByRole("region");
       expect(region).toBeTruthy();
@@ -106,9 +101,7 @@ describe("HintSystem", () => {
   describe("hint revelation", () => {
     it("should reveal first hint on button click", () => {
       const onHintRequested = vi.fn();
-      render(() => (
-        <HintSystem hints={mockHints} onHintRequested={onHintRequested} />
-      ));
+      render(() => <HintSystem hints={mockHints} onHintRequested={onHintRequested} />);
 
       const button = screen.getByRole("button");
       fireEvent.click(button);
@@ -123,9 +116,7 @@ describe("HintSystem", () => {
 
     it("should reveal hints sequentially", () => {
       const onHintRequested = vi.fn();
-      render(() => (
-        <HintSystem hints={mockHints} onHintRequested={onHintRequested} />
-      ));
+      render(() => <HintSystem hints={mockHints} onHintRequested={onHintRequested} />);
 
       const button = screen.getByRole("button");
 
@@ -154,9 +145,7 @@ describe("HintSystem", () => {
 
     it("should keep previous hints visible when revealing new ones", () => {
       const onHintRequested = vi.fn();
-      render(() => (
-        <HintSystem hints={mockHints} onHintRequested={onHintRequested} />
-      ));
+      render(() => <HintSystem hints={mockHints} onHintRequested={onHintRequested} />);
 
       const button = screen.getByRole("button");
 
@@ -174,9 +163,7 @@ describe("HintSystem", () => {
 
     it("should display all 4 hints after clicking 4 times", () => {
       const onHintRequested = vi.fn();
-      render(() => (
-        <HintSystem hints={mockHints} onHintRequested={onHintRequested} />
-      ));
+      render(() => <HintSystem hints={mockHints} onHintRequested={onHintRequested} />);
 
       const button = screen.getByRole("button");
 
@@ -199,9 +186,7 @@ describe("HintSystem", () => {
   describe("button state", () => {
     it("should change button text after revealing first hint", () => {
       const onHintRequested = vi.fn();
-      render(() => (
-        <HintSystem hints={mockHints} onHintRequested={onHintRequested} />
-      ));
+      render(() => <HintSystem hints={mockHints} onHintRequested={onHintRequested} />);
 
       const button = screen.getByRole("button");
       expect(button.textContent).toContain("Get a Hint");
@@ -213,9 +198,7 @@ describe("HintSystem", () => {
 
     it("should disable button when all hints are revealed", () => {
       const onHintRequested = vi.fn();
-      render(() => (
-        <HintSystem hints={mockHints} onHintRequested={onHintRequested} />
-      ));
+      render(() => <HintSystem hints={mockHints} onHintRequested={onHintRequested} />);
 
       const button = screen.getByRole("button");
 
@@ -231,9 +214,7 @@ describe("HintSystem", () => {
 
     it("should not call onHintRequested when clicking disabled button", () => {
       const onHintRequested = vi.fn();
-      render(() => (
-        <HintSystem hints={mockHints} onHintRequested={onHintRequested} />
-      ));
+      render(() => <HintSystem hints={mockHints} onHintRequested={onHintRequested} />);
 
       const button = screen.getByRole("button");
 
@@ -253,11 +234,7 @@ describe("HintSystem", () => {
     it("should respect disabled prop", () => {
       const onHintRequested = vi.fn();
       render(() => (
-        <HintSystem
-          hints={mockHints}
-          onHintRequested={onHintRequested}
-          disabled={true}
-        />
+        <HintSystem hints={mockHints} onHintRequested={onHintRequested} disabled={true} />
       ));
 
       const button = screen.getByRole("button");
@@ -278,11 +255,7 @@ describe("HintSystem", () => {
       const [disabled, setDisabled] = createSignal(true);
 
       render(() => (
-        <HintSystem
-          hints={mockHints}
-          onHintRequested={onHintRequested}
-          disabled={disabled()}
-        />
+        <HintSystem hints={mockHints} onHintRequested={onHintRequested} disabled={disabled()} />
       ));
 
       const button = screen.getByRole("button");
@@ -299,9 +272,7 @@ describe("HintSystem", () => {
   describe("progress indicator", () => {
     it("should not show progress initially", () => {
       const onHintRequested = vi.fn();
-      render(() => (
-        <HintSystem hints={mockHints} onHintRequested={onHintRequested} />
-      ));
+      render(() => <HintSystem hints={mockHints} onHintRequested={onHintRequested} />);
 
       // const progress = screen.queryByText(/Hint \d+ of \d+/);
       // Progress text might be in ARIA label but not visible initially
@@ -310,9 +281,7 @@ describe("HintSystem", () => {
 
     it("should update progress after revealing hints", () => {
       const onHintRequested = vi.fn();
-      render(() => (
-        <HintSystem hints={mockHints} onHintRequested={onHintRequested} />
-      ));
+      render(() => <HintSystem hints={mockHints} onHintRequested={onHintRequested} />);
 
       const button = screen.getByRole("button");
 
@@ -329,12 +298,7 @@ describe("HintSystem", () => {
   describe("visual aids", () => {
     it("should display visual aid when present", () => {
       const onHintRequested = vi.fn();
-      render(() => (
-        <HintSystem
-          hints={mockHintsWithVisualAid}
-          onHintRequested={onHintRequested}
-        />
-      ));
+      render(() => <HintSystem hints={mockHintsWithVisualAid} onHintRequested={onHintRequested} />);
 
       const button = screen.getByRole("button");
       fireEvent.click(button);
@@ -346,9 +310,7 @@ describe("HintSystem", () => {
 
     it("should not display visual aid when not present", () => {
       const onHintRequested = vi.fn();
-      render(() => (
-        <HintSystem hints={mockHints} onHintRequested={onHintRequested} />
-      ));
+      render(() => <HintSystem hints={mockHints} onHintRequested={onHintRequested} />);
 
       const button = screen.getByRole("button");
       fireEvent.click(button);
@@ -364,11 +326,7 @@ describe("HintSystem", () => {
       const [resetKey, setResetKey] = createSignal(1);
 
       render(() => (
-        <HintSystem
-          hints={mockHints}
-          onHintRequested={onHintRequested}
-          resetKey={resetKey()}
-        />
+        <HintSystem hints={mockHints} onHintRequested={onHintRequested} resetKey={resetKey()} />
       ));
 
       const button = screen.getByRole("button");
@@ -392,9 +350,7 @@ describe("HintSystem", () => {
   describe("hint level badges", () => {
     it("should display correct level badges for each hint", () => {
       const onHintRequested = vi.fn();
-      render(() => (
-        <HintSystem hints={mockHints} onHintRequested={onHintRequested} />
-      ));
+      render(() => <HintSystem hints={mockHints} onHintRequested={onHintRequested} />);
 
       const button = screen.getByRole("button");
 
@@ -412,9 +368,7 @@ describe("HintSystem", () => {
   describe("accessibility", () => {
     it("should have minimum touch target size", () => {
       const onHintRequested = vi.fn();
-      render(() => (
-        <HintSystem hints={mockHints} onHintRequested={onHintRequested} />
-      ));
+      render(() => <HintSystem hints={mockHints} onHintRequested={onHintRequested} />);
 
       const button = screen.getByRole("button");
       const style = window.getComputedStyle(button);
@@ -426,9 +380,7 @@ describe("HintSystem", () => {
 
     it("should have proper ARIA label on button", () => {
       const onHintRequested = vi.fn();
-      render(() => (
-        <HintSystem hints={mockHints} onHintRequested={onHintRequested} />
-      ));
+      render(() => <HintSystem hints={mockHints} onHintRequested={onHintRequested} />);
 
       const button = screen.getByRole("button");
       const ariaLabel = button.getAttribute("aria-label");
@@ -439,9 +391,7 @@ describe("HintSystem", () => {
 
     it("should have live region for progress updates", () => {
       const onHintRequested = vi.fn();
-      render(() => (
-        <HintSystem hints={mockHints} onHintRequested={onHintRequested} />
-      ));
+      render(() => <HintSystem hints={mockHints} onHintRequested={onHintRequested} />);
 
       const button = screen.getByRole("button");
       fireEvent.click(button);
@@ -453,9 +403,7 @@ describe("HintSystem", () => {
 
     it("should have proper role for revealed hints list", () => {
       const onHintRequested = vi.fn();
-      render(() => (
-        <HintSystem hints={mockHints} onHintRequested={onHintRequested} />
-      ));
+      render(() => <HintSystem hints={mockHints} onHintRequested={onHintRequested} />);
 
       const button = screen.getByRole("button");
       fireEvent.click(button);
@@ -475,9 +423,7 @@ describe("HintSystem", () => {
       await changeLocale("da-DK");
 
       const onHintRequested = vi.fn();
-      render(() => (
-        <HintSystem hints={mockHints} onHintRequested={onHintRequested} />
-      ));
+      render(() => <HintSystem hints={mockHints} onHintRequested={onHintRequested} />);
 
       const button = screen.getByRole("button");
       expect(button.textContent).toContain("Få et hint");
@@ -487,9 +433,7 @@ describe("HintSystem", () => {
       await changeLocale("en-US");
 
       const onHintRequested = vi.fn();
-      render(() => (
-        <HintSystem hints={mockHints} onHintRequested={onHintRequested} />
-      ));
+      render(() => <HintSystem hints={mockHints} onHintRequested={onHintRequested} />);
 
       const button = screen.getByRole("button");
       expect(button.textContent).toContain("Get a Hint");
@@ -516,9 +460,7 @@ describe("HintSystem", () => {
       ];
 
       const onHintRequested = vi.fn();
-      render(() => (
-        <HintSystem hints={multilineHints} onHintRequested={onHintRequested} />
-      ));
+      render(() => <HintSystem hints={multilineHints} onHintRequested={onHintRequested} />);
 
       const button = screen.getByRole("button");
       fireEvent.click(button);

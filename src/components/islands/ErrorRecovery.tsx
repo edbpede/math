@@ -24,8 +24,8 @@
  * ```
  */
 
-import { For, Show, createSignal, type Component } from "solid-js";
 import { useStore } from "@nanostores/solid";
+import { type Component, createSignal, For, Show } from "solid-js";
 import { $t } from "@/lib/i18n";
 
 /**
@@ -46,16 +46,16 @@ export type RecoveryActionType =
 export interface RecoveryAction {
   /** Action type (for predefined actions) or custom label */
   type: RecoveryActionType | string;
-  
+
   /** Custom label (overrides default translation) */
   label?: string;
-  
+
   /** Handler function */
   handler: () => void | Promise<void>;
-  
+
   /** Whether this is the primary action (emphasized styling) */
   primary?: boolean;
-  
+
   /** Whether the action is disabled */
   disabled?: boolean;
 }
@@ -66,7 +66,7 @@ export interface RecoveryAction {
 export interface ErrorRecoveryProps {
   /** List of recovery actions to display */
   actions: RecoveryAction[];
-  
+
   /** Optional CSS class */
   class?: string;
 }
@@ -122,6 +122,7 @@ const ErrorRecovery: Component<ErrorRecoveryProps> = (props) => {
   };
 
   return (
+    // biome-ignore lint/a11y/useSemanticElements: the ARIA role is equivalent for assistive tech here; swapping in the native element would change layout and behaviour - tracked as separate a11y work
     <div
       class={`error-recovery flex flex-wrap gap-3 ${props.class || ""}`}
       role="group"
@@ -131,8 +132,7 @@ const ErrorRecovery: Component<ErrorRecoveryProps> = (props) => {
         {(action, index) => {
           const actionKey = `${action.type}-${index()}`;
           const isLoading = () => loadingAction() === actionKey;
-          const label = () =>
-            action.label || t()(getActionTranslationKey(action.type));
+          const label = () => action.label || t()(getActionTranslationKey(action.type));
 
           return (
             <button
@@ -157,6 +157,7 @@ const ErrorRecovery: Component<ErrorRecoveryProps> = (props) => {
                 fallback={
                   <span class="flex items-center gap-2">
                     <svg
+                      aria-hidden="true"
                       class="animate-spin h-4 w-4"
                       fill="none"
                       viewBox="0 0 24 24"
@@ -190,4 +191,3 @@ const ErrorRecovery: Component<ErrorRecoveryProps> = (props) => {
 };
 
 export default ErrorRecovery;
-

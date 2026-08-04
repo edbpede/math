@@ -8,7 +8,7 @@
  * - 5.6: Compose sessions balancing new (10-30%), review (40-60%), weak areas (10-30%), random (10-20%)
  */
 
-import type { CompetencyAreaId, GradeRange, SkillProgress } from '../types';
+import type { CompetencyAreaId, GradeRange, SkillProgress } from "../types";
 
 /**
  * Content category for session composition
@@ -19,7 +19,7 @@ import type { CompetencyAreaId, GradeRange, SkillProgress } from '../types';
  * - weak-area: Skills with low mastery levels
  * - random: Random selection for variety
  */
-export type ContentCategory = 'new' | 'review' | 'weak-area' | 'random';
+export type ContentCategory = "new" | "review" | "weak-area" | "random";
 
 /**
  * Configuration for session composition content balancing
@@ -145,7 +145,7 @@ export interface SessionPlan {
  * Returned when session composition completes successfully.
  */
 export interface SessionCompositionSuccess {
-  status: 'success';
+  status: "success";
   sessionPlan: SessionPlan;
 }
 
@@ -156,7 +156,7 @@ export interface SessionCompositionSuccess {
  * (e.g., not enough templates available, new user with no progress).
  */
 export interface SessionCompositionInsufficientData {
-  status: 'insufficient-data';
+  status: "insufficient-data";
   message: string;
   availableExercises: number;
   requestedExercises: number;
@@ -168,7 +168,7 @@ export interface SessionCompositionInsufficientData {
  * Returned when an error occurs during session composition.
  */
 export interface SessionCompositionError {
-  status: 'error';
+  status: "error";
   message: string;
   error?: Error;
 }

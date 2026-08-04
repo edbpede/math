@@ -1,33 +1,36 @@
 ---
 /**
  * Footer Component
- * 
+ *
  * Site footer with copyright notice, links, and sync status indicator.
  * Displays sync status per Requirement 15.4 for offline-capable PWA.
- * 
+ *
  * Requirements:
  * - 15.4: Display online/offline status and last sync timestamp
  * - 9.4: Semantic HTML with ARIA landmarks
  */
 
-import { $t, getCurrentLocale } from '@/lib/i18n'
-import SyncStatus from '@/components/islands/SyncStatus'
+import SyncStatus from "@/components/islands/SyncStatus";
+import { $t, getCurrentLocale } from "@/lib/i18n";
 
-const locale = await getCurrentLocale()
-const translations = await $t.get()
+const locale = await getCurrentLocale();
+const translations = await $t.get();
 
 // Get current year for copyright
-const currentYear = new Date().getFullYear()
+const currentYear = new Date().getFullYear();
 
 // Footer links
 const footerLinks = [
-  { label: translations('navigation.footer.links.privacy'), href: '/privacy' },
-  { label: translations('navigation.footer.links.help'), href: '/help' },
-  { label: translations('navigation.footer.links.about'), href: '/about' },
-]
+  { label: translations("navigation.footer.links.privacy"), href: "/privacy" },
+  { label: translations("navigation.footer.links.help"), href: "/help" },
+  { label: translations("navigation.footer.links.about"), href: "/about" },
+];
 
 // Interpolate year into copyright text
-const copyrightText = translations('navigation.footer.copyright').replace('{{year}}', currentYear.toString())
+const copyrightText = translations("navigation.footer.copyright").replace(
+  "{{year}}",
+  currentYear.toString(),
+);
 ---
 
 <footer

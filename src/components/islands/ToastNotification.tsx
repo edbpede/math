@@ -30,16 +30,10 @@
  * ```
  */
 
-import {
-  createSignal,
-  For,
-  Show,
-  onMount,
-  type Component,
-} from "solid-js";
 import { useStore } from "@nanostores/solid";
-import { $t } from "@/lib/i18n";
+import { type Component, createSignal, For, onMount, Show } from "solid-js";
 import { announce } from "@/lib/accessibility/announcer";
+import { $t } from "@/lib/i18n";
 
 /**
  * Toast notification type
@@ -306,6 +300,7 @@ const ToastItem: Component<{
         </div>
         <Show when={props.toast.dismissible}>
           <button
+            type="button"
             onClick={props.onDismiss}
             class={`ml-4 inline-flex flex-shrink-0 rounded-md p-1.5 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${getButtonColorClass()}`}
             aria-label={t()("common.actions.dismiss")}
@@ -357,9 +352,7 @@ export const ToastContainer: Component = () => {
       aria-atomic="false"
     >
       <For each={toasts()}>
-        {(toast) => (
-          <ToastItem toast={toast} onDismiss={() => dismissToast(toast.id)} />
-        )}
+        {(toast) => <ToastItem toast={toast} onDismiss={() => dismissToast(toast.id)} />}
       </For>
     </div>
   );
@@ -372,11 +365,9 @@ export const toast = {
   success: (message: string, duration?: number) =>
     showToast({ type: "success", message, duration }),
 
-  error: (message: string, duration?: number) =>
-    showToast({ type: "error", message, duration }),
+  error: (message: string, duration?: number) => showToast({ type: "error", message, duration }),
 
-  info: (message: string, duration?: number) =>
-    showToast({ type: "info", message, duration }),
+  info: (message: string, duration?: number) => showToast({ type: "info", message, duration }),
 
   warning: (message: string, duration?: number) =>
     showToast({ type: "warning", message, duration }),

@@ -9,7 +9,7 @@
  * - Track user engagement and consistency
  */
 
-import type { ExerciseAttempt } from './types';
+import type { ExerciseAttempt } from "./types";
 
 export interface StreakData {
   currentStreak: number;
@@ -40,9 +40,7 @@ export interface StreakData {
  * console.log(`${streak.currentStreak}-day streak!`);
  * ```
  */
-export function calculatePracticeStreak(
-  exerciseHistory: ExerciseAttempt[]
-): StreakData {
+export function calculatePracticeStreak(exerciseHistory: ExerciseAttempt[]): StreakData {
   // Handle empty history
   if (exerciseHistory.length === 0) {
     return {
@@ -97,8 +95,8 @@ export function calculatePracticeStreak(
  */
 function getLocalDateKey(date: Date): string {
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 
@@ -189,7 +187,7 @@ function getYesterday(): Date {
  * @returns Previous day in YYYY-MM-DD format
  */
 function getPreviousDay(dateKey: string): string {
-  const date = new Date(dateKey + 'T00:00:00'); // Parse as local time
+  const date = new Date(dateKey + "T00:00:00"); // Parse as local time
   date.setDate(date.getDate() - 1);
   return getLocalDateKey(date);
 }
@@ -206,7 +204,7 @@ export function formatStreakMessage(streakData: StreakData): string {
   const { currentStreak, isAtRisk } = streakData;
 
   if (currentStreak === 0) {
-    return 'Start practicing to build your streak';
+    return "Start practicing to build your streak";
   }
 
   if (isAtRisk && currentStreak > 0) {
@@ -226,4 +224,3 @@ export function formatStreakMessage(streakData: StreakData): string {
 
   return `${currentStreak}-day streak`;
 }
-

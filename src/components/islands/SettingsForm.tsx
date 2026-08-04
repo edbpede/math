@@ -10,13 +10,13 @@
  * - 9.2: Display preferences (theme, font size, dyslexia font, high contrast)
  */
 
-import { createSignal, Show, For } from "solid-js";
 import { useStore } from "@nanostores/solid";
-import { $t } from "@/lib/i18n";
+import { createSignal, For, Show } from "solid-js";
 import { updateUser } from "@/lib/auth";
+import { $t } from "@/lib/i18n";
+import { $preferences, updatePreferences } from "@/lib/preferences";
 import type { UserPreferences } from "@/lib/types/preferences";
 import { validatePreferences } from "@/lib/types/preferences";
-import { $preferences, updatePreferences } from "@/lib/preferences";
 import { ErrorBoundaryWrapper } from "./ErrorBoundary";
 
 export interface SettingsFormProps {
@@ -122,9 +122,7 @@ const SettingsFormComponent = (props: SettingsFormProps) => {
 
       // Clear saved status after 3 seconds
       setTimeout(() => {
-        setState((current) =>
-          current.status === "saved" ? { status: "idle" } : current,
-        );
+        setState((current) => (current.status === "saved" ? { status: "idle" } : current));
       }, 3000);
 
       // Note: DOM updates are handled automatically by the preferences manager
@@ -220,7 +218,7 @@ const SettingsFormComponent = (props: SettingsFormProps) => {
           </Show>
           <Show when={state().status === "saved"}>
             <div class="flex items-center gap-2">
-              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+              <svg aria-hidden="true" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fill-rule="evenodd"
                   d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -232,16 +230,14 @@ const SettingsFormComponent = (props: SettingsFormProps) => {
           </Show>
           <Show when={state().status === "error"}>
             <div class="flex items-center gap-2">
-              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+              <svg aria-hidden="true" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fill-rule="evenodd"
                   d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
                   clip-rule="evenodd"
                 />
               </svg>
-              <span>
-                {(state() as { status: "error"; message: string }).message}
-              </span>
+              <span>{(state() as { status: "error"; message: string }).message}</span>
             </div>
           </Show>
         </div>
@@ -252,9 +248,7 @@ const SettingsFormComponent = (props: SettingsFormProps) => {
         <h3 class="mb-2 text-lg font-semibold text-gray-900">
           {t()("settings.sections.gradeLevel.title")}
         </h3>
-        <p class="mb-4 text-sm text-gray-600">
-          {t()("settings.sections.gradeLevel.description")}
-        </p>
+        <p class="mb-4 text-sm text-gray-600">{t()("settings.sections.gradeLevel.description")}</p>
 
         <fieldset class="space-y-3">
           <legend class="sr-only">{t()("settings.gradeLevel.label")}</legend>
@@ -283,9 +277,7 @@ const SettingsFormComponent = (props: SettingsFormProps) => {
                   class="mt-1 h-5 w-5 cursor-pointer text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 />
                 <div class="flex-1">
-                  <div class="font-medium text-gray-900">
-                    {t()(option.labelKey)}
-                  </div>
+                  <div class="font-medium text-gray-900">{t()(option.labelKey)}</div>
                   <div class="text-sm text-gray-600">{t()(option.descKey)}</div>
                 </div>
               </label>
@@ -299,19 +291,15 @@ const SettingsFormComponent = (props: SettingsFormProps) => {
         <h3 class="mb-2 text-lg font-semibold text-gray-900">
           {t()("settings.sections.display.title")}
         </h3>
-        <p class="mb-4 text-sm text-gray-600">
-          {t()("settings.sections.display.description")}
-        </p>
+        <p class="mb-4 text-sm text-gray-600">{t()("settings.sections.display.description")}</p>
 
         <div class="space-y-6">
           {/* Theme Selection */}
           <div>
-            <label class="mb-2 block text-sm font-medium text-gray-700">
+            <span class="mb-2 block text-sm font-medium text-gray-700">
               {t()("settings.display.theme.label")}
-            </label>
-            <p class="mb-3 text-sm text-gray-600">
-              {t()("settings.display.theme.description")}
-            </p>
+            </span>
+            <p class="mb-3 text-sm text-gray-600">{t()("settings.display.theme.description")}</p>
             <div class="grid grid-cols-3 gap-3">
               <For each={themeOptions}>
                 {(option) => (
@@ -343,12 +331,10 @@ const SettingsFormComponent = (props: SettingsFormProps) => {
 
           {/* Font Size Selection */}
           <div>
-            <label class="mb-2 block text-sm font-medium text-gray-700">
+            <span class="mb-2 block text-sm font-medium text-gray-700">
               {t()("settings.display.fontSize.label")}
-            </label>
-            <p class="mb-3 text-sm text-gray-600">
-              {t()("settings.display.fontSize.description")}
-            </p>
+            </span>
+            <p class="mb-3 text-sm text-gray-600">{t()("settings.display.fontSize.description")}</p>
             <div class="grid grid-cols-3 gap-3">
               <For each={fontSizeOptions}>
                 {(option) => (
@@ -391,10 +377,7 @@ const SettingsFormComponent = (props: SettingsFormProps) => {
               class="mt-1 h-5 w-5 cursor-pointer rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             />
             <div class="flex-1">
-              <label
-                for="dyslexia-font"
-                class="block cursor-pointer font-medium text-gray-900"
-              >
+              <label for="dyslexia-font" class="block cursor-pointer font-medium text-gray-900">
                 {t()("settings.display.dyslexiaFont.label")}
               </label>
               <p class="mt-1 text-sm text-gray-600">
@@ -416,10 +399,7 @@ const SettingsFormComponent = (props: SettingsFormProps) => {
               class="mt-1 h-5 w-5 cursor-pointer rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             />
             <div class="flex-1">
-              <label
-                for="high-contrast"
-                class="block cursor-pointer font-medium text-gray-900"
-              >
+              <label for="high-contrast" class="block cursor-pointer font-medium text-gray-900">
                 {t()("settings.display.highContrast.label")}
               </label>
               <p class="mt-1 text-sm text-gray-600">
@@ -456,10 +436,7 @@ const SettingsFormComponent = (props: SettingsFormProps) => {
  */
 export default function SettingsForm(props: SettingsFormProps) {
   return (
-    <ErrorBoundaryWrapper
-      componentName="SettingsForm"
-      errorMessageKey="errors.settings.saveFailed"
-    >
+    <ErrorBoundaryWrapper componentName="SettingsForm" errorMessageKey="errors.settings.saveFailed">
       <SettingsFormComponent {...props} />
     </ErrorBoundaryWrapper>
   );

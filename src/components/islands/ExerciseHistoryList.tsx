@@ -9,9 +9,9 @@
  * - Target: Render max 100 DOM nodes for 1000+ items
  */
 
+import { useStore } from "@nanostores/solid";
 import { createVirtualizer } from "@tanstack/solid-virtual";
 import { createSignal, For, Show } from "solid-js";
-import { useStore } from "@nanostores/solid";
 import { $t } from "@/lib/i18n";
 import type { ExerciseAttempt } from "@/lib/mastery/types";
 // getMasteryLevelBand not currently used but available for future features
@@ -102,9 +102,7 @@ export default function ExerciseHistoryList(props: ExerciseHistoryListProps) {
     <div class={`exercise-history-list ${props.class || ""}`}>
       {/* Header */}
       <div class="mb-4">
-        <h3 class="text-lg font-semibold text-gray-900">
-          {t()("progress.history.title")}
-        </h3>
+        <h3 class="text-lg font-semibold text-gray-900">{t()("progress.history.title")}</h3>
         <p class="text-sm text-gray-600">
           {t()("progress.history.totalAttempts")}: {props.history.length}
         </p>
@@ -151,6 +149,7 @@ export default function ExerciseHistoryList(props: ExerciseHistoryListProps) {
                       {/* Status indicator */}
                       <div
                         class={`flex h-10 w-10 items-center justify-center rounded-full border-2 font-bold ${getStatusColor(attempt.correct)}`}
+                        role="img"
                         aria-label={
                           attempt.correct
                             ? t()("progress.history.correct")
@@ -173,28 +172,20 @@ export default function ExerciseHistoryList(props: ExerciseHistoryListProps) {
                           </Show>
                         </div>
                         <div class="flex items-center gap-3 mt-1 text-xs text-gray-600">
-                          <span>
-                            ⏱️ {formatDuration(attempt.timeSpentSeconds)}
-                          </span>
+                          <span>⏱️ {formatDuration(attempt.timeSpentSeconds)}</span>
                           <Show when={attempt.hintsUsed > 0}>
                             <span>
                               💡 {attempt.hintsUsed}{" "}
-                              {attempt.hintsUsed === 1
-                                ? t()("common.hint")
-                                : t()("common.hints")}
+                              {attempt.hintsUsed === 1 ? t()("common.hint") : t()("common.hints")}
                             </span>
                           </Show>
-                          <span class="text-gray-400">
-                            {formatDate(attempt.createdAt)}
-                          </span>
+                          <span class="text-gray-400">{formatDate(attempt.createdAt)}</span>
                         </div>
                       </div>
 
                       {/* User answer (if available) */}
                       <Show when={attempt.userAnswer}>
-                        <div class="text-sm text-gray-700 font-mono">
-                          {attempt.userAnswer}
-                        </div>
+                        <div class="text-sm text-gray-700 font-mono">{attempt.userAnswer}</div>
                       </Show>
                     </div>
                   </div>
@@ -207,26 +198,18 @@ export default function ExerciseHistoryList(props: ExerciseHistoryListProps) {
         {/* Stats footer */}
         <div class="mt-4 flex gap-6 text-sm text-gray-600">
           <div>
-            <span class="font-medium">
-              {t()("progress.history.correctCount")}:
-            </span>{" "}
+            <span class="font-medium">{t()("progress.history.correctCount")}:</span>{" "}
             {props.history.filter((a) => a.correct).length}
           </div>
           <div>
-            <span class="font-medium">
-              {t()("progress.history.incorrectCount")}:
-            </span>{" "}
+            <span class="font-medium">{t()("progress.history.incorrectCount")}:</span>{" "}
             {props.history.filter((a) => !a.correct).length}
           </div>
           <div>
-            <span class="font-medium">
-              {t()("progress.history.successRate")}:
-            </span>{" "}
+            <span class="font-medium">{t()("progress.history.successRate")}:</span>{" "}
             {props.history.length > 0
               ? Math.round(
-                  (props.history.filter((a) => a.correct).length /
-                    props.history.length) *
-                    100,
+                  (props.history.filter((a) => a.correct).length / props.history.length) * 100,
                 )
               : 0}
             %

@@ -8,15 +8,15 @@
  * - 2.7: Format numbers according to language conventions
  */
 
+import { $locale } from "./store";
 import type {
-  Locale,
-  NumberFormatOptions,
-  DateFormatOptions,
   ContextPool,
+  DateFormatOptions,
+  Locale,
   LocaleConfig,
-} from './types';
-import { SUPPORTED_LOCALES } from './types';
-import { $locale } from './store';
+  NumberFormatOptions,
+} from "./types";
+import { SUPPORTED_LOCALES } from "./types";
 
 /**
  * Get locale configuration
@@ -40,10 +40,7 @@ export function getLocaleConfig(locale: Locale): LocaleConfig {
  * @param options - Formatting options
  * @returns Formatted number string
  */
-export function formatNumber(
-  value: number,
-  options?: Partial<NumberFormatOptions>
-): string {
+export function formatNumber(value: number, options?: Partial<NumberFormatOptions>): string {
   const locale = options?.locale || $locale.get();
   const decimals = options?.decimals ?? 2;
   const useGrouping = options?.useGrouping ?? true;
@@ -51,7 +48,7 @@ export function formatNumber(
   const config = getLocaleConfig(locale);
 
   // Format the number with the specified decimal places
-  const parts = value.toFixed(decimals).split('.');
+  const parts = value.toFixed(decimals).split(".");
   let integerPart = parts[0];
   const decimalPart = parts[1];
 
@@ -59,7 +56,7 @@ export function formatNumber(
   if (useGrouping && integerPart.length > 3) {
     integerPart = integerPart.replace(
       /\B(?=(\d{3})+(?!\d))/g,
-      config.numberFormat.thousandsSeparator
+      config.numberFormat.thousandsSeparator,
     );
   }
 
@@ -78,12 +75,9 @@ export function formatNumber(
  * @param options - Formatting options
  * @returns Formatted date string
  */
-export function formatDate(
-  date: Date,
-  options?: Partial<DateFormatOptions>
-): string {
+export function formatDate(date: Date, options?: Partial<DateFormatOptions>): string {
   const locale = options?.locale || $locale.get();
-  const dateStyle = options?.dateStyle || 'medium';
+  const dateStyle = options?.dateStyle || "medium";
   const timeStyle = options?.timeStyle;
 
   try {
@@ -99,12 +93,12 @@ export function formatDate(
 
     return new Intl.DateTimeFormat(locale, formatOptions).format(date);
   } catch (error) {
-    console.error('Failed to format date:', error);
+    console.error("Failed to format date:", error);
     // Return a fallback string for invalid dates
     try {
       return date.toISOString();
     } catch {
-      return 'Invalid Date';
+      return "Invalid Date";
     }
   }
 }
@@ -122,8 +116,8 @@ export function parseNumber(value: string, locale?: Locale): number {
 
   // Remove thousands separators and replace decimal separator with '.'
   const normalized = value
-    .replace(new RegExp(`\\${config.numberFormat.thousandsSeparator}`, 'g'), '')
-    .replace(config.numberFormat.decimalSeparator, '.');
+    .replace(new RegExp(`\\${config.numberFormat.thousandsSeparator}`, "g"), "")
+    .replace(config.numberFormat.decimalSeparator, ".");
 
   return parseFloat(normalized);
 }
@@ -138,19 +132,15 @@ export async function getContextPool(locale?: Locale): Promise<ContextPool> {
   const currentLocale = locale || $locale.get();
 
   try {
-    const contextData = await import(
-      `../../locales/${currentLocale}/contexts.json`
-    );
+    const contextData = await import(`../../locales/${currentLocale}/contexts.json`);
     const data = contextData.default || contextData;
 
     return {
       locale: currentLocale,
-      names: data.names?.male
-        .concat(data.names?.female || [])
-        .concat(data.names?.neutral || []) || [],
-      places: data.places?.cities
-        .concat(data.places?.locations || []) || [],
-      currency: data.currency || { symbol: 'kr', name: 'kroner' },
+      names:
+        data.names?.male.concat(data.names?.female || []).concat(data.names?.neutral || []) || [],
+      places: data.places?.cities.concat(data.places?.locations || []) || [],
+      currency: data.currency || { symbol: "kr", name: "kroner" },
       items: data.items || {},
     };
   } catch (error) {
@@ -161,7 +151,7 @@ export async function getContextPool(locale?: Locale): Promise<ContextPool> {
       locale: currentLocale,
       names: [],
       places: [],
-      currency: { symbol: 'kr', name: 'kroner' },
+      currency: { symbol: "kr", name: "kroner" },
       items: {},
     };
   }
@@ -175,16 +165,16 @@ export async function getContextPool(locale?: Locale): Promise<ContextPool> {
  * @returns Random item from the category
  */
 export async function getRandomContext(
-  category: 'names' | 'places' | keyof ContextPool['items'],
-  locale?: Locale
+  category: "names" | "places" | keyof ContextPool["items"],
+  locale?: Locale,
 ): Promise<string> {
   const pool = await getContextPool(locale);
 
   let items: string[] = [];
 
-  if (category === 'names') {
+  if (category === "names") {
     items = pool.names;
-  } else if (category === 'places') {
+  } else if (category === "places") {
     items = pool.places;
   } else if (category in pool.items) {
     items = pool.items[category] || [];
@@ -192,7 +182,7 @@ export async function getRandomContext(
 
   if (items.length === 0) {
     console.warn(`No items found in context category: ${category}`);
-    return '';
+    return "";
   }
 
   return items[Math.floor(Math.random() * items.length)];
@@ -207,17 +197,17 @@ export async function getRandomContext(
  * @returns Array of random items
  */
 export async function getRandomContexts(
-  category: 'names' | 'places' | keyof ContextPool['items'],
+  category: "names" | "places" | keyof ContextPool["items"],
   count: number,
-  locale?: Locale
+  locale?: Locale,
 ): Promise<string[]> {
   const pool = await getContextPool(locale);
 
   let items: string[] = [];
 
-  if (category === 'names') {
+  if (category === "names") {
     items = pool.names;
-  } else if (category === 'places') {
+  } else if (category === "places") {
     items = pool.places;
   } else if (category in pool.items) {
     items = pool.items[category] || [];
@@ -274,21 +264,19 @@ export function compareAnswers(
   userAnswer: string,
   correctAnswer: string | number,
   locale?: Locale,
-  tolerance = 0.01
+  tolerance = 0.01,
 ): boolean {
   const normalizedUser = normalizeAnswer(userAnswer, locale);
   const normalizedCorrect =
-    typeof correctAnswer === 'string'
-      ? normalizeAnswer(correctAnswer, locale)
-      : correctAnswer;
+    typeof correctAnswer === "string" ? normalizeAnswer(correctAnswer, locale) : correctAnswer;
 
   // Both are numbers - compare with tolerance
-  if (typeof normalizedUser === 'number' && typeof normalizedCorrect === 'number') {
+  if (typeof normalizedUser === "number" && typeof normalizedCorrect === "number") {
     return Math.abs(normalizedUser - normalizedCorrect) <= tolerance;
   }
 
   // Both are strings - case-insensitive comparison
-  if (typeof normalizedUser === 'string' && typeof normalizedCorrect === 'string') {
+  if (typeof normalizedUser === "string" && typeof normalizedCorrect === "string") {
     return normalizedUser === normalizedCorrect;
   }
 
@@ -306,37 +294,37 @@ export function detectNumberFormat(input: string): Locale | null {
   const trimmed = input.trim();
 
   // If it has comma as decimal separator and period as thousands (Danish)
-  if (/\d\.\d{3}/.test(trimmed) && trimmed.includes(',')) {
-    return 'da-DK';
+  if (/\d\.\d{3}/.test(trimmed) && trimmed.includes(",")) {
+    return "da-DK";
   }
 
   // If it has period as decimal separator and comma as thousands (English)
-  if (/\d,\d{3}/.test(trimmed) && trimmed.includes('.')) {
-    return 'en-US';
+  if (/\d,\d{3}/.test(trimmed) && trimmed.includes(".")) {
+    return "en-US";
   }
 
   // Single separator cases
-  if (trimmed.includes(',') && !trimmed.includes('.')) {
+  if (trimmed.includes(",") && !trimmed.includes(".")) {
     // Could be Danish decimal or English thousands
     // If comma is followed by 1-2 digits at the end, likely Danish decimal
     if (/,\d{1,2}$/.test(trimmed)) {
-      return 'da-DK';
+      return "da-DK";
     }
     // If comma is followed by 3 digits and more digits, likely English thousands
     if (/,\d{3}/.test(trimmed)) {
-      return 'en-US';
+      return "en-US";
     }
   }
 
-  if (trimmed.includes('.') && !trimmed.includes(',')) {
+  if (trimmed.includes(".") && !trimmed.includes(",")) {
     // Could be English decimal or Danish thousands
     // If period is followed by 1-2 digits at the end, likely English decimal
     if (/\.\d{1,2}$/.test(trimmed)) {
-      return 'en-US';
+      return "en-US";
     }
     // If period is followed by 3 digits and more digits, likely Danish thousands
     if (/\.\d{3}/.test(trimmed)) {
-      return 'da-DK';
+      return "da-DK";
     }
   }
 
@@ -353,10 +341,7 @@ export function detectNumberFormat(input: string): Locale | null {
  * @param preferredLocale - Locale to prefer if format is ambiguous
  * @returns Parsed number
  */
-export function parseNumberAuto(
-  input: string,
-  preferredLocale?: Locale
-): number {
+export function parseNumberAuto(input: string, preferredLocale?: Locale): number {
   const detected = detectNumberFormat(input);
   const locale = detected || preferredLocale || $locale.get();
   return parseNumber(input, locale);

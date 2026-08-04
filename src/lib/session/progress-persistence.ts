@@ -17,19 +17,15 @@
  * - 12.4: Write progress updates every 30 seconds using debounced batch writes
  */
 
-import { atom, computed } from 'nanostores'
+import { atom, computed } from "nanostores";
+import type { CompetencyAreaId } from "../curriculum/types";
+import type { CompetencyProgress, ExerciseAttempt, SkillProgress } from "../mastery/types";
+import { syncManager } from "../offline/sync-manager";
 import {
   batchUpdateCompetencyProgress,
   batchUpdateSkillProgress,
   logExerciseAttempt,
-} from '../supabase/progress'
-import type {
-  CompetencyProgress,
-  SkillProgress,
-  ExerciseAttempt,
-} from '../mastery/types'
-import { syncManager } from '../offline/sync-manager'
-import type { CompetencyAreaId } from '../curriculum/types'
+} from "../supabase/progress";
 
 // ============================================================================
 // CONFIGURATION
@@ -40,18 +36,18 @@ import type { CompetencyAreaId } from '../curriculum/types'
  */
 export interface ProgressPersistenceConfig {
   /** Debounce interval in milliseconds (default: 30000 = 30 seconds) */
-  debounceMs: number
+  debounceMs: number;
   /** Enable automatic persistence (default: true) */
-  autoSync: boolean
+  autoSync: boolean;
   /** Maximum queue size before forcing flush (default: 50) */
-  maxQueueSize: number
+  maxQueueSize: number;
 }
 
 const DEFAULT_CONFIG: ProgressPersistenceConfig = {
   debounceMs: 30000, // 30 seconds as per Requirement 12.4
   autoSync: true,
   maxQueueSize: 50,
-}
+};
 
 // ============================================================================
 // TYPES
@@ -61,34 +57,34 @@ const DEFAULT_CONFIG: ProgressPersistenceConfig = {
  * Progress update status
  */
 export type ProgressUpdateStatus =
-  | 'idle' // No pending updates
-  | 'pending' // Updates queued, waiting for debounce
-  | 'syncing' // Currently writing to database
-  | 'error' // Last sync failed
+  | "idle" // No pending updates
+  | "pending" // Updates queued, waiting for debounce
+  | "syncing" // Currently writing to database
+  | "error"; // Last sync failed
 
 /**
  * Progress update queue state
  */
 export interface ProgressQueueState {
   /** Current status */
-  status: ProgressUpdateStatus
+  status: ProgressUpdateStatus;
   /** Number of pending updates */
-  pendingCount: number
+  pendingCount: number;
   /** Last successful sync timestamp */
-  lastSyncTime: Date | null
+  lastSyncTime: Date | null;
   /** Error message if status is 'error' */
-  error: string | null
+  error: string | null;
   /** Next scheduled sync time */
-  nextSyncTime: Date | null
+  nextSyncTime: Date | null;
 }
 
 /**
  * Progress update result
  */
 export type ProgressUpdateResult =
-  | { status: 'success'; timestamp: Date }
-  | { status: 'error'; message: string; error?: Error }
-  | { status: 'queued'; queueSize: number }
+  | { status: "success"; timestamp: Date }
+  | { status: "error"; message: string; error?: Error }
+  | { status: "queued"; queueSize: number };
 
 // ============================================================================
 // STATE MANAGEMENT (Nanostores)
@@ -98,57 +94,55 @@ export type ProgressUpdateResult =
  * Progress queue state atom
  */
 export const $progressQueueState = atom<ProgressQueueState>({
-  status: 'idle',
+  status: "idle",
   pendingCount: 0,
   lastSyncTime: null,
   error: null,
   nextSyncTime: null,
-})
+});
 
 /**
  * Competency progress cache (optimistic updates)
  */
-export const $competencyProgressCache = atom<Map<string, CompetencyProgress>>(
-  new Map()
-)
+export const $competencyProgressCache = atom<Map<string, CompetencyProgress>>(new Map());
 
 /**
  * Skill progress cache (optimistic updates)
  */
-export const $skillProgressCache = atom<Map<string, SkillProgress>>(new Map())
+export const $skillProgressCache = atom<Map<string, SkillProgress>>(new Map());
 
 /**
  * Computed: Is sync in progress
  */
 export const $isSyncInProgress = computed($progressQueueState, (state) => {
-  return state.status === 'syncing'
-})
+  return state.status === "syncing";
+});
 
 /**
  * Computed: Has pending updates
  */
 export const $hasPendingUpdates = computed($progressQueueState, (state) => {
-  return state.pendingCount > 0
-})
+  return state.pendingCount > 0;
+});
 
 /**
  * Computed: Time until next sync (formatted string)
  */
 export const $timeUntilNextSync = computed($progressQueueState, (state) => {
-  if (!state.nextSyncTime || state.status !== 'pending') {
-    return null
+  if (!state.nextSyncTime || state.status !== "pending") {
+    return null;
   }
 
-  const now = Date.now()
-  const nextSync = state.nextSyncTime.getTime()
-  const secondsRemaining = Math.ceil((nextSync - now) / 1000)
+  const now = Date.now();
+  const nextSync = state.nextSyncTime.getTime();
+  const secondsRemaining = Math.ceil((nextSync - now) / 1000);
 
   if (secondsRemaining <= 0) {
-    return 'Syncing soon...'
+    return "Syncing soon...";
   }
 
-  return `${secondsRemaining}s`
-})
+  return `${secondsRemaining}s`;
+});
 
 // ============================================================================
 // INTERNAL STATE
@@ -157,33 +151,32 @@ export const $timeUntilNextSync = computed($progressQueueState, (state) => {
 /**
  * Pending competency progress updates (keyed by competencyAreaId-gradeRange)
  */
-const pendingCompetencyUpdates = new Map<string, CompetencyProgress>()
+const pendingCompetencyUpdates = new Map<string, CompetencyProgress>();
 
 /**
  * Pending skill progress updates (keyed by skillId)
  */
-const pendingSkillUpdates = new Map<string, SkillProgress>()
+const pendingSkillUpdates = new Map<string, SkillProgress>();
 
 /**
  * Pending exercise attempts (to be logged)
  */
-const pendingExerciseAttempts: Array<Omit<ExerciseAttempt, 'id' | 'createdAt'>> =
-  []
+const pendingExerciseAttempts: Array<Omit<ExerciseAttempt, "id" | "createdAt">> = [];
 
 /**
  * Debounce timer for batch writes
  */
-let debounceTimer: ReturnType<typeof setTimeout> | null = null
+let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
 /**
  * Configuration
  */
-let config: ProgressPersistenceConfig = DEFAULT_CONFIG
+let config: ProgressPersistenceConfig = DEFAULT_CONFIG;
 
 /**
  * User ID for current session
  */
-let currentUserId: string | null = null
+let currentUserId: string | null = null;
 
 // ============================================================================
 // INITIALIZATION
@@ -197,67 +190,67 @@ let currentUserId: string | null = null
  */
 export function initializeProgressPersistence(
   userId: string,
-  userConfig: Partial<ProgressPersistenceConfig> = {}
+  userConfig: Partial<ProgressPersistenceConfig> = {},
 ): void {
-  console.log('[ProgressPersistence] Initializing for user:', userId)
+  console.log("[ProgressPersistence] Initializing for user:", userId);
 
   // Set user ID
-  currentUserId = userId
+  currentUserId = userId;
 
   // Merge configuration
-  config = { ...DEFAULT_CONFIG, ...userConfig }
+  config = { ...DEFAULT_CONFIG, ...userConfig };
 
   // Reset state
-  resetProgressPersistence()
+  resetProgressPersistence();
 
-  console.log('[ProgressPersistence] Initialized with config:', config)
+  console.log("[ProgressPersistence] Initialized with config:", config);
 }
 
 /**
  * Reset progress persistence state
  */
 export function resetProgressPersistence(): void {
-  console.log('[ProgressPersistence] Resetting state')
+  console.log("[ProgressPersistence] Resetting state");
 
   // Clear pending updates
-  pendingCompetencyUpdates.clear()
-  pendingSkillUpdates.clear()
-  pendingExerciseAttempts.length = 0
+  pendingCompetencyUpdates.clear();
+  pendingSkillUpdates.clear();
+  pendingExerciseAttempts.length = 0;
 
   // Clear debounce timer
   if (debounceTimer) {
-    clearTimeout(debounceTimer)
-    debounceTimer = null
+    clearTimeout(debounceTimer);
+    debounceTimer = null;
   }
 
   // Reset state
   $progressQueueState.set({
-    status: 'idle',
+    status: "idle",
     pendingCount: 0,
     lastSyncTime: null,
     error: null,
     nextSyncTime: null,
-  })
+  });
 
   // Clear caches
-  $competencyProgressCache.set(new Map())
-  $skillProgressCache.set(new Map())
+  $competencyProgressCache.set(new Map());
+  $skillProgressCache.set(new Map());
 }
 
 /**
  * Destroy progress persistence (cleanup)
  */
 export function destroyProgressPersistence(): void {
-  console.log('[ProgressPersistence] Destroying')
+  console.log("[ProgressPersistence] Destroying");
 
   // Flush any pending updates
   if ($hasPendingUpdates.get()) {
-    console.warn('[ProgressPersistence] Flushing pending updates before destroy')
-    void flushProgressUpdates()
+    console.warn("[ProgressPersistence] Flushing pending updates before destroy");
+    void flushProgressUpdates();
   }
 
-  resetProgressPersistence()
-  currentUserId = null
+  resetProgressPersistence();
+  currentUserId = null;
 }
 
 // ============================================================================
@@ -272,43 +265,41 @@ export function destroyProgressPersistence(): void {
  * @param progress - Competency progress to update
  * @returns Update result
  */
-export function queueCompetencyProgressUpdate(
-  progress: CompetencyProgress
-): ProgressUpdateResult {
+export function queueCompetencyProgressUpdate(progress: CompetencyProgress): ProgressUpdateResult {
   if (!currentUserId) {
     return {
-      status: 'error',
-      message: 'Progress persistence not initialized',
-    }
+      status: "error",
+      message: "Progress persistence not initialized",
+    };
   }
 
   console.log(
-    '[ProgressPersistence] Queuing competency update:',
+    "[ProgressPersistence] Queuing competency update:",
     progress.competencyAreaId,
-    progress.gradeRange
-  )
+    progress.gradeRange,
+  );
 
   // Create unique key for this competency-grade combination
-  const key = `${progress.competencyAreaId}-${progress.gradeRange}`
+  const key = `${progress.competencyAreaId}-${progress.gradeRange}`;
 
   // Add to pending updates (will overwrite if already exists)
-  pendingCompetencyUpdates.set(key, progress)
+  pendingCompetencyUpdates.set(key, progress);
 
   // Update optimistic cache
-  const cache = $competencyProgressCache.get()
-  cache.set(key, progress)
-  $competencyProgressCache.set(new Map(cache))
+  const cache = $competencyProgressCache.get();
+  cache.set(key, progress);
+  $competencyProgressCache.set(new Map(cache));
 
   // Update queue state
-  updateQueueState()
+  updateQueueState();
 
   // Schedule debounced flush
-  scheduleDebouncedFlush()
+  scheduleDebouncedFlush();
 
   return {
-    status: 'queued',
+    status: "queued",
     queueSize: getTotalQueueSize(),
-  }
+  };
 }
 
 /**
@@ -319,36 +310,34 @@ export function queueCompetencyProgressUpdate(
  * @param progress - Skill progress to update
  * @returns Update result
  */
-export function queueSkillProgressUpdate(
-  progress: SkillProgress
-): ProgressUpdateResult {
+export function queueSkillProgressUpdate(progress: SkillProgress): ProgressUpdateResult {
   if (!currentUserId) {
     return {
-      status: 'error',
-      message: 'Progress persistence not initialized',
-    }
+      status: "error",
+      message: "Progress persistence not initialized",
+    };
   }
 
-  console.log('[ProgressPersistence] Queuing skill update:', progress.skillId)
+  console.log("[ProgressPersistence] Queuing skill update:", progress.skillId);
 
   // Add to pending updates (will overwrite if already exists)
-  pendingSkillUpdates.set(progress.skillId, progress)
+  pendingSkillUpdates.set(progress.skillId, progress);
 
   // Update optimistic cache
-  const cache = $skillProgressCache.get()
-  cache.set(progress.skillId, progress)
-  $skillProgressCache.set(new Map(cache))
+  const cache = $skillProgressCache.get();
+  cache.set(progress.skillId, progress);
+  $skillProgressCache.set(new Map(cache));
 
   // Update queue state
-  updateQueueState()
+  updateQueueState();
 
   // Schedule debounced flush
-  scheduleDebouncedFlush()
+  scheduleDebouncedFlush();
 
   return {
-    status: 'queued',
+    status: "queued",
     queueSize: getTotalQueueSize(),
-  }
+  };
 }
 
 /**
@@ -361,43 +350,43 @@ export function queueSkillProgressUpdate(
  * @returns Update result
  */
 export async function queueExerciseAttempt(
-  attempt: Omit<ExerciseAttempt, 'id' | 'createdAt'>
+  attempt: Omit<ExerciseAttempt, "id" | "createdAt">,
 ): Promise<ProgressUpdateResult> {
   if (!currentUserId) {
     return {
-      status: 'error',
-      message: 'Progress persistence not initialized',
-    }
+      status: "error",
+      message: "Progress persistence not initialized",
+    };
   }
 
-  console.log('[ProgressPersistence] Logging exercise attempt:', attempt.templateId)
+  console.log("[ProgressPersistence] Logging exercise attempt:", attempt.templateId);
 
   // Exercise attempts are logged immediately, not debounced
   // This ensures we don't lose exercise history if user closes browser
   try {
-    await logExerciseAttempt(attempt)
+    await logExerciseAttempt(attempt);
     return {
-      status: 'success',
+      status: "success",
       timestamp: new Date(),
-    }
+    };
   } catch (error) {
     console.warn(
-      '[ProgressPersistence] Failed to log exercise attempt, queuing for offline sync:',
-      error
-    )
+      "[ProgressPersistence] Failed to log exercise attempt, queuing for offline sync:",
+      error,
+    );
 
     // Queue for offline sync
     await syncManager.addToQueue({
-      type: 'exercise_complete',
+      type: "exercise_complete",
       data: attempt,
       timestamp: new Date(),
       retries: 0,
-    })
+    });
 
     return {
-      status: 'queued',
+      status: "queued",
       queueSize: 1,
-    }
+    };
   }
 }
 
@@ -412,18 +401,18 @@ export async function queueExerciseAttempt(
 export async function flushProgressUpdates(): Promise<ProgressUpdateResult> {
   if (!currentUserId) {
     return {
-      status: 'error',
-      message: 'Progress persistence not initialized',
-    }
+      status: "error",
+      message: "Progress persistence not initialized",
+    };
   }
 
   // Cancel pending debounce
   if (debounceTimer) {
-    clearTimeout(debounceTimer)
-    debounceTimer = null
+    clearTimeout(debounceTimer);
+    debounceTimer = null;
   }
 
-  return performBatchWrite()
+  return performBatchWrite();
 }
 
 // ============================================================================
@@ -435,44 +424,42 @@ export async function flushProgressUpdates(): Promise<ProgressUpdateResult> {
  */
 function scheduleDebouncedFlush(): void {
   if (!config.autoSync) {
-    console.log('[ProgressPersistence] Auto-sync disabled, skipping schedule')
-    return
+    console.log("[ProgressPersistence] Auto-sync disabled, skipping schedule");
+    return;
   }
 
   // Clear existing timer
   if (debounceTimer) {
-    clearTimeout(debounceTimer)
+    clearTimeout(debounceTimer);
   }
 
   // Calculate next sync time
-  const nextSyncTime = new Date(Date.now() + config.debounceMs)
+  const nextSyncTime = new Date(Date.now() + config.debounceMs);
 
   // Update queue state with next sync time
-  const state = $progressQueueState.get()
+  const state = $progressQueueState.get();
   $progressQueueState.set({
     ...state,
     nextSyncTime,
-  })
+  });
 
   // Check if we should force flush due to queue size
-  const queueSize = getTotalQueueSize()
+  const queueSize = getTotalQueueSize();
   if (queueSize >= config.maxQueueSize) {
-    console.log(
-      '[ProgressPersistence] Queue size limit reached, forcing immediate flush'
-    )
-    void performBatchWrite()
-    return
+    console.log("[ProgressPersistence] Queue size limit reached, forcing immediate flush");
+    void performBatchWrite();
+    return;
   }
 
   // Schedule debounced flush
   debounceTimer = setTimeout(() => {
-    console.log('[ProgressPersistence] Debounce timer fired, flushing updates')
-    void performBatchWrite()
-  }, config.debounceMs)
+    console.log("[ProgressPersistence] Debounce timer fired, flushing updates");
+    void performBatchWrite();
+  }, config.debounceMs);
 
   console.log(
-    `[ProgressPersistence] Scheduled flush in ${config.debounceMs}ms (queue size: ${queueSize})`
-  )
+    `[ProgressPersistence] Scheduled flush in ${config.debounceMs}ms (queue size: ${queueSize})`,
+  );
 }
 
 /**
@@ -481,123 +468,121 @@ function scheduleDebouncedFlush(): void {
 async function performBatchWrite(): Promise<ProgressUpdateResult> {
   if (!currentUserId) {
     return {
-      status: 'error',
-      message: 'Progress persistence not initialized',
-    }
+      status: "error",
+      message: "Progress persistence not initialized",
+    };
   }
 
-  const queueSize = getTotalQueueSize()
+  const queueSize = getTotalQueueSize();
 
   if (queueSize === 0) {
-    console.log('[ProgressPersistence] No pending updates, skipping flush')
+    console.log("[ProgressPersistence] No pending updates, skipping flush");
     return {
-      status: 'success',
+      status: "success",
       timestamp: new Date(),
-    }
+    };
   }
 
-  console.log(`[ProgressPersistence] Starting batch write (${queueSize} updates)`)
+  console.log(`[ProgressPersistence] Starting batch write (${queueSize} updates)`);
 
   // Update state to syncing
   $progressQueueState.set({
     ...$progressQueueState.get(),
-    status: 'syncing',
-  })
+    status: "syncing",
+  });
 
   try {
     // Batch write competency progress
     if (pendingCompetencyUpdates.size > 0) {
-      const competencyList = Array.from(pendingCompetencyUpdates.values())
-      console.log(
-        `[ProgressPersistence] Writing ${competencyList.length} competency updates`
-      )
+      const competencyList = Array.from(pendingCompetencyUpdates.values());
+      console.log(`[ProgressPersistence] Writing ${competencyList.length} competency updates`);
 
       try {
-        await batchUpdateCompetencyProgress(currentUserId, competencyList)
-        pendingCompetencyUpdates.clear()
+        await batchUpdateCompetencyProgress(currentUserId, competencyList);
+        pendingCompetencyUpdates.clear();
       } catch (error) {
         console.warn(
-          '[ProgressPersistence] Failed to write competency progress, queuing for offline sync:',
-          error
-        )
+          "[ProgressPersistence] Failed to write competency progress, queuing for offline sync:",
+          error,
+        );
 
         // Queue for offline sync
         await syncManager.addToQueue({
-          type: 'progress_update',
+          type: "progress_update",
           data: {
             userId: currentUserId,
             competencyProgress: competencyList,
           },
           timestamp: new Date(),
           retries: 0,
-        })
+        });
 
         // Clear pending updates since they're queued
-        pendingCompetencyUpdates.clear()
+        pendingCompetencyUpdates.clear();
       }
     }
 
     // Batch write skill progress
     if (pendingSkillUpdates.size > 0) {
-      const skillList = Array.from(pendingSkillUpdates.values())
-      console.log(`[ProgressPersistence] Writing ${skillList.length} skill updates`)
+      const skillList = Array.from(pendingSkillUpdates.values());
+      console.log(`[ProgressPersistence] Writing ${skillList.length} skill updates`);
 
       try {
-        await batchUpdateSkillProgress(currentUserId, skillList)
-        pendingSkillUpdates.clear()
+        await batchUpdateSkillProgress(currentUserId, skillList);
+        pendingSkillUpdates.clear();
       } catch (error) {
         console.warn(
-          '[ProgressPersistence] Failed to write skill progress, queuing for offline sync:',
-          error
-        )
+          "[ProgressPersistence] Failed to write skill progress, queuing for offline sync:",
+          error,
+        );
 
         // Queue for offline sync
         await syncManager.addToQueue({
-          type: 'progress_update',
+          type: "progress_update",
           data: {
             userId: currentUserId,
             skillsProgress: skillList,
           },
           timestamp: new Date(),
           retries: 0,
-        })
+        });
 
         // Clear pending updates since they're queued
-        pendingSkillUpdates.clear()
+        pendingSkillUpdates.clear();
       }
     }
 
     // Update state to idle
     $progressQueueState.set({
-      status: 'idle',
+      status: "idle",
       pendingCount: 0,
       lastSyncTime: new Date(),
       error: null,
       nextSyncTime: null,
-    })
+    });
 
-    console.log('[ProgressPersistence] Batch write completed successfully')
+    console.log("[ProgressPersistence] Batch write completed successfully");
 
     return {
-      status: 'success',
+      status: "success",
       timestamp: new Date(),
-    }
+    };
   } catch (error) {
-    const errorMsg = error instanceof Error ? error.message : 'Unknown error'
-    console.error('[ProgressPersistence] Batch write failed:', error)
+    const errorMsg = error instanceof Error ? error.message : "Unknown error";
+    console.error("[ProgressPersistence] Batch write failed:", error);
 
     // Update state to error
     $progressQueueState.set({
       ...$progressQueueState.get(),
-      status: 'error',
+      status: "error",
       error: errorMsg,
-    })
+    });
 
     return {
-      status: 'error',
+      status: "error",
       message: errorMsg,
       error: error instanceof Error ? error : undefined,
-    }
+    };
   }
 }
 
@@ -605,25 +590,21 @@ async function performBatchWrite(): Promise<ProgressUpdateResult> {
  * Update queue state with current pending counts
  */
 function updateQueueState(): void {
-  const state = $progressQueueState.get()
-  const pendingCount = getTotalQueueSize()
+  const state = $progressQueueState.get();
+  const pendingCount = getTotalQueueSize();
 
   $progressQueueState.set({
     ...state,
-    status: pendingCount > 0 ? 'pending' : 'idle',
+    status: pendingCount > 0 ? "pending" : "idle",
     pendingCount,
-  })
+  });
 }
 
 /**
  * Get total queue size
  */
 function getTotalQueueSize(): number {
-  return (
-    pendingCompetencyUpdates.size +
-    pendingSkillUpdates.size +
-    pendingExerciseAttempts.length
-  )
+  return pendingCompetencyUpdates.size + pendingSkillUpdates.size + pendingExerciseAttempts.length;
 }
 
 // ============================================================================
@@ -639,11 +620,11 @@ function getTotalQueueSize(): number {
  */
 export function getCachedCompetencyProgress(
   competencyAreaId: CompetencyAreaId,
-  gradeRange: string
+  gradeRange: string,
 ): CompetencyProgress | null {
-  const key = `${competencyAreaId}-${gradeRange}`
-  const cache = $competencyProgressCache.get()
-  return cache.get(key) ?? null
+  const key = `${competencyAreaId}-${gradeRange}`;
+  const cache = $competencyProgressCache.get();
+  return cache.get(key) ?? null;
 }
 
 /**
@@ -653,8 +634,8 @@ export function getCachedCompetencyProgress(
  * @returns Cached skill progress or null
  */
 export function getCachedSkillProgress(skillId: string): SkillProgress | null {
-  const cache = $skillProgressCache.get()
-  return cache.get(skillId) ?? null
+  const cache = $skillProgressCache.get();
+  return cache.get(skillId) ?? null;
 }
 
 /**
@@ -665,26 +646,26 @@ export function getCachedSkillProgress(skillId: string): SkillProgress | null {
  */
 export function populateProgressCache(
   competencyProgress: CompetencyProgress[],
-  skillProgress: SkillProgress[]
+  skillProgress: SkillProgress[],
 ): void {
-  console.log('[ProgressPersistence] Populating progress cache')
+  console.log("[ProgressPersistence] Populating progress cache");
 
   // Populate competency cache
-  const competencyCache = new Map<string, CompetencyProgress>()
+  const competencyCache = new Map<string, CompetencyProgress>();
   for (const progress of competencyProgress) {
-    const key = `${progress.competencyAreaId}-${progress.gradeRange}`
-    competencyCache.set(key, progress)
+    const key = `${progress.competencyAreaId}-${progress.gradeRange}`;
+    competencyCache.set(key, progress);
   }
-  $competencyProgressCache.set(competencyCache)
+  $competencyProgressCache.set(competencyCache);
 
   // Populate skill cache
-  const skillCache = new Map<string, SkillProgress>()
+  const skillCache = new Map<string, SkillProgress>();
   for (const progress of skillProgress) {
-    skillCache.set(progress.skillId, progress)
+    skillCache.set(progress.skillId, progress);
   }
-  $skillProgressCache.set(skillCache)
+  $skillProgressCache.set(skillCache);
 
   console.log(
-    `[ProgressPersistence] Cache populated: ${competencyCache.size} competencies, ${skillCache.size} skills`
-  )
+    `[ProgressPersistence] Cache populated: ${competencyCache.size} competencies, ${skillCache.size} skills`,
+  );
 }

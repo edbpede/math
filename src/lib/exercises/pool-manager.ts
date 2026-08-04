@@ -11,11 +11,11 @@
  * - 11.4: Generate 20-30 instances in batch <200ms
  */
 
-import type { ExerciseInstance } from "./types";
-import type { TemplateSelectionCriteria } from "./template-registry";
 import type { Locale } from "../i18n/types";
 import { offlineStorage } from "../offline/storage";
 import type { WorkerMessage, WorkerResponse } from "./pool-worker";
+import type { TemplateSelectionCriteria } from "./template-registry";
+import type { ExerciseInstance } from "./types";
 
 /**
  * Pool configuration
@@ -93,9 +93,7 @@ export class ExercisePoolManager {
       if (typeof Worker !== "undefined") {
         this.initializeWorker();
       } else {
-        console.warn(
-          "[PoolManager] Web Workers not supported, falling back to main thread",
-        );
+        console.warn("[PoolManager] Web Workers not supported, falling back to main thread");
       }
 
       this.initialized = true;
@@ -107,11 +105,7 @@ export class ExercisePoolManager {
         this.fillPool({ gradeRange: "4-6" }, "da-DK").catch(console.error);
       }
     } catch (error) {
-      throw new PoolManagerError(
-        "Failed to initialize pool manager",
-        "initialize",
-        error,
-      );
+      throw new PoolManagerError("Failed to initialize pool manager", "initialize", error);
     }
   }
 
@@ -131,12 +125,9 @@ export class ExercisePoolManager {
 
       this.worker = new Worker(workerUrl, { type: "module" });
 
-      this.worker.addEventListener(
-        "message",
-        (event: MessageEvent<WorkerResponse>) => {
-          this.handleWorkerMessage(event.data);
-        },
-      );
+      this.worker.addEventListener("message", (event: MessageEvent<WorkerResponse>) => {
+        this.handleWorkerMessage(event.data);
+      });
 
       this.worker.addEventListener("error", (error) => {
         console.error("[PoolManager] Worker error:", error);
@@ -154,26 +145,17 @@ export class ExercisePoolManager {
   private handleWorkerMessage(response: WorkerResponse): void {
     const request = this.pendingRequests.get(response.id);
     if (!request) {
-      console.warn(
-        "[PoolManager] Received response for unknown request:",
-        response.id,
-      );
+      console.warn("[PoolManager] Received response for unknown request:", response.id);
       return;
     }
 
     this.pendingRequests.delete(response.id);
 
     if (response.type === "batch-complete") {
-      console.log(
-        `[PoolManager] Batch generated in ${response.duration.toFixed(2)}ms`,
-      );
+      console.log(`[PoolManager] Batch generated in ${response.duration.toFixed(2)}ms`);
       request.resolve(response.instances);
     } else if (response.type === "error") {
-      const error = new PoolManagerError(
-        response.error,
-        "worker-generation",
-        response.stack,
-      );
+      const error = new PoolManagerError(response.error, "worker-generation", response.stack);
       request.reject(error);
     }
   }
@@ -193,16 +175,11 @@ export class ExercisePoolManager {
       const exercises = await offlineStorage.getUnusedExercises(count);
 
       // Mark exercises as used
-      await Promise.all(
-        exercises.map((ex) => offlineStorage.markExerciseUsed(ex.id)),
-      );
+      await Promise.all(exercises.map((ex) => offlineStorage.markExerciseUsed(ex.id)));
 
       // Check if we need to refill pool
       const stats = await this.getStats();
-      if (
-        stats.unusedExercises < POOL_CONFIG.MIN_BUFFER_SIZE &&
-        !this.generationInProgress
-      ) {
+      if (stats.unusedExercises < POOL_CONFIG.MIN_BUFFER_SIZE && !this.generationInProgress) {
         // Refill in background
         const fillCriteria: TemplateSelectionCriteria = {
           gradeRange: criteria?.gradeRange || "4-6",
@@ -214,11 +191,7 @@ export class ExercisePoolManager {
 
       return exercises;
     } catch (error) {
-      throw new PoolManagerError(
-        "Failed to get exercises from pool",
-        "getExercises",
-        error,
-      );
+      throw new PoolManagerError("Failed to get exercises from pool", "getExercises", error);
     }
   }
 

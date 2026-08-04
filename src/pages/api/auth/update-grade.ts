@@ -19,25 +19,16 @@
  */
 
 import type { APIRoute } from "astro";
-import {
-  getSessionFromCookie,
-  validateSessionToken,
-} from "../../../lib/auth/session";
-import {
-  updateUserGradeRange,
-  getUserByUUID,
-} from "../../../lib/auth/service";
-import { createSecurityHeaders } from "../../../lib/security";
+import { getUserByUUID, updateUserGradeRange } from "../../../lib/auth/service";
+import { getSessionFromCookie, validateSessionToken } from "../../../lib/auth/session";
 import type { GradeRange } from "../../../lib/curriculum/types";
+import { createSecurityHeaders } from "../../../lib/security";
 
 // Validation schema for grade range
 const VALID_GRADE_RANGES: GradeRange[] = ["0-3", "4-6", "7-9"];
 
 function isValidGradeRange(value: unknown): value is GradeRange {
-  return (
-    typeof value === "string" &&
-    VALID_GRADE_RANGES.includes(value as GradeRange)
-  );
+  return typeof value === "string" && VALID_GRADE_RANGES.includes(value as GradeRange);
 }
 
 // IMPORTANT: This API route requires server-side rendering
@@ -64,7 +55,7 @@ export const POST: APIRoute = async ({ request }) => {
             "Content-Type": "application/json",
             ...createSecurityHeaders(isDevelopment),
           },
-        }
+        },
       );
     }
 
@@ -86,7 +77,7 @@ export const POST: APIRoute = async ({ request }) => {
             "Content-Type": "application/json",
             ...createSecurityHeaders(isDevelopment),
           },
-        }
+        },
       );
     }
 
@@ -105,7 +96,7 @@ export const POST: APIRoute = async ({ request }) => {
             "Content-Type": "application/json",
             ...createSecurityHeaders(isDevelopment),
           },
-        }
+        },
       );
     }
 
@@ -124,7 +115,7 @@ export const POST: APIRoute = async ({ request }) => {
             "Content-Type": "application/json",
             ...createSecurityHeaders(isDevelopment),
           },
-        }
+        },
       );
     }
 
@@ -143,7 +134,7 @@ export const POST: APIRoute = async ({ request }) => {
             "Content-Type": "application/json",
             ...createSecurityHeaders(isDevelopment),
           },
-        }
+        },
       );
     }
 
@@ -158,7 +149,7 @@ export const POST: APIRoute = async ({ request }) => {
           "Content-Type": "application/json",
           ...createSecurityHeaders(isDevelopment),
         },
-      }
+      },
     );
   } catch (error) {
     console.error("Update grade error:", error);
@@ -174,7 +165,7 @@ export const POST: APIRoute = async ({ request }) => {
           "Content-Type": "application/json",
           ...createSecurityHeaders(isDevelopment),
         },
-      }
+      },
     );
   }
 };

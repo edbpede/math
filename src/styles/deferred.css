@@ -1,14 +1,14 @@
 /**
  * Deferred CSS
- * 
+ *
  * Non-critical styles that can be loaded asynchronously after
  * the initial page render. Loaded using the media="print" trick.
- * 
+ *
  * This file is intentionally minimal as most styling is handled by:
  * - UnoCSS atomic utilities (generated at build time)
  * - Component-specific styles (scoped)
  * - Accessibility styles (loaded separately)
- * 
+ *
  * Requirements: 13.4 - Load non-critical CSS asynchronously
  */
 
@@ -20,14 +20,16 @@
 }
 
 @keyframes ping {
-  75%, 100% {
+  75%,
+  100% {
     transform: scale(2);
     opacity: 0;
   }
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -84,13 +86,13 @@
   .no-print {
     display: none !important;
   }
-  
+
   main {
     max-width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
   }
-  
+
   * {
     background: white !important;
     color: black !important;
@@ -103,4 +105,3 @@
     border-color: currentColor !important;
   }
 }
-

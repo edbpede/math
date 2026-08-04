@@ -16,17 +16,17 @@
  * - 5.5: Reset intervals on incorrect answers
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from "vitest";
 import {
-  initializeSRSParameters,
-  calculateQualityScore,
-  updateSRSParameters,
   calculateNextReviewDate,
-  isSkillDueForReview,
+  calculateQualityScore,
   calculateReviewPriority,
   getDueSkillsSortedByPriority,
-} from './srs';
-import type { SRSParameters, SRSUpdateInput, SkillProgress } from './types';
+  initializeSRSParameters,
+  isSkillDueForReview,
+  updateSRSParameters,
+} from "./srs";
+import type { SkillProgress, SRSParameters, SRSUpdateInput } from "./types";
 
 // ============================================================================
 // Test Data Factories
@@ -43,7 +43,7 @@ function createSRSParams(overrides: Partial<SRSParameters> = {}): SRSParameters 
 
 function createSkillProgress(overrides: Partial<SkillProgress> = {}): SkillProgress {
   return {
-    skillId: 'test-skill',
+    skillId: "test-skill",
     masteryLevel: 50,
     srsParams: createSRSParams(),
     attempts: 0,
@@ -59,8 +59,8 @@ function createSkillProgress(overrides: Partial<SkillProgress> = {}): SkillProgr
 // initializeSRSParameters() Tests
 // ============================================================================
 
-describe('initializeSRSParameters', () => {
-  it('should initialize with default SuperMemo 2 values', () => {
+describe("initializeSRSParameters", () => {
+  it("should initialize with default SuperMemo 2 values", () => {
     const params = initializeSRSParameters();
 
     expect(params.easeFactor).toBe(2.5);
@@ -68,7 +68,7 @@ describe('initializeSRSParameters', () => {
     expect(params.repetitionCount).toBe(0);
   });
 
-  it('should return new object each time (not reuse reference)', () => {
+  it("should return new object each time (not reuse reference)", () => {
     const params1 = initializeSRSParameters();
     const params2 = initializeSRSParameters();
 
@@ -81,54 +81,54 @@ describe('initializeSRSParameters', () => {
 // calculateQualityScore() Tests
 // ============================================================================
 
-describe('calculateQualityScore', () => {
-  describe('Correct answers', () => {
-    it('should return quality 5 for perfect response (high quality)', () => {
+describe("calculateQualityScore", () => {
+  describe("Correct answers", () => {
+    it("should return quality 5 for perfect response (high quality)", () => {
       expect(calculateQualityScore(true, 1.0)).toBe(5);
       expect(calculateQualityScore(true, 0.9)).toBe(5);
       expect(calculateQualityScore(true, 0.67)).toBe(5);
     });
 
-    it('should return quality 4 for good response (medium quality)', () => {
+    it("should return quality 4 for good response (medium quality)", () => {
       expect(calculateQualityScore(true, 0.66)).toBe(4);
       expect(calculateQualityScore(true, 0.5)).toBe(4);
       expect(calculateQualityScore(true, 0.34)).toBe(4);
     });
 
-    it('should return quality 3 for correct with difficulty (low quality)', () => {
+    it("should return quality 3 for correct with difficulty (low quality)", () => {
       expect(calculateQualityScore(true, 0.33)).toBe(3);
       expect(calculateQualityScore(true, 0.2)).toBe(3);
       expect(calculateQualityScore(true, 0.0)).toBe(3);
     });
   });
 
-  describe('Incorrect answers', () => {
-    it('should return quality 2 for remembered but incorrect (high quality)', () => {
+  describe("Incorrect answers", () => {
+    it("should return quality 2 for remembered but incorrect (high quality)", () => {
       expect(calculateQualityScore(false, 1.0)).toBe(2);
       expect(calculateQualityScore(false, 0.9)).toBe(2);
       expect(calculateQualityScore(false, 0.67)).toBe(2);
     });
 
-    it('should return quality 1 for vague memory (medium quality)', () => {
+    it("should return quality 1 for vague memory (medium quality)", () => {
       expect(calculateQualityScore(false, 0.66)).toBe(1);
       expect(calculateQualityScore(false, 0.5)).toBe(1);
       expect(calculateQualityScore(false, 0.34)).toBe(1);
     });
 
-    it('should return quality 0 for complete blackout (low quality)', () => {
+    it("should return quality 0 for complete blackout (low quality)", () => {
       expect(calculateQualityScore(false, 0.33)).toBe(0);
       expect(calculateQualityScore(false, 0.2)).toBe(0);
       expect(calculateQualityScore(false, 0.0)).toBe(0);
     });
   });
 
-  describe('Edge cases', () => {
-    it('should clamp quality values above 1.0', () => {
+  describe("Edge cases", () => {
+    it("should clamp quality values above 1.0", () => {
       expect(calculateQualityScore(true, 1.5)).toBe(5);
       expect(calculateQualityScore(true, 10.0)).toBe(5);
     });
 
-    it('should clamp quality values below 0.0', () => {
+    it("should clamp quality values below 0.0", () => {
       expect(calculateQualityScore(true, -0.5)).toBe(3);
       expect(calculateQualityScore(false, -1.0)).toBe(0);
     });
@@ -139,8 +139,8 @@ describe('calculateQualityScore', () => {
 // updateSRSParameters() - Correct Answer Tests (Req 5.4: Exponential Growth)
 // ============================================================================
 
-describe('updateSRSParameters - Correct Answers', () => {
-  it('should set interval to 1 day on first correct answer', () => {
+describe("updateSRSParameters - Correct Answers", () => {
+  it("should set interval to 1 day on first correct answer", () => {
     const input: SRSUpdateInput = {
       wasCorrect: true,
       responseQuality: 0.8,
@@ -157,7 +157,7 @@ describe('updateSRSParameters - Correct Answers', () => {
     expect(result.newParams.repetitionCount).toBe(1);
   });
 
-  it('should set interval to 3 days on second correct answer', () => {
+  it("should set interval to 3 days on second correct answer", () => {
     const input: SRSUpdateInput = {
       wasCorrect: true,
       responseQuality: 0.8,
@@ -174,7 +174,7 @@ describe('updateSRSParameters - Correct Answers', () => {
     expect(result.newParams.repetitionCount).toBe(2);
   });
 
-  it('should calculate exponential interval growth after second repetition', () => {
+  it("should calculate exponential interval growth after second repetition", () => {
     // Third repetition: interval = previous * easeFactor
     const input: SRSUpdateInput = {
       wasCorrect: true,
@@ -193,7 +193,7 @@ describe('updateSRSParameters - Correct Answers', () => {
     expect(result.newParams.repetitionCount).toBe(3);
   });
 
-  it('should continue exponential growth for subsequent repetitions', () => {
+  it("should continue exponential growth for subsequent repetitions", () => {
     // Fourth repetition
     const input: SRSUpdateInput = {
       wasCorrect: true,
@@ -213,7 +213,7 @@ describe('updateSRSParameters - Correct Answers', () => {
     expect(result.newParams.repetitionCount).toBe(4);
   });
 
-  it('should demonstrate full exponential sequence (1, 3, 8+, 20+, 50+...)', () => {
+  it("should demonstrate full exponential sequence (1, 3, 8+, 20+, 50+...)", () => {
     let params = createSRSParams({ easeFactor: 2.5, interval: 1, repetitionCount: 0 });
     const expectedMinIntervals = [1, 3, 8, 20, 50];
 
@@ -233,7 +233,7 @@ describe('updateSRSParameters - Correct Answers', () => {
     }
   });
 
-  it('should increase ease factor for perfect responses (quality 5)', () => {
+  it("should increase ease factor for perfect responses (quality 5)", () => {
     const input: SRSUpdateInput = {
       wasCorrect: true,
       responseQuality: 1.0, // Quality 5
@@ -246,7 +246,7 @@ describe('updateSRSParameters - Correct Answers', () => {
     expect(result.newParams.easeFactor).toBeGreaterThan(2.5);
   });
 
-  it('should maintain ease factor for good responses (quality 4)', () => {
+  it("should maintain ease factor for good responses (quality 4)", () => {
     const input: SRSUpdateInput = {
       wasCorrect: true,
       responseQuality: 0.5, // Quality 4
@@ -260,7 +260,7 @@ describe('updateSRSParameters - Correct Answers', () => {
     expect(result.newParams.easeFactor).toBeLessThanOrEqual(2.6);
   });
 
-  it('should slightly decrease ease factor for difficult correct responses (quality 3)', () => {
+  it("should slightly decrease ease factor for difficult correct responses (quality 3)", () => {
     const input: SRSUpdateInput = {
       wasCorrect: true,
       responseQuality: 0.2, // Quality 3
@@ -274,7 +274,7 @@ describe('updateSRSParameters - Correct Answers', () => {
     expect(result.newParams.easeFactor).toBeGreaterThanOrEqual(1.3); // Above minimum
   });
 
-  it('should clamp ease factor to maximum (3.0)', () => {
+  it("should clamp ease factor to maximum (3.0)", () => {
     const input: SRSUpdateInput = {
       wasCorrect: true,
       responseQuality: 1.0, // Perfect quality
@@ -286,7 +286,7 @@ describe('updateSRSParameters - Correct Answers', () => {
     expect(result.newParams.easeFactor).toBeLessThanOrEqual(3.0);
   });
 
-  it('should clamp ease factor to minimum (1.3)', () => {
+  it("should clamp ease factor to minimum (1.3)", () => {
     const input: SRSUpdateInput = {
       wasCorrect: true,
       responseQuality: 0.0, // Low quality correct (quality 3)
@@ -303,8 +303,8 @@ describe('updateSRSParameters - Correct Answers', () => {
 // updateSRSParameters() - Incorrect Answer Tests (Req 5.5: Interval Reset)
 // ============================================================================
 
-describe('updateSRSParameters - Incorrect Answers', () => {
-  it('should reset interval to 1 day on incorrect answer', () => {
+describe("updateSRSParameters - Incorrect Answers", () => {
+  it("should reset interval to 1 day on incorrect answer", () => {
     const input: SRSUpdateInput = {
       wasCorrect: false,
       responseQuality: 0.5,
@@ -320,7 +320,7 @@ describe('updateSRSParameters - Incorrect Answers', () => {
     expect(result.newParams.interval).toBe(1);
   });
 
-  it('should reset repetition count to 0 on incorrect answer', () => {
+  it("should reset repetition count to 0 on incorrect answer", () => {
     const input: SRSUpdateInput = {
       wasCorrect: false,
       responseQuality: 0.5,
@@ -336,7 +336,7 @@ describe('updateSRSParameters - Incorrect Answers', () => {
     expect(result.newParams.repetitionCount).toBe(0);
   });
 
-  it('should decrease ease factor on incorrect answer', () => {
+  it("should decrease ease factor on incorrect answer", () => {
     const input: SRSUpdateInput = {
       wasCorrect: false,
       responseQuality: 0.5,
@@ -348,7 +348,7 @@ describe('updateSRSParameters - Incorrect Answers', () => {
     expect(result.newParams.easeFactor).toBeLessThan(2.5);
   });
 
-  it('should decrease ease factor more for complete blackout (quality 0)', () => {
+  it("should decrease ease factor more for complete blackout (quality 0)", () => {
     const input: SRSUpdateInput = {
       wasCorrect: false,
       responseQuality: 0.0, // Quality 0
@@ -360,7 +360,7 @@ describe('updateSRSParameters - Incorrect Answers', () => {
     expect(result.newParams.easeFactor).toBeLessThan(2.3);
   });
 
-  it('should not let ease factor drop below minimum (1.3)', () => {
+  it("should not let ease factor drop below minimum (1.3)", () => {
     const input: SRSUpdateInput = {
       wasCorrect: false,
       responseQuality: 0.0,
@@ -372,7 +372,7 @@ describe('updateSRSParameters - Incorrect Answers', () => {
     expect(result.newParams.easeFactor).toBeGreaterThanOrEqual(1.3);
   });
 
-  it('should demonstrate reset behavior after long interval', () => {
+  it("should demonstrate reset behavior after long interval", () => {
     // Simulate skill that had reached 50-day interval, then failed
     const input: SRSUpdateInput = {
       wasCorrect: false,
@@ -395,8 +395,8 @@ describe('updateSRSParameters - Incorrect Answers', () => {
 // calculateNextReviewDate() Tests
 // ============================================================================
 
-describe('calculateNextReviewDate', () => {
-  it('should calculate next review date correctly for 1 day interval', () => {
+describe("calculateNextReviewDate", () => {
+  it("should calculate next review date correctly for 1 day interval", () => {
     const now = new Date();
     const nextReview = calculateNextReviewDate(1);
 
@@ -408,7 +408,7 @@ describe('calculateNextReviewDate', () => {
     expect(actualTime).toBeLessThan(expectedTime + 1000);
   });
 
-  it('should calculate next review date correctly for 7 day interval', () => {
+  it("should calculate next review date correctly for 7 day interval", () => {
     const now = new Date();
     const nextReview = calculateNextReviewDate(7);
 
@@ -419,7 +419,7 @@ describe('calculateNextReviewDate', () => {
     expect(actualTime).toBeLessThan(expectedTime + 1000);
   });
 
-  it('should handle large intervals correctly', () => {
+  it("should handle large intervals correctly", () => {
     const nextReview = calculateNextReviewDate(365); // 1 year
 
     const expectedTime = Date.now() + 365 * 24 * 60 * 60 * 1000;
@@ -429,7 +429,7 @@ describe('calculateNextReviewDate', () => {
     expect(actualTime).toBeLessThan(expectedTime + 1000);
   });
 
-  it('should return Date object', () => {
+  it("should return Date object", () => {
     const result = calculateNextReviewDate(1);
     expect(result).toBeInstanceOf(Date);
   });
@@ -439,31 +439,31 @@ describe('calculateNextReviewDate', () => {
 // isSkillDueForReview() Tests
 // ============================================================================
 
-describe('isSkillDueForReview', () => {
-  it('should return true if next review is in the past', () => {
+describe("isSkillDueForReview", () => {
+  it("should return true if next review is in the past", () => {
     const pastDate = new Date(Date.now() - 24 * 60 * 60 * 1000); // Yesterday
     const result = isSkillDueForReview(pastDate);
 
     expect(result).toBe(true);
   });
 
-  it('should return true if next review is now', () => {
+  it("should return true if next review is now", () => {
     const now = new Date();
     const result = isSkillDueForReview(now, now);
 
     expect(result).toBe(true);
   });
 
-  it('should return false if next review is in the future', () => {
+  it("should return false if next review is in the future", () => {
     const futureDate = new Date(Date.now() + 24 * 60 * 60 * 1000); // Tomorrow
     const result = isSkillDueForReview(futureDate);
 
     expect(result).toBe(false);
   });
 
-  it('should use custom current date if provided', () => {
-    const reviewDate = new Date('2025-01-15');
-    const customNow = new Date('2025-01-10');
+  it("should use custom current date if provided", () => {
+    const reviewDate = new Date("2025-01-15");
+    const customNow = new Date("2025-01-10");
 
     const result = isSkillDueForReview(reviewDate, customNow);
 
@@ -475,8 +475,8 @@ describe('isSkillDueForReview', () => {
 // calculateReviewPriority() Tests
 // ============================================================================
 
-describe('calculateReviewPriority', () => {
-  it('should return higher priority for overdue skills', () => {
+describe("calculateReviewPriority", () => {
+  it("should return higher priority for overdue skills", () => {
     const oneDayOverdue = new Date(Date.now() - 24 * 60 * 60 * 1000);
     const threeDaysOverdue = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
 
@@ -486,7 +486,7 @@ describe('calculateReviewPriority', () => {
     expect(priority2).toBeGreaterThan(priority1);
   });
 
-  it('should return higher priority for lower ease factor (more difficult)', () => {
+  it("should return higher priority for lower ease factor (more difficult)", () => {
     const reviewDate = new Date(Date.now() - 24 * 60 * 60 * 1000); // 1 day overdue
 
     const priorityEasy = calculateReviewPriority(reviewDate, 3.0, 50); // High EF = easy
@@ -495,7 +495,7 @@ describe('calculateReviewPriority', () => {
     expect(priorityHard).toBeGreaterThan(priorityEasy);
   });
 
-  it('should return higher priority for lower mastery level', () => {
+  it("should return higher priority for lower mastery level", () => {
     const reviewDate = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
     const priorityHighMastery = calculateReviewPriority(reviewDate, 2.5, 80);
@@ -504,7 +504,7 @@ describe('calculateReviewPriority', () => {
     expect(priorityLowMastery).toBeGreaterThan(priorityHighMastery);
   });
 
-  it('should return 0 or near-0 priority for skills not yet due', () => {
+  it("should return 0 or near-0 priority for skills not yet due", () => {
     const futureDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
     const priority = calculateReviewPriority(futureDate, 2.5, 50);
@@ -512,7 +512,7 @@ describe('calculateReviewPriority', () => {
     expect(priority).toBeLessThan(1); // Should be low since not overdue
   });
 
-  it('should combine all factors appropriately', () => {
+  it("should combine all factors appropriately", () => {
     const reviewDate = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000); // 5 days overdue
 
     // High priority case: overdue, difficult, low mastery
@@ -530,15 +530,15 @@ describe('calculateReviewPriority', () => {
 // getDueSkillsSortedByPriority() Tests
 // ============================================================================
 
-describe('getDueSkillsSortedByPriority', () => {
-  it('should filter out skills not due for review', () => {
+describe("getDueSkillsSortedByPriority", () => {
+  it("should filter out skills not due for review", () => {
     const skills = [
       createSkillProgress({
-        skillId: 'due-skill',
+        skillId: "due-skill",
         nextReview: new Date(Date.now() - 24 * 60 * 60 * 1000), // Yesterday
       }),
       createSkillProgress({
-        skillId: 'not-due-skill',
+        skillId: "not-due-skill",
         nextReview: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
       }),
     ];
@@ -546,25 +546,25 @@ describe('getDueSkillsSortedByPriority', () => {
     const dueSkills = getDueSkillsSortedByPriority(skills);
 
     expect(dueSkills).toHaveLength(1);
-    expect(dueSkills[0]?.skillId).toBe('due-skill');
+    expect(dueSkills[0]?.skillId).toBe("due-skill");
   });
 
-  it('should sort due skills by priority (highest first)', () => {
+  it("should sort due skills by priority (highest first)", () => {
     const skills = [
       createSkillProgress({
-        skillId: 'medium-priority',
+        skillId: "medium-priority",
         nextReview: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day overdue
         srsParams: createSRSParams({ easeFactor: 2.5 }),
         masteryLevel: 50,
       }),
       createSkillProgress({
-        skillId: 'high-priority',
+        skillId: "high-priority",
         nextReview: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days overdue
         srsParams: createSRSParams({ easeFactor: 1.5 }), // Difficult
         masteryLevel: 20, // Low mastery
       }),
       createSkillProgress({
-        skillId: 'low-priority',
+        skillId: "low-priority",
         nextReview: new Date(Date.now() - 1 * 60 * 60 * 1000), // 1 hour overdue
         srsParams: createSRSParams({ easeFactor: 3.0 }), // Easy
         masteryLevel: 90, // High mastery
@@ -574,11 +574,11 @@ describe('getDueSkillsSortedByPriority', () => {
     const sorted = getDueSkillsSortedByPriority(skills);
 
     expect(sorted).toHaveLength(3);
-    expect(sorted[0]?.skillId).toBe('high-priority');
-    expect(sorted[2]?.skillId).toBe('low-priority');
+    expect(sorted[0]?.skillId).toBe("high-priority");
+    expect(sorted[2]?.skillId).toBe("low-priority");
   });
 
-  it('should return empty array if no skills are due', () => {
+  it("should return empty array if no skills are due", () => {
     const skills = [
       createSkillProgress({
         nextReview: new Date(Date.now() + 24 * 60 * 60 * 1000),
@@ -593,30 +593,30 @@ describe('getDueSkillsSortedByPriority', () => {
     expect(dueSkills).toHaveLength(0);
   });
 
-  it('should handle empty input array', () => {
+  it("should handle empty input array", () => {
     const dueSkills = getDueSkillsSortedByPriority([]);
 
     expect(dueSkills).toHaveLength(0);
   });
 
-  it('should work with custom current date', () => {
-    const customDate = new Date('2025-01-15');
+  it("should work with custom current date", () => {
+    const customDate = new Date("2025-01-15");
 
     const skills = [
       createSkillProgress({
-        skillId: 'due-on-custom-date',
-        nextReview: new Date('2025-01-10'), // 5 days before custom date
+        skillId: "due-on-custom-date",
+        nextReview: new Date("2025-01-10"), // 5 days before custom date
       }),
       createSkillProgress({
-        skillId: 'not-due-on-custom-date',
-        nextReview: new Date('2025-01-20'), // After custom date
+        skillId: "not-due-on-custom-date",
+        nextReview: new Date("2025-01-20"), // After custom date
       }),
     ];
 
     const dueSkills = getDueSkillsSortedByPriority(skills, customDate);
 
     expect(dueSkills).toHaveLength(1);
-    expect(dueSkills[0]?.skillId).toBe('due-on-custom-date');
+    expect(dueSkills[0]?.skillId).toBe("due-on-custom-date");
   });
 });
 
@@ -624,8 +624,8 @@ describe('getDueSkillsSortedByPriority', () => {
 // Integration Tests - Full SRS Workflow
 // ============================================================================
 
-describe('Integration Tests - Full SRS Workflow', () => {
-  it('should demonstrate complete learning progression from new skill to mastery', () => {
+describe("Integration Tests - Full SRS Workflow", () => {
+  it("should demonstrate complete learning progression from new skill to mastery", () => {
     // Start with new skill
     let params = initializeSRSParameters();
     const intervals: number[] = [];
@@ -643,8 +643,8 @@ describe('Integration Tests - Full SRS Workflow', () => {
     }
 
     // Verify exponential growth
-    expect(intervals[0]).toBe(1);  // First: 1 day
-    expect(intervals[1]).toBe(3);  // Second: 3 days
+    expect(intervals[0]).toBe(1); // First: 1 day
+    expect(intervals[1]).toBe(3); // Second: 3 days
     expect(intervals[2]).toBeGreaterThan(intervals[1]); // Exponential growth starts
     expect(intervals[9]).toBeGreaterThan(intervals[8]); // Continues growing
 
@@ -653,7 +653,7 @@ describe('Integration Tests - Full SRS Workflow', () => {
     expect(params.easeFactor).toBeLessThanOrEqual(3.0);
   });
 
-  it('should demonstrate forgetting and relearning cycle', () => {
+  it("should demonstrate forgetting and relearning cycle", () => {
     // Build up to long interval
     let params = createSRSParams({
       easeFactor: 2.5,
@@ -691,7 +691,7 @@ describe('Integration Tests - Full SRS Workflow', () => {
     expect(relearn2.newParams.interval).toBe(3); // Second interval
   });
 
-  it('should handle mixed performance realistically', () => {
+  it("should handle mixed performance realistically", () => {
     let params = initializeSRSParameters();
     const performance = [
       { correct: true, quality: 0.8 },
@@ -717,24 +717,24 @@ describe('Integration Tests - Full SRS Workflow', () => {
     expect(params.interval).toBeGreaterThan(0);
   });
 
-  it('should prioritize overdue difficult low-mastery skills for session composition', () => {
+  it("should prioritize overdue difficult low-mastery skills for session composition", () => {
     const now = new Date();
 
     const skills = [
       createSkillProgress({
-        skillId: 'new-easy-skill',
+        skillId: "new-easy-skill",
         nextReview: new Date(now.getTime() + 24 * 60 * 60 * 1000), // Future
         srsParams: createSRSParams({ easeFactor: 2.8 }),
         masteryLevel: 30,
       }),
       createSkillProgress({
-        skillId: 'overdue-difficult-skill',
+        skillId: "overdue-difficult-skill",
         nextReview: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000), // 7 days overdue
         srsParams: createSRSParams({ easeFactor: 1.5 }),
         masteryLevel: 25,
       }),
       createSkillProgress({
-        skillId: 'slightly-overdue-mastered-skill',
+        skillId: "slightly-overdue-mastered-skill",
         nextReview: new Date(now.getTime() - 24 * 60 * 60 * 1000), // 1 day overdue
         srsParams: createSRSParams({ easeFactor: 2.9 }),
         masteryLevel: 95,
@@ -745,8 +745,8 @@ describe('Integration Tests - Full SRS Workflow', () => {
 
     // Should include both overdue skills, prioritize the difficult one
     expect(dueSkills).toHaveLength(2);
-    expect(dueSkills[0]?.skillId).toBe('overdue-difficult-skill');
-    expect(dueSkills[1]?.skillId).toBe('slightly-overdue-mastered-skill');
+    expect(dueSkills[0]?.skillId).toBe("overdue-difficult-skill");
+    expect(dueSkills[1]?.skillId).toBe("slightly-overdue-mastered-skill");
   });
 });
 
@@ -754,8 +754,8 @@ describe('Integration Tests - Full SRS Workflow', () => {
 // Edge Cases and Boundary Conditions
 // ============================================================================
 
-describe('Edge Cases', () => {
-  it('should handle ease factor at minimum boundary', () => {
+describe("Edge Cases", () => {
+  it("should handle ease factor at minimum boundary", () => {
     const params = createSRSParams({ easeFactor: 1.3 }); // At minimum
 
     // Even with poor performance, should not go below 1.3
@@ -768,7 +768,7 @@ describe('Edge Cases', () => {
     expect(result.newParams.easeFactor).toBe(1.3);
   });
 
-  it('should handle ease factor at maximum boundary', () => {
+  it("should handle ease factor at maximum boundary", () => {
     const params = createSRSParams({ easeFactor: 3.0 }); // At maximum
 
     // Even with perfect performance, should not exceed 3.0
@@ -781,7 +781,7 @@ describe('Edge Cases', () => {
     expect(result.newParams.easeFactor).toBe(3.0);
   });
 
-  it('should handle very large intervals gracefully', () => {
+  it("should handle very large intervals gracefully", () => {
     const params = createSRSParams({
       easeFactor: 2.5,
       interval: 365, // 1 year
@@ -799,7 +799,7 @@ describe('Edge Cases', () => {
     expect(result.newParams.interval).toBeLessThan(10000); // Stay in reasonable range
   });
 
-  it('should handle repetition count of 0', () => {
+  it("should handle repetition count of 0", () => {
     const params = createSRSParams({ repetitionCount: 0 });
 
     const result = updateSRSParameters({
@@ -812,7 +812,7 @@ describe('Edge Cases', () => {
     expect(result.newParams.interval).toBe(1);
   });
 
-  it('should return valid next review date for all calculated intervals', () => {
+  it("should return valid next review date for all calculated intervals", () => {
     const intervals = [1, 3, 7, 14, 30, 90, 180, 365];
 
     for (const interval of intervals) {

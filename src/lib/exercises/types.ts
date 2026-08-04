@@ -9,11 +9,7 @@
  * - 11.2: Template registry with metadata and generation logic
  */
 
-import type {
-  CompetencyAreaId,
-  Difficulty,
-  GradeRange,
-} from "../curriculum/types";
+import type { CompetencyAreaId, Difficulty, GradeRange } from "../curriculum/types";
 
 export interface TemplateMetadata {
   competencyAreaId: CompetencyAreaId;
@@ -48,12 +44,7 @@ export interface ParameterConstraints {
   [key: string]: ParameterConstraint;
 }
 
-export type ContextType =
-  | "shopping"
-  | "school"
-  | "nature"
-  | "sports"
-  | "abstract";
+export type ContextType = "shopping" | "school" | "nature" | "sports" | "abstract";
 
 export interface VisualAid {
   type: "number-line" | "diagram" | "chart" | "image";
@@ -147,10 +138,7 @@ export interface ExerciseTemplate {
   name: string;
   metadata: TemplateMetadata;
   parameters: ParameterConstraints;
-  generate: (
-    params: Record<string, unknown>,
-    locale: string,
-  ) => GenerationResult;
+  generate: (params: Record<string, unknown>, locale: string) => GenerationResult;
   validate: (userAnswer: string, correctAnswer: Answer) => ValidationResult;
   hints: HintGenerator[];
   contextType?: ContextType;

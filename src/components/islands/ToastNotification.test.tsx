@@ -10,17 +10,17 @@
  * - Accessibility features
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@solidjs/testing-library";
+import { fireEvent, render, screen, waitFor } from "@solidjs/testing-library";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom";
+import * as announcer from "@/lib/accessibility/announcer";
 import {
-  ToastContainer,
-  showToast,
-  dismissToast,
   dismissAllToasts,
+  dismissToast,
+  showToast,
+  ToastContainer,
   toast,
 } from "./ToastNotification";
-import * as announcer from "@/lib/accessibility/announcer";
 
 // Mock the announcer
 vi.mock("@/lib/accessibility/announcer", () => ({

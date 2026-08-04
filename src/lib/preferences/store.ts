@@ -25,15 +25,15 @@
  * ```
  */
 
-import { atom } from 'nanostores'
-import type { UserPreferences } from '@/lib/types/preferences'
-import { DEFAULT_PREFERENCES, mergeWithDefaults } from '@/lib/types/preferences'
+import { atom } from "nanostores";
+import type { UserPreferences } from "@/lib/types/preferences";
+import { DEFAULT_PREFERENCES, mergeWithDefaults } from "@/lib/types/preferences";
 
 /**
  * Global preferences store
  * Contains the current user preferences with defaults applied
  */
-export const $preferences = atom<Required<UserPreferences>>(DEFAULT_PREFERENCES)
+export const $preferences = atom<Required<UserPreferences>>(DEFAULT_PREFERENCES);
 
 /**
  * Update preferences (partial or complete)
@@ -51,12 +51,12 @@ export const $preferences = atom<Required<UserPreferences>>(DEFAULT_PREFERENCES)
  * ```
  */
 export function updatePreferences(newPreferences: Partial<UserPreferences>): void {
-  const current = $preferences.get()
+  const current = $preferences.get();
   const updated = mergeWithDefaults({
     ...current,
     ...newPreferences,
-  })
-  $preferences.set(updated)
+  });
+  $preferences.set(updated);
 }
 
 /**
@@ -68,7 +68,7 @@ export function updatePreferences(newPreferences: Partial<UserPreferences>): voi
  * ```
  */
 export function resetPreferences(): void {
-  $preferences.set(DEFAULT_PREFERENCES)
+  $preferences.set(DEFAULT_PREFERENCES);
 }
 
 /**
@@ -89,10 +89,10 @@ export function resetPreferences(): void {
  * ```
  */
 export function initializePreferences(
-  savedPreferences: UserPreferences | Record<string, unknown>
+  savedPreferences: UserPreferences | Record<string, unknown>,
 ): void {
-  const initialized = mergeWithDefaults(savedPreferences)
-  $preferences.set(initialized)
+  const initialized = mergeWithDefaults(savedPreferences);
+  $preferences.set(initialized);
 }
 
 /**
@@ -114,9 +114,9 @@ export function initializePreferences(
  * ```
  */
 export function subscribeToPreferences(
-  callback: (preferences: Required<UserPreferences>) => void
+  callback: (preferences: Required<UserPreferences>) => void,
 ): () => void {
-  return $preferences.subscribe(callback)
+  return $preferences.subscribe(callback);
 }
 
 /**
@@ -131,5 +131,5 @@ export function subscribeToPreferences(
  * ```
  */
 export function getPreferences(): Required<UserPreferences> {
-  return $preferences.get()
+  return $preferences.get();
 }

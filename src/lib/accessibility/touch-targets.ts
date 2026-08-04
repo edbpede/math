@@ -74,13 +74,13 @@ export interface TouchTargetConfig {
  * ```
  */
 export function getTouchTargetClasses(config?: TouchTargetConfig): string {
-  const classes: string[] = ['touch-target'];
+  const classes: string[] = ["touch-target"];
 
   if (config?.extraPadding && config.extraPadding > 0) {
     classes.push(`p-${config.extraPadding}`);
   }
 
-  return classes.join(' ');
+  return classes.join(" ");
 }
 
 /**
@@ -98,15 +98,13 @@ export function getTouchTargetClasses(config?: TouchTargetConfig): string {
  * // Returns: { 'min-width': '44px', 'min-height': '44px' }
  * ```
  */
-export function getTouchTargetStyles(
-  config?: TouchTargetConfig
-): Record<string, string> {
+export function getTouchTargetStyles(config?: TouchTargetConfig): Record<string, string> {
   const minWidth = config?.minWidth ?? TOUCH_TARGET_MIN_SIZE;
   const minHeight = config?.minHeight ?? TOUCH_TARGET_MIN_SIZE;
 
   return {
-    'min-width': `${minWidth}px`,
-    'min-height': `${minHeight}px`,
+    "min-width": `${minWidth}px`,
+    "min-height": `${minHeight}px`,
   };
 }
 
@@ -130,7 +128,7 @@ export function getTouchTargetStyles(
  */
 export function ensureTouchTarget(
   element: HTMLElement | null | undefined,
-  config?: TouchTargetConfig
+  config?: TouchTargetConfig,
 ): boolean {
   if (!element) return false;
 
@@ -158,9 +156,7 @@ export function ensureTouchTarget(
  * console.log(`Button size: ${size.width}x${size.height}`);
  * ```
  */
-export function getElementSize(
-  element: HTMLElement | null | undefined
-): TouchTargetSize | null {
+export function getElementSize(element: HTMLElement | null | undefined): TouchTargetSize | null {
   if (!element) return null;
 
   const rect = element.getBoundingClientRect();
@@ -194,7 +190,7 @@ export function getElementSize(
 export function hasSufficientSpacing(
   element1: HTMLElement | null | undefined,
   element2: HTMLElement | null | undefined,
-  minSpacing: number = TOUCH_TARGET_MIN_SPACING
+  minSpacing: number = TOUCH_TARGET_MIN_SPACING,
 ): boolean {
   if (!element1 || !element2) return false;
 
@@ -221,9 +217,7 @@ export function hasSufficientSpacing(
   const minHorizontalDist = (rect1.width + rect2.width) / 2 + minSpacing;
   const minVerticalDist = (rect1.height + rect2.height) / 2 + minSpacing;
 
-  return (
-    horizontalDist >= minHorizontalDist || verticalDist >= minVerticalDist
-  );
+  return horizontalDist >= minHorizontalDist || verticalDist >= minVerticalDist;
 }
 
 /**
@@ -246,11 +240,11 @@ export function hasSufficientSpacing(
  */
 export function auditTouchTargets(
   root: HTMLElement = document.body,
-  config?: TouchTargetConfig
+  config?: TouchTargetConfig,
 ): Array<{ element: HTMLElement; size: TouchTargetSize; selector: string }> {
   const interactiveSelectors = [
-    'button',
-    'a[href]',
+    "button",
+    "a[href]",
     'input[type="button"]',
     'input[type="submit"]',
     'input[type="reset"]',
@@ -262,7 +256,7 @@ export function auditTouchTargets(
   ];
 
   const elements = root.querySelectorAll(
-    interactiveSelectors.join(', ')
+    interactiveSelectors.join(", "),
   ) as NodeListOf<HTMLElement>;
 
   const nonCompliant: Array<{
@@ -279,8 +273,8 @@ export function auditTouchTargets(
         const selector = element.id
           ? `#${element.id}`
           : element.className
-          ? `.${element.className.split(' ')[0]}`
-          : element.tagName.toLowerCase();
+            ? `.${element.className.split(" ")[0]}`
+            : element.tagName.toLowerCase();
 
         nonCompliant.push({
           element,
@@ -300,9 +294,6 @@ export function auditTouchTargets(
  * @param config - Touch target configuration
  * @returns true if inline styles should be used
  */
-export function shouldUseInlineStyles(
-  config?: TouchTargetConfig
-): boolean {
+export function shouldUseInlineStyles(config?: TouchTargetConfig): boolean {
   return config?.useInlineStyles === true;
 }
-

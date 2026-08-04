@@ -2,22 +2,18 @@
  * Exercise Instance Generator Tests
  */
 
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import {
-  generateInstance,
   generateBatch,
   generateBatchFromTemplates,
-  regenerateInstance,
-  validateTemplate,
+  generateInstance,
   getGenerationStats,
   InstanceGenerationError,
+  regenerateInstance,
+  validateTemplate,
 } from "./generator";
-import { templateRegistry, registerTemplate } from "./template-registry";
-import type {
-  ExerciseTemplate,
-  GenerationResult,
-  ValidationResult,
-} from "./types";
+import { registerTemplate, templateRegistry } from "./template-registry";
+import type { ExerciseTemplate, GenerationResult, ValidationResult } from "./types";
 
 // Mock template for testing
 const createMockTemplate = (id: string): ExerciseTemplate => ({
@@ -120,15 +116,13 @@ describe("Exercise Instance Generator", () => {
     const registry = templateRegistry;
 
     // Unregister any existing test templates
-    ["test-template-1", "test-template-2", "context-template-1"].forEach(
-      (id) => {
-        try {
-          registry.unregister(id);
-        } catch {
-          // Ignore if template doesn't exist
-        }
-      },
-    );
+    ["test-template-1", "test-template-2", "context-template-1"].forEach((id) => {
+      try {
+        registry.unregister(id);
+      } catch {
+        // Ignore if template doesn't exist
+      }
+    });
   });
 
   describe("generateInstance", () => {
@@ -282,11 +276,10 @@ describe("Exercise Instance Generator", () => {
       const template = createMockTemplate("test-template-1");
       registerTemplate(template);
 
-      const instances = await generateBatch(
-        { competencyAreaId: "tal-og-algebra" },
-        5,
-        { locale: "da-DK", startSeed: 1000 },
-      );
+      const instances = await generateBatch({ competencyAreaId: "tal-og-algebra" }, 5, {
+        locale: "da-DK",
+        startSeed: 1000,
+      });
 
       expect(instances).toHaveLength(5);
     });
@@ -296,11 +289,10 @@ describe("Exercise Instance Generator", () => {
       registerTemplate(template);
 
       const startSeed = 1000;
-      const instances = await generateBatch(
-        { competencyAreaId: "tal-og-algebra" },
-        3,
-        { locale: "da-DK", startSeed },
-      );
+      const instances = await generateBatch({ competencyAreaId: "tal-og-algebra" }, 3, {
+        locale: "da-DK",
+        startSeed,
+      });
 
       expect(instances[0].seed).toBe(startSeed);
       expect(instances[1].seed).toBe(startSeed + 1);
@@ -319,11 +311,10 @@ describe("Exercise Instance Generator", () => {
       const template = createContextTemplate("context-template-1");
       registerTemplate(template);
 
-      const instances = await generateBatch(
-        { competencyAreaId: "tal-og-algebra" },
-        3,
-        { locale: "da-DK", startSeed: 1000 },
-      );
+      const instances = await generateBatch({ competencyAreaId: "tal-og-algebra" }, 3, {
+        locale: "da-DK",
+        startSeed: 1000,
+      });
 
       // All instances should have context (even if empty due to test environment)
       instances.forEach((instance) => {
@@ -336,11 +327,10 @@ describe("Exercise Instance Generator", () => {
       const template = createMockTemplate("test-template-1");
       registerTemplate(template);
 
-      const instances = await generateBatch(
-        { competencyAreaId: "tal-og-algebra" },
-        3,
-        { locale: "da-DK", includeDistractors: true },
-      );
+      const instances = await generateBatch({ competencyAreaId: "tal-og-algebra" }, 3, {
+        locale: "da-DK",
+        includeDistractors: true,
+      });
 
       instances.forEach((instance) => {
         expect(instance.distractors).toBeDefined();
@@ -375,11 +365,7 @@ describe("Exercise Instance Generator", () => {
       registerTemplate(template1);
       registerTemplate(template2);
 
-      const templateIds = [
-        "test-template-1",
-        "test-template-2",
-        "test-template-1",
-      ];
+      const templateIds = ["test-template-1", "test-template-2", "test-template-1"];
       const instances = await generateBatchFromTemplates(templateIds, {
         locale: "da-DK",
         startSeed: 1000,
@@ -396,10 +382,10 @@ describe("Exercise Instance Generator", () => {
       registerTemplate(template);
 
       const startSeed = 2000;
-      const instances = await generateBatchFromTemplates(
-        ["test-template-1", "test-template-1"],
-        { locale: "da-DK", startSeed },
-      );
+      const instances = await generateBatchFromTemplates(["test-template-1", "test-template-1"], {
+        locale: "da-DK",
+        startSeed,
+      });
 
       expect(instances[0].seed).toBe(startSeed);
       expect(instances[1].seed).toBe(startSeed + 1);
@@ -470,12 +456,7 @@ describe("Exercise Instance Generator", () => {
 
     it("should reject template with empty hints", async () => {
       const template = createMockTemplate("test-template-1");
-      template.hints = [
-        () => "Hint 1",
-        () => "",
-        () => "Hint 3",
-        () => "Hint 4",
-      ];
+      template.hints = [() => "Hint 1", () => "", () => "Hint 3", () => "Hint 4"];
 
       const isValid = await validateTemplate(template);
 

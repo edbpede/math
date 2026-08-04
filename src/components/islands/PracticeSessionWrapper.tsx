@@ -11,23 +11,23 @@
  * - 8.1: Validate answer and display feedback within 1 second
  */
 
-import { createSignal, createMemo, Match, Switch } from "solid-js";
+import { createMemo, createSignal, Match, Switch } from "solid-js";
 import type { CompetencyAreaId, GradeRange } from "@/lib/curriculum/types";
+import { generateBatch } from "@/lib/exercises/generator";
 import type { ExerciseInstance } from "@/lib/exercises/types";
 import type { Locale } from "@/lib/i18n/types";
-import { generateBatch } from "@/lib/exercises/generator";
 import {
-  startSession,
   endSession,
-  updateSession,
   logExerciseAttempt,
+  startSession,
+  updateSession,
 } from "@/lib/supabase/progress";
-import SessionSetup from "./SessionSetup";
-import ExercisePractice from "./ExercisePractice";
-import SessionSummary from "./SessionSummary";
-import type { SessionConfig } from "./SessionSetup";
-import type { SessionStats } from "./SessionSummary";
 import type { ExerciseAttempt as ExercisePracticeAttempt } from "./ExercisePractice";
+import ExercisePractice from "./ExercisePractice";
+import type { SessionConfig } from "./SessionSetup";
+import SessionSetup from "./SessionSetup";
+import type { SessionStats } from "./SessionSummary";
+import SessionSummary from "./SessionSummary";
 
 /**
  * Props for PracticeSessionWrapper component
@@ -77,9 +77,7 @@ type SessionState = "setup" | "practicing" | "complete" | "error";
  * />
  * ```
  */
-export default function PracticeSessionWrapper(
-  props: PracticeSessionWrapperProps,
-) {
+export default function PracticeSessionWrapper(props: PracticeSessionWrapperProps) {
   // State management
   const [sessionState, setSessionState] = createSignal<SessionState>("setup");
   const [sessionId, setSessionId] = createSignal<string>("");
@@ -111,16 +109,11 @@ export default function PracticeSessionWrapper(
   const handleStartSession = async (config: SessionConfig) => {
     try {
       // Create session in database
-      const session = await startSession(
-        props.userId,
-        props.gradeRange,
-        props.competencyAreaId,
-      );
+      const session = await startSession(props.userId, props.gradeRange, props.competencyAreaId);
       setSessionId(session.id);
 
       // Generate exercise batch
-      const difficulty =
-        config.difficulty === "Auto" ? undefined : config.difficulty;
+      const difficulty = config.difficulty === "Auto" ? undefined : config.difficulty;
       const generatedExercises = await generateBatch(
         {
           competencyAreaId: props.competencyAreaId,
@@ -256,8 +249,7 @@ export default function PracticeSessionWrapper(
   const completeSession = async () => {
     try {
       const totalExercises = exercises().length;
-      const avgTime =
-        totalExercises > 0 ? totalTimeSeconds() / totalExercises : 0;
+      const avgTime = totalExercises > 0 ? totalTimeSeconds() / totalExercises : 0;
 
       // End session in database
       await endSession(sessionId(), totalExercises, correctCount(), avgTime);
@@ -306,23 +298,17 @@ export default function PracticeSessionWrapper(
   const sessionStats = createMemo<SessionStats>(() => ({
     totalExercises: exercises().length,
     correctCount: correctCount(),
-    avgTimeSeconds:
-      exercises().length > 0 ? totalTimeSeconds() / exercises().length : 0,
+    avgTimeSeconds: exercises().length > 0 ? totalTimeSeconds() / exercises().length : 0,
     hintsUsed: hintsUsed(),
     skippedCount: skippedCount(),
   }));
 
   return (
-    <div
-      class={`practice-session-wrapper max-w-4xl mx-auto px-4 py-8 ${props.class || ""}`}
-    >
+    <div class={`practice-session-wrapper max-w-4xl mx-auto px-4 py-8 ${props.class || ""}`}>
       <Switch>
         {/* Setup state */}
         <Match when={sessionState() === "setup"}>
-          <SessionSetup
-            isFirstTime={props.isFirstTime}
-            onStart={handleStartSession}
-          />
+          <SessionSetup isFirstTime={props.isFirstTime} onStart={handleStartSession} />
         </Match>
 
         {/* Practicing state */}

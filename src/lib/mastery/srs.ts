@@ -20,7 +20,7 @@
  * @module mastery/srs
  */
 
-import type { SRSParameters, SRSUpdateInput, SRSUpdateResult } from './types';
+import type { SRSParameters, SRSUpdateInput, SRSUpdateResult } from "./types";
 
 /**
  * Configuration constants for SuperMemo 2 algorithm
@@ -35,19 +35,18 @@ const SM2_CONFIG = {
   MAX_EASE_FACTOR: 3.0,
 
   // Initial intervals in days
-  FIRST_INTERVAL: 1,      // 1 day after first successful attempt
-  SECOND_INTERVAL: 3,     // 3 days after second successful attempt
+  FIRST_INTERVAL: 1, // 1 day after first successful attempt
+  SECOND_INTERVAL: 3, // 3 days after second successful attempt
 
   // Interval on incorrect answer (reset to short review)
-  INCORRECT_INTERVAL: 1,  // Review again tomorrow
+  INCORRECT_INTERVAL: 1, // Review again tomorrow
 
   // Quality score thresholds
   QUALITY_THRESHOLD_PASS: 3, // Minimum quality to count as "correct"
 
   // Ease factor adjustment per quality level
   // Quality 0-2: decrease EF, Quality 3: maintain, Quality 4-5: increase EF
-  EASE_ADJUSTMENT_FORMULA: (quality: number) =>
-    0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02),
+  EASE_ADJUSTMENT_FORMULA: (quality: number) => 0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02),
 } as const;
 
 /**
@@ -175,7 +174,7 @@ export function updateSRSParameters(input: SRSUpdateInput): SRSUpdateResult {
   // Clamp ease factor to valid range
   newEaseFactor = Math.max(
     SM2_CONFIG.MIN_EASE_FACTOR,
-    Math.min(SM2_CONFIG.MAX_EASE_FACTOR, newEaseFactor)
+    Math.min(SM2_CONFIG.MAX_EASE_FACTOR, newEaseFactor),
   );
 
   // Check if response quality meets passing threshold
@@ -202,10 +201,7 @@ export function updateSRSParameters(input: SRSUpdateInput): SRSUpdateResult {
 
     // Optional: decrease ease factor slightly on failure
     // (helps prevent skills from becoming too easy if consistently failing)
-    newEaseFactor = Math.max(
-      SM2_CONFIG.MIN_EASE_FACTOR,
-      newEaseFactor - 0.2
-    );
+    newEaseFactor = Math.max(SM2_CONFIG.MIN_EASE_FACTOR, newEaseFactor - 0.2);
   }
 
   // Build new parameters
@@ -263,10 +259,7 @@ export function calculateNextReviewDate(intervalDays: number): Date {
  * }
  * ```
  */
-export function isSkillDueForReview(
-  nextReviewDate: Date,
-  currentDate: Date = new Date()
-): boolean {
+export function isSkillDueForReview(nextReviewDate: Date, currentDate: Date = new Date()): boolean {
   return currentDate >= nextReviewDate;
 }
 
@@ -301,7 +294,7 @@ export function calculateReviewPriority(
   nextReviewDate: Date,
   easeFactor: number,
   masteryLevel: number,
-  currentDate: Date = new Date()
+  currentDate: Date = new Date(),
 ): number {
   // Calculate days overdue (negative if not yet due)
   const daysOverdue = (currentDate.getTime() - nextReviewDate.getTime()) / (24 * 60 * 60 * 1000);
@@ -312,8 +305,9 @@ export function calculateReviewPriority(
 
   // Difficulty factor: lower ease factor = more difficult = higher priority
   // Normalized to 0-1 range (EF 1.3-3.0 maps to priority 1.0-0.0)
-  const difficultyFactor = (SM2_CONFIG.MAX_EASE_FACTOR - easeFactor) /
-                           (SM2_CONFIG.MAX_EASE_FACTOR - SM2_CONFIG.MIN_EASE_FACTOR);
+  const difficultyFactor =
+    (SM2_CONFIG.MAX_EASE_FACTOR - easeFactor) /
+    (SM2_CONFIG.MAX_EASE_FACTOR - SM2_CONFIG.MIN_EASE_FACTOR);
 
   // Mastery factor: lower mastery = higher priority
   // Normalized to 0-1 range (mastery 0-100 maps to priority 1.0-0.0)
@@ -321,10 +315,7 @@ export function calculateReviewPriority(
 
   // Combined priority score
   // Weights: overdue (50%), difficulty (30%), mastery (20%)
-  const priority =
-    overdueFactor * 0.5 +
-    difficultyFactor * 0.3 +
-    masteryFactor * 0.2;
+  const priority = overdueFactor * 0.5 + difficultyFactor * 0.3 + masteryFactor * 0.2;
 
   return priority;
 }
@@ -347,18 +338,15 @@ export function calculateReviewPriority(
  * // Returns skills that need review, most urgent first
  * ```
  */
-export function getDueSkillsSortedByPriority<T extends {
-  nextReview: Date;
-  srsParams: SRSParameters;
-  masteryLevel: number;
-}>(
-  skills: T[],
-  currentDate: Date = new Date()
-): T[] {
+export function getDueSkillsSortedByPriority<
+  T extends {
+    nextReview: Date;
+    srsParams: SRSParameters;
+    masteryLevel: number;
+  },
+>(skills: T[], currentDate: Date = new Date()): T[] {
   // Filter to only skills due for review
-  const dueSkills = skills.filter(skill =>
-    isSkillDueForReview(skill.nextReview, currentDate)
-  );
+  const dueSkills = skills.filter((skill) => isSkillDueForReview(skill.nextReview, currentDate));
 
   // Sort by priority (highest first)
   return dueSkills.sort((a, b) => {
@@ -366,13 +354,13 @@ export function getDueSkillsSortedByPriority<T extends {
       a.nextReview,
       a.srsParams.easeFactor,
       a.masteryLevel,
-      currentDate
+      currentDate,
     );
     const priorityB = calculateReviewPriority(
       b.nextReview,
       b.srsParams.easeFactor,
       b.masteryLevel,
-      currentDate
+      currentDate,
     );
 
     return priorityB - priorityA; // Descending order

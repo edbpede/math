@@ -1,40 +1,40 @@
 /**
  * Tal og Algebra Exercise Templates
- * 
+ *
  * Exports and registration for all Tal og Algebra (Numbers and Algebra) templates
  * covering basic arithmetic operations (grades 0-3), fractions and decimals (grades 4-6).
- * 
+ *
  * Competency Area: Tal og Algebra (Numbers and Algebra)
  * Skills Areas: Regning (Calculation), Brøker og procent (Fractions and percentages)
  */
 
-import { additionTemplates } from './addition';
-import { subtractionTemplates } from './subtraction';
-import { multiplicationTemplates } from './multiplication';
-import { divisionTemplates } from './division';
-import { numberComparisonTemplates } from './number-comparison';
-import { placeValueIdentificationTemplates } from './place-value-identification';
-import { numberOrderingTemplates } from './number-ordering';
-import { roundingTemplates } from './rounding';
-import { fractionRepresentationTemplates } from './fraction-representation';
-import { fractionEquivalenceTemplates } from './fraction-equivalence';
-import { decimalPlaceValueTemplates } from './decimal-place-value';
-import { fractionDecimalConversionTemplates } from './fraction-decimal-conversion';
-import { registerTemplate } from '../../template-registry';
+import { registerTemplate } from "../../template-registry";
+import { additionTemplates } from "./addition";
+import { decimalPlaceValueTemplates } from "./decimal-place-value";
+import { divisionTemplates } from "./division";
+import { fractionDecimalConversionTemplates } from "./fraction-decimal-conversion";
+import { fractionEquivalenceTemplates } from "./fraction-equivalence";
+import { fractionRepresentationTemplates } from "./fraction-representation";
+import { multiplicationTemplates } from "./multiplication";
+import { numberComparisonTemplates } from "./number-comparison";
+import { numberOrderingTemplates } from "./number-ordering";
+import { placeValueIdentificationTemplates } from "./place-value-identification";
+import { roundingTemplates } from "./rounding";
+import { subtractionTemplates } from "./subtraction";
 
 // Export all templates
-export { additionTemplates } from './addition';
-export { subtractionTemplates } from './subtraction';
-export { multiplicationTemplates } from './multiplication';
-export { divisionTemplates } from './division';
-export { numberComparisonTemplates } from './number-comparison';
-export { placeValueIdentificationTemplates } from './place-value-identification';
-export { numberOrderingTemplates } from './number-ordering';
-export { roundingTemplates } from './rounding';
-export { fractionRepresentationTemplates } from './fraction-representation';
-export { fractionEquivalenceTemplates } from './fraction-equivalence';
-export { decimalPlaceValueTemplates } from './decimal-place-value';
-export { fractionDecimalConversionTemplates } from './fraction-decimal-conversion';
+export { additionTemplates } from "./addition";
+export { decimalPlaceValueTemplates } from "./decimal-place-value";
+export { divisionTemplates } from "./division";
+export { fractionDecimalConversionTemplates } from "./fraction-decimal-conversion";
+export { fractionEquivalenceTemplates } from "./fraction-equivalence";
+export { fractionRepresentationTemplates } from "./fraction-representation";
+export { multiplicationTemplates } from "./multiplication";
+export { numberComparisonTemplates } from "./number-comparison";
+export { numberOrderingTemplates } from "./number-ordering";
+export { placeValueIdentificationTemplates } from "./place-value-identification";
+export { roundingTemplates } from "./rounding";
+export { subtractionTemplates } from "./subtraction";
 
 // Combine all templates
 export const talOgAlgebraTemplates = [
@@ -54,13 +54,12 @@ export const talOgAlgebraTemplates = [
 
 /**
  * Register all Tal og Algebra templates with the template registry
- * 
+ *
  * This function should be called during application initialization
  * to make these templates available for exercise generation.
  */
 export function registerTalOgAlgebraTemplates(): void {
-  talOgAlgebraTemplates.forEach(template => {
+  talOgAlgebraTemplates.forEach((template) => {
     registerTemplate(template);
   });
 }
-

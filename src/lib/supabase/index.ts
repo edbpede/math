@@ -16,39 +16,37 @@
  */
 
 export {
-  supabase,
-  isSupabaseConfigured,
   getCurrentSession,
   getCurrentUser,
   isAuthenticated,
-} from './client'
-
-export type { Database } from './types'
-
+  isSupabaseConfigured,
+  supabase,
+} from "./client";
 // Progress tracking data access layer
 export {
-  ProgressError,
+  batchLogExerciseAttempts,
+  batchUpdateCompetencyProgress,
+  batchUpdateSkillProgress,
+  endSession,
+  fetchActiveSession,
   // Fetch operations
   fetchCompetencyProgress,
   fetchCompetencyProgressByArea,
-  fetchSkillsProgress,
-  fetchSkillProgressBySkill,
-  fetchSkillsDueForReview,
   fetchExerciseHistory,
   fetchExerciseHistoryBySkill,
-  // Update operations
-  updateCompetencyProgress,
-  updateSkillProgress,
-  batchUpdateCompetencyProgress,
-  batchUpdateSkillProgress,
+  fetchRecentSessions,
+  fetchSession,
+  fetchSkillProgressBySkill,
+  fetchSkillsDueForReview,
+  fetchSkillsProgress,
   // Exercise history operations
   logExerciseAttempt,
-  batchLogExerciseAttempts,
+  ProgressError,
   // Session management operations
   startSession,
+  // Update operations
+  updateCompetencyProgress,
   updateSession,
-  endSession,
-  fetchSession,
-  fetchRecentSessions,
-  fetchActiveSession,
-} from './progress'
+  updateSkillProgress,
+} from "./progress";
+export type { Database } from "./types";

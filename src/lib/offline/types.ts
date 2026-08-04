@@ -10,18 +10,18 @@
  */
 export interface CacheConfig {
   /** Cache version number (increment to invalidate all caches) */
-  version: number
+  version: number;
   /** Named cache buckets */
   caches: {
     /** Static assets cache (HTML, CSS, JS, fonts) */
-    static: string
+    static: string;
     /** Exercise templates cache */
-    templates: string
+    templates: string;
     /** Runtime cache for dynamic content */
-    runtime: string
-  }
+    runtime: string;
+  };
   /** List of assets to pre-cache during installation */
-  precacheAssets: string[]
+  precacheAssets: string[];
 }
 
 /**
@@ -29,15 +29,15 @@ export interface CacheConfig {
  */
 export interface ServiceWorkerStatus {
   /** Whether service worker is registered */
-  registered: boolean
+  registered: boolean;
   /** Whether service worker is currently installing */
-  installing: boolean
+  installing: boolean;
   /** Whether an updated service worker is waiting to activate */
-  waiting: boolean
+  waiting: boolean;
   /** Whether service worker is active and controlling pages */
-  active: boolean
+  active: boolean;
   /** Error message if registration failed */
-  error?: string
+  error?: string;
 }
 
 /**
@@ -45,33 +45,33 @@ export interface ServiceWorkerStatus {
  */
 export interface NetworkStatus {
   /** Whether the browser is currently online */
-  online: boolean
+  online: boolean;
   /** Timestamp of last status change */
-  lastChanged: Date
+  lastChanged: Date;
 }
 
 /**
  * Cache strategy types
  */
 export type CacheStrategy =
-  | 'cache-first'      // Cache first, fallback to network
-  | 'network-first'    // Network first, fallback to cache
-  | 'cache-only'       // Cache only (fail if not cached)
-  | 'network-only'     // Network only (never cache)
-  | 'stale-while-revalidate' // Serve from cache, update in background
+  | "cache-first" // Cache first, fallback to network
+  | "network-first" // Network first, fallback to cache
+  | "cache-only" // Cache only (fail if not cached)
+  | "network-only" // Network only (never cache)
+  | "stale-while-revalidate"; // Serve from cache, update in background
 
 /**
  * Cache entry metadata
  */
 export interface CacheEntry {
   /** Cached request URL */
-  url: string
+  url: string;
   /** Timestamp when cached */
-  cachedAt: Date
+  cachedAt: Date;
   /** Cache expiration date (optional) */
-  expiresAt?: Date
+  expiresAt?: Date;
   /** Cache strategy used */
-  strategy: CacheStrategy
+  strategy: CacheStrategy;
 }
 
 /**
@@ -79,9 +79,9 @@ export interface CacheEntry {
  */
 export interface ServiceWorkerMessage {
   /** Message type identifier */
-  type: 'SKIP_WAITING' | 'CACHE_UPDATED' | 'CLIENTS_CLAIMED'
+  type: "SKIP_WAITING" | "CACHE_UPDATED" | "CLIENTS_CLAIMED";
   /** Optional message payload */
-  payload?: unknown
+  payload?: unknown;
 }
 
 /**
@@ -89,13 +89,13 @@ export interface ServiceWorkerMessage {
  */
 export interface AssetManifestEntry {
   /** Asset path relative to site root */
-  path: string
+  path: string;
   /** Asset file size in bytes */
-  size: number
+  size: number;
   /** Asset MIME type */
-  type: string
+  type: string;
   /** Whether this is a critical asset (should be pre-cached) */
-  critical: boolean
+  critical: boolean;
 }
 
 /**
@@ -103,11 +103,11 @@ export interface AssetManifestEntry {
  */
 export interface AssetManifest {
   /** Build version/timestamp */
-  version: string
+  version: string;
   /** Generated timestamp */
-  generatedAt: string
+  generatedAt: string;
   /** List of all assets */
-  assets: AssetManifestEntry[]
+  assets: AssetManifestEntry[];
 }
 
 /**
@@ -117,95 +117,92 @@ export interface AssetManifest {
  * Requirement 6.2: Store exercise history and progress data in IndexedDB
  */
 
-import type { ExerciseInstance } from '../exercises/types'
-import type { CompetencyProgress, SkillProgress, ExerciseAttempt } from '../mastery/types'
+import type { ExerciseInstance } from "../exercises/types";
+import type { CompetencyProgress, ExerciseAttempt, SkillProgress } from "../mastery/types";
 
 /**
  * Exercise cache entry for pre-generated exercise instances
  */
 export interface ExerciseCacheEntry {
   /** The cached exercise instance */
-  instance: ExerciseInstance
+  instance: ExerciseInstance;
   /** Timestamp when the exercise was generated and cached */
-  generatedAt: Date
+  generatedAt: Date;
   /** Whether this exercise has been used (presented to user) */
-  used: boolean
+  used: boolean;
 }
 
 /**
  * Sync queue item types (discriminated union)
  */
-export type SyncQueueItemType = 'exercise_complete' | 'progress_update' | 'session_end'
+export type SyncQueueItemType = "exercise_complete" | "progress_update" | "session_end";
 
 /**
  * Base sync queue item
  */
 interface BaseSyncQueueItem {
   /** Unique ID for the queue item (auto-generated) */
-  id?: number
+  id?: number;
   /** Timestamp when item was added to queue */
-  timestamp: Date
+  timestamp: Date;
   /** Number of sync retry attempts */
-  retries: number
+  retries: number;
 }
 
 /**
  * Exercise completion sync item
  */
 export interface ExerciseCompleteSyncItem extends BaseSyncQueueItem {
-  type: 'exercise_complete'
-  data: ExerciseAttempt
+  type: "exercise_complete";
+  data: ExerciseAttempt;
 }
 
 /**
  * Progress update sync item
  */
 export interface ProgressUpdateSyncItem extends BaseSyncQueueItem {
-  type: 'progress_update'
+  type: "progress_update";
   data: {
-    userId: string
-    competencyProgress?: CompetencyProgress[]
-    skillsProgress?: SkillProgress[]
-  }
+    userId: string;
+    competencyProgress?: CompetencyProgress[];
+    skillsProgress?: SkillProgress[];
+  };
 }
 
 /**
  * Session end sync item
  */
 export interface SessionEndSyncItem extends BaseSyncQueueItem {
-  type: 'session_end'
+  type: "session_end";
   data: {
-    sessionId: string
-    endedAt: Date
-    totalExercises: number
-    correctCount: number
-    avgTimePerExerciseSeconds: number
-  }
+    sessionId: string;
+    endedAt: Date;
+    totalExercises: number;
+    correctCount: number;
+    avgTimePerExerciseSeconds: number;
+  };
 }
 
 /**
  * Discriminated union of all sync queue item types
  */
-export type SyncQueueItem = 
-  | ExerciseCompleteSyncItem 
-  | ProgressUpdateSyncItem 
-  | SessionEndSyncItem
+export type SyncQueueItem = ExerciseCompleteSyncItem | ProgressUpdateSyncItem | SessionEndSyncItem;
 
 /**
  * Progress cache types
  */
-export type ProgressCacheType = 'competency' | 'skills' | 'history'
+export type ProgressCacheType = "competency" | "skills" | "history";
 
 /**
  * Progress cache entry with expiration
  */
 export interface ProgressCacheEntry {
   /** The cached data (structure depends on cache type) */
-  data: unknown
+  data: unknown;
   /** Timestamp when data was cached */
-  cachedAt: Date
+  cachedAt: Date;
   /** Timestamp when cache expires */
-  expiresAt: Date
+  expiresAt: Date;
 }
 
 /**
@@ -213,9 +210,9 @@ export interface ProgressCacheEntry {
  */
 export interface PreferenceEntry {
   /** Preference key */
-  key: string
+  key: string;
   /** Preference value */
-  value: unknown
+  value: unknown;
 }
 
 /**
@@ -226,23 +223,22 @@ export interface PreferenceEntry {
 export interface OfflineDatabase {
   /** Exercise instance cache store */
   exercises: {
-    key: string
-    value: ExerciseCacheEntry
-  }
+    key: string;
+    value: ExerciseCacheEntry;
+  };
   /** Sync queue store for pending operations */
   syncQueue: {
-    key: number
-    value: SyncQueueItem
-  }
+    key: number;
+    value: SyncQueueItem;
+  };
   /** Progress cache store */
   progressCache: {
-    key: ProgressCacheType
-    value: ProgressCacheEntry
-  }
+    key: ProgressCacheType;
+    value: ProgressCacheEntry;
+  };
   /** User preferences store */
   preferences: {
-    key: string
-    value: PreferenceEntry
-  }
+    key: string;
+    value: PreferenceEntry;
+  };
 }
-

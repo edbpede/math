@@ -12,21 +12,13 @@
  * - 11.4: Generate 20-30 instances in batch <200ms (~10ms per instance)
  */
 
-import type {
-  ExerciseInstance,
-  ExerciseTemplate,
-  Hint,
-  ExerciseContext,
-} from "./types";
-import type { Locale } from "../i18n/types";
-import { ParameterGenerator } from "./parameter-generator";
-import {
-  templateRegistry,
-  type TemplateSelectionCriteria,
-} from "./template-registry";
 import { ContextSelector } from "../i18n/context-selector";
+import type { Locale } from "../i18n/types";
 import { formatNumber } from "../i18n/utils";
 import { generateDistractors } from "./distractors";
+import { ParameterGenerator } from "./parameter-generator";
+import { type TemplateSelectionCriteria, templateRegistry } from "./template-registry";
+import type { ExerciseContext, ExerciseInstance, ExerciseTemplate, Hint } from "./types";
 
 /**
  * Error thrown when instance generation fails
@@ -38,9 +30,7 @@ export class InstanceGenerationError extends Error {
     public seed: number,
     public cause?: unknown,
   ) {
-    super(
-      `Instance generation failed for template '${templateId}' with seed ${seed}: ${message}`,
-    );
+    super(`Instance generation failed for template '${templateId}' with seed ${seed}: ${message}`);
     this.name = "InstanceGenerationError";
   }
 }
@@ -86,11 +76,7 @@ export async function generateInstance(
   // Get template from registry
   const template = templateRegistry.get(templateId);
   if (!template) {
-    throw new InstanceGenerationError(
-      "Template not found in registry",
-      templateId,
-      seed,
-    );
+    throw new InstanceGenerationError("Template not found in registry", templateId, seed);
   }
 
   try {
@@ -99,8 +85,7 @@ export async function generateInstance(
     const params = paramGenerator.generate(template.parameters);
 
     // Create or use provided context selector
-    const contextSelectorInstance =
-      contextSelector || new ContextSelector(locale);
+    const contextSelectorInstance = contextSelector || new ContextSelector(locale);
 
     // Build exercise context
     const context: ExerciseContext = {
@@ -124,17 +109,11 @@ export async function generateInstance(
 
         const itemCategory = itemCategories[template.contextType];
         if (itemCategory) {
-          context.items = await contextSelectorInstance.selectItems(
-            itemCategory,
-            3,
-          );
+          context.items = await contextSelectorInstance.selectItems(itemCategory, 3);
         }
       } catch (error) {
         // Context selection failed, continue with empty context
-        console.warn(
-          `Context selection failed for template ${templateId}:`,
-          error,
-        );
+        console.warn(`Context selection failed for template ${templateId}:`, error);
       }
     }
 
@@ -142,12 +121,7 @@ export async function generateInstance(
     const generationResult = template.generate(params, locale);
 
     // Render question text with parameter substitution
-    const questionText = renderQuestionText(
-      generationResult.questionText,
-      params,
-      locale,
-      context,
-    );
+    const questionText = renderQuestionText(generationResult.questionText, params, locale, context);
 
     // Generate hints using template hint functions
     const hints: Hint[] = template.hints.map((hintFn, index) => {
@@ -236,8 +210,7 @@ export async function generateBatch(
   const instances: ExerciseInstance[] = new Array(count);
 
   // Create context selector once for the batch
-  const contextSelectorInstance =
-    contextSelector || new ContextSelector(locale);
+  const contextSelectorInstance = contextSelector || new ContextSelector(locale);
 
   // Generate instances
   for (let i = 0; i < count; i++) {
@@ -292,8 +265,7 @@ export async function generateBatchFromTemplates(
   const instances: ExerciseInstance[] = new Array(templateIds.length);
 
   // Create context selector once for the batch
-  const contextSelectorInstance =
-    contextSelector || new ContextSelector(locale);
+  const contextSelectorInstance = contextSelector || new ContextSelector(locale);
 
   // Generate instances
   for (let i = 0; i < templateIds.length; i++) {
@@ -348,9 +320,7 @@ function renderQuestionText(
   }
 
   if (context.places) {
-    const place = Array.isArray(context.places)
-      ? context.places[0]
-      : context.places;
+    const place = Array.isArray(context.places) ? context.places[0] : context.places;
     rendered = rendered.replace(/\{\{context\.place\}\}/g, place);
   }
 
@@ -421,9 +391,7 @@ export async function validateTemplate(
 ): Promise<boolean> {
   for (const seed of testSeeds) {
     try {
-      const params = new ParameterGenerator({ seed }).generate(
-        template.parameters,
-      );
+      const params = new ParameterGenerator({ seed }).generate(template.parameters);
       const result = template.generate(params, "da-DK");
 
       // Validate result structure
@@ -431,10 +399,7 @@ export async function validateTemplate(
         throw new Error("Generated question text is empty");
       }
 
-      if (
-        result.correctAnswer.value === undefined ||
-        result.correctAnswer.value === null
-      ) {
+      if (result.correctAnswer.value === undefined || result.correctAnswer.value === null) {
         throw new Error("Generated correct answer is undefined or null");
       }
 
@@ -452,10 +417,7 @@ export async function validateTemplate(
         if (typeof hint === "string" && hint.trim() === "") {
           throw new Error(`Hint level ${i + 1} is empty`);
         }
-        if (
-          typeof hint === "object" &&
-          (!hint.text || hint.text.trim() === "")
-        ) {
+        if (typeof hint === "object" && (!hint.text || hint.text.trim() === "")) {
           throw new Error(`Hint level ${i + 1} has empty text`);
         }
       }

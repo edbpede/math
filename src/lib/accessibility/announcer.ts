@@ -23,16 +23,16 @@
  * ```
  */
 
-import { onCleanup } from 'solid-js'
-import type { Announcer, AnnouncementOptions } from './types'
+import { onCleanup } from "solid-js";
+import type { AnnouncementOptions, Announcer } from "./types";
 
 /**
  * Announcement queue item
  */
 interface QueuedAnnouncement {
-  message: string
-  priority: 'polite' | 'assertive'
-  timestamp: number
+  message: string;
+  priority: "polite" | "assertive";
+  timestamp: number;
 }
 
 /**
@@ -44,76 +44,76 @@ interface QueuedAnnouncement {
  * @returns Announcer object
  */
 export function createAnnouncer(): Announcer {
-  if (typeof document === 'undefined') {
+  if (typeof document === "undefined") {
     // SSR fallback - return no-op announcer
     return {
       announce: () => {},
       clear: () => {},
       destroy: () => {},
-    }
+    };
   }
 
-  let politeRegion: HTMLDivElement | null = null
-  let assertiveRegion: HTMLDivElement | null = null
-  const queue: QueuedAnnouncement[] = []
-  let isProcessing = false
-  let timeoutId: number | null = null
+  let politeRegion: HTMLDivElement | null = null;
+  let assertiveRegion: HTMLDivElement | null = null;
+  const queue: QueuedAnnouncement[] = [];
+  let isProcessing = false;
+  let timeoutId: number | null = null;
 
   /**
    * Create ARIA live regions and append to document
    */
   const createLiveRegions = () => {
     // Create polite region
-    politeRegion = document.createElement('div')
-    politeRegion.setAttribute('role', 'status')
-    politeRegion.setAttribute('aria-live', 'polite')
-    politeRegion.setAttribute('aria-atomic', 'true')
-    politeRegion.className = 'sr-only'
-    politeRegion.id = 'announcer-polite'
-    document.body.appendChild(politeRegion)
+    politeRegion = document.createElement("div");
+    politeRegion.setAttribute("role", "status");
+    politeRegion.setAttribute("aria-live", "polite");
+    politeRegion.setAttribute("aria-atomic", "true");
+    politeRegion.className = "sr-only";
+    politeRegion.id = "announcer-polite";
+    document.body.appendChild(politeRegion);
 
     // Create assertive region
-    assertiveRegion = document.createElement('div')
-    assertiveRegion.setAttribute('role', 'alert')
-    assertiveRegion.setAttribute('aria-live', 'assertive')
-    assertiveRegion.setAttribute('aria-atomic', 'true')
-    assertiveRegion.className = 'sr-only'
-    assertiveRegion.id = 'announcer-assertive'
-    document.body.appendChild(assertiveRegion)
-  }
+    assertiveRegion = document.createElement("div");
+    assertiveRegion.setAttribute("role", "alert");
+    assertiveRegion.setAttribute("aria-live", "assertive");
+    assertiveRegion.setAttribute("aria-atomic", "true");
+    assertiveRegion.className = "sr-only";
+    assertiveRegion.id = "announcer-assertive";
+    document.body.appendChild(assertiveRegion);
+  };
 
   /**
    * Process announcement queue
    */
   const processQueue = () => {
     if (queue.length === 0) {
-      isProcessing = false
-      return
+      isProcessing = false;
+      return;
     }
 
-    isProcessing = true
-    const announcement = queue.shift()!
+    isProcessing = true;
+    const announcement = queue.shift()!;
 
-    const region = announcement.priority === 'assertive' ? assertiveRegion : politeRegion
+    const region = announcement.priority === "assertive" ? assertiveRegion : politeRegion;
 
     if (region) {
       // Clear previous message
-      region.textContent = ''
+      region.textContent = "";
 
       // Small delay to ensure screen readers notice the change
       setTimeout(() => {
-        region.textContent = announcement.message
+        region.textContent = announcement.message;
 
         // Clear after message is read (estimated 3 seconds)
         setTimeout(() => {
-          region.textContent = ''
-          processQueue()
-        }, 3000)
-      }, 100)
+          region.textContent = "";
+          processQueue();
+        }, 3000);
+      }, 100);
     } else {
-      processQueue()
+      processQueue();
     }
-  }
+  };
 
   /**
    * Announce a message to screen readers
@@ -122,13 +122,13 @@ export function createAnnouncer(): Announcer {
    * @param options - Announcement options
    */
   const announce = (message: string, options: AnnouncementOptions = {}) => {
-    if (!message.trim()) return
+    if (!message.trim()) return;
 
-    const { priority = 'polite', delay = 0, clearQueue = false } = options
+    const { priority = "polite", delay = 0, clearQueue = false } = options;
 
     // Clear queue if requested
     if (clearQueue) {
-      queue.length = 0
+      queue.length = 0;
     }
 
     // Add to queue
@@ -136,69 +136,69 @@ export function createAnnouncer(): Announcer {
       message,
       priority,
       timestamp: Date.now(),
-    })
+    });
 
     // Start processing if not already
     if (!isProcessing) {
       if (delay > 0) {
         timeoutId = window.setTimeout(() => {
-          processQueue()
-        }, delay)
+          processQueue();
+        }, delay);
       } else {
-        processQueue()
+        processQueue();
       }
     }
-  }
+  };
 
   /**
    * Clear all pending announcements
    */
   const clear = () => {
-    queue.length = 0
+    queue.length = 0;
     if (timeoutId !== null) {
-      clearTimeout(timeoutId)
-      timeoutId = null
+      clearTimeout(timeoutId);
+      timeoutId = null;
     }
-    if (politeRegion) politeRegion.textContent = ''
-    if (assertiveRegion) assertiveRegion.textContent = ''
-    isProcessing = false
-  }
+    if (politeRegion) politeRegion.textContent = "";
+    if (assertiveRegion) assertiveRegion.textContent = "";
+    isProcessing = false;
+  };
 
   /**
    * Destroy the announcer and remove live regions from DOM
    */
   const destroy = () => {
-    clear()
+    clear();
     if (politeRegion && politeRegion.parentNode) {
-      politeRegion.parentNode.removeChild(politeRegion)
+      politeRegion.parentNode.removeChild(politeRegion);
     }
     if (assertiveRegion && assertiveRegion.parentNode) {
-      assertiveRegion.parentNode.removeChild(assertiveRegion)
+      assertiveRegion.parentNode.removeChild(assertiveRegion);
     }
-    politeRegion = null
-    assertiveRegion = null
-  }
+    politeRegion = null;
+    assertiveRegion = null;
+  };
 
   // Initialize
-  createLiveRegions()
+  createLiveRegions();
 
   // Cleanup on component unmount
   onCleanup(() => {
-    destroy()
-  })
+    destroy();
+  });
 
   return {
     announce,
     clear,
     destroy,
-  }
+  };
 }
 
 /**
  * Global announcer instance
  * Singleton for use across multiple components
  */
-let globalAnnouncer: Announcer | null = null
+let globalAnnouncer: Announcer | null = null;
 
 /**
  * Get or create the global announcer instance
@@ -207,9 +207,9 @@ let globalAnnouncer: Announcer | null = null
  */
 export function getGlobalAnnouncer(): Announcer {
   if (!globalAnnouncer) {
-    globalAnnouncer = createAnnouncer()
+    globalAnnouncer = createAnnouncer();
   }
-  return globalAnnouncer
+  return globalAnnouncer;
 }
 
 /**
@@ -220,5 +220,5 @@ export function getGlobalAnnouncer(): Announcer {
  * @param options - Announcement options
  */
 export function announce(message: string, options?: AnnouncementOptions) {
-  getGlobalAnnouncer().announce(message, options)
+  getGlobalAnnouncer().announce(message, options);
 }

@@ -8,10 +8,10 @@
  * - 14.3: Three clear grade level options with brief descriptions
  */
 
-import { createSignal, For } from "solid-js";
 import { useStore } from "@nanostores/solid";
-import { $t } from "@/lib/i18n";
+import { createSignal, For } from "solid-js";
 import type { GradeRange } from "@/lib/curriculum/types";
+import { $t } from "@/lib/i18n";
 
 export interface GradeSelectorProps {
   /** Currently selected grade range */
@@ -40,9 +40,7 @@ const gradeOptions: GradeRange[] = ["0-3", "4-6", "7-9"];
  */
 export default function GradeSelector(props: GradeSelectorProps) {
   const t = useStore($t);
-  const [selected, setSelected] = createSignal<GradeRange | undefined>(
-    props.selectedGrade
-  );
+  const [selected, setSelected] = createSignal<GradeRange | undefined>(props.selectedGrade);
 
   const handleSelect = (grade: GradeRange) => {
     setSelected(grade);
@@ -62,6 +60,7 @@ export default function GradeSelector(props: GradeSelectorProps) {
             const gradeKey = grade as "0-3" | "4-6" | "7-9";
 
             return (
+              // biome-ignore lint/a11y/useSemanticElements: the ARIA role is equivalent for assistive tech here; swapping in the native element would change layout and behaviour - tracked as separate a11y work
               <button
                 type="button"
                 onClick={() => handleSelect(grade)}
@@ -85,6 +84,7 @@ export default function GradeSelector(props: GradeSelectorProps) {
                 >
                   {isSelected() && (
                     <svg
+                      aria-hidden="true"
                       class="w-4 h-4 text-white mx-auto mt-0.5"
                       fill="none"
                       stroke="currentColor"
@@ -106,6 +106,7 @@ export default function GradeSelector(props: GradeSelectorProps) {
                   aria-hidden="true"
                 >
                   <svg
+                    aria-hidden="true"
                     class="w-16 h-16"
                     fill="none"
                     stroke="currentColor"

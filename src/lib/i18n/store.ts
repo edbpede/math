@@ -9,28 +9,19 @@
  * - 2.4: Store language preference and synchronize across devices
  */
 
-import { atom, computed } from 'nanostores';
-import { persistentAtom } from '@nanostores/persistent';
-import type { Locale, Translations, TranslationFunction } from './types';
-import {
-  loadTranslations,
-  getNestedValue,
-  interpolate,
-  detectBrowserLocale,
-} from './loader';
+import { persistentAtom } from "@nanostores/persistent";
+import { atom, computed } from "nanostores";
+import { detectBrowserLocale, getNestedValue, interpolate, loadTranslations } from "./loader";
+import type { Locale, TranslationFunction, Translations } from "./types";
 
 /**
  * Current locale atom with persistence to localStorage
  * Defaults to browser-detected locale
  */
-export const $locale = persistentAtom<Locale>(
-  'app:locale',
-  detectBrowserLocale(),
-  {
-    encode: JSON.stringify,
-    decode: JSON.parse,
-  }
-);
+export const $locale = persistentAtom<Locale>("app:locale", detectBrowserLocale(), {
+  encode: JSON.stringify,
+  decode: JSON.parse,
+});
 
 /**
  * Translations atom
@@ -56,7 +47,7 @@ export async function initI18n(): Promise<void> {
     const translations = await loadTranslations(currentLocale);
     $translations.set(translations);
   } catch (error) {
-    console.error('Failed to initialize i18n:', error);
+    console.error("Failed to initialize i18n:", error);
   } finally {
     $isLoadingTranslations.set(false);
   }
@@ -106,26 +97,22 @@ export const $t = computed(
 
       // Split the key into category and path
       // e.g., "common.actions.start" -> category: "common", path: "actions.start"
-      const parts = key.split('.');
+      const parts = key.split(".");
       const category = parts[0] as keyof Translations;
-      const path = parts.slice(1).join('.');
+      const path = parts.slice(1).join(".");
 
       if (!(category in translations)) {
         if (isDevelopment) {
-          console.warn(
-            `Translation category "${category}" not found for key: ${key}`
-          );
+          console.warn(`Translation category "${category}" not found for key: ${key}`);
         }
         return key;
       }
 
       const value = getNestedValue(translations[category], path);
 
-      if (typeof value !== 'string') {
+      if (typeof value !== "string") {
         if (isDevelopment) {
-          console.warn(
-            `Translation not found or not a string for key: ${key} (locale: ${locale})`
-          );
+          console.warn(`Translation not found or not a string for key: ${key} (locale: ${locale})`);
         }
         return key;
       }
@@ -133,7 +120,7 @@ export const $t = computed(
       // Interpolate parameters if provided
       return interpolate(value, params);
     };
-  }
+  },
 );
 
 /**

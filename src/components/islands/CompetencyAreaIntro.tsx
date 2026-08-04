@@ -8,10 +8,10 @@
  * - 14.4: Four competency area cards with icons and descriptions
  */
 
-import { createSignal, For, Show, type JSX } from "solid-js";
 import { useStore } from "@nanostores/solid";
-import { $t } from "@/lib/i18n";
+import { createSignal, For, type JSX, Show } from "solid-js";
 import type { CompetencyAreaId, GradeRange } from "@/lib/curriculum/types";
+import { $t } from "@/lib/i18n";
 
 export interface CompetencyAreaIntroProps {
   /** User's selected grade range for recommendations */
@@ -40,6 +40,7 @@ const competencyAreas: CompetencyAreaOption[] = [
     recommendedGrades: ["0-3", "4-6", "7-9"],
     icon: () => (
       <svg
+        aria-hidden="true"
         class="w-12 h-12"
         fill="none"
         stroke="currentColor"
@@ -62,6 +63,7 @@ const competencyAreas: CompetencyAreaOption[] = [
     recommendedGrades: ["0-3", "4-6", "7-9"],
     icon: () => (
       <svg
+        aria-hidden="true"
         class="w-12 h-12"
         fill="none"
         stroke="currentColor"
@@ -84,6 +86,7 @@ const competencyAreas: CompetencyAreaOption[] = [
     recommendedGrades: ["0-3", "4-6", "7-9"],
     icon: () => (
       <svg
+        aria-hidden="true"
         class="w-12 h-12"
         fill="none"
         stroke="currentColor"
@@ -106,6 +109,7 @@ const competencyAreas: CompetencyAreaOption[] = [
     recommendedGrades: ["4-6", "7-9"],
     icon: () => (
       <svg
+        aria-hidden="true"
         class="w-12 h-12"
         fill="none"
         stroke="currentColor"
@@ -138,9 +142,7 @@ const competencyAreas: CompetencyAreaOption[] = [
  */
 export default function CompetencyAreaIntro(props: CompetencyAreaIntroProps) {
   const t = useStore($t);
-  const [hoveredCard, setHoveredCard] = createSignal<CompetencyAreaId | null>(
-    null
-  );
+  const [hoveredCard, setHoveredCard] = createSignal<CompetencyAreaId | null>(null);
 
   const isRecommended = (area: CompetencyAreaOption): boolean => {
     return area.recommendedGrades.includes(props.gradeRange);
@@ -175,9 +177,7 @@ export default function CompetencyAreaIntro(props: CompetencyAreaIntroProps) {
                 <div class="absolute top-3 left-3">
                   <div
                     class={`px-2 py-1 text-xs font-semibold rounded ${
-                      area.isBinding
-                        ? "bg-blue-100 text-blue-800"
-                        : "bg-gray-100 text-gray-700"
+                      area.isBinding ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-700"
                     }`}
                   >
                     {area.isBinding

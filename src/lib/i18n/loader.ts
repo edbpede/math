@@ -10,7 +10,7 @@
  * - 2.5: Load translations from structured JSON files
  */
 
-import type { Locale, Translations, TranslationCategory } from './types';
+import type { Locale, TranslationCategory, Translations } from "./types";
 
 // Cache for loaded translations
 const translationCache = new Map<Locale, Translations>();
@@ -26,27 +26,18 @@ export async function loadTranslations(locale: Locale): Promise<Translations> {
 
   try {
     // Dynamically import all translation files for the locale
-    const [
-      common,
-      auth,
-      navigation,
-      competencies,
-      exercises,
-      feedback,
-      hints,
-      contexts,
-      errors,
-    ] = await Promise.all([
-      import(`../../locales/${locale}/common.json`),
-      import(`../../locales/${locale}/auth.json`),
-      import(`../../locales/${locale}/navigation.json`),
-      import(`../../locales/${locale}/competencies.json`),
-      import(`../../locales/${locale}/exercises.json`),
-      import(`../../locales/${locale}/feedback.json`),
-      import(`../../locales/${locale}/hints.json`),
-      import(`../../locales/${locale}/contexts.json`),
-      import(`../../locales/${locale}/errors.json`),
-    ]);
+    const [common, auth, navigation, competencies, exercises, feedback, hints, contexts, errors] =
+      await Promise.all([
+        import(`../../locales/${locale}/common.json`),
+        import(`../../locales/${locale}/auth.json`),
+        import(`../../locales/${locale}/navigation.json`),
+        import(`../../locales/${locale}/competencies.json`),
+        import(`../../locales/${locale}/exercises.json`),
+        import(`../../locales/${locale}/feedback.json`),
+        import(`../../locales/${locale}/hints.json`),
+        import(`../../locales/${locale}/contexts.json`),
+        import(`../../locales/${locale}/errors.json`),
+      ]);
 
     const translations: Translations = {
       common: common.default || common,
@@ -68,9 +59,9 @@ export async function loadTranslations(locale: Locale): Promise<Translations> {
     console.error(`Failed to load translations for locale ${locale}:`, error);
 
     // Fallback to Danish if loading failed and not already Danish
-    if (locale !== 'da-DK') {
+    if (locale !== "da-DK") {
       console.warn(`Falling back to Danish (da-DK) translations`);
-      return loadTranslations('da-DK');
+      return loadTranslations("da-DK");
     }
 
     // If Danish also fails, throw error
@@ -84,13 +75,13 @@ export async function loadTranslations(locale: Locale): Promise<Translations> {
  */
 export function getNestedValue(
   obj: TranslationCategory,
-  path: string
+  path: string,
 ): string | TranslationCategory | undefined {
-  const keys = path.split('.');
+  const keys = path.split(".");
   let current: any = obj;
 
   for (const key of keys) {
-    if (current && typeof current === 'object' && key in current) {
+    if (current && typeof current === "object" && key in current) {
       current = current[key];
     } else {
       return undefined;
@@ -108,10 +99,7 @@ export function getNestedValue(
  * @param params - Object containing values to interpolate
  * @returns Interpolated string
  */
-export function interpolate(
-  template: string,
-  params?: Record<string, string | number>
-): string {
+export function interpolate(template: string, params?: Record<string, string | number>): string {
   if (!params) {
     return template;
   }
@@ -146,25 +134,25 @@ export async function preloadTranslations(locale: Locale): Promise<void> {
  * Falls back to Danish if browser language is not supported
  */
 export function detectBrowserLocale(): Locale {
-  if (typeof window === 'undefined') {
-    return 'da-DK'; // Default to Danish on server
+  if (typeof window === "undefined") {
+    return "da-DK"; // Default to Danish on server
   }
 
   const browserLang = navigator.language || (navigator as any).userLanguage;
 
   // Check for exact match
-  if (browserLang === 'da-DK' || browserLang === 'en-US') {
+  if (browserLang === "da-DK" || browserLang === "en-US") {
     return browserLang as Locale;
   }
 
   // Check for language prefix match
-  if (browserLang.startsWith('da')) {
-    return 'da-DK';
+  if (browserLang.startsWith("da")) {
+    return "da-DK";
   }
-  if (browserLang.startsWith('en')) {
-    return 'en-US';
+  if (browserLang.startsWith("en")) {
+    return "en-US";
   }
 
   // Default to Danish
-  return 'da-DK';
+  return "da-DK";
 }

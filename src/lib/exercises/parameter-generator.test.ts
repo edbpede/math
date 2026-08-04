@@ -5,20 +5,20 @@
  * parameter validation, and dependency handling.
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from "vitest";
 import {
-  SeededRandom,
-  ParameterGenerator,
+  ConstraintViolationError,
   createParameterGenerator,
   generateParameters,
   ParameterGenerationError,
-  ConstraintViolationError,
-} from './parameter-generator';
-import type { ParameterConstraints } from './types';
+  ParameterGenerator,
+  SeededRandom,
+} from "./parameter-generator";
+import type { ParameterConstraints } from "./types";
 
-describe('SeededRandom', () => {
-  describe('determinism', () => {
-    it('should generate same sequence with same seed', () => {
+describe("SeededRandom", () => {
+  describe("determinism", () => {
+    it("should generate same sequence with same seed", () => {
       const rng1 = new SeededRandom(12345);
       const rng2 = new SeededRandom(12345);
 
@@ -28,7 +28,7 @@ describe('SeededRandom', () => {
       expect(sequence1).toEqual(sequence2);
     });
 
-    it('should generate different sequences with different seeds', () => {
+    it("should generate different sequences with different seeds", () => {
       const rng1 = new SeededRandom(12345);
       const rng2 = new SeededRandom(54321);
 
@@ -39,8 +39,8 @@ describe('SeededRandom', () => {
     });
   });
 
-  describe('next()', () => {
-    it('should generate numbers in range [0, 1)', () => {
+  describe("next()", () => {
+    it("should generate numbers in range [0, 1)", () => {
       const rng = new SeededRandom(42);
 
       for (let i = 0; i < 1000; i++) {
@@ -50,7 +50,7 @@ describe('SeededRandom', () => {
       }
     });
 
-    it('should handle seed of 0', () => {
+    it("should handle seed of 0", () => {
       const rng = new SeededRandom(0);
       const value = rng.next();
 
@@ -59,8 +59,8 @@ describe('SeededRandom', () => {
     });
   });
 
-  describe('nextInt()', () => {
-    it('should generate integers in specified range (inclusive)', () => {
+  describe("nextInt()", () => {
+    it("should generate integers in specified range (inclusive)", () => {
       const rng = new SeededRandom(42);
       const min = 5;
       const max = 10;
@@ -73,25 +73,25 @@ describe('SeededRandom', () => {
       }
     });
 
-    it('should handle single-value range', () => {
+    it("should handle single-value range", () => {
       const rng = new SeededRandom(42);
       const value = rng.nextInt(5, 5);
       expect(value).toBe(5);
     });
 
-    it('should throw on non-integer bounds', () => {
+    it("should throw on non-integer bounds", () => {
       const rng = new SeededRandom(42);
-      expect(() => rng.nextInt(1.5, 5)).toThrow('nextInt requires integer bounds');
+      expect(() => rng.nextInt(1.5, 5)).toThrow("nextInt requires integer bounds");
     });
 
-    it('should throw when min > max', () => {
+    it("should throw when min > max", () => {
       const rng = new SeededRandom(42);
-      expect(() => rng.nextInt(10, 5)).toThrow('min must be less than or equal to max');
+      expect(() => rng.nextInt(10, 5)).toThrow("min must be less than or equal to max");
     });
   });
 
-  describe('nextFloat()', () => {
-    it('should generate floats in specified range', () => {
+  describe("nextFloat()", () => {
+    it("should generate floats in specified range", () => {
       const rng = new SeededRandom(42);
       const min = 1.5;
       const max = 7.8;
@@ -103,17 +103,17 @@ describe('SeededRandom', () => {
       }
     });
 
-    it('should throw when min >= max', () => {
+    it("should throw when min >= max", () => {
       const rng = new SeededRandom(42);
-      expect(() => rng.nextFloat(5, 5)).toThrow('min must be less than max');
-      expect(() => rng.nextFloat(10, 5)).toThrow('min must be less than max');
+      expect(() => rng.nextFloat(5, 5)).toThrow("min must be less than max");
+      expect(() => rng.nextFloat(10, 5)).toThrow("min must be less than max");
     });
   });
 
-  describe('choice()', () => {
-    it('should select element from array', () => {
+  describe("choice()", () => {
+    it("should select element from array", () => {
       const rng = new SeededRandom(42);
-      const array = ['a', 'b', 'c', 'd', 'e'];
+      const array = ["a", "b", "c", "d", "e"];
 
       for (let i = 0; i < 50; i++) {
         const value = rng.choice(array);
@@ -121,8 +121,8 @@ describe('SeededRandom', () => {
       }
     });
 
-    it('should be deterministic with same seed', () => {
-      const array = ['a', 'b', 'c', 'd', 'e'];
+    it("should be deterministic with same seed", () => {
+      const array = ["a", "b", "c", "d", "e"];
 
       const rng1 = new SeededRandom(12345);
       const choices1 = Array.from({ length: 10 }, () => rng1.choice(array));
@@ -133,14 +133,14 @@ describe('SeededRandom', () => {
       expect(choices1).toEqual(choices2);
     });
 
-    it('should throw on empty array', () => {
+    it("should throw on empty array", () => {
       const rng = new SeededRandom(42);
-      expect(() => rng.choice([])).toThrow('Cannot select from empty array');
+      expect(() => rng.choice([])).toThrow("Cannot select from empty array");
     });
   });
 
-  describe('shuffle()', () => {
-    it('should shuffle array deterministically', () => {
+  describe("shuffle()", () => {
+    it("should shuffle array deterministically", () => {
       const array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
       const rng1 = new SeededRandom(12345);
@@ -152,7 +152,7 @@ describe('SeededRandom', () => {
       expect(shuffled1).toEqual(shuffled2);
     });
 
-    it('should contain all original elements', () => {
+    it("should contain all original elements", () => {
       const rng = new SeededRandom(42);
       const array = [1, 2, 3, 4, 5];
       const shuffled = rng.shuffle(array);
@@ -161,7 +161,7 @@ describe('SeededRandom', () => {
       expect(shuffled.sort()).toEqual(array.sort());
     });
 
-    it('should not modify original array', () => {
+    it("should not modify original array", () => {
       const rng = new SeededRandom(42);
       const array = [1, 2, 3, 4, 5];
       const original = [...array];
@@ -173,17 +173,17 @@ describe('SeededRandom', () => {
   });
 });
 
-describe('ParameterGenerator', () => {
+describe("ParameterGenerator", () => {
   let generator: ParameterGenerator;
 
   beforeEach(() => {
     generator = new ParameterGenerator({ seed: 12345 });
   });
 
-  describe('integer generation', () => {
-    it('should generate integers within range', () => {
+  describe("integer generation", () => {
+    it("should generate integers within range", () => {
       const constraints: ParameterConstraints = {
-        a: { type: 'integer', min: 1, max: 10 },
+        a: { type: "integer", min: 1, max: 10 },
       };
 
       for (let i = 0; i < 50; i++) {
@@ -194,9 +194,9 @@ describe('ParameterGenerator', () => {
       }
     });
 
-    it('should respect step constraint', () => {
+    it("should respect step constraint", () => {
       const constraints: ParameterConstraints = {
-        a: { type: 'integer', min: 0, max: 100, step: 5 },
+        a: { type: "integer", min: 0, max: 100, step: 5 },
       };
 
       for (let i = 0; i < 50; i++) {
@@ -208,9 +208,9 @@ describe('ParameterGenerator', () => {
       }
     });
 
-    it('should use default min and max when not specified', () => {
+    it("should use default min and max when not specified", () => {
       const constraints: ParameterConstraints = {
-        a: { type: 'integer' },
+        a: { type: "integer" },
       };
 
       const params = generator.generate(constraints);
@@ -220,23 +220,23 @@ describe('ParameterGenerator', () => {
     });
   });
 
-  describe('decimal generation', () => {
-    it('should generate decimals within range', () => {
+  describe("decimal generation", () => {
+    it("should generate decimals within range", () => {
       const constraints: ParameterConstraints = {
-        a: { type: 'decimal', min: 0.0, max: 10.0 },
+        a: { type: "decimal", min: 0.0, max: 10.0 },
       };
 
       for (let i = 0; i < 50; i++) {
         const params = generator.generate(constraints);
         expect(params.a).toBeGreaterThanOrEqual(0.0);
         expect(params.a).toBeLessThan(10.0);
-        expect(typeof params.a).toBe('number');
+        expect(typeof params.a).toBe("number");
       }
     });
 
-    it('should respect step constraint for decimals', () => {
+    it("should respect step constraint for decimals", () => {
       const constraints: ParameterConstraints = {
-        a: { type: 'decimal', min: 0, max: 1, step: 0.1 },
+        a: { type: "decimal", min: 0, max: 1, step: 0.1 },
       };
 
       for (let i = 0; i < 50; i++) {
@@ -249,18 +249,18 @@ describe('ParameterGenerator', () => {
     });
   });
 
-  describe('fraction generation', () => {
-    it('should generate valid fractions', () => {
+  describe("fraction generation", () => {
+    it("should generate valid fractions", () => {
       const constraints: ParameterConstraints = {
-        a: { type: 'fraction', min: 1, max: 10 },
+        a: { type: "fraction", min: 1, max: 10 },
       };
 
       for (let i = 0; i < 50; i++) {
         const params = generator.generate(constraints);
-        expect(typeof params.a).toBe('string');
+        expect(typeof params.a).toBe("string");
         expect(params.a).toMatch(/^\d+\/\d+$/);
 
-        const [num, den] = (params.a as string).split('/').map(Number);
+        const [num, den] = (params.a as string).split("/").map(Number);
         expect(num).toBeGreaterThanOrEqual(1);
         expect(num).toBeLessThanOrEqual(10);
         expect(den).toBeGreaterThanOrEqual(1);
@@ -268,24 +268,24 @@ describe('ParameterGenerator', () => {
       }
     });
 
-    it('should not generate zero denominator', () => {
+    it("should not generate zero denominator", () => {
       const constraints: ParameterConstraints = {
-        a: { type: 'fraction', min: 0, max: 3 },
+        a: { type: "fraction", min: 0, max: 3 },
       };
 
       for (let i = 0; i < 50; i++) {
         const params = generator.generate(constraints);
-        const [, den] = (params.a as string).split('/').map(Number);
+        const [, den] = (params.a as string).split("/").map(Number);
         expect(den).not.toBe(0);
       }
     });
   });
 
-  describe('string generation', () => {
-    it('should select from options', () => {
-      const options = ['red', 'blue', 'green', 'yellow'];
+  describe("string generation", () => {
+    it("should select from options", () => {
+      const options = ["red", "blue", "green", "yellow"];
       const constraints: ParameterConstraints = {
-        a: { type: 'string', options },
+        a: { type: "string", options },
       };
 
       for (let i = 0; i < 50; i++) {
@@ -294,21 +294,19 @@ describe('ParameterGenerator', () => {
       }
     });
 
-    it('should throw without options', () => {
+    it("should throw without options", () => {
       const constraints: ParameterConstraints = {
-        a: { type: 'string' },
+        a: { type: "string" },
       };
 
-      expect(() => generator.generate(constraints)).toThrow(
-        ParameterGenerationError,
-      );
+      expect(() => generator.generate(constraints)).toThrow(ParameterGenerationError);
     });
   });
 
-  describe('options-based generation', () => {
-    it('should select from options for any type', () => {
+  describe("options-based generation", () => {
+    it("should select from options for any type", () => {
       const constraints: ParameterConstraints = {
-        a: { type: 'integer', options: [2, 4, 8, 16, 32] },
+        a: { type: "integer", options: [2, 4, 8, 16, 32] },
       };
 
       for (let i = 0; i < 50; i++) {
@@ -318,11 +316,11 @@ describe('ParameterGenerator', () => {
     });
   });
 
-  describe('custom constraints', () => {
-    it('should satisfy custom constraint function', () => {
+  describe("custom constraints", () => {
+    it("should satisfy custom constraint function", () => {
       const constraints: ParameterConstraints = {
         a: {
-          type: 'integer',
+          type: "integer",
           min: 1,
           max: 100,
           constraint: (params) => (params.a as number) % 2 === 0,
@@ -335,11 +333,11 @@ describe('ParameterGenerator', () => {
       }
     });
 
-    it('should retry on constraint violation', () => {
+    it("should retry on constraint violation", () => {
       let attempts = 0;
       const constraints: ParameterConstraints = {
         a: {
-          type: 'integer',
+          type: "integer",
           min: 1,
           max: 10,
           constraint: (params) => {
@@ -355,10 +353,10 @@ describe('ParameterGenerator', () => {
       expect(attempts).toBeGreaterThan(1);
     });
 
-    it('should throw after max attempts with unsatisfiable constraint', () => {
+    it("should throw after max attempts with unsatisfiable constraint", () => {
       const constraints: ParameterConstraints = {
         a: {
-          type: 'integer',
+          type: "integer",
           min: 1,
           max: 10,
           constraint: () => false, // Always fails
@@ -370,15 +368,15 @@ describe('ParameterGenerator', () => {
     });
   });
 
-  describe('dependent parameters', () => {
-    it('should generate dependencies before dependents', () => {
+  describe("dependent parameters", () => {
+    it("should generate dependencies before dependents", () => {
       const constraints: ParameterConstraints = {
-        min: { type: 'integer', min: 1, max: 10 },
+        min: { type: "integer", min: 1, max: 10 },
         max: {
-          type: 'integer',
+          type: "integer",
           min: 1,
           max: 100,
-          dependsOn: ['min'],
+          dependsOn: ["min"],
           constraint: (params) => (params.max as number) > (params.min as number),
         },
       };
@@ -389,15 +387,15 @@ describe('ParameterGenerator', () => {
       }
     });
 
-    it('should handle multiple dependencies', () => {
+    it("should handle multiple dependencies", () => {
       const constraints: ParameterConstraints = {
-        a: { type: 'integer', min: 1, max: 5 },
-        b: { type: 'integer', min: 1, max: 5 },
+        a: { type: "integer", min: 1, max: 5 },
+        b: { type: "integer", min: 1, max: 5 },
         sum: {
-          type: 'integer',
+          type: "integer",
           min: 2,
           max: 15,
-          dependsOn: ['a', 'b'],
+          dependsOn: ["a", "b"],
           constraint: (params) =>
             (params.sum as number) === (params.a as number) + (params.b as number),
         },
@@ -407,42 +405,38 @@ describe('ParameterGenerator', () => {
       expect(params.sum).toBe((params.a as number) + (params.b as number));
     });
 
-    it('should throw on circular dependency', () => {
+    it("should throw on circular dependency", () => {
       const constraints: ParameterConstraints = {
-        a: { type: 'integer', dependsOn: ['b'] },
-        b: { type: 'integer', dependsOn: ['a'] },
+        a: { type: "integer", dependsOn: ["b"] },
+        b: { type: "integer", dependsOn: ["a"] },
       };
 
-      expect(() => generator.generate(constraints)).toThrow(
-        'Circular dependency detected',
-      );
+      expect(() => generator.generate(constraints)).toThrow("Circular dependency detected");
     });
 
-    it('should throw on missing dependency', () => {
+    it("should throw on missing dependency", () => {
       const constraints: ParameterConstraints = {
-        a: { type: 'integer', dependsOn: ['nonexistent'] },
+        a: { type: "integer", dependsOn: ["nonexistent"] },
       };
 
-      expect(() => generator.generate(constraints)).toThrow(
-        'Depends on undefined parameter',
-      );
+      expect(() => generator.generate(constraints)).toThrow("Depends on undefined parameter");
     });
 
-    it('should handle transitive dependencies', () => {
+    it("should handle transitive dependencies", () => {
       const constraints: ParameterConstraints = {
-        a: { type: 'integer', min: 1, max: 3 },
+        a: { type: "integer", min: 1, max: 3 },
         b: {
-          type: 'integer',
+          type: "integer",
           min: 1,
           max: 10,
-          dependsOn: ['a'],
+          dependsOn: ["a"],
           constraint: (params) => (params.b as number) > (params.a as number),
         },
         c: {
-          type: 'integer',
+          type: "integer",
           min: 1,
           max: 20,
-          dependsOn: ['b'],
+          dependsOn: ["b"],
           constraint: (params) => (params.c as number) > (params.b as number),
         },
       };
@@ -453,100 +447,80 @@ describe('ParameterGenerator', () => {
     });
   });
 
-  describe('validation', () => {
-    it('should validate integer type', () => {
-      const constraint = { type: 'integer' as const, min: 1, max: 10 };
+  describe("validation", () => {
+    it("should validate integer type", () => {
+      const constraint = { type: "integer" as const, min: 1, max: 10 };
 
-      expect(() => generator.validate('a', 5, constraint)).not.toThrow();
-      expect(() => generator.validate('a', 5.5, constraint)).toThrow(
-        ConstraintViolationError,
-      );
-      expect(() => generator.validate('a', '5', constraint)).toThrow(
-        ConstraintViolationError,
-      );
+      expect(() => generator.validate("a", 5, constraint)).not.toThrow();
+      expect(() => generator.validate("a", 5.5, constraint)).toThrow(ConstraintViolationError);
+      expect(() => generator.validate("a", "5", constraint)).toThrow(ConstraintViolationError);
     });
 
-    it('should validate decimal type', () => {
-      const constraint = { type: 'decimal' as const, min: 1, max: 10 };
+    it("should validate decimal type", () => {
+      const constraint = { type: "decimal" as const, min: 1, max: 10 };
 
-      expect(() => generator.validate('a', 5.5, constraint)).not.toThrow();
-      expect(() => generator.validate('a', 5, constraint)).not.toThrow();
-      expect(() => generator.validate('a', '5.5', constraint)).toThrow(
-        ConstraintViolationError,
-      );
+      expect(() => generator.validate("a", 5.5, constraint)).not.toThrow();
+      expect(() => generator.validate("a", 5, constraint)).not.toThrow();
+      expect(() => generator.validate("a", "5.5", constraint)).toThrow(ConstraintViolationError);
     });
 
-    it('should validate fraction type', () => {
-      const constraint = { type: 'fraction' as const };
+    it("should validate fraction type", () => {
+      const constraint = { type: "fraction" as const };
 
-      expect(() => generator.validate('a', '3/4', constraint)).not.toThrow();
-      expect(() => generator.validate('a', '10/7', constraint)).not.toThrow();
-      expect(() => generator.validate('a', 'abc', constraint)).toThrow(
-        ConstraintViolationError,
-      );
-      expect(() => generator.validate('a', '3/', constraint)).toThrow(
-        ConstraintViolationError,
-      );
+      expect(() => generator.validate("a", "3/4", constraint)).not.toThrow();
+      expect(() => generator.validate("a", "10/7", constraint)).not.toThrow();
+      expect(() => generator.validate("a", "abc", constraint)).toThrow(ConstraintViolationError);
+      expect(() => generator.validate("a", "3/", constraint)).toThrow(ConstraintViolationError);
     });
 
-    it('should validate string type', () => {
-      const constraint = { type: 'string' as const };
+    it("should validate string type", () => {
+      const constraint = { type: "string" as const };
 
-      expect(() => generator.validate('a', 'hello', constraint)).not.toThrow();
-      expect(() => generator.validate('a', '', constraint)).not.toThrow();
-      expect(() => generator.validate('a', 123, constraint)).toThrow(
-        ConstraintViolationError,
-      );
+      expect(() => generator.validate("a", "hello", constraint)).not.toThrow();
+      expect(() => generator.validate("a", "", constraint)).not.toThrow();
+      expect(() => generator.validate("a", 123, constraint)).toThrow(ConstraintViolationError);
     });
 
-    it('should validate min constraint', () => {
-      const constraint = { type: 'integer' as const, min: 5, max: 10 };
+    it("should validate min constraint", () => {
+      const constraint = { type: "integer" as const, min: 5, max: 10 };
 
-      expect(() => generator.validate('a', 5, constraint)).not.toThrow();
-      expect(() => generator.validate('a', 4, constraint)).toThrow(
-        'less than minimum',
-      );
+      expect(() => generator.validate("a", 5, constraint)).not.toThrow();
+      expect(() => generator.validate("a", 4, constraint)).toThrow("less than minimum");
     });
 
-    it('should validate max constraint', () => {
-      const constraint = { type: 'integer' as const, min: 5, max: 10 };
+    it("should validate max constraint", () => {
+      const constraint = { type: "integer" as const, min: 5, max: 10 };
 
-      expect(() => generator.validate('a', 10, constraint)).not.toThrow();
-      expect(() => generator.validate('a', 11, constraint)).toThrow(
-        'greater than maximum',
-      );
+      expect(() => generator.validate("a", 10, constraint)).not.toThrow();
+      expect(() => generator.validate("a", 11, constraint)).toThrow("greater than maximum");
     });
 
-    it('should validate step constraint', () => {
-      const constraint = { type: 'integer' as const, min: 0, max: 20, step: 5 };
+    it("should validate step constraint", () => {
+      const constraint = { type: "integer" as const, min: 0, max: 20, step: 5 };
 
-      expect(() => generator.validate('a', 0, constraint)).not.toThrow();
-      expect(() => generator.validate('a', 5, constraint)).not.toThrow();
-      expect(() => generator.validate('a', 10, constraint)).not.toThrow();
-      expect(() => generator.validate('a', 3, constraint)).toThrow(
-        'does not match step',
-      );
+      expect(() => generator.validate("a", 0, constraint)).not.toThrow();
+      expect(() => generator.validate("a", 5, constraint)).not.toThrow();
+      expect(() => generator.validate("a", 10, constraint)).not.toThrow();
+      expect(() => generator.validate("a", 3, constraint)).toThrow("does not match step");
     });
 
-    it('should validate options constraint', () => {
+    it("should validate options constraint", () => {
       const constraint = {
-        type: 'integer' as const,
+        type: "integer" as const,
         options: [2, 4, 8, 16],
       };
 
-      expect(() => generator.validate('a', 4, constraint)).not.toThrow();
-      expect(() => generator.validate('a', 5, constraint)).toThrow(
-        'not in allowed options',
-      );
+      expect(() => generator.validate("a", 4, constraint)).not.toThrow();
+      expect(() => generator.validate("a", 5, constraint)).toThrow("not in allowed options");
     });
   });
 
-  describe('determinism', () => {
-    it('should generate same parameters with same seed', () => {
+  describe("determinism", () => {
+    it("should generate same parameters with same seed", () => {
       const constraints: ParameterConstraints = {
-        a: { type: 'integer', min: 1, max: 100 },
-        b: { type: 'decimal', min: 0, max: 10 },
-        c: { type: 'string', options: ['red', 'blue', 'green'] },
+        a: { type: "integer", min: 1, max: 100 },
+        b: { type: "decimal", min: 0, max: 10 },
+        c: { type: "string", options: ["red", "blue", "green"] },
       };
 
       const gen1 = new ParameterGenerator({ seed: 42 });
@@ -558,10 +532,10 @@ describe('ParameterGenerator', () => {
       expect(params1).toEqual(params2);
     });
 
-    it('should generate different parameters with different seeds', () => {
+    it("should generate different parameters with different seeds", () => {
       const constraints: ParameterConstraints = {
-        a: { type: 'integer', min: 1, max: 100 },
-        b: { type: 'decimal', min: 0, max: 10 },
+        a: { type: "integer", min: 1, max: 100 },
+        b: { type: "decimal", min: 0, max: 10 },
       };
 
       const gen1 = new ParameterGenerator({ seed: 42 });
@@ -574,9 +548,9 @@ describe('ParameterGenerator', () => {
       expect(params1).not.toEqual(params2);
     });
 
-    it('should allow resetting seed', () => {
+    it("should allow resetting seed", () => {
       const constraints: ParameterConstraints = {
-        a: { type: 'integer', min: 1, max: 100 },
+        a: { type: "integer", min: 1, max: 100 },
       };
 
       const gen = new ParameterGenerator({ seed: 42 });
@@ -589,16 +563,16 @@ describe('ParameterGenerator', () => {
     });
   });
 
-  describe('complex scenarios', () => {
-    it('should generate parameters for addition exercise', () => {
+  describe("complex scenarios", () => {
+    it("should generate parameters for addition exercise", () => {
       const constraints: ParameterConstraints = {
-        a: { type: 'integer', min: 1, max: 10 },
-        b: { type: 'integer', min: 1, max: 10 },
+        a: { type: "integer", min: 1, max: 10 },
+        b: { type: "integer", min: 1, max: 10 },
         answer: {
-          type: 'integer',
+          type: "integer",
           min: 2,
           max: 20,
-          dependsOn: ['a', 'b'],
+          dependsOn: ["a", "b"],
           constraint: (params) =>
             (params.answer as number) === (params.a as number) + (params.b as number),
         },
@@ -610,16 +584,15 @@ describe('ParameterGenerator', () => {
       }
     });
 
-    it('should generate parameters for subtraction with non-negative result', () => {
+    it("should generate parameters for subtraction with non-negative result", () => {
       const constraints: ParameterConstraints = {
-        minuend: { type: 'integer', min: 10, max: 50 },
+        minuend: { type: "integer", min: 10, max: 50 },
         subtrahend: {
-          type: 'integer',
+          type: "integer",
           min: 1,
           max: 50,
-          dependsOn: ['minuend'],
-          constraint: (params) =>
-            (params.subtrahend as number) <= (params.minuend as number),
+          dependsOn: ["minuend"],
+          constraint: (params) => (params.subtrahend as number) <= (params.minuend as number),
         },
       };
 
@@ -629,12 +602,12 @@ describe('ParameterGenerator', () => {
       }
     });
 
-    it('should generate parameters for division with no remainder', () => {
+    it("should generate parameters for division with no remainder", () => {
       // For this test, we need to generate divisor and quotient first,
       // then calculate dividend, not generate it randomly
       const constraints: ParameterConstraints = {
-        divisor: { type: 'integer', min: 2, max: 10 },
-        quotient: { type: 'integer', min: 2, max: 10 },
+        divisor: { type: "integer", min: 2, max: 10 },
+        quotient: { type: "integer", min: 2, max: 10 },
       };
 
       for (let i = 0; i < 20; i++) {
@@ -650,23 +623,23 @@ describe('ParameterGenerator', () => {
   });
 });
 
-describe('convenience functions', () => {
-  it('createParameterGenerator should create generator with seed', () => {
+describe("convenience functions", () => {
+  it("createParameterGenerator should create generator with seed", () => {
     const gen = createParameterGenerator(42);
     expect(gen).toBeInstanceOf(ParameterGenerator);
 
     const constraints: ParameterConstraints = {
-      a: { type: 'integer', min: 1, max: 10 },
+      a: { type: "integer", min: 1, max: 10 },
     };
 
     const params = gen.generate(constraints);
     expect(params.a).toBeDefined();
   });
 
-  it('generateParameters should generate with seed', () => {
+  it("generateParameters should generate with seed", () => {
     const constraints: ParameterConstraints = {
-      a: { type: 'integer', min: 1, max: 10 },
-      b: { type: 'decimal', min: 0, max: 5 },
+      a: { type: "integer", min: 1, max: 10 },
+      b: { type: "decimal", min: 0, max: 5 },
     };
 
     const params = generateParameters(constraints, 42);
@@ -677,10 +650,10 @@ describe('convenience functions', () => {
     expect(params.b).toBeLessThan(5);
   });
 
-  it('generateParameters should be deterministic', () => {
+  it("generateParameters should be deterministic", () => {
     const constraints: ParameterConstraints = {
-      a: { type: 'integer', min: 1, max: 100 },
-      b: { type: 'string', options: ['a', 'b', 'c', 'd'] },
+      a: { type: "integer", min: 1, max: 100 },
+      b: { type: "string", options: ["a", "b", "c", "d"] },
     };
 
     const params1 = generateParameters(constraints, 12345);

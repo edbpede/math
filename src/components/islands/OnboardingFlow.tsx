@@ -9,23 +9,18 @@
  * - 14.1-14.5: Complete onboarding flow management
  */
 
-import { createSignal, Show } from "solid-js";
 import { useStore } from "@nanostores/solid";
-import { $t, $locale } from "@/lib/i18n";
-import type { GradeRange, CompetencyAreaId } from "@/lib/curriculum/types";
-import UUIDGenerator from "./UUIDGenerator";
-import GradeSelector from "./GradeSelector";
+import { createSignal, Show } from "solid-js";
+import type { CompetencyAreaId, GradeRange } from "@/lib/curriculum/types";
+import { $locale, $t } from "@/lib/i18n";
 import CompetencyAreaIntro from "./CompetencyAreaIntro";
-import TutorialOverlay from "./TutorialOverlay";
-import LanguageSelector from "./LanguageSelector";
 import { ErrorBoundaryWrapper } from "./ErrorBoundary";
+import GradeSelector from "./GradeSelector";
+import LanguageSelector from "./LanguageSelector";
+import TutorialOverlay from "./TutorialOverlay";
+import UUIDGenerator from "./UUIDGenerator";
 
-type OnboardingStep =
-  | "welcome"
-  | "uuid"
-  | "grade"
-  | "competency"
-  | "tutorial";
+type OnboardingStep = "welcome" | "uuid" | "grade" | "competency" | "tutorial";
 
 /**
  * OnboardingFlow Component (Internal)
@@ -49,11 +44,8 @@ const OnboardingFlowComponent = () => {
   const locale = useStore($locale);
   const [currentStep, setCurrentStep] = createSignal<OnboardingStep>("welcome");
   const [generatedUUID, setGeneratedUUID] = createSignal<string | null>(null);
-  const [selectedGrade, setSelectedGrade] = createSignal<GradeRange | null>(
-    null
-  );
-  const [selectedCompetency, setSelectedCompetency] =
-    createSignal<CompetencyAreaId | null>(null);
+  const [selectedGrade, setSelectedGrade] = createSignal<GradeRange | null>(null);
+  const [selectedCompetency, setSelectedCompetency] = createSignal<CompetencyAreaId | null>(null);
   const [showTutorial, setShowTutorial] = createSignal(false);
   const [isAuthenticating, setIsAuthenticating] = createSignal(false);
 
@@ -178,9 +170,7 @@ const OnboardingFlowComponent = () => {
                 <path d="M2 17l10 5 10-5" />
                 <path d="M2 12l10 5 10-5" />
               </svg>
-              <h1 class="text-xl font-bold text-gray-900 sm:text-2xl">
-                {t()("common.app.title")}
-              </h1>
+              <h1 class="text-xl font-bold text-gray-900 sm:text-2xl">{t()("common.app.title")}</h1>
             </div>
 
             {/* Language Selector */}
@@ -225,15 +215,9 @@ const OnboardingFlowComponent = () => {
         {/* Welcome Step */}
         <Show when={currentStep() === "welcome"}>
           <div class="text-center max-w-2xl mx-auto animate-fadeIn">
-            <h2 class="text-4xl font-bold text-gray-900 mb-4">
-              {t()("onboarding.welcome.title")}
-            </h2>
-            <p class="text-xl text-gray-600 mb-8">
-              {t()("onboarding.welcome.subtitle")}
-            </p>
-            <p class="text-md text-gray-500 mb-12">
-              {t()("onboarding.welcome.description")}
-            </p>
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">{t()("onboarding.welcome.title")}</h2>
+            <p class="text-xl text-gray-600 mb-8">{t()("onboarding.welcome.subtitle")}</p>
+            <p class="text-md text-gray-500 mb-12">{t()("onboarding.welcome.description")}</p>
 
             <button
               type="button"
@@ -249,12 +233,8 @@ const OnboardingFlowComponent = () => {
         <Show when={currentStep() === "uuid"}>
           <div class="animate-fadeIn">
             <div class="text-center mb-8">
-              <h2 class="text-3xl font-bold text-gray-900 mb-4">
-                {t()("onboarding.steps.uuid")}
-              </h2>
-              <p class="text-lg text-gray-600">
-                {t()("auth.uuid.description")}
-              </p>
+              <h2 class="text-3xl font-bold text-gray-900 mb-4">{t()("onboarding.steps.uuid")}</h2>
+              <p class="text-lg text-gray-600">{t()("auth.uuid.description")}</p>
             </div>
 
             <UUIDGenerator
@@ -272,9 +252,7 @@ const OnboardingFlowComponent = () => {
                   disabled={isAuthenticating()}
                   class="px-8 py-4 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all duration-200 active:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed min-h-44px"
                 >
-                  {isAuthenticating()
-                    ? t()("common.status.loading")
-                    : t()("common.actions.next")}
+                  {isAuthenticating() ? t()("common.status.loading") : t()("common.actions.next")}
                 </button>
               </div>
             </Show>
@@ -288,9 +266,7 @@ const OnboardingFlowComponent = () => {
               <h2 class="text-3xl font-bold text-gray-900 mb-4">
                 {t()("onboarding.gradeSelection.title")}
               </h2>
-              <p class="text-lg text-gray-600">
-                {t()("onboarding.gradeSelection.subtitle")}
-              </p>
+              <p class="text-lg text-gray-600">{t()("onboarding.gradeSelection.subtitle")}</p>
             </div>
 
             <GradeSelector onSelect={handleGradeSelected} />
@@ -304,9 +280,7 @@ const OnboardingFlowComponent = () => {
               <h2 class="text-3xl font-bold text-gray-900 mb-4">
                 {t()("onboarding.competencyIntro.title")}
               </h2>
-              <p class="text-lg text-gray-600">
-                {t()("onboarding.competencyIntro.subtitle")}
-              </p>
+              <p class="text-lg text-gray-600">{t()("onboarding.competencyIntro.subtitle")}</p>
             </div>
 
             <Show when={selectedGrade()}>
@@ -331,10 +305,7 @@ const OnboardingFlowComponent = () => {
 
         {/* Tutorial Step */}
         <Show when={currentStep() === "tutorial"}>
-          <TutorialOverlay
-            show={showTutorial()}
-            onComplete={handleTutorialComplete}
-          />
+          <TutorialOverlay show={showTutorial()} onComplete={handleTutorialComplete} />
         </Show>
       </div>
     </div>
@@ -348,10 +319,7 @@ const OnboardingFlowComponent = () => {
  */
 export default function OnboardingFlow() {
   return (
-    <ErrorBoundaryWrapper
-      componentName="OnboardingFlow"
-      errorMessageKey="errors.onboarding.failed"
-    >
+    <ErrorBoundaryWrapper componentName="OnboardingFlow" errorMessageKey="errors.onboarding.failed">
       <OnboardingFlowComponent />
     </ErrorBoundaryWrapper>
   );

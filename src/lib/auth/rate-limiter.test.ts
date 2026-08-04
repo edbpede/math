@@ -6,7 +6,7 @@
  * and the rate limiter behaves correctly under various scenarios.
  */
 
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { RateLimiter } from "./rate-limiter";
 
 describe("RateLimiter", () => {

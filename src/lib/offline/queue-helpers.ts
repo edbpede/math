@@ -9,13 +9,10 @@
  * - 6.4: Automatic sync when online
  */
 
-import { syncManager } from './sync-manager'
-import {
-  logExerciseAttempt,
-  endSession,
-} from '../supabase/progress'
-import { syncProgressUpdateWithConflictResolution } from './sync-operations'
-import type { ExerciseAttempt, CompetencyProgress, SkillProgress } from '../mastery/types'
+import type { CompetencyProgress, ExerciseAttempt, SkillProgress } from "../mastery/types";
+import { endSession, logExerciseAttempt } from "../supabase/progress";
+import { syncManager } from "./sync-manager";
+import { syncProgressUpdateWithConflictResolution } from "./sync-operations";
 
 /**
  * Queue or directly sync an exercise completion
@@ -27,23 +24,23 @@ import type { ExerciseAttempt, CompetencyProgress, SkillProgress } from '../mast
  * @throws Error if queueing fails
  */
 export async function queueExerciseComplete(
-  attempt: Omit<ExerciseAttempt, 'id' | 'createdAt'>
+  attempt: Omit<ExerciseAttempt, "id" | "createdAt">,
 ): Promise<void> {
-  const isOnline = syncManager.getOnlineStatus()
+  const isOnline = syncManager.getOnlineStatus();
 
   if (isOnline) {
     try {
       // Directly log to Supabase
-      await logExerciseAttempt(attempt)
-      console.log('[QueueHelper] Exercise completion synced directly (online)')
+      await logExerciseAttempt(attempt);
+      console.log("[QueueHelper] Exercise completion synced directly (online)");
     } catch (error) {
-      console.warn('[QueueHelper] Failed to sync directly, queueing for later:', error)
+      console.warn("[QueueHelper] Failed to sync directly, queueing for later:", error);
       // Queue for later sync
-      await queueExerciseCompleteOffline(attempt)
+      await queueExerciseCompleteOffline(attempt);
     }
   } else {
     // Queue for later sync
-    await queueExerciseCompleteOffline(attempt)
+    await queueExerciseCompleteOffline(attempt);
   }
 }
 
@@ -51,23 +48,23 @@ export async function queueExerciseComplete(
  * Queue exercise completion for offline sync
  */
 async function queueExerciseCompleteOffline(
-  attempt: Omit<ExerciseAttempt, 'id' | 'createdAt'>
+  attempt: Omit<ExerciseAttempt, "id" | "createdAt">,
 ): Promise<void> {
   // Add id and createdAt for the queue item
   const queueItem = {
     ...attempt,
     id: crypto.randomUUID(),
     createdAt: new Date(),
-  }
+  };
 
   await syncManager.addToQueue({
-    type: 'exercise_complete',
+    type: "exercise_complete",
     data: queueItem,
     timestamp: new Date(),
     retries: 0,
-  })
+  });
 
-  console.log('[QueueHelper] Exercise completion queued (offline)')
+  console.log("[QueueHelper] Exercise completion queued (offline)");
 }
 
 /**
@@ -84,23 +81,23 @@ async function queueExerciseCompleteOffline(
 export async function queueProgressUpdate(
   userId: string,
   competency?: CompetencyProgress[],
-  skills?: SkillProgress[]
+  skills?: SkillProgress[],
 ): Promise<void> {
-  const isOnline = syncManager.getOnlineStatus()
+  const isOnline = syncManager.getOnlineStatus();
 
   if (isOnline) {
     try {
       // Directly sync with conflict resolution
-      await syncProgressUpdateWithConflictResolution(userId, competency, skills)
-      console.log('[QueueHelper] Progress update synced directly (online)')
+      await syncProgressUpdateWithConflictResolution(userId, competency, skills);
+      console.log("[QueueHelper] Progress update synced directly (online)");
     } catch (error) {
-      console.warn('[QueueHelper] Failed to sync directly, queueing for later:', error)
+      console.warn("[QueueHelper] Failed to sync directly, queueing for later:", error);
       // Queue for later sync
-      await queueProgressUpdateOffline(userId, competency, skills)
+      await queueProgressUpdateOffline(userId, competency, skills);
     }
   } else {
     // Queue for later sync
-    await queueProgressUpdateOffline(userId, competency, skills)
+    await queueProgressUpdateOffline(userId, competency, skills);
   }
 }
 
@@ -110,10 +107,10 @@ export async function queueProgressUpdate(
 async function queueProgressUpdateOffline(
   userId: string,
   competency?: CompetencyProgress[],
-  skills?: SkillProgress[]
+  skills?: SkillProgress[],
 ): Promise<void> {
   await syncManager.addToQueue({
-    type: 'progress_update',
+    type: "progress_update",
     data: {
       userId,
       competencyProgress: competency,
@@ -121,9 +118,9 @@ async function queueProgressUpdateOffline(
     },
     timestamp: new Date(),
     retries: 0,
-  })
+  });
 
-  console.log('[QueueHelper] Progress update queued (offline)')
+  console.log("[QueueHelper] Progress update queued (offline)");
 }
 
 /**
@@ -142,23 +139,33 @@ export async function queueSessionEnd(
   sessionId: string,
   totalExercises: number,
   correctCount: number,
-  avgTimePerExerciseSeconds: number
+  avgTimePerExerciseSeconds: number,
 ): Promise<void> {
-  const isOnline = syncManager.getOnlineStatus()
+  const isOnline = syncManager.getOnlineStatus();
 
   if (isOnline) {
     try {
       // Directly end session on Supabase
-      await endSession(sessionId, totalExercises, correctCount, avgTimePerExerciseSeconds)
-      console.log('[QueueHelper] Session end synced directly (online)')
+      await endSession(sessionId, totalExercises, correctCount, avgTimePerExerciseSeconds);
+      console.log("[QueueHelper] Session end synced directly (online)");
     } catch (error) {
-      console.warn('[QueueHelper] Failed to sync directly, queueing for later:', error)
+      console.warn("[QueueHelper] Failed to sync directly, queueing for later:", error);
       // Queue for later sync
-      await queueSessionEndOffline(sessionId, totalExercises, correctCount, avgTimePerExerciseSeconds)
+      await queueSessionEndOffline(
+        sessionId,
+        totalExercises,
+        correctCount,
+        avgTimePerExerciseSeconds,
+      );
     }
   } else {
     // Queue for later sync
-    await queueSessionEndOffline(sessionId, totalExercises, correctCount, avgTimePerExerciseSeconds)
+    await queueSessionEndOffline(
+      sessionId,
+      totalExercises,
+      correctCount,
+      avgTimePerExerciseSeconds,
+    );
   }
 }
 
@@ -169,10 +176,10 @@ async function queueSessionEndOffline(
   sessionId: string,
   totalExercises: number,
   correctCount: number,
-  avgTimePerExerciseSeconds: number
+  avgTimePerExerciseSeconds: number,
 ): Promise<void> {
   await syncManager.addToQueue({
-    type: 'session_end',
+    type: "session_end",
     data: {
       sessionId,
       endedAt: new Date(),
@@ -182,9 +189,9 @@ async function queueSessionEndOffline(
     },
     timestamp: new Date(),
     retries: 0,
-  })
+  });
 
-  console.log('[QueueHelper] Session end queued (offline)')
+  console.log("[QueueHelper] Session end queued (offline)");
 }
 
 /**
@@ -193,15 +200,15 @@ async function queueSessionEndOffline(
  * Useful for displaying sync status in UI
  */
 export async function getQueueStats(): Promise<{
-  queueCount: number
-  isOnline: boolean
-  isSyncing: boolean
+  queueCount: number;
+  isOnline: boolean;
+  isSyncing: boolean;
 }> {
   return {
     queueCount: await syncManager.getQueueCount(),
     isOnline: syncManager.getOnlineStatus(),
     isSyncing: syncManager.getSyncingStatus(),
-  }
+  };
 }
 
 /**
@@ -211,7 +218,6 @@ export async function getQueueStats(): Promise<{
  * Typically only used in settings or for debugging.
  */
 export async function clearSyncQueue(): Promise<void> {
-  await syncManager.clearQueue()
-  console.log('[QueueHelper] Sync queue cleared')
+  await syncManager.clearQueue();
+  console.log("[QueueHelper] Sync queue cleared");
 }
-

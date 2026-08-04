@@ -9,11 +9,7 @@
  * - 11.2: Support parameter domains, relationships, and constraint specifications
  */
 
-import type {
-  ParameterConstraints,
-  ParameterConstraint,
-  ParameterType,
-} from "./types";
+import type { ParameterConstraint, ParameterConstraints, ParameterType } from "./types";
 
 /**
  * Error thrown when parameter generation fails
@@ -38,9 +34,7 @@ export class ConstraintViolationError extends Error {
     public parameterName: string,
     public value: unknown,
   ) {
-    super(
-      `Constraint violation for '${parameterName}' (value: ${value}): ${message}`,
-    );
+    super(`Constraint violation for '${parameterName}' (value: ${value}): ${message}`);
     this.name = "ConstraintViolationError";
   }
 }
@@ -81,7 +75,8 @@ export class SeededRandom {
    */
   next(): number {
     // Mulberry32 algorithm
-    let t = (this.state += 0x6d2b79f5);
+    this.state += 0x6d2b79f5;
+    let t = this.state;
     t = Math.imul(t ^ (t >>> 15), t | 1);
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
@@ -200,8 +195,6 @@ export class ParameterGenerator {
           }
           throw error;
         }
-        // Otherwise, retry with a different random state
-        continue;
       }
     }
 
@@ -488,10 +481,7 @@ export class ParameterGenerator {
       }
 
       if (visiting.has(paramName)) {
-        throw new ParameterGenerationError(
-          "Circular dependency detected",
-          paramName,
-        );
+        throw new ParameterGenerationError("Circular dependency detected", paramName);
       }
 
       visiting.add(paramName);
@@ -501,10 +491,7 @@ export class ParameterGenerator {
       if (constraint.dependsOn) {
         for (const dep of constraint.dependsOn) {
           if (!constraints[dep]) {
-            throw new ParameterGenerationError(
-              `Depends on undefined parameter: ${dep}`,
-              paramName,
-            );
+            throw new ParameterGenerationError(`Depends on undefined parameter: ${dep}`, paramName);
           }
           visit(dep);
         }

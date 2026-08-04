@@ -4,14 +4,14 @@
  * Comprehensive tests for place value identification exercise templates
  */
 
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
+import { ParameterGenerator } from "../../parameter-generator";
+import { TemplateRegistry } from "../../template-registry";
 import {
   placeValueIdentificationA,
   placeValueIdentificationB,
   placeValueIdentificationC,
 } from "./place-value-identification";
-import { TemplateRegistry } from "../../template-registry";
-import { ParameterGenerator } from "../../parameter-generator";
 
 describe("Place Value Identification Templates", () => {
   let registry: TemplateRegistry;
@@ -22,12 +22,8 @@ describe("Place Value Identification Templates", () => {
 
   describe("placeValueIdentificationA (Difficulty A)", () => {
     it("should have correct metadata", () => {
-      expect(placeValueIdentificationA.id).toBe(
-        "tal-algebra-place-value-0-3-A",
-      );
-      expect(placeValueIdentificationA.metadata.competencyAreaId).toBe(
-        "tal-og-algebra",
-      );
+      expect(placeValueIdentificationA.id).toBe("tal-algebra-place-value-0-3-A");
+      expect(placeValueIdentificationA.metadata.competencyAreaId).toBe("tal-og-algebra");
       expect(placeValueIdentificationA.metadata.skillsAreaId).toBe("tal");
       expect(placeValueIdentificationA.metadata.gradeRange).toBe("0-3");
       expect(placeValueIdentificationA.metadata.difficulty).toBe("A");
@@ -71,12 +67,8 @@ describe("Place Value Identification Templates", () => {
       const params = { number: 15, position: "ones" };
       const result = placeValueIdentificationA.generate(params, "da-DK");
 
-      expect(
-        placeValueIdentificationA.validate("5", result.correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        placeValueIdentificationA.validate("15", result.correctAnswer).correct,
-      ).toBe(false);
+      expect(placeValueIdentificationA.validate("5", result.correctAnswer).correct).toBe(true);
+      expect(placeValueIdentificationA.validate("15", result.correctAnswer).correct).toBe(false);
     });
 
     it("should provide 4 hint levels", () => {
@@ -110,26 +102,16 @@ describe("Place Value Identification Templates", () => {
       const paramsOnes = { number: 15, position: "ones" };
       const paramsTens = { number: 15, position: "tens" };
 
-      const resultOnes = placeValueIdentificationA.generate(
-        paramsOnes,
-        "da-DK",
-      );
-      const resultTens = placeValueIdentificationA.generate(
-        paramsTens,
-        "da-DK",
-      );
+      const resultOnes = placeValueIdentificationA.generate(paramsOnes, "da-DK");
+      const resultTens = placeValueIdentificationA.generate(paramsTens, "da-DK");
 
-      expect(resultOnes.correctAnswer.value).not.toBe(
-        resultTens.correctAnswer.value,
-      );
+      expect(resultOnes.correctAnswer.value).not.toBe(resultTens.correctAnswer.value);
     });
   });
 
   describe("placeValueIdentificationB (Difficulty B)", () => {
     it("should have correct metadata", () => {
-      expect(placeValueIdentificationB.id).toBe(
-        "tal-algebra-place-value-0-3-B",
-      );
+      expect(placeValueIdentificationB.id).toBe("tal-algebra-place-value-0-3-B");
       expect(placeValueIdentificationB.metadata.difficulty).toBe("B");
       expect(placeValueIdentificationB.metadata.tags).toContain("two-digit");
     });
@@ -170,12 +152,8 @@ describe("Place Value Identification Templates", () => {
       const params = { number: 84, position: "tens" };
       const result = placeValueIdentificationB.generate(params, "da-DK");
 
-      expect(
-        placeValueIdentificationB.validate("80", result.correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        placeValueIdentificationB.validate("8", result.correctAnswer).correct,
-      ).toBe(false);
+      expect(placeValueIdentificationB.validate("80", result.correctAnswer).correct).toBe(true);
+      expect(placeValueIdentificationB.validate("8", result.correctAnswer).correct).toBe(false);
     });
 
     it("should provide 4 hint levels", () => {
@@ -199,9 +177,7 @@ describe("Place Value Identification Templates", () => {
 
   describe("placeValueIdentificationC (Difficulty C)", () => {
     it("should have correct metadata", () => {
-      expect(placeValueIdentificationC.id).toBe(
-        "tal-algebra-place-value-0-3-C",
-      );
+      expect(placeValueIdentificationC.id).toBe("tal-algebra-place-value-0-3-C");
       expect(placeValueIdentificationC.metadata.difficulty).toBe("C");
       expect(placeValueIdentificationC.metadata.tags).toContain("three-digit");
     });
@@ -249,36 +225,24 @@ describe("Place Value Identification Templates", () => {
       const params = { number: 749, position: "ones" };
       const result = placeValueIdentificationC.generate(params, "da-DK");
 
-      expect(
-        placeValueIdentificationC.validate("9", result.correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        placeValueIdentificationC.validate("90", result.correctAnswer).correct,
-      ).toBe(false);
+      expect(placeValueIdentificationC.validate("9", result.correctAnswer).correct).toBe(true);
+      expect(placeValueIdentificationC.validate("90", result.correctAnswer).correct).toBe(false);
     });
 
     it("should validate correct answers for tens", () => {
       const params = { number: 749, position: "tens" };
       const result = placeValueIdentificationC.generate(params, "da-DK");
 
-      expect(
-        placeValueIdentificationC.validate("40", result.correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        placeValueIdentificationC.validate("4", result.correctAnswer).correct,
-      ).toBe(false);
+      expect(placeValueIdentificationC.validate("40", result.correctAnswer).correct).toBe(true);
+      expect(placeValueIdentificationC.validate("4", result.correctAnswer).correct).toBe(false);
     });
 
     it("should validate correct answers for hundreds", () => {
       const params = { number: 749, position: "hundreds" };
       const result = placeValueIdentificationC.generate(params, "da-DK");
 
-      expect(
-        placeValueIdentificationC.validate("700", result.correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        placeValueIdentificationC.validate("7", result.correctAnswer).correct,
-      ).toBe(false);
+      expect(placeValueIdentificationC.validate("700", result.correctAnswer).correct).toBe(true);
+      expect(placeValueIdentificationC.validate("7", result.correctAnswer).correct).toBe(false);
     });
 
     it("should provide 4 hint levels", () => {

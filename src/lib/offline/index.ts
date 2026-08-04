@@ -11,72 +11,64 @@
  * - Offline data types
  */
 
-// Service worker registration
-export {
-    registerServiceWorker,
-    unregisterServiceWorker,
-} from "./service-worker-registration";
-
-// IndexedDB storage layer
-export { offlineStorage, OfflineStorage, StorageError } from "./storage";
-
 // Cache configuration
 export { CACHE_CONFIG as cacheConfig } from "./cache-config";
-export type { CacheConfig } from "./types";
-
 // Cache utilities (for use in service worker)
-export { shouldCache, getCacheStrategy } from "./cache-utils";
-
-// Sync queue manager
-export { syncManager, SyncManager } from "./sync-manager";
-export type {
-    SyncEvent,
-    SyncEventType,
-    SyncEventListener,
-    SyncManagerConfig,
-} from "./sync-manager";
-
-// Sync operations
-export {
-    syncQueueItem,
-    syncProgressUpdateWithConflictResolution,
-} from "./sync-operations";
-
-// Queue helpers
-export {
-    queueExerciseComplete,
-    queueProgressUpdate,
-    queueSessionEnd,
-    getQueueStats,
-    clearSyncQueue,
-} from "./queue-helpers";
-
+export { getCacheStrategy, shouldCache } from "./cache-utils";
 // Conflict resolution
 export {
-    mergeCompetencyProgress,
-    mergeSkillProgress,
-    isNewer,
-    isSameCompetency,
-    isSameSkill,
+  isNewer,
+  isSameCompetency,
+  isSameSkill,
+  mergeCompetencyProgress,
+  mergeSkillProgress,
 } from "./conflict-resolution";
-
+// Queue helpers
+export {
+  clearSyncQueue,
+  getQueueStats,
+  queueExerciseComplete,
+  queueProgressUpdate,
+  queueSessionEnd,
+} from "./queue-helpers";
+// Service worker registration
+export {
+  registerServiceWorker,
+  unregisterServiceWorker,
+} from "./service-worker-registration";
+// IndexedDB storage layer
+export { OfflineStorage, offlineStorage, StorageError } from "./storage";
+export type {
+  SyncEvent,
+  SyncEventListener,
+  SyncEventType,
+  SyncManagerConfig,
+} from "./sync-manager";
+// Sync queue manager
+export { SyncManager, syncManager } from "./sync-manager";
+// Sync operations
+export {
+  syncProgressUpdateWithConflictResolution,
+  syncQueueItem,
+} from "./sync-operations";
 // Type exports
 export type {
-    ServiceWorkerStatus,
-    NetworkStatus,
-    CacheStrategy,
-    CacheEntry,
-    ServiceWorkerMessage,
-    AssetManifest,
-    AssetManifestEntry,
-    ExerciseCacheEntry,
-    SyncQueueItem,
-    SyncQueueItemType,
-    ExerciseCompleteSyncItem,
-    ProgressUpdateSyncItem,
-    SessionEndSyncItem,
-    ProgressCacheType,
-    ProgressCacheEntry,
-    PreferenceEntry,
-    OfflineDatabase,
+  AssetManifest,
+  AssetManifestEntry,
+  CacheConfig,
+  CacheEntry,
+  CacheStrategy,
+  ExerciseCacheEntry,
+  ExerciseCompleteSyncItem,
+  NetworkStatus,
+  OfflineDatabase,
+  PreferenceEntry,
+  ProgressCacheEntry,
+  ProgressCacheType,
+  ProgressUpdateSyncItem,
+  ServiceWorkerMessage,
+  ServiceWorkerStatus,
+  SessionEndSyncItem,
+  SyncQueueItem,
+  SyncQueueItemType,
 } from "./types";

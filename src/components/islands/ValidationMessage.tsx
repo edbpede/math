@@ -25,7 +25,7 @@
  * ```
  */
 
-import { Show, type Component } from "solid-js";
+import { type Component, Show } from "solid-js";
 
 /**
  * Validation message type
@@ -38,22 +38,22 @@ export type ValidationMessageType = "error" | "warning" | "success" | "info";
 export interface ValidationMessageProps {
   /** Message type (determines color and icon) */
   type: ValidationMessageType;
-  
+
   /** Message text to display */
   message: string;
-  
+
   /** Whether the message is visible */
   visible?: boolean;
-  
+
   /** Whether the message can be dismissed */
   dismissible?: boolean;
-  
+
   /** Callback when message is dismissed */
   onDismiss?: () => void;
-  
+
   /** Optional CSS class */
   class?: string;
-  
+
   /** Optional ID for aria-describedby linking */
   id?: string;
 }
@@ -157,6 +157,7 @@ const ValidationMessage: Component<ValidationMessageProps> = (props) => {
             aria-label="Dismiss message"
           >
             <svg
+              aria-hidden="true"
               class="w-4 h-4"
               fill="none"
               stroke="currentColor"
@@ -177,4 +178,3 @@ const ValidationMessage: Component<ValidationMessageProps> = (props) => {
 };
 
 export default ValidationMessage;
-

@@ -10,9 +10,9 @@
  * - 3.3: Implement context rotation to ensure variety
  */
 
-import type { Locale, ContextPool } from './types';
-import { getContextPool } from './utils';
-import { memoizeAsync } from '../utils/memoization';
+import { memoizeAsync } from "../utils/memoization";
+import type { ContextPool, Locale } from "./types";
+import { getContextPool } from "./utils";
 
 /**
  * Memoized context pool loader
@@ -92,9 +92,7 @@ export class ContextSelector {
     const tracker = this.getTracker(category);
 
     // Filter out recently used items
-    const available = allItems.filter(
-      (item) => !tracker.recentlyUsed.includes(item)
-    );
+    const available = allItems.filter((item) => !tracker.recentlyUsed.includes(item));
 
     // If we've exhausted all items, reset and use all items
     if (available.length === 0) {
@@ -111,23 +109,21 @@ export class ContextSelector {
    * @param gender - Optional gender filter ('male', 'female', 'neutral')
    * @returns Random name from the appropriate pool
    */
-  async selectName(gender?: 'male' | 'female' | 'neutral'): Promise<string> {
+  async selectName(gender?: "male" | "female" | "neutral"): Promise<string> {
     if (!this.contextPool) {
       await this.loadContextPool();
     }
 
     if (!this.contextPool) {
-      throw new Error('Failed to load context pool');
+      throw new Error("Failed to load context pool");
     }
 
     // Load full name data
-    const contextData = await import(
-      `../../locales/${this.locale}/contexts.json`
-    );
+    const contextData = await import(`../../locales/${this.locale}/contexts.json`);
     const data = contextData.default || contextData;
 
     let allNames: string[] = [];
-    let categoryKey = 'names';
+    let categoryKey = "names";
 
     if (gender) {
       allNames = data.names?.[gender] || [];
@@ -142,7 +138,7 @@ export class ContextSelector {
     }
 
     if (allNames.length === 0) {
-      throw new Error(`No names available for gender: ${gender || 'any'}`);
+      throw new Error(`No names available for gender: ${gender || "any"}`);
     }
 
     const available = this.getAvailableItems(categoryKey, allNames);
@@ -159,7 +155,7 @@ export class ContextSelector {
    * @param gender - Optional gender filter ('male', 'female', 'neutral')
    * @returns Array of random names from the appropriate pool
    */
-  async selectNames(count: number = 1, gender?: 'male' | 'female' | 'neutral'): Promise<string[]> {
+  async selectNames(count: number = 1, gender?: "male" | "female" | "neutral"): Promise<string[]> {
     const names: string[] = [];
     for (let i = 0; i < count; i++) {
       names.push(await this.selectName(gender));
@@ -173,24 +169,20 @@ export class ContextSelector {
    * @param type - Optional type filter ('cities', 'locations', 'neighborhoods')
    * @returns Random place from the appropriate pool
    */
-  async selectPlace(
-    type?: 'cities' | 'locations' | 'neighborhoods'
-  ): Promise<string> {
+  async selectPlace(type?: "cities" | "locations" | "neighborhoods"): Promise<string> {
     if (!this.contextPool) {
       await this.loadContextPool();
     }
 
     if (!this.contextPool) {
-      throw new Error('Failed to load context pool');
+      throw new Error("Failed to load context pool");
     }
 
-    const contextData = await import(
-      `../../locales/${this.locale}/contexts.json`
-    );
+    const contextData = await import(`../../locales/${this.locale}/contexts.json`);
     const data = contextData.default || contextData;
 
     let allPlaces: string[] = [];
-    let categoryKey = 'places';
+    let categoryKey = "places";
 
     if (type) {
       allPlaces = data.places?.[type] || [];
@@ -205,7 +197,7 @@ export class ContextSelector {
     }
 
     if (allPlaces.length === 0) {
-      throw new Error(`No places available for type: ${type || 'any'}`);
+      throw new Error(`No places available for type: ${type || "any"}`);
     }
 
     const available = this.getAvailableItems(categoryKey, allPlaces);
@@ -228,12 +220,10 @@ export class ContextSelector {
     }
 
     if (!this.contextPool) {
-      throw new Error('Failed to load context pool');
+      throw new Error("Failed to load context pool");
     }
 
-    const contextData = await import(
-      `../../locales/${this.locale}/contexts.json`
-    );
+    const contextData = await import(`../../locales/${this.locale}/contexts.json`);
     const data = contextData.default || contextData;
 
     const allItems = data.items?.[category] || [];
@@ -250,7 +240,9 @@ export class ContextSelector {
     const selected = shuffled.slice(0, Math.min(count, shuffled.length));
 
     // Mark all selected items as used
-    selected.forEach((item) => this.markAsUsed(categoryKey, item));
+    selected.forEach((item) => {
+      this.markAsUsed(categoryKey, item);
+    });
 
     return selected;
   }
@@ -267,12 +259,10 @@ export class ContextSelector {
     }
 
     if (!this.contextPool) {
-      throw new Error('Failed to load context pool');
+      throw new Error("Failed to load context pool");
     }
 
-    const contextData = await import(
-      `../../locales/${this.locale}/contexts.json`
-    );
+    const contextData = await import(`../../locales/${this.locale}/contexts.json`);
     const data = contextData.default || contextData;
 
     const allScenarios = data.scenarios?.[category] || [];
@@ -300,21 +290,19 @@ export class ContextSelector {
     }
 
     if (!this.contextPool) {
-      throw new Error('Failed to load context pool');
+      throw new Error("Failed to load context pool");
     }
 
-    const contextData = await import(
-      `../../locales/${this.locale}/contexts.json`
-    );
+    const contextData = await import(`../../locales/${this.locale}/contexts.json`);
     const data = contextData.default || contextData;
 
     const allVerbs = data.activities?.verbs || [];
 
     if (allVerbs.length === 0) {
-      throw new Error('No activity verbs available');
+      throw new Error("No activity verbs available");
     }
 
-    const categoryKey = 'activities:verbs';
+    const categoryKey = "activities:verbs";
     const available = this.getAvailableItems(categoryKey, allVerbs);
     const selected = available[Math.floor(Math.random() * available.length)];
     this.markAsUsed(categoryKey, selected);
@@ -329,7 +317,7 @@ export class ContextSelector {
    */
   getCurrency(): { symbol: string; name: string } {
     if (!this.contextPool) {
-      throw new Error('Context pool not loaded. Call loadContextPool() first.');
+      throw new Error("Context pool not loaded. Call loadContextPool() first.");
     }
 
     return this.contextPool.currency;
@@ -377,9 +365,6 @@ export class ContextSelector {
  * @param maxRecentSize - Maximum number of recently used items to track
  * @returns ContextSelector instance
  */
-export function createContextSelector(
-  locale: Locale,
-  maxRecentSize?: number
-): ContextSelector {
+export function createContextSelector(locale: Locale, maxRecentSize?: number): ContextSelector {
   return new ContextSelector(locale, maxRecentSize);
 }

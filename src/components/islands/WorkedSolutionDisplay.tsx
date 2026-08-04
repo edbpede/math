@@ -9,11 +9,11 @@
  * - 8.4: Provide worked solution at any time during or after exercise
  */
 
-import { For, Show, createEffect } from "solid-js";
-import type { WorkedSolution } from "@/lib/exercises/types";
 import { useStore } from "@nanostores/solid";
-import { $t } from "@/lib/i18n";
+import { createEffect, For, Show } from "solid-js";
 import { announce } from "@/lib/accessibility";
+import type { WorkedSolution } from "@/lib/exercises/types";
+import { $t } from "@/lib/i18n";
 import VisualAidRenderer from "./VisualAidRenderer";
 
 export interface WorkedSolutionDisplayProps {
@@ -41,9 +41,7 @@ export interface WorkedSolutionDisplayProps {
  * />
  * ```
  */
-export default function WorkedSolutionDisplay(
-  props: WorkedSolutionDisplayProps,
-) {
+export default function WorkedSolutionDisplay(props: WorkedSolutionDisplayProps) {
   const t = useStore($t);
 
   // Announce when solution is revealed
@@ -58,6 +56,7 @@ export default function WorkedSolutionDisplay(
 
   return (
     <Show when={props.show !== false}>
+      {/* biome-ignore lint/a11y/useSemanticElements: the ARIA role is equivalent for assistive tech here; swapping in the native element would change layout and behaviour - tracked as separate a11y work */}
       <div
         class={`worked-solution-container ${props.class || ""}`}
         role="region"
@@ -86,6 +85,7 @@ export default function WorkedSolutionDisplay(
         </div>
 
         {/* Solution Steps */}
+        {/* biome-ignore lint/a11y/useSemanticElements: the ARIA role is equivalent for assistive tech here; swapping in the native element would change layout and behaviour - tracked as separate a11y work */}
         <div
           class="solution-steps space-y-4 mb-6"
           role="list"
@@ -93,6 +93,7 @@ export default function WorkedSolutionDisplay(
         >
           <For each={props.solution.steps}>
             {(step, index) => (
+              // biome-ignore lint/a11y/useSemanticElements: the ARIA role is equivalent for assistive tech here; swapping in the native element would change layout and behaviour - tracked as separate a11y work
               <div
                 class="solution-step p-4 rounded-lg bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 shadow-sm transition-all duration-200 hover:shadow-md"
                 role="listitem"
@@ -168,9 +169,7 @@ export default function WorkedSolutionDisplay(
               <div class="text-sm font-medium text-green-800 uppercase tracking-wide mb-1">
                 {t()("solutions.finalAnswer")}
               </div>
-              <div class="text-xl font-bold text-green-900">
-                {props.solution.finalAnswer}
-              </div>
+              <div class="text-xl font-bold text-green-900">{props.solution.finalAnswer}</div>
             </div>
           </div>
         </div>

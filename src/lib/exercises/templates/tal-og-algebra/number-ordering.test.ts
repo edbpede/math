@@ -4,14 +4,10 @@
  * Comprehensive tests for number ordering exercise templates
  */
 
-import { describe, it, expect, beforeEach } from "vitest";
-import {
-  numberOrderingA,
-  numberOrderingB,
-  numberOrderingC,
-} from "./number-ordering";
-import { TemplateRegistry } from "../../template-registry";
+import { beforeEach, describe, expect, it } from "vitest";
 import { ParameterGenerator } from "../../parameter-generator";
+import { TemplateRegistry } from "../../template-registry";
+import { numberOrderingA, numberOrderingB, numberOrderingC } from "./number-ordering";
 
 describe("Number Ordering Templates", () => {
   let registry: TemplateRegistry;
@@ -79,39 +75,25 @@ describe("Number Ordering Templates", () => {
       const params = { num1: 15, num2: 3, num3: 9, direction: "ascending" };
       const result = numberOrderingA.generate(params, "da-DK");
 
-      expect(
-        numberOrderingA.validate("3, 9, 15", result.correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        numberOrderingA.validate("3,9,15", result.correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        numberOrderingA.validate("3 9 15", result.correctAnswer).correct,
-      ).toBe(true);
+      expect(numberOrderingA.validate("3, 9, 15", result.correctAnswer).correct).toBe(true);
+      expect(numberOrderingA.validate("3,9,15", result.correctAnswer).correct).toBe(true);
+      expect(numberOrderingA.validate("3 9 15", result.correctAnswer).correct).toBe(true);
     });
 
     it("should reject incorrect ordering", () => {
       const params = { num1: 15, num2: 3, num3: 9, direction: "ascending" };
       const result = numberOrderingA.generate(params, "da-DK");
 
-      expect(
-        numberOrderingA.validate("15, 9, 3", result.correctAnswer).correct,
-      ).toBe(false);
-      expect(
-        numberOrderingA.validate("3, 15, 9", result.correctAnswer).correct,
-      ).toBe(false);
+      expect(numberOrderingA.validate("15, 9, 3", result.correctAnswer).correct).toBe(false);
+      expect(numberOrderingA.validate("3, 15, 9", result.correctAnswer).correct).toBe(false);
     });
 
     it("should reject answers with wrong number of elements", () => {
       const params = { num1: 15, num2: 3, num3: 9, direction: "ascending" };
       const result = numberOrderingA.generate(params, "da-DK");
 
-      expect(
-        numberOrderingA.validate("3, 9", result.correctAnswer).correct,
-      ).toBe(false);
-      expect(
-        numberOrderingA.validate("3, 9, 15, 20", result.correctAnswer).correct,
-      ).toBe(false);
+      expect(numberOrderingA.validate("3, 9", result.correctAnswer).correct).toBe(false);
+      expect(numberOrderingA.validate("3, 9, 15, 20", result.correctAnswer).correct).toBe(false);
     });
 
     it("should provide 4 hint levels", () => {
@@ -231,13 +213,8 @@ describe("Number Ordering Templates", () => {
       };
       const result = numberOrderingB.generate(params, "da-DK");
 
-      expect(
-        numberOrderingB.validate("15, 42, 73, 99", result.correctAnswer)
-          .correct,
-      ).toBe(true);
-      expect(
-        numberOrderingB.validate("15,42,73,99", result.correctAnswer).correct,
-      ).toBe(true);
+      expect(numberOrderingB.validate("15, 42, 73, 99", result.correctAnswer).correct).toBe(true);
+      expect(numberOrderingB.validate("15,42,73,99", result.correctAnswer).correct).toBe(true);
     });
 
     it("should provide 4 hint levels", () => {
@@ -324,14 +301,12 @@ describe("Number Ordering Templates", () => {
       };
       const result = numberOrderingC.generate(params, "da-DK");
 
-      expect(
-        numberOrderingC.validate("15, 89, 340, 526, 742", result.correctAnswer)
-          .correct,
-      ).toBe(true);
-      expect(
-        numberOrderingC.validate("15,89,340,526,742", result.correctAnswer)
-          .correct,
-      ).toBe(true);
+      expect(numberOrderingC.validate("15, 89, 340, 526, 742", result.correctAnswer).correct).toBe(
+        true,
+      );
+      expect(numberOrderingC.validate("15,89,340,526,742", result.correctAnswer).correct).toBe(
+        true,
+      );
     });
 
     it("should reject incorrect ordering", () => {
@@ -345,10 +320,9 @@ describe("Number Ordering Templates", () => {
       };
       const result = numberOrderingC.generate(params, "da-DK");
 
-      expect(
-        numberOrderingC.validate("742, 526, 340, 89, 15", result.correctAnswer)
-          .correct,
-      ).toBe(false);
+      expect(numberOrderingC.validate("742, 526, 340, 89, 15", result.correctAnswer).correct).toBe(
+        false,
+      );
     });
 
     it("should provide 4 hint levels", () => {

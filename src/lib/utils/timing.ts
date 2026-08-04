@@ -9,7 +9,7 @@
  * - Debounce progress updates (30s) per design.md line 908
  */
 
-import { createSignal, createEffect, onCleanup, type Accessor } from 'solid-js';
+import { type Accessor, createEffect, createSignal, onCleanup } from "solid-js";
 
 /**
  * Standard debounce function
@@ -30,7 +30,7 @@ import { createSignal, createEffect, onCleanup, type Accessor } from 'solid-js';
  */
 export function debounce<T extends (...args: any[]) => any>(
   fn: T,
-  delay: number
+  delay: number,
 ): (...args: Parameters<T>) => void {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
@@ -65,7 +65,7 @@ export function debounce<T extends (...args: any[]) => any>(
  */
 export function throttle<T extends (...args: any[]) => any>(
   fn: T,
-  delay: number
+  delay: number,
 ): (...args: Parameters<T>) => void {
   let lastCall = 0;
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -116,10 +116,7 @@ export function throttle<T extends (...args: any[]) => any>(
  * });
  * ```
  */
-export function createDebouncedSignal<T>(
-  source: Accessor<T>,
-  delay: number
-): Accessor<T> {
+export function createDebouncedSignal<T>(source: Accessor<T>, delay: number): Accessor<T> {
   const [debounced, setDebounced] = createSignal<T>(source());
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
@@ -166,10 +163,7 @@ export function createDebouncedSignal<T>(
  * });
  * ```
  */
-export function createThrottledSignal<T>(
-  source: Accessor<T>,
-  delay: number
-): Accessor<T> {
+export function createThrottledSignal<T>(source: Accessor<T>, delay: number): Accessor<T> {
   const [throttled, setThrottled] = createSignal<T>(source());
   let lastUpdate = 0;
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -229,7 +223,7 @@ export interface CancellableFunction<T extends (...args: any[]) => any> {
  */
 export function debounceCancellable<T extends (...args: any[]) => any>(
   fn: T,
-  delay: number
+  delay: number,
 ): CancellableFunction<T> {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
@@ -265,7 +259,7 @@ export function debounceCancellable<T extends (...args: any[]) => any>(
  */
 export function throttleCancellable<T extends (...args: any[]) => any>(
   fn: T,
-  delay: number
+  delay: number,
 ): CancellableFunction<T> {
   let lastCall = 0;
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -300,4 +294,3 @@ export function throttleCancellable<T extends (...args: any[]) => any>(
 
   return throttled;
 }
-

@@ -16,15 +16,15 @@
  * - 9.3: Touch targets minimum 44x44 pixels
  */
 
-import { createSignal, createEffect, Show, onMount } from "solid-js";
 import { useStore } from "@nanostores/solid";
-import { $t } from "@/lib/i18n";
-import { createKeyboardShortcuts, announce } from "@/lib/accessibility";
+import { createEffect, createSignal, onMount, Show } from "solid-js";
+import { announce, createKeyboardShortcuts } from "@/lib/accessibility";
 import type { ExerciseInstance } from "@/lib/exercises/types";
+import { $t } from "@/lib/i18n";
 import { batchUpdates } from "@/lib/utils/reactivity";
 import { ErrorBoundaryWrapper } from "./ErrorBoundary";
-import HintSystem from "./HintSystem";
 import FeedbackDisplay from "./FeedbackDisplay";
+import HintSystem from "./HintSystem";
 import MathExpression from "./MathExpression";
 
 /**
@@ -198,11 +198,7 @@ function ExercisePracticeComponent(props: ExercisePracticeProps) {
 
       // Announce progress milestones (25%, 50%, 75%)
       const progressPercent = Math.round((current / total) * 100);
-      if (
-        progressPercent === 25 ||
-        progressPercent === 50 ||
-        progressPercent === 75
-      ) {
+      if (progressPercent === 25 || progressPercent === 50 || progressPercent === 75) {
         announce(
           t()("accessibility.screenReader.progressMilestone", {
             percent: progressPercent.toString(),
@@ -279,8 +275,7 @@ function ExercisePracticeComponent(props: ExercisePracticeProps) {
       // For now, use a simple validation approach
       // This will be improved when we have proper template validation
       const isCorrect =
-        normalizedAnswer.toLowerCase() ===
-        String(exercise.correctAnswer.value).toLowerCase();
+        normalizedAnswer.toLowerCase() === String(exercise.correctAnswer.value).toLowerCase();
 
       const timeSpent = calculateTimeSpent();
 
@@ -296,11 +291,8 @@ function ExercisePracticeComponent(props: ExercisePracticeProps) {
 
       if (isCorrect) {
         // Get random success message
-        const messages = t()(
-          "feedback.correct.messages",
-        ) as unknown as string[];
-        const randomMessage =
-          messages[Math.floor(Math.random() * messages.length)];
+        const messages = t()("feedback.correct.messages") as unknown as string[];
+        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
 
         setValidationState({
           status: "correct",
@@ -311,11 +303,8 @@ function ExercisePracticeComponent(props: ExercisePracticeProps) {
         props.onExerciseComplete(attempt);
       } else {
         // Get random incorrect message
-        const messages = t()(
-          "feedback.incorrect.messages",
-        ) as unknown as string[];
-        const randomMessage =
-          messages[Math.floor(Math.random() * messages.length)];
+        const messages = t()("feedback.incorrect.messages") as unknown as string[];
+        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
 
         setValidationState({
           status: "incorrect",
@@ -331,13 +320,10 @@ function ExercisePracticeComponent(props: ExercisePracticeProps) {
 
       // Fallback validation
       const isCorrect =
-        normalizeAnswer(answer()) ===
-        String(getCurrentExercise()?.correctAnswer.value);
+        normalizeAnswer(answer()) === String(getCurrentExercise()?.correctAnswer.value);
       setValidationState({
         status: isCorrect ? "correct" : "incorrect",
-        message: isCorrect
-          ? t()("feedback.correct.title")
-          : t()("feedback.incorrect.title"),
+        message: isCorrect ? t()("feedback.correct.title") : t()("feedback.incorrect.title"),
         correctAnswer: String(getCurrentExercise()?.correctAnswer.value),
       });
     }
@@ -414,18 +400,19 @@ function ExercisePracticeComponent(props: ExercisePracticeProps) {
   const exercise = getCurrentExercise();
   const state = validationState();
   const isSubmitting = state.status === "validating";
-  const hasSubmitted =
-    state.status === "correct" || state.status === "incorrect";
+  const hasSubmitted = state.status === "correct" || state.status === "incorrect";
   // const isCorrect = state.status === "correct";
   const isIncorrect = state.status === "incorrect";
 
   return (
+    // biome-ignore lint/a11y/useSemanticElements: the ARIA role is equivalent for assistive tech here; swapping in the native element would change layout and behaviour - tracked as separate a11y work
     <div
       class={`exercise-practice-container max-w-4xl mx-auto p-6 ${props.class || ""}`}
       role="main"
       aria-label={t()("exercises.session.title")}
     >
       {/* Progress Indicator */}
+      {/* biome-ignore lint/a11y/useSemanticElements: the ARIA role is equivalent for assistive tech here; swapping in the native element would change layout and behaviour - tracked as separate a11y work */}
       <div
         class="progress-section mb-8"
         role="region"
@@ -465,15 +452,12 @@ function ExercisePracticeComponent(props: ExercisePracticeProps) {
 
       <Show
         when={exercise}
-        fallback={
-          <div class="text-center text-gray-600">
-            {t()("errors.exercise.notFound")}
-          </div>
-        }
+        fallback={<div class="text-center text-gray-600">{t()("errors.exercise.notFound")}</div>}
       >
         {(ex) => (
           <div class="exercise-content bg-white rounded-lg shadow-md p-8">
             {/* Question */}
+            {/* biome-ignore lint/a11y/useSemanticElements: the ARIA role is equivalent for assistive tech here; swapping in the native element would change layout and behaviour - tracked as separate a11y work */}
             <div
               class="question-section mb-8"
               role="region"
@@ -483,10 +467,7 @@ function ExercisePracticeComponent(props: ExercisePracticeProps) {
                 {t()("exercises.exercise.question")}
               </h3>
               <div class="question-text text-2xl font-medium text-gray-800 leading-relaxed p-6 bg-blue-50 rounded-lg border-2 border-blue-200">
-                <MathExpression
-                  expression={ex().questionText}
-                  class="text-2xl"
-                />
+                <MathExpression expression={ex().questionText} class="text-2xl" />
               </div>
 
               {/* Exercise metadata */}
@@ -506,10 +487,7 @@ function ExercisePracticeComponent(props: ExercisePracticeProps) {
 
             {/* Answer Input */}
             <form onSubmit={handleSubmit} class="answer-section mb-6">
-              <label
-                for="answer-input"
-                class="block text-lg font-semibold text-gray-700 mb-3"
-              >
+              <label for="answer-input" class="block text-lg font-semibold text-gray-700 mb-3">
                 {t()("exercises.exercise.yourAnswer")}
               </label>
               <div class="flex gap-3">
@@ -541,10 +519,7 @@ function ExercisePracticeComponent(props: ExercisePracticeProps) {
                     }}
                     aria-label={t()("exercises.exercise.checkAnswer")}
                   >
-                    <Show
-                      when={isSubmitting}
-                      fallback={t()("exercises.exercise.checkAnswer")}
-                    >
+                    <Show when={isSubmitting} fallback={t()("exercises.exercise.checkAnswer")}>
                       {t()("exercises.validation.checking")}
                     </Show>
                   </button>
@@ -603,12 +578,14 @@ function ExercisePracticeComponent(props: ExercisePracticeProps) {
                         {t()("exercises.session.confirmQuit")}
                       </p>
                       <button
+                        type="button"
                         onClick={handleSkipConfirm}
                         class="px-4 py-2 bg-yellow-600 text-white font-medium rounded hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all text-sm touch-target"
                       >
                         {t()("common.actions.confirm")}
                       </button>
                       <button
+                        type="button"
                         onClick={handleSkipCancel}
                         class="px-4 py-2 bg-gray-300 text-gray-700 font-medium rounded hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all text-sm touch-target"
                       >
@@ -618,6 +595,7 @@ function ExercisePracticeComponent(props: ExercisePracticeProps) {
                   }
                 >
                   <button
+                    type="button"
                     onClick={handleSkipClick}
                     class="px-5 py-2 text-gray-600 font-medium rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all text-sm touch-target"
                     aria-label={t()("exercises.exercise.skipExercise")}

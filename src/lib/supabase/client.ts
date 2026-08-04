@@ -14,27 +14,27 @@
  * @see https://supabase.com/docs/reference/javascript/initializing
  */
 
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from './types'
+import { createClient } from "@supabase/supabase-js";
+import type { Database } from "./types";
 
 /**
  * Get environment variable with validation
  * Throws error if required variable is missing
  */
 function getEnvVar(key: string): string {
-  const value = import.meta.env[key]
+  const value = import.meta.env[key];
   if (!value) {
     throw new Error(
       `Missing required environment variable: ${key}. ` +
-      `Please add it to your .env file. See .env.example for reference.`
-    )
+        `Please add it to your .env file. See .env.example for reference.`,
+    );
   }
-  return value
+  return value;
 }
 
 // Validate and get environment variables
-const supabaseUrl = getEnvVar('PUBLIC_SUPABASE_URL')
-const supabaseAnonKey = getEnvVar('PUBLIC_SUPABASE_ANON_KEY')
+const supabaseUrl = getEnvVar("PUBLIC_SUPABASE_URL");
+const supabaseAnonKey = getEnvVar("PUBLIC_SUPABASE_ANON_KEY");
 
 /**
  * Supabase client singleton instance
@@ -50,7 +50,7 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
     // Store auth session in localStorage
     // This enables "Remember this device" functionality
-    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+    storage: typeof window !== "undefined" ? window.localStorage : undefined,
 
     // Automatically refresh the session before it expires
     autoRefreshToken: true,
@@ -62,7 +62,7 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: true,
 
     // Use a custom storage key to avoid conflicts
-    storageKey: 'math-edbpede-auth',
+    storageKey: "math-edbpede-auth",
   },
 
   realtime: {
@@ -76,10 +76,10 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   global: {
     headers: {
       // Identify the client application
-      'X-Client-Info': 'math-edbpede-web',
+      "X-Client-Info": "math-edbpede-web",
     },
   },
-})
+});
 
 /**
  * Helper function to check if Supabase client is properly configured
@@ -87,12 +87,9 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
  */
 export function isSupabaseConfigured(): boolean {
   try {
-    return !!(
-      import.meta.env.PUBLIC_SUPABASE_URL &&
-      import.meta.env.PUBLIC_SUPABASE_ANON_KEY
-    )
+    return !!(import.meta.env.PUBLIC_SUPABASE_URL && import.meta.env.PUBLIC_SUPABASE_ANON_KEY);
   } catch {
-    return false
+    return false;
   }
 }
 
@@ -101,14 +98,17 @@ export function isSupabaseConfigured(): boolean {
  * Returns null if no active session
  */
 export async function getCurrentSession() {
-  const { data: { session }, error } = await supabase.auth.getSession()
+  const {
+    data: { session },
+    error,
+  } = await supabase.auth.getSession();
 
   if (error) {
-    console.error('Error getting session:', error)
-    return null
+    console.error("Error getting session:", error);
+    return null;
   }
 
-  return session
+  return session;
 }
 
 /**
@@ -116,20 +116,23 @@ export async function getCurrentSession() {
  * Returns null if no authenticated user
  */
 export async function getCurrentUser() {
-  const { data: { user }, error } = await supabase.auth.getUser()
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
 
   if (error) {
-    console.error('Error getting user:', error)
-    return null
+    console.error("Error getting user:", error);
+    return null;
   }
 
-  return user
+  return user;
 }
 
 /**
  * Check if there is an active authenticated session
  */
 export async function isAuthenticated(): Promise<boolean> {
-  const session = await getCurrentSession()
-  return session !== null
+  const session = await getCurrentSession();
+  return session !== null;
 }

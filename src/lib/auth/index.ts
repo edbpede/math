@@ -19,35 +19,33 @@
  * ```
  */
 
-// UUID utilities
-export {
-  generateUUID,
-  formatUUID,
-  validateUUID,
-  parseUUID,
-  normalizeUUID,
-  maskUUID,
-} from './uuid'
+export type { AuthResult, Session, User } from "./service";
 
 // Auth service
 export {
   createUser,
-  signInWithUUID,
-  getUserByUUID,
-  getCurrentUser,
-  updateUser,
   deleteUser,
-} from './service'
-
-export type { Session, User, AuthResult } from './service'
-
+  getCurrentUser,
+  getUserByUUID,
+  signInWithUUID,
+  updateUser,
+} from "./service";
 // Session management
 export {
-  createSessionToken,
-  validateSessionToken,
-  createSessionCookie,
   clearSessionCookie,
+  createSessionCookie,
+  createSessionToken,
+  getSessionConfig,
   getSessionFromCookie,
   shouldRefreshSession,
-  getSessionConfig,
-} from './session'
+  validateSessionToken,
+} from "./session";
+// UUID utilities
+export {
+  formatUUID,
+  generateUUID,
+  maskUUID,
+  normalizeUUID,
+  parseUUID,
+  validateUUID,
+} from "./uuid";

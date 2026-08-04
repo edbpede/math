@@ -9,17 +9,17 @@
  * - 11.3: Filtered and weighted selection based on SRS, binding, and recency
  */
 
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import {
+  findTemplates,
+  getTemplate,
+  markTemplateUsed,
+  registerTemplate,
+  selectTemplate,
   TemplateRegistry,
   TemplateValidationError,
   templateRegistry,
-  registerTemplate,
   unregisterTemplate,
-  getTemplate,
-  findTemplates,
-  selectTemplate,
-  markTemplateUsed,
 } from "./template-registry";
 import type { ExerciseTemplate } from "./types";
 
@@ -89,27 +89,21 @@ describe("TemplateRegistry", () => {
 
       registry.register(template1);
 
-      expect(() => registry.register(template2)).toThrow(
-        TemplateValidationError,
-      );
+      expect(() => registry.register(template2)).toThrow(TemplateValidationError);
       expect(() => registry.register(template2)).toThrow("already registered");
     });
 
     it("should validate template ID is non-empty string", () => {
       const template = createValidTemplate("");
 
-      expect(() => registry.register(template)).toThrow(
-        TemplateValidationError,
-      );
+      expect(() => registry.register(template)).toThrow(TemplateValidationError);
       expect(() => registry.register(template)).toThrow("non-empty string");
     });
 
     it("should validate template name is non-empty string", () => {
       const template = createValidTemplate("test-1", { name: "" });
 
-      expect(() => registry.register(template)).toThrow(
-        TemplateValidationError,
-      );
+      expect(() => registry.register(template)).toThrow(TemplateValidationError);
       expect(() => registry.register(template)).toThrow("non-empty string");
     });
 
@@ -118,9 +112,7 @@ describe("TemplateRegistry", () => {
       // @ts-expect-error - Testing runtime validation
       delete template.metadata;
 
-      expect(() => registry.register(template)).toThrow(
-        TemplateValidationError,
-      );
+      expect(() => registry.register(template)).toThrow(TemplateValidationError);
       expect(() => registry.register(template)).toThrow("metadata is required");
     });
 
@@ -137,12 +129,8 @@ describe("TemplateRegistry", () => {
         },
       });
 
-      expect(() => registry.register(template)).toThrow(
-        TemplateValidationError,
-      );
-      expect(() => registry.register(template)).toThrow(
-        "Invalid competency area ID",
-      );
+      expect(() => registry.register(template)).toThrow(TemplateValidationError);
+      expect(() => registry.register(template)).toThrow("Invalid competency area ID");
     });
 
     it("should validate grade range", () => {
@@ -158,9 +146,7 @@ describe("TemplateRegistry", () => {
         },
       });
 
-      expect(() => registry.register(template)).toThrow(
-        TemplateValidationError,
-      );
+      expect(() => registry.register(template)).toThrow(TemplateValidationError);
       expect(() => registry.register(template)).toThrow("Invalid grade range");
     });
 
@@ -177,9 +163,7 @@ describe("TemplateRegistry", () => {
         },
       });
 
-      expect(() => registry.register(template)).toThrow(
-        TemplateValidationError,
-      );
+      expect(() => registry.register(template)).toThrow(TemplateValidationError);
       expect(() => registry.register(template)).toThrow("Invalid difficulty");
     });
 
@@ -196,12 +180,8 @@ describe("TemplateRegistry", () => {
         },
       });
 
-      expect(() => registry.register(template)).toThrow(
-        TemplateValidationError,
-      );
-      expect(() => registry.register(template)).toThrow(
-        "isBinding must be a boolean",
-      );
+      expect(() => registry.register(template)).toThrow(TemplateValidationError);
+      expect(() => registry.register(template)).toThrow("isBinding must be a boolean");
     });
 
     it("should validate tags is an array", () => {
@@ -217,12 +197,8 @@ describe("TemplateRegistry", () => {
         },
       });
 
-      expect(() => registry.register(template)).toThrow(
-        TemplateValidationError,
-      );
-      expect(() => registry.register(template)).toThrow(
-        "Tags must be an array",
-      );
+      expect(() => registry.register(template)).toThrow(TemplateValidationError);
+      expect(() => registry.register(template)).toThrow("Tags must be an array");
     });
 
     it("should validate generate is a function", () => {
@@ -230,12 +206,8 @@ describe("TemplateRegistry", () => {
       // @ts-expect-error - Testing runtime validation
       template.generate = "not-a-function";
 
-      expect(() => registry.register(template)).toThrow(
-        TemplateValidationError,
-      );
-      expect(() => registry.register(template)).toThrow(
-        "generate must be a function",
-      );
+      expect(() => registry.register(template)).toThrow(TemplateValidationError);
+      expect(() => registry.register(template)).toThrow("generate must be a function");
     });
 
     it("should validate validate is a function", () => {
@@ -243,12 +215,8 @@ describe("TemplateRegistry", () => {
       // @ts-expect-error - Testing runtime validation
       template.validate = "not-a-function";
 
-      expect(() => registry.register(template)).toThrow(
-        TemplateValidationError,
-      );
-      expect(() => registry.register(template)).toThrow(
-        "validate must be a function",
-      );
+      expect(() => registry.register(template)).toThrow(TemplateValidationError);
+      expect(() => registry.register(template)).toThrow("validate must be a function");
     });
 
     it("should validate hints is an array", () => {
@@ -256,12 +224,8 @@ describe("TemplateRegistry", () => {
       // @ts-expect-error - Testing runtime validation
       template.hints = "not-an-array";
 
-      expect(() => registry.register(template)).toThrow(
-        TemplateValidationError,
-      );
-      expect(() => registry.register(template)).toThrow(
-        "hints must be an array",
-      );
+      expect(() => registry.register(template)).toThrow(TemplateValidationError);
+      expect(() => registry.register(template)).toThrow("hints must be an array");
     });
 
     it("should validate at least 4 hint levels", () => {
@@ -269,12 +233,8 @@ describe("TemplateRegistry", () => {
         hints: [() => "Hint 1", () => "Hint 2"],
       });
 
-      expect(() => registry.register(template)).toThrow(
-        TemplateValidationError,
-      );
-      expect(() => registry.register(template)).toThrow(
-        "at least 4 hint levels",
-      );
+      expect(() => registry.register(template)).toThrow(TemplateValidationError);
+      expect(() => registry.register(template)).toThrow("at least 4 hint levels");
     });
 
     it("should validate each hint is a function", () => {
@@ -283,9 +243,7 @@ describe("TemplateRegistry", () => {
         hints: [() => "H1", () => "H2", "not-a-function", () => "H4"],
       });
 
-      expect(() => registry.register(template)).toThrow(
-        TemplateValidationError,
-      );
+      expect(() => registry.register(template)).toThrow(TemplateValidationError);
       expect(() => registry.register(template)).toThrow("must be a function");
     });
   });
@@ -561,12 +519,7 @@ describe("TemplateRegistry", () => {
       });
 
       expect(selected).toBeTruthy();
-      expect([
-        "binding-a",
-        "non-binding-a",
-        "difficulty-b",
-        "difficulty-c",
-      ]).toContain(selected);
+      expect(["binding-a", "non-binding-a", "difficulty-b", "difficulty-c"]).toContain(selected);
     });
 
     it("should return undefined when no templates match criteria", () => {
@@ -599,9 +552,7 @@ describe("TemplateRegistry", () => {
 
       // Binding template should be selected more often
       const bindingCount = selections.filter((s) => s === "binding-a").length;
-      const nonBindingCount = selections.filter(
-        (s) => s === "non-binding-a",
-      ).length;
+      const nonBindingCount = selections.filter((s) => s === "non-binding-a").length;
 
       expect(bindingCount).toBeGreaterThan(nonBindingCount);
     });
@@ -641,12 +592,8 @@ describe("TemplateRegistry", () => {
         if (selected) lowMasterySelections.push(selected);
       }
 
-      const lowMasteryA = lowMasterySelections.filter((s) =>
-        s.includes("a"),
-      ).length;
-      const lowMasteryC = lowMasterySelections.filter(
-        (s) => s === "difficulty-c",
-      ).length;
+      const lowMasteryA = lowMasterySelections.filter((s) => s.includes("a")).length;
+      const lowMasteryC = lowMasterySelections.filter((s) => s === "difficulty-c").length;
 
       expect(lowMasteryA).toBeGreaterThan(lowMasteryC);
 
@@ -661,12 +608,8 @@ describe("TemplateRegistry", () => {
         if (selected) highMasterySelections.push(selected);
       }
 
-      const highMasteryC = highMasterySelections.filter(
-        (s) => s === "difficulty-c",
-      ).length;
-      const highMasteryA = highMasterySelections.filter((s) =>
-        s.includes("-a"),
-      ).length;
+      const highMasteryC = highMasterySelections.filter((s) => s === "difficulty-c").length;
+      const highMasteryA = highMasterySelections.filter((s) => s.includes("-a")).length;
 
       expect(highMasteryC).toBeGreaterThan(highMasteryA);
     });
@@ -866,9 +809,7 @@ describe("TemplateRegistry", () => {
 
       registry.register(template);
 
-      expect(registry.find({ tags: ["addition", "basic"] })).toContain(
-        "test-1",
-      );
+      expect(registry.find({ tags: ["addition", "basic"] })).toContain("test-1");
       expect(registry.find({ tags: ["money"] })).toContain("test-1");
     });
 

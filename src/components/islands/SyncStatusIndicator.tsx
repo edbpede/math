@@ -9,16 +9,16 @@
  * - 15.4: Display last sync timestamp and online/offline status
  */
 
-import { Show, createSignal, onMount, onCleanup, createEffect } from "solid-js";
 import { useStore } from "@nanostores/solid";
+import { createEffect, createSignal, onCleanup, onMount, Show } from "solid-js";
+import { $t } from "../../lib/i18n";
 import {
   $networkStatus,
   $syncStatus,
+  getTimeSinceLastSync,
   initializeStatusStores,
   triggerManualSync,
-  getTimeSinceLastSync,
 } from "../../lib/stores/network-status";
-import { $t } from "../../lib/i18n";
 
 export default function SyncStatusIndicator() {
   const [expanded, setExpanded] = createSignal(false);
@@ -68,15 +68,11 @@ export default function SyncStatusIndicator() {
 
     try {
       const itemsSynced = await triggerManualSync();
-      console.log(
-        `[SyncStatusIndicator] Manual sync completed: ${itemsSynced} items`,
-      );
+      console.log(`[SyncStatusIndicator] Manual sync completed: ${itemsSynced} items`);
       // Success - the store will update automatically
     } catch (err) {
       console.error("[SyncStatusIndicator] Manual sync failed:", err);
-      setError(
-        err instanceof Error ? err.message : t()("sync.errors.syncFailed"),
-      );
+      setError(err instanceof Error ? err.message : t()("sync.errors.syncFailed"));
     } finally {
       setSyncing(false);
     }
@@ -116,9 +112,7 @@ export default function SyncStatusIndicator() {
         />
 
         {/* Status text */}
-        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
-          {getStatusText()}
-        </span>
+        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{getStatusText()}</span>
 
         {/* Queue count badge */}
         <Show when={syncStatus().queueCount > 0}>
@@ -129,6 +123,7 @@ export default function SyncStatusIndicator() {
 
         {/* Expand/collapse icon */}
         <svg
+          aria-hidden="true"
           class={`w-4 h-4 transition-transform ${expanded() ? "rotate-180" : ""}`}
           fill="none"
           stroke="currentColor"
@@ -160,9 +155,7 @@ export default function SyncStatusIndicator() {
                 class={`w-2 h-2 rounded-full ${networkStatus().online ? "bg-green-500" : "bg-red-500"}`}
               />
               <span class="text-sm text-gray-600 dark:text-gray-400">
-                {networkStatus().online
-                  ? t()("sync.status.online")
-                  : t()("sync.status.offline")}
+                {networkStatus().online ? t()("sync.status.online") : t()("sync.status.offline")}
               </span>
             </div>
           </div>
@@ -186,6 +179,7 @@ export default function SyncStatusIndicator() {
             <div class="mb-3 p-3 bg-red-50 dark:bg-red-900/20 rounded border border-red-200 dark:border-red-800">
               <div class="flex items-start gap-2">
                 <svg
+                  aria-hidden="true"
                   class="flex-shrink-0 w-5 h-5 text-red-600 dark:text-red-400 mt-0.5"
                   fill="none"
                   stroke="currentColor"
@@ -217,11 +211,7 @@ export default function SyncStatusIndicator() {
             <button
               type="button"
               onClick={handleManualSync}
-              disabled={
-                syncStatus().syncing ||
-                syncing() ||
-                syncStatus().queueCount === 0
-              }
+              disabled={syncStatus().syncing || syncing() || syncStatus().queueCount === 0}
               class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               aria-label={t()("sync.ui.manualSync")}
             >
@@ -229,7 +219,13 @@ export default function SyncStatusIndicator() {
                 when={syncStatus().syncing || syncing()}
                 fallback={
                   <span class="flex items-center justify-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      aria-hidden="true"
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -242,7 +238,7 @@ export default function SyncStatusIndicator() {
                 }
               >
                 <span class="flex items-center justify-center gap-2">
-                  <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                  <svg aria-hidden="true" class="animate-spin h-4 w-4" viewBox="0 0 24 24">
                     <circle
                       class="opacity-25"
                       cx="12"
@@ -269,6 +265,7 @@ export default function SyncStatusIndicator() {
             <div class="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-800">
               <div class="flex items-start gap-2">
                 <svg
+                  aria-hidden="true"
                   class="flex-shrink-0 w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5"
                   fill="none"
                   stroke="currentColor"

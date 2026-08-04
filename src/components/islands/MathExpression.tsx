@@ -24,19 +24,19 @@
  * ```
  */
 
-import { createMemo } from 'solid-js'
-import { useStore } from '@nanostores/solid'
-import { $t } from '@/lib/i18n'
-import { parseMathExpression, containsMath } from '@/lib/accessibility/math-parser'
-import { mathToSpeech } from '@/lib/accessibility/math-to-speech'
+import { useStore } from "@nanostores/solid";
+import { createMemo } from "solid-js";
+import { containsMath, parseMathExpression } from "@/lib/accessibility/math-parser";
+import { mathToSpeech } from "@/lib/accessibility/math-to-speech";
+import { $t } from "@/lib/i18n";
 
 export interface MathExpressionProps {
   /** The mathematical expression as text */
-  expression: string
+  expression: string;
   /** Optional CSS class for styling */
-  class?: string
+  class?: string;
   /** Whether to display inline (default) or block */
-  display?: 'inline' | 'block'
+  display?: "inline" | "block";
 }
 
 /**
@@ -52,49 +52,50 @@ export interface MathExpressionProps {
  * ```
  */
 export default function MathExpression(props: MathExpressionProps) {
-  const t = useStore($t)
+  const t = useStore($t);
 
   // Check if expression contains math
-  const hasMath = createMemo(() => containsMath(props.expression))
+  const hasMath = createMemo(() => containsMath(props.expression));
 
   // Parse the expression
   const parsed = createMemo(() => {
-    if (!hasMath()) return null
-    return parseMathExpression(props.expression)
-  })
+    if (!hasMath()) return null;
+    return parseMathExpression(props.expression);
+  });
 
   // Generate spoken representation
   const spokenForm = createMemo(() => {
-    const expr = parsed()
-    if (!expr) return props.expression
+    const expr = parsed();
+    if (!expr) return props.expression;
 
     try {
-      return mathToSpeech(expr, t())
+      return mathToSpeech(expr, t());
     } catch (error) {
-      console.error('Error converting math to speech:', error)
-      return props.expression
+      console.error("Error converting math to speech:", error);
+      return props.expression;
     }
-  })
+  });
 
   // Determine if we should render with special math styling
-  const renderAsMath = createMemo(() => hasMath())
+  const renderAsMath = createMemo(() => hasMath());
 
   // CSS classes
   const classes = createMemo(() => {
-    const baseClass = props.class || ''
-    const displayClass = props.display === 'block' ? 'block' : 'inline'
-    const mathClass = renderAsMath() ? 'math-expression font-mono' : ''
+    const baseClass = props.class || "";
+    const displayClass = props.display === "block" ? "block" : "inline";
+    const mathClass = renderAsMath() ? "math-expression font-mono" : "";
 
-    return `${baseClass} ${displayClass} ${mathClass}`.trim()
-  })
+    return `${baseClass} ${displayClass} ${mathClass}`.trim();
+  });
 
   return (
+    // biome-ignore lint/a11y/useAriaPropsSupportedByRole: role is assigned conditionally at runtime, so the static check only sees the case where it is undefined
     <span
       class={classes()}
-      role={renderAsMath() ? 'math' : undefined}
+      role={renderAsMath() ? "math" : undefined}
       aria-label={renderAsMath() ? spokenForm() : undefined}
     >
       {props.expression}
     </span>
-  )
+  );
 }

@@ -27,16 +27,16 @@
  * ```
  */
 
-import {
-  ErrorBoundary as SolidErrorBoundary,
-  type Component,
-  type JSX,
-  createSignal,
-} from "solid-js";
 import { useStore } from "@nanostores/solid";
-import { $t } from "@/lib/i18n";
+import {
+  type Component,
+  createSignal,
+  type JSX,
+  ErrorBoundary as SolidErrorBoundary,
+} from "solid-js";
 import { announce } from "@/lib/accessibility/announcer";
 import { logError } from "@/lib/error/logger";
+import { $t } from "@/lib/i18n";
 
 /**
  * Props for ErrorBoundaryWrapper component
@@ -110,15 +110,11 @@ const DefaultErrorFallback: Component<{
         </div>
 
         {/* Error Message */}
-        <h2 class="text-lg font-semibold text-red-900 mb-2">
-          {getMessage()}
-        </h2>
+        <h2 class="text-lg font-semibold text-red-900 mb-2">{getMessage()}</h2>
 
         {/* Component Context (dev mode only) */}
         {import.meta.env.DEV && props.componentName && (
-          <p class="text-sm text-red-700 mb-2">
-            Component: {props.componentName}
-          </p>
+          <p class="text-sm text-red-700 mb-2">Component: {props.componentName}</p>
         )}
 
         {/* Technical Details (dev mode only) */}
@@ -137,6 +133,7 @@ const DefaultErrorFallback: Component<{
         {/* Action Buttons */}
         <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
           <button
+            type="button"
             onClick={handleReset}
             class="touch-target inline-flex items-center justify-center rounded-md bg-red-600 px-6 py-3 text-base font-medium text-white transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
             aria-label={t()("errors.general.tryAgain")}
@@ -160,6 +157,7 @@ const DefaultErrorFallback: Component<{
           </button>
 
           <button
+            type="button"
             onClick={() => window.location.reload()}
             class="touch-target inline-flex items-center justify-center rounded-md border-2 border-red-300 bg-white px-6 py-3 text-base font-medium text-red-700 transition-colors hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
             aria-label="Genindlæs siden"
@@ -169,9 +167,7 @@ const DefaultErrorFallback: Component<{
         </div>
 
         {/* Support Message */}
-        <p class="mt-4 text-sm text-red-600">
-          {t()("errors.general.contactSupport")}
-        </p>
+        <p class="mt-4 text-sm text-red-600">{t()("errors.general.contactSupport")}</p>
       </div>
     </div>
   );
@@ -210,9 +206,7 @@ const DefaultErrorFallback: Component<{
  * </ErrorBoundaryWrapper>
  * ```
  */
-export const ErrorBoundaryWrapper: Component<ErrorBoundaryWrapperProps> = (
-  props,
-) => {
+export const ErrorBoundaryWrapper: Component<ErrorBoundaryWrapperProps> = (props) => {
   const t = useStore($t);
   const [resetKey, setResetKey] = createSignal(0);
 

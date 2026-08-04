@@ -10,10 +10,10 @@
  * - 9.3: Touch targets minimum 44x44 pixels
  */
 
-import { createMemo, For, Show } from 'solid-js';
-import { useStore } from '@nanostores/solid';
-import { $t } from '@/lib/i18n';
-import { ErrorBoundaryWrapper } from './ErrorBoundary';
+import { useStore } from "@nanostores/solid";
+import { createMemo, For, Show } from "solid-js";
+import { $t } from "@/lib/i18n";
+import { ErrorBoundaryWrapper } from "./ErrorBoundary";
 
 /**
  * Session statistics data
@@ -72,38 +72,38 @@ const SessionSummaryComponent = (props: SessionSummaryProps) => {
     const seconds = Math.round(props.stats.avgTimeSeconds);
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   });
 
   // Determine congratulations message based on accuracy
   const congratsMessage = createMemo(() => {
     const acc = accuracy();
-    if (acc >= 90) return t()('exercises.session.summary.excellentWork');
-    if (acc >= 70) return t()('exercises.session.summary.goodProgress');
-    return t()('exercises.session.summary.keepPracticing');
+    if (acc >= 90) return t()("exercises.session.summary.excellentWork");
+    if (acc >= 70) return t()("exercises.session.summary.goodProgress");
+    return t()("exercises.session.summary.keepPracticing");
   });
 
   // Determine achievements unlocked
   const achievements = createMemo(() => {
     const unlocked: string[] = [];
-    if (accuracy() === 100) unlocked.push('perfectScore');
-    if (props.stats.hintsUsed === 0 && props.stats.correctCount > 0) unlocked.push('noHints');
-    if (props.stats.avgTimeSeconds < 30) unlocked.push('fastLearner');
-    if (props.stats.totalExercises >= 30) unlocked.push('persistent');
+    if (accuracy() === 100) unlocked.push("perfectScore");
+    if (props.stats.hintsUsed === 0 && props.stats.correctCount > 0) unlocked.push("noHints");
+    if (props.stats.avgTimeSeconds < 30) unlocked.push("fastLearner");
+    if (props.stats.totalExercises >= 30) unlocked.push("persistent");
     return unlocked;
   });
 
   return (
-    <div class={`session-summary ${props.class || ''}`}>
+    <div class={`session-summary ${props.class || ""}`}>
       {/* Header with celebration */}
       <div class="text-center mb-8">
-        <div class="text-6xl mb-4" aria-hidden="true">🎉</div>
+        <div class="text-6xl mb-4" aria-hidden="true">
+          🎉
+        </div>
         <h1 class="text-3xl font-bold text-gray-900 mb-2">
-          {t()('exercises.session.summary.title')}
+          {t()("exercises.session.summary.title")}
         </h1>
-        <p class="text-xl text-gray-700">
-          {congratsMessage()}
-        </p>
+        <p class="text-xl text-gray-700">{congratsMessage()}</p>
       </div>
 
       {/* Achievements */}
@@ -116,7 +116,9 @@ const SessionSummaryComponent = (props: SessionSummaryProps) => {
             <For each={achievements()}>
               {(achievement) => (
                 <div class="flex items-center p-3 bg-white rounded-lg shadow-sm">
-                  <span class="text-2xl mr-3" aria-hidden="true">🏆</span>
+                  <span class="text-2xl mr-3" aria-hidden="true">
+                    🏆
+                  </span>
                   <span class="text-sm font-medium text-gray-800">
                     {t()(`exercises.session.summary.achievements.${achievement}`)}
                   </span>
@@ -130,57 +132,47 @@ const SessionSummaryComponent = (props: SessionSummaryProps) => {
       {/* Statistics */}
       <div class="mb-8 p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
         <h2 class="text-xl font-semibold text-gray-900 mb-6">
-          {t()('exercises.session.summary.statistics.title')}
+          {t()("exercises.session.summary.statistics.title")}
         </h2>
         <div class="grid grid-cols-2 gap-6">
           {/* Total exercises */}
           <div class="text-center">
-            <div class="text-3xl font-bold text-blue-600 mb-1">
-              {props.stats.totalExercises}
-            </div>
+            <div class="text-3xl font-bold text-blue-600 mb-1">{props.stats.totalExercises}</div>
             <div class="text-sm text-gray-600">
-              {t()('exercises.session.summary.statistics.total')}
+              {t()("exercises.session.summary.statistics.total")}
             </div>
           </div>
 
           {/* Correct count */}
           <div class="text-center">
-            <div class="text-3xl font-bold text-green-600 mb-1">
-              {props.stats.correctCount}
-            </div>
+            <div class="text-3xl font-bold text-green-600 mb-1">{props.stats.correctCount}</div>
             <div class="text-sm text-gray-600">
-              {t()('exercises.session.summary.statistics.correct')}
+              {t()("exercises.session.summary.statistics.correct")}
             </div>
           </div>
 
           {/* Accuracy */}
           <div class="text-center">
-            <div class="text-3xl font-bold text-purple-600 mb-1">
-              {accuracy()}%
-            </div>
+            <div class="text-3xl font-bold text-purple-600 mb-1">{accuracy()}%</div>
             <div class="text-sm text-gray-600">
-              {t()('exercises.session.summary.statistics.accuracy')}
+              {t()("exercises.session.summary.statistics.accuracy")}
             </div>
           </div>
 
           {/* Average time */}
           <div class="text-center">
-            <div class="text-3xl font-bold text-orange-600 mb-1">
-              {avgTimeFormatted()}
-            </div>
+            <div class="text-3xl font-bold text-orange-600 mb-1">{avgTimeFormatted()}</div>
             <div class="text-sm text-gray-600">
-              {t()('exercises.session.summary.statistics.avgTime')}
+              {t()("exercises.session.summary.statistics.avgTime")}
             </div>
           </div>
 
           {/* Hints used */}
           <Show when={props.stats.hintsUsed > 0}>
             <div class="text-center">
-              <div class="text-3xl font-bold text-yellow-600 mb-1">
-                {props.stats.hintsUsed}
-              </div>
+              <div class="text-3xl font-bold text-yellow-600 mb-1">{props.stats.hintsUsed}</div>
               <div class="text-sm text-gray-600">
-                {t()('exercises.session.summary.statistics.hintsUsed')}
+                {t()("exercises.session.summary.statistics.hintsUsed")}
               </div>
             </div>
           </Show>
@@ -188,11 +180,9 @@ const SessionSummaryComponent = (props: SessionSummaryProps) => {
           {/* Skipped */}
           <Show when={props.stats.skippedCount > 0}>
             <div class="text-center">
-              <div class="text-3xl font-bold text-gray-600 mb-1">
-                {props.stats.skippedCount}
-              </div>
+              <div class="text-3xl font-bold text-gray-600 mb-1">{props.stats.skippedCount}</div>
               <div class="text-sm text-gray-600">
-                {t()('exercises.session.summary.statistics.skipped')}
+                {t()("exercises.session.summary.statistics.skipped")}
               </div>
             </div>
           </Show>
@@ -200,11 +190,9 @@ const SessionSummaryComponent = (props: SessionSummaryProps) => {
           {/* Mastery gain (if provided) */}
           <Show when={props.masteryGain !== undefined && props.masteryGain! > 0}>
             <div class="text-center col-span-2">
-              <div class="text-3xl font-bold text-indigo-600 mb-1">
-                +{props.masteryGain}
-              </div>
+              <div class="text-3xl font-bold text-indigo-600 mb-1">+{props.masteryGain}</div>
               <div class="text-sm text-gray-600">
-                {t()('exercises.session.summary.statistics.masteryGain')}
+                {t()("exercises.session.summary.statistics.masteryGain")}
               </div>
             </div>
           </Show>
@@ -226,7 +214,7 @@ const SessionSummaryComponent = (props: SessionSummaryProps) => {
             shadow-md hover:shadow-lg
           "
         >
-          {t()('exercises.session.summary.actions.practiceAgain')}
+          {t()("exercises.session.summary.actions.practiceAgain")}
         </button>
 
         <button
@@ -242,7 +230,7 @@ const SessionSummaryComponent = (props: SessionSummaryProps) => {
             shadow-md hover:shadow-lg
           "
         >
-          {t()('exercises.session.summary.actions.viewProgress')}
+          {t()("exercises.session.summary.actions.viewProgress")}
         </button>
 
         <button
@@ -258,7 +246,7 @@ const SessionSummaryComponent = (props: SessionSummaryProps) => {
             shadow-sm hover:shadow-md
           "
         >
-          {t()('exercises.session.summary.actions.dashboard')}
+          {t()("exercises.session.summary.actions.dashboard")}
         </button>
       </div>
     </div>

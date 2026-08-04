@@ -8,8 +8,8 @@
  * - 14.5: Optional dismissible tutorial overlay
  */
 
-import { createSignal, For, Show, onMount, type JSX } from "solid-js";
 import { useStore } from "@nanostores/solid";
+import { createSignal, For, type JSX, onMount, Show } from "solid-js";
 import { $t } from "@/lib/i18n";
 
 export interface TutorialOverlayProps {
@@ -35,6 +35,7 @@ const tutorialSteps: TutorialStep[] = [
     descriptionKey: "onboarding.tutorial.steps.1.description",
     icon: () => (
       <svg
+        aria-hidden="true"
         class="w-16 h-16"
         fill="none"
         stroke="currentColor"
@@ -55,6 +56,7 @@ const tutorialSteps: TutorialStep[] = [
     descriptionKey: "onboarding.tutorial.steps.2.description",
     icon: () => (
       <svg
+        aria-hidden="true"
         class="w-16 h-16"
         fill="none"
         stroke="currentColor"
@@ -75,6 +77,7 @@ const tutorialSteps: TutorialStep[] = [
     descriptionKey: "onboarding.tutorial.steps.3.description",
     icon: () => (
       <svg
+        aria-hidden="true"
         class="w-16 h-16"
         fill="none"
         stroke="currentColor"
@@ -95,6 +98,7 @@ const tutorialSteps: TutorialStep[] = [
     descriptionKey: "onboarding.tutorial.steps.4.description",
     icon: () => (
       <svg
+        aria-hidden="true"
         class="w-16 h-16"
         fill="none"
         stroke="currentColor"
@@ -194,10 +198,7 @@ export default function TutorialOverlay(props: TutorialOverlayProps) {
           {/* Header */}
           <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-xl">
             <div class="flex items-center justify-between">
-              <h2
-                id="tutorial-title"
-                class="text-2xl font-bold text-gray-900"
-              >
+              <h2 id="tutorial-title" class="text-2xl font-bold text-gray-900">
                 {t()("onboarding.tutorial.title")}
               </h2>
               <button
@@ -207,6 +208,7 @@ export default function TutorialOverlay(props: TutorialOverlayProps) {
                 aria-label={t()("common.actions.close")}
               >
                 <svg
+                  aria-hidden="true"
                   class="w-6 h-6"
                   fill="none"
                   stroke="currentColor"
@@ -228,9 +230,7 @@ export default function TutorialOverlay(props: TutorialOverlayProps) {
                 {(_, index) => (
                   <div
                     class={`h-2 flex-1 rounded-full transition-all duration-300 ${
-                      index() <= currentStep()
-                        ? "bg-blue-600"
-                        : "bg-gray-200"
+                      index() <= currentStep() ? "bg-blue-600" : "bg-gray-200"
                     }`}
                     aria-hidden="true"
                   />
@@ -246,10 +246,7 @@ export default function TutorialOverlay(props: TutorialOverlayProps) {
                 <Show when={currentStep() === index()}>
                   <div class="text-center animate-fadeIn">
                     {/* Icon */}
-                    <div
-                      class="flex justify-center mb-6 text-blue-600"
-                      aria-hidden="true"
-                    >
+                    <div class="flex justify-center mb-6 text-blue-600" aria-hidden="true">
                       {step.icon()}
                     </div>
 
@@ -262,14 +259,10 @@ export default function TutorialOverlay(props: TutorialOverlayProps) {
                     </div>
 
                     {/* Title */}
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">
-                      {t()(step.titleKey)}
-                    </h3>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">{t()(step.titleKey)}</h3>
 
                     {/* Description */}
-                    <p class="text-lg text-gray-600 leading-relaxed">
-                      {t()(step.descriptionKey)}
-                    </p>
+                    <p class="text-lg text-gray-600 leading-relaxed">{t()(step.descriptionKey)}</p>
                   </div>
                 </Show>
               )}

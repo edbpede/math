@@ -4,14 +4,14 @@
  * Comprehensive tests for fraction/decimal conversion exercise templates
  */
 
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
+import { ParameterGenerator } from "../../parameter-generator";
+import { TemplateRegistry } from "../../template-registry";
 import {
   fractionDecimalConversionA,
   fractionDecimalConversionB,
   fractionDecimalConversionC,
 } from "./fraction-decimal-conversion";
-import { TemplateRegistry } from "../../template-registry";
-import { ParameterGenerator } from "../../parameter-generator";
 
 describe("Fraction/Decimal Conversion Templates", () => {
   let registry: TemplateRegistry;
@@ -22,15 +22,9 @@ describe("Fraction/Decimal Conversion Templates", () => {
 
   describe("fractionDecimalConversionA (Difficulty A)", () => {
     it("should have correct metadata", () => {
-      expect(fractionDecimalConversionA.id).toBe(
-        "tal-algebra-fraction-decimal-conversion-4-6-A",
-      );
-      expect(fractionDecimalConversionA.metadata.competencyAreaId).toBe(
-        "tal-og-algebra",
-      );
-      expect(fractionDecimalConversionA.metadata.skillsAreaId).toBe(
-        "broker-og-procent",
-      );
+      expect(fractionDecimalConversionA.id).toBe("tal-algebra-fraction-decimal-conversion-4-6-A");
+      expect(fractionDecimalConversionA.metadata.competencyAreaId).toBe("tal-og-algebra");
+      expect(fractionDecimalConversionA.metadata.skillsAreaId).toBe("broker-og-procent");
       expect(fractionDecimalConversionA.metadata.gradeRange).toBe("4-6");
       expect(fractionDecimalConversionA.metadata.difficulty).toBe("A");
       expect(fractionDecimalConversionA.metadata.isBinding).toBe(true);
@@ -45,9 +39,7 @@ describe("Fraction/Decimal Conversion Templates", () => {
     it("should generate valid parameters", () => {
       const generator = new ParameterGenerator({ seed: 42 });
       for (let i = 0; i < 20; i++) {
-        const params = generator.generate(
-          fractionDecimalConversionA.parameters,
-        );
+        const params = generator.generate(fractionDecimalConversionA.parameters);
         const choice = params.fractionChoice as number;
 
         expect(choice).toBeGreaterThanOrEqual(0);
@@ -90,21 +82,11 @@ describe("Fraction/Decimal Conversion Templates", () => {
     it("should validate answers in multiple formats", () => {
       const correctAnswer = { value: 0.5, equivalents: ["0,5", "1/2"] };
 
-      expect(
-        fractionDecimalConversionA.validate("0.5", correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        fractionDecimalConversionA.validate("0,5", correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        fractionDecimalConversionA.validate("1/2", correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        fractionDecimalConversionA.validate("2/4", correctAnswer).correct,
-      ).toBe(true); // Equivalent
-      expect(
-        fractionDecimalConversionA.validate("0.25", correctAnswer).correct,
-      ).toBe(false);
+      expect(fractionDecimalConversionA.validate("0.5", correctAnswer).correct).toBe(true);
+      expect(fractionDecimalConversionA.validate("0,5", correctAnswer).correct).toBe(true);
+      expect(fractionDecimalConversionA.validate("1/2", correctAnswer).correct).toBe(true);
+      expect(fractionDecimalConversionA.validate("2/4", correctAnswer).correct).toBe(true); // Equivalent
+      expect(fractionDecimalConversionA.validate("0.25", correctAnswer).correct).toBe(false);
     });
 
     it("should provide 4 hint levels", () => {
@@ -138,9 +120,7 @@ describe("Fraction/Decimal Conversion Templates", () => {
 
   describe("fractionDecimalConversionB (Difficulty B)", () => {
     it("should have correct metadata", () => {
-      expect(fractionDecimalConversionB.id).toBe(
-        "tal-algebra-fraction-decimal-conversion-4-6-B",
-      );
+      expect(fractionDecimalConversionB.id).toBe("tal-algebra-fraction-decimal-conversion-4-6-B");
       expect(fractionDecimalConversionB.metadata.difficulty).toBe("B");
       expect(fractionDecimalConversionB.metadata.tags).toContain("tenths");
       expect(fractionDecimalConversionB.metadata.tags).toContain("hundredths");
@@ -154,9 +134,7 @@ describe("Fraction/Decimal Conversion Templates", () => {
     it("should generate valid parameters", () => {
       const generator = new ParameterGenerator({ seed: 123 });
       for (let i = 0; i < 30; i++) {
-        const params = generator.generate(
-          fractionDecimalConversionB.parameters,
-        );
+        const params = generator.generate(fractionDecimalConversionB.parameters);
         const conversionType = params.conversionType as number;
         const numerator = params.numerator as number;
         const direction = params.direction as number;
@@ -221,18 +199,10 @@ describe("Fraction/Decimal Conversion Templates", () => {
     it("should validate bidirectional conversions", () => {
       const correctAnswer = { value: "0,3", equivalents: [0.3, "3/10", "0,3"] };
 
-      expect(
-        fractionDecimalConversionB.validate("0.3", correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        fractionDecimalConversionB.validate("0,3", correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        fractionDecimalConversionB.validate("3/10", correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        fractionDecimalConversionB.validate("6/20", correctAnswer).correct,
-      ).toBe(true); // Equivalent
+      expect(fractionDecimalConversionB.validate("0.3", correctAnswer).correct).toBe(true);
+      expect(fractionDecimalConversionB.validate("0,3", correctAnswer).correct).toBe(true);
+      expect(fractionDecimalConversionB.validate("3/10", correctAnswer).correct).toBe(true);
+      expect(fractionDecimalConversionB.validate("6/20", correctAnswer).correct).toBe(true); // Equivalent
     });
 
     it("should provide 4 hint levels", () => {
@@ -242,9 +212,7 @@ describe("Fraction/Decimal Conversion Templates", () => {
 
   describe("fractionDecimalConversionC (Difficulty C)", () => {
     it("should have correct metadata", () => {
-      expect(fractionDecimalConversionC.id).toBe(
-        "tal-algebra-fraction-decimal-conversion-4-6-C",
-      );
+      expect(fractionDecimalConversionC.id).toBe("tal-algebra-fraction-decimal-conversion-4-6-C");
       expect(fractionDecimalConversionC.metadata.difficulty).toBe("C");
       expect(fractionDecimalConversionC.metadata.tags).toContain("advanced");
     });
@@ -257,9 +225,7 @@ describe("Fraction/Decimal Conversion Templates", () => {
     it("should generate valid parameters", () => {
       const generator = new ParameterGenerator({ seed: 456 });
       for (let i = 0; i < 30; i++) {
-        const params = generator.generate(
-          fractionDecimalConversionC.parameters,
-        );
+        const params = generator.generate(fractionDecimalConversionC.parameters);
         const denominator = params.baseDenominator as number;
         const numerator = params.numerator as number;
 
@@ -318,21 +284,11 @@ describe("Fraction/Decimal Conversion Templates", () => {
     it("should validate complex conversions", () => {
       const correctAnswer = { value: 0.75, equivalents: ["0,75", "3/4"] };
 
-      expect(
-        fractionDecimalConversionC.validate("0.75", correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        fractionDecimalConversionC.validate("0,75", correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        fractionDecimalConversionC.validate("3/4", correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        fractionDecimalConversionC.validate("6/8", correctAnswer).correct,
-      ).toBe(true); // Equivalent
-      expect(
-        fractionDecimalConversionC.validate("0.5", correctAnswer).correct,
-      ).toBe(false);
+      expect(fractionDecimalConversionC.validate("0.75", correctAnswer).correct).toBe(true);
+      expect(fractionDecimalConversionC.validate("0,75", correctAnswer).correct).toBe(true);
+      expect(fractionDecimalConversionC.validate("3/4", correctAnswer).correct).toBe(true);
+      expect(fractionDecimalConversionC.validate("6/8", correctAnswer).correct).toBe(true); // Equivalent
+      expect(fractionDecimalConversionC.validate("0.5", correctAnswer).correct).toBe(false);
     });
 
     it("should provide 4 hint levels", () => {
@@ -361,15 +317,11 @@ describe("Fraction/Decimal Conversion Templates", () => {
   describe("Template Determinism", () => {
     it("should generate same result with same seed", () => {
       const generator1 = new ParameterGenerator({ seed: 999 });
-      const params1 = generator1.generate(
-        fractionDecimalConversionA.parameters,
-      );
+      const params1 = generator1.generate(fractionDecimalConversionA.parameters);
       const result1 = fractionDecimalConversionA.generate(params1, "da-DK");
 
       const generator2 = new ParameterGenerator({ seed: 999 });
-      const params2 = generator2.generate(
-        fractionDecimalConversionA.parameters,
-      );
+      const params2 = generator2.generate(fractionDecimalConversionA.parameters);
       const result2 = fractionDecimalConversionA.generate(params2, "da-DK");
 
       expect(params1).toEqual(params2);

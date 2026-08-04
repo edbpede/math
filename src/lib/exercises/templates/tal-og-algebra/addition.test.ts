@@ -4,10 +4,10 @@
  * Comprehensive tests for addition exercise templates
  */
 
-import { describe, it, expect, beforeEach } from "vitest";
-import { additionA, additionB, additionC } from "./addition";
-import { TemplateRegistry } from "../../template-registry";
+import { beforeEach, describe, expect, it } from "vitest";
 import { ParameterGenerator } from "../../parameter-generator";
+import { TemplateRegistry } from "../../template-registry";
+import { additionA, additionB, additionC } from "./addition";
 
 describe("Addition Templates", () => {
   let registry: TemplateRegistry;

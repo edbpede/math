@@ -10,8 +10,8 @@
  * - 6.4: Indicate when sync is in progress
  */
 
-import { createSignal, onMount, onCleanup, Show } from "solid-js";
 import { useStore } from "@nanostores/solid";
+import { createSignal, onCleanup, onMount, Show } from "solid-js";
 import { $t } from "@/lib/i18n";
 
 export interface SyncStatusProps {
@@ -141,23 +141,14 @@ export default function SyncStatus(props: SyncStatusProps) {
     };
 
     window.addEventListener("sync:start", handleSyncStart as EventListener);
-    window.addEventListener(
-      "sync:complete",
-      handleSyncComplete as EventListener,
-    );
+    window.addEventListener("sync:complete", handleSyncComplete as EventListener);
 
     onCleanup(() => {
       if (typeof window !== "undefined") {
         window.removeEventListener("online", updateOnlineStatus);
         window.removeEventListener("offline", updateOnlineStatus);
-        window.removeEventListener(
-          "sync:start",
-          handleSyncStart as EventListener,
-        );
-        window.removeEventListener(
-          "sync:complete",
-          handleSyncComplete as EventListener,
-        );
+        window.removeEventListener("sync:start", handleSyncStart as EventListener);
+        window.removeEventListener("sync:complete", handleSyncComplete as EventListener);
       }
       clearInterval(intervalId);
     });
@@ -192,10 +183,7 @@ export default function SyncStatus(props: SyncStatusProps) {
       <div class="flex items-center gap-2">
         {/* Animated dot for syncing state */}
         <div class="relative">
-          <span
-            class={`inline-block w-2 h-2 rounded-full ${dotColor()}`}
-            aria-hidden="true"
-          />
+          <span class={`inline-block w-2 h-2 rounded-full ${dotColor()}`} aria-hidden="true" />
           <Show when={isSyncing()}>
             <span
               class="absolute inset-0 w-2 h-2 rounded-full bg-blue-600 animate-ping opacity-75"
@@ -205,9 +193,7 @@ export default function SyncStatus(props: SyncStatusProps) {
         </div>
 
         {/* Status text */}
-        <span class={`text-sm font-medium ${statusColor()}`}>
-          {statusText()}
-        </span>
+        <span class={`text-sm font-medium ${statusColor()}`}>{statusText()}</span>
       </div>
 
       {/* Last sync timestamp */}

@@ -10,25 +10,24 @@
  * - Keyboard navigation and accessibility
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@solidjs/testing-library";
-import LanguageSelector from "./LanguageSelector";
-import * as i18n from "@/lib/i18n";
+import { fireEvent, render, screen, waitFor } from "@solidjs/testing-library";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as auth from "@/lib/auth";
+import * as i18n from "@/lib/i18n";
+import LanguageSelector from "./LanguageSelector";
 
 // Mock the i18n module with complete mock (avoid importActual to prevent loading translation files)
 vi.mock("@/lib/i18n", () => {
-  const createTranslationFunction =
-    () => (key: string, _params?: Record<string, string>) => {
-      const translations: Record<string, string> = {
-        "common.language.selector.title": "Language selector",
-        "common.language.selector.danish": "Dansk",
-        "common.language.selector.english": "English",
-        "common.language.selector.changingLanguage": "Changing language...",
-        "common.errors.generic": "An error occurred",
-      };
-      return translations[key] || key;
+  const createTranslationFunction = () => (key: string, _params?: Record<string, string>) => {
+    const translations: Record<string, string> = {
+      "common.language.selector.title": "Language selector",
+      "common.language.selector.danish": "Dansk",
+      "common.language.selector.english": "English",
+      "common.language.selector.changingLanguage": "Changing language...",
+      "common.errors.generic": "An error occurred",
     };
+    return translations[key] || key;
+  };
 
   const tFunc = createTranslationFunction();
 
@@ -132,9 +131,7 @@ describe("LanguageSelector", () => {
     });
 
     it("should render in compact mode without labels", async () => {
-      const { container } = render(() => (
-        <LanguageSelector variant="compact" />
-      ));
+      const { container } = render(() => <LanguageSelector variant="compact" />);
 
       // In compact mode, labels should not be visible
       const labels = container.querySelectorAll("span.font-medium");
@@ -160,18 +157,14 @@ describe("LanguageSelector", () => {
     });
 
     it("should apply vertical layout when specified", async () => {
-      const { container } = render(() => (
-        <LanguageSelector layout="vertical" />
-      ));
+      const { container } = render(() => <LanguageSelector layout="vertical" />);
 
       const selector = container.querySelector(".language-selector");
       expect(selector?.classList.contains("flex-col")).toBe(true);
     });
 
     it("should apply custom CSS class", async () => {
-      const { container } = render(() => (
-        <LanguageSelector class="custom-class" />
-      ));
+      const { container } = render(() => <LanguageSelector class="custom-class" />);
 
       const selector = container.querySelector(".language-selector");
       expect(selector?.classList.contains("custom-class")).toBe(true);
@@ -244,9 +237,7 @@ describe("LanguageSelector", () => {
       const getCurrentUserMock = vi.mocked(auth.getCurrentUser);
 
       // Make changeLocale async and slow
-      changeLocaleMock.mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100)),
-      );
+      changeLocaleMock.mockImplementation(() => new Promise((resolve) => setTimeout(resolve, 100)));
       getCurrentUserMock.mockResolvedValue(null);
 
       vi.spyOn(i18n.$locale, "get").mockReturnValue("da-DK");
@@ -257,16 +248,12 @@ describe("LanguageSelector", () => {
       fireEvent.click(englishButton);
 
       // Should show loading indicator
-      const loadingText = await screen.findByText(
-        /changing language|skifter sprog/i,
-      );
+      const loadingText = await screen.findByText(/changing language|skifter sprog/i);
       expect(loadingText).toBeInTheDocument();
 
       // Wait for loading to complete
       await waitFor(() => {
-        expect(
-          screen.queryByText(/changing language|skifter sprog/i),
-        ).not.toBeInTheDocument();
+        expect(screen.queryByText(/changing language|skifter sprog/i)).not.toBeInTheDocument();
       });
     });
   });
@@ -374,9 +361,7 @@ describe("LanguageSelector", () => {
       const changeLocaleMock = vi.mocked(i18n.changeLocale);
       const getCurrentUserMock = vi.mocked(auth.getCurrentUser);
 
-      changeLocaleMock.mockRejectedValue(
-        new Error("Failed to load translations"),
-      );
+      changeLocaleMock.mockRejectedValue(new Error("Failed to load translations"));
       getCurrentUserMock.mockResolvedValue(null);
 
       vi.spyOn(i18n.$locale, "get").mockReturnValue("da-DK");
@@ -441,9 +426,7 @@ describe("LanguageSelector", () => {
       const getCurrentUserMock = vi.mocked(auth.getCurrentUser);
 
       // Make changeLocale async and slow
-      changeLocaleMock.mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100)),
-      );
+      changeLocaleMock.mockImplementation(() => new Promise((resolve) => setTimeout(resolve, 100)));
       getCurrentUserMock.mockResolvedValue(null);
 
       vi.spyOn(i18n.$locale, "get").mockReturnValue("da-DK");

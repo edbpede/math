@@ -21,14 +21,14 @@
  * Security header names
  */
 export const SECURITY_HEADERS = {
-  CSP: 'Content-Security-Policy',
-  XCTO: 'X-Content-Type-Options',
-  XFO: 'X-Frame-Options',
-  XXP: 'X-XSS-Protection',
-  RP: 'Referrer-Policy',
-  PP: 'Permissions-Policy',
-  HSTS: 'Strict-Transport-Security',
-} as const
+  CSP: "Content-Security-Policy",
+  XCTO: "X-Content-Type-Options",
+  XFO: "X-Frame-Options",
+  XXP: "X-XSS-Protection",
+  RP: "Referrer-Policy",
+  PP: "Permissions-Policy",
+  HSTS: "Strict-Transport-Security",
+} as const;
 
 /**
  * Content Security Policy directives
@@ -56,9 +56,7 @@ export function getContentSecurityPolicy(isDevelopment: boolean = false): string
     // Scripts: only from same origin
     // In development, allow 'unsafe-inline' and 'unsafe-eval' for HMR
     // In production, use strict CSP with hashes (requires SSR adapter)
-    isDevelopment
-      ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
-      : "script-src 'self'",
+    isDevelopment ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'" : "script-src 'self'",
 
     // Styles: same origin + inline styles (Astro generates inline critical CSS)
     // TODO: Migrate to hash-based CSP when using SSR adapter
@@ -71,7 +69,7 @@ export function getContentSecurityPolicy(isDevelopment: boolean = false): string
     "font-src 'self'",
 
     // AJAX/WebSocket/EventSource: same origin + Supabase
-    `connect-src 'self' ${process.env.PUBLIC_SUPABASE_URL || 'https://*.supabase.co'} wss://*.supabase.co`,
+    `connect-src 'self' ${process.env.PUBLIC_SUPABASE_URL || "https://*.supabase.co"} wss://*.supabase.co`,
 
     // Media: same origin only
     "media-src 'self'",
@@ -95,10 +93,10 @@ export function getContentSecurityPolicy(isDevelopment: boolean = false): string
     "base-uri 'self'",
 
     // Upgrade insecure requests in production
-    ...(isDevelopment ? [] : ['upgrade-insecure-requests']),
-  ]
+    ...(isDevelopment ? [] : ["upgrade-insecure-requests"]),
+  ];
 
-  return directives.join('; ')
+  return directives.join("; ");
 }
 
 /**
@@ -110,42 +108,40 @@ export function getContentSecurityPolicy(isDevelopment: boolean = false): string
  * @param isDevelopment - Whether running in development mode
  * @returns Security headers object
  */
-export function getSecurityHeaders(
-  isDevelopment: boolean = false
-): Record<string, string> {
+export function getSecurityHeaders(isDevelopment: boolean = false): Record<string, string> {
   return {
     // Content Security Policy - prevents XSS and other injection attacks
     [SECURITY_HEADERS.CSP]: getContentSecurityPolicy(isDevelopment),
 
     // Prevent MIME type sniffing
     // Forces browsers to respect declared Content-Type
-    [SECURITY_HEADERS.XCTO]: 'nosniff',
+    [SECURITY_HEADERS.XCTO]: "nosniff",
 
     // Prevent clickjacking by blocking iframe embedding
     // Using 'DENY' instead of 'SAMEORIGIN' for maximum protection
-    [SECURITY_HEADERS.XFO]: 'DENY',
+    [SECURITY_HEADERS.XFO]: "DENY",
 
     // XSS Protection (legacy header, but still useful for older browsers)
     // Modern browsers rely on CSP, but this adds defense in depth
-    [SECURITY_HEADERS.XXP]: '1; mode=block',
+    [SECURITY_HEADERS.XXP]: "1; mode=block",
 
     // Referrer Policy - controls how much referrer information is sent
     // 'strict-origin-when-cross-origin' provides good privacy while
     // still allowing analytics on same-origin requests
-    [SECURITY_HEADERS.RP]: 'strict-origin-when-cross-origin',
+    [SECURITY_HEADERS.RP]: "strict-origin-when-cross-origin",
 
     // Permissions Policy - controls browser features
     // Disable features we don't use to reduce attack surface
     [SECURITY_HEADERS.PP]: [
-      'camera=()',
-      'microphone=()',
-      'geolocation=()',
-      'payment=()',
-      'usb=()',
-      'magnetometer=()',
-      'gyroscope=()',
-      'accelerometer=()',
-    ].join(', '),
+      "camera=()",
+      "microphone=()",
+      "geolocation=()",
+      "payment=()",
+      "usb=()",
+      "magnetometer=()",
+      "gyroscope=()",
+      "accelerometer=()",
+    ].join(", "),
 
     // Strict Transport Security - force HTTPS (only in production)
     // max-age: 2 years, includeSubDomains, preload
@@ -153,9 +149,9 @@ export function getSecurityHeaders(
     ...(isDevelopment
       ? {}
       : {
-          [SECURITY_HEADERS.HSTS]: 'max-age=63072000; includeSubDomains; preload',
+          [SECURITY_HEADERS.HSTS]: "max-age=63072000; includeSubDomains; preload",
         }),
-  }
+  };
 }
 
 /**
@@ -168,21 +164,18 @@ export function getSecurityHeaders(
  * @param isDevelopment - Whether running in development mode
  * @returns New Response with security headers
  */
-export function withSecurityHeaders(
-  response: Response,
-  isDevelopment: boolean = false
-): Response {
-  const headers = getSecurityHeaders(isDevelopment)
+export function withSecurityHeaders(response: Response, isDevelopment: boolean = false): Response {
+  const headers = getSecurityHeaders(isDevelopment);
 
   // Clone response to add headers
-  const newResponse = new Response(response.body, response)
+  const newResponse = new Response(response.body, response);
 
   // Add all security headers
   for (const [name, value] of Object.entries(headers)) {
-    newResponse.headers.set(name, value)
+    newResponse.headers.set(name, value);
   }
 
-  return newResponse
+  return newResponse;
 }
 
 /**
@@ -196,14 +189,14 @@ export function withSecurityHeaders(
  */
 export function createSecurityHeaders(
   isDevelopment: boolean = false,
-  existingHeaders?: HeadersInit
+  existingHeaders?: HeadersInit,
 ): Headers {
-  const headers = new Headers(existingHeaders)
-  const securityHeaders = getSecurityHeaders(isDevelopment)
+  const headers = new Headers(existingHeaders);
+  const securityHeaders = getSecurityHeaders(isDevelopment);
 
   for (const [name, value] of Object.entries(securityHeaders)) {
-    headers.set(name, value)
+    headers.set(name, value);
   }
 
-  return headers
+  return headers;
 }

@@ -2,15 +2,10 @@
  * Tests for timing utilities (debounce, throttle)
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import {
-  debounce,
-  throttle,
-  debounceCancellable,
-  throttleCancellable,
-} from './timing';
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { debounce, debounceCancellable, throttle, throttleCancellable } from "./timing";
 
-describe('debounce', () => {
+describe("debounce", () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -19,7 +14,7 @@ describe('debounce', () => {
     vi.restoreAllMocks();
   });
 
-  it('should delay function execution', () => {
+  it("should delay function execution", () => {
     const fn = vi.fn();
     const debounced = debounce(fn, 100);
 
@@ -30,7 +25,7 @@ describe('debounce', () => {
     expect(fn).toHaveBeenCalledTimes(1);
   });
 
-  it('should reset delay on multiple calls', () => {
+  it("should reset delay on multiple calls", () => {
     const fn = vi.fn();
     const debounced = debounce(fn, 100);
 
@@ -45,17 +40,17 @@ describe('debounce', () => {
     expect(fn).toHaveBeenCalledTimes(1);
   });
 
-  it('should pass arguments correctly', () => {
+  it("should pass arguments correctly", () => {
     const fn = vi.fn();
     const debounced = debounce(fn, 100);
 
-    debounced('arg1', 'arg2');
+    debounced("arg1", "arg2");
     vi.advanceTimersByTime(100);
 
-    expect(fn).toHaveBeenCalledWith('arg1', 'arg2');
+    expect(fn).toHaveBeenCalledWith("arg1", "arg2");
   });
 
-  it('should preserve this context', () => {
+  it("should preserve this context", () => {
     const obj = {
       value: 42,
       fn: vi.fn(function (this: any) {
@@ -71,7 +66,7 @@ describe('debounce', () => {
   });
 });
 
-describe('throttle', () => {
+describe("throttle", () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -80,7 +75,7 @@ describe('throttle', () => {
     vi.restoreAllMocks();
   });
 
-  it('should execute immediately on first call', () => {
+  it("should execute immediately on first call", () => {
     const fn = vi.fn();
     const throttled = throttle(fn, 100);
 
@@ -88,7 +83,7 @@ describe('throttle', () => {
     expect(fn).toHaveBeenCalledTimes(1);
   });
 
-  it('should not execute again until delay passes', () => {
+  it("should not execute again until delay passes", () => {
     const fn = vi.fn();
     const throttled = throttle(fn, 100);
 
@@ -102,41 +97,41 @@ describe('throttle', () => {
     expect(fn).toHaveBeenCalledTimes(2); // Trailing edge call
   });
 
-  it('should include trailing edge call', () => {
+  it("should include trailing edge call", () => {
     vi.useFakeTimers();
     const fn = vi.fn();
     const throttled = throttle(fn, 100);
 
-    throttled('first');
+    throttled("first");
     vi.advanceTimersByTime(50);
-    throttled('second');
+    throttled("second");
     vi.advanceTimersByTime(50);
-    throttled('third');
+    throttled("third");
 
     // First call executed immediately, second's trailing call executed at t=100
     // After throttled('third'), we should have 2 calls: 'first' and 'second'
     expect(fn).toHaveBeenCalledTimes(2);
-    expect(fn).toHaveBeenNthCalledWith(1, 'first');
-    expect(fn).toHaveBeenNthCalledWith(2, 'second');
+    expect(fn).toHaveBeenNthCalledWith(1, "first");
+    expect(fn).toHaveBeenNthCalledWith(2, "second");
 
     // Trailing call for 'third' after remaining delay
     vi.advanceTimersByTime(100);
     expect(fn).toHaveBeenCalledTimes(3);
-    expect(fn).toHaveBeenLastCalledWith('third');
-    
+    expect(fn).toHaveBeenLastCalledWith("third");
+
     vi.useRealTimers();
   });
 
-  it('should pass arguments correctly', () => {
+  it("should pass arguments correctly", () => {
     const fn = vi.fn();
     const throttled = throttle(fn, 100);
 
-    throttled('arg1', 'arg2');
-    expect(fn).toHaveBeenCalledWith('arg1', 'arg2');
+    throttled("arg1", "arg2");
+    expect(fn).toHaveBeenCalledWith("arg1", "arg2");
   });
 });
 
-describe('debounceCancellable', () => {
+describe("debounceCancellable", () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -145,7 +140,7 @@ describe('debounceCancellable', () => {
     vi.restoreAllMocks();
   });
 
-  it('should cancel pending execution', () => {
+  it("should cancel pending execution", () => {
     const fn = vi.fn();
     const debounced = debounceCancellable(fn, 100);
 
@@ -156,7 +151,7 @@ describe('debounceCancellable', () => {
     expect(fn).not.toHaveBeenCalled();
   });
 
-  it('should allow normal execution after cancel', () => {
+  it("should allow normal execution after cancel", () => {
     const fn = vi.fn();
     const debounced = debounceCancellable(fn, 100);
 
@@ -169,7 +164,7 @@ describe('debounceCancellable', () => {
   });
 });
 
-describe('throttleCancellable', () => {
+describe("throttleCancellable", () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -178,7 +173,7 @@ describe('throttleCancellable', () => {
     vi.restoreAllMocks();
   });
 
-  it('should cancel pending trailing call', () => {
+  it("should cancel pending trailing call", () => {
     const fn = vi.fn();
     const throttled = throttleCancellable(fn, 100);
 
@@ -191,8 +186,8 @@ describe('throttleCancellable', () => {
   });
 });
 
-describe('Performance', () => {
-  it('debounce should handle rapid calls efficiently', () => {
+describe("Performance", () => {
+  it("debounce should handle rapid calls efficiently", () => {
     const fn = vi.fn();
     const debounced = debounce(fn, 10);
 
@@ -205,7 +200,7 @@ describe('Performance', () => {
     expect(duration).toBeLessThan(50); // Should be very fast
   });
 
-  it('throttle should handle rapid calls efficiently', () => {
+  it("throttle should handle rapid calls efficiently", () => {
     const fn = vi.fn();
     const throttled = throttle(fn, 10);
 
@@ -218,4 +213,3 @@ describe('Performance', () => {
     expect(duration).toBeLessThan(50); // Should be very fast
   });
 });
-

@@ -96,9 +96,7 @@ function generateSubsettingCommands() {
  */
 function main() {
   console.log("🔤 Font Subsetting Script\n");
-  console.log(
-    "This script generates subsetting commands for OpenDyslexic fonts.",
-  );
+  console.log("This script generates subsetting commands for OpenDyslexic fonts.");
   console.log("To subset fonts, you need fonttools installed:\n");
   console.log("  pip install fonttools brotli\n");
   console.log("Unicode ranges to include:");

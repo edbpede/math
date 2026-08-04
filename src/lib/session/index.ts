@@ -9,82 +9,78 @@
  * - Offline persistence and recovery
  */
 
-// Lifecycle management
-export {
-  startPracticeSession,
-  pausePracticeSession,
-  resumePracticeSession,
-  endPracticeSession,
-  recoverSession,
-  clearSession,
-  SessionLifecycleError,
-  type StartSessionOptions,
-  type SessionOperationResult,
-} from './lifecycle'
-
 // State management
 export {
-  $sessionState,
+  $currentExerciseTimeFormatted,
   $isSessionActive,
   $sessionProgress,
-  $sessionTimeFormatted,
-  $currentExerciseTimeFormatted,
+  $sessionState,
   $sessionSummary,
-  resetSessionState,
-  setLifecycleState,
-  setSessionRecord,
-  setSessionPlan,
-  setCurrentExercise,
-  incrementHintsUsed,
-  submitExercise,
-  setSessionError,
+  $sessionTimeFormatted,
   clearSessionError,
+  destroySessionState,
+  type ExerciseState,
+  incrementHintsUsed,
   markSessionPaused,
   markSessionResumed,
-  destroySessionState,
-  type SessionState,
+  resetSessionState,
   type SessionLifecycleState,
-  type ExerciseState,
+  type SessionState,
   type SessionStatistics,
-} from '../stores/session-state'
-
+  setCurrentExercise,
+  setLifecycleState,
+  setSessionError,
+  setSessionPlan,
+  setSessionRecord,
+  submitExercise,
+} from "../stores/session-state";
 // Session composition
 export {
-  composeSession,
   type ComposeSessionOptions,
-} from './composer'
-
-// Session types
+  composeSession,
+} from "./composer";
+// Lifecycle management
 export {
-  type SessionPlan,
-  type PlannedExercise,
-  type SessionCompositionConfig,
-  type SessionCompositionResult,
-  type ContentCategory,
-  type CategoryAllocation,
-  DEFAULT_SESSION_CONFIG,
-} from './types'
-
+  clearSession,
+  endPracticeSession,
+  pausePracticeSession,
+  recoverSession,
+  resumePracticeSession,
+  SessionLifecycleError,
+  type SessionOperationResult,
+  type StartSessionOptions,
+  startPracticeSession,
+} from "./lifecycle";
 // Progress persistence
 export {
-  initializeProgressPersistence,
-  resetProgressPersistence,
+  $competencyProgressCache,
+  $hasPendingUpdates,
+  $isSyncInProgress,
+  $progressQueueState,
+  $skillProgressCache,
+  $timeUntilNextSync,
   destroyProgressPersistence,
-  queueCompetencyProgressUpdate,
-  queueSkillProgressUpdate,
-  queueExerciseAttempt,
   flushProgressUpdates,
   getCachedCompetencyProgress,
   getCachedSkillProgress,
-  populateProgressCache,
-  $progressQueueState,
-  $competencyProgressCache,
-  $skillProgressCache,
-  $isSyncInProgress,
-  $hasPendingUpdates,
-  $timeUntilNextSync,
+  initializeProgressPersistence,
   type ProgressPersistenceConfig,
-  type ProgressUpdateStatus,
   type ProgressQueueState,
   type ProgressUpdateResult,
-} from './progress-persistence'
+  type ProgressUpdateStatus,
+  populateProgressCache,
+  queueCompetencyProgressUpdate,
+  queueExerciseAttempt,
+  queueSkillProgressUpdate,
+  resetProgressPersistence,
+} from "./progress-persistence";
+// Session types
+export {
+  type CategoryAllocation,
+  type ContentCategory,
+  DEFAULT_SESSION_CONFIG,
+  type PlannedExercise,
+  type SessionCompositionConfig,
+  type SessionCompositionResult,
+  type SessionPlan,
+} from "./types";

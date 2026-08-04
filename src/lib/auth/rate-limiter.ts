@@ -19,9 +19,9 @@
  */
 interface RateLimitEntry {
   /** Number of failed attempts in current window */
-  count: number
+  count: number;
   /** Timestamp when the rate limit window resets (ms since epoch) */
-  resetAt: number
+  resetAt: number;
 }
 
 /**
@@ -29,13 +29,13 @@ interface RateLimitEntry {
  */
 export interface RateLimitResult {
   /** Whether the request is allowed */
-  allowed: boolean
+  allowed: boolean;
   /** Number of attempts remaining before rate limit */
-  remaining: number
+  remaining: number;
   /** Timestamp when the rate limit resets (ms since epoch) */
-  resetAt: number
+  resetAt: number;
   /** Seconds until rate limit resets (for Retry-After header) */
-  retryAfter: number
+  retryAfter: number;
 }
 
 /**
@@ -43,11 +43,11 @@ export interface RateLimitResult {
  */
 export interface RateLimiterConfig {
   /** Maximum number of failed attempts allowed */
-  maxAttempts: number
+  maxAttempts: number;
   /** Time window in milliseconds */
-  windowMs: number
+  windowMs: number;
   /** Cleanup interval in milliseconds */
-  cleanupIntervalMs: number
+  cleanupIntervalMs: number;
 }
 
 /**
@@ -57,7 +57,7 @@ const DEFAULT_CONFIG: RateLimiterConfig = {
   maxAttempts: 5,
   windowMs: 60000, // 1 minute
   cleanupIntervalMs: 5 * 60000, // 5 minutes
-}
+};
 
 /**
  * Server-side rate limiter for UUID authentication
@@ -89,9 +89,9 @@ const DEFAULT_CONFIG: RateLimiterConfig = {
  * }
  */
 export class RateLimiter {
-  private attempts = new Map<string, RateLimitEntry>()
-  private cleanupTimer: NodeJS.Timeout | null = null
-  private readonly config: RateLimiterConfig
+  private attempts = new Map<string, RateLimitEntry>();
+  private cleanupTimer: NodeJS.Timeout | null = null;
+  private readonly config: RateLimiterConfig;
 
   /**
    * Creates a new rate limiter instance
@@ -99,10 +99,10 @@ export class RateLimiter {
    * @param config - Optional configuration overrides
    */
   constructor(config: Partial<RateLimiterConfig> = {}) {
-    this.config = { ...DEFAULT_CONFIG, ...config }
+    this.config = { ...DEFAULT_CONFIG, ...config };
 
     // Start automatic cleanup
-    this.startCleanup()
+    this.startCleanup();
   }
 
   /**
@@ -119,38 +119,38 @@ export class RateLimiter {
    * console.log(`Allowed: ${result.allowed}, Remaining: ${result.remaining}`)
    */
   check(ip: string): RateLimitResult {
-    const now = Date.now()
-    const entry = this.attempts.get(ip)
+    const now = Date.now();
+    const entry = this.attempts.get(ip);
 
     // Clean up expired entry
     if (entry && now > entry.resetAt) {
-      this.attempts.delete(ip)
+      this.attempts.delete(ip);
     }
 
     // Get current entry (may be undefined after cleanup)
-    const current = this.attempts.get(ip)
+    const current = this.attempts.get(ip);
 
     if (!current) {
       // No attempts yet - allow request
-      const resetAt = now + this.config.windowMs
+      const resetAt = now + this.config.windowMs;
       return {
         allowed: true,
         remaining: this.config.maxAttempts,
         resetAt,
         retryAfter: 0,
-      }
+      };
     }
 
     // Calculate remaining attempts
-    const remaining = Math.max(0, this.config.maxAttempts - current.count)
-    const retryAfter = Math.ceil((current.resetAt - now) / 1000)
+    const remaining = Math.max(0, this.config.maxAttempts - current.count);
+    const retryAfter = Math.ceil((current.resetAt - now) / 1000);
 
     return {
       allowed: current.count < this.config.maxAttempts,
       remaining,
       resetAt: current.resetAt,
       retryAfter: Math.max(0, retryAfter),
-    }
+    };
   }
 
   /**
@@ -168,8 +168,8 @@ export class RateLimiter {
    * }
    */
   record(ip: string): void {
-    const now = Date.now()
-    const entry = this.attempts.get(ip)
+    const now = Date.now();
+    const entry = this.attempts.get(ip);
 
     // Check if entry exists and is still valid
     if (!entry || now > entry.resetAt) {
@@ -177,10 +177,10 @@ export class RateLimiter {
       this.attempts.set(ip, {
         count: 1,
         resetAt: now + this.config.windowMs,
-      })
+      });
     } else {
       // Increment existing entry
-      entry.count++
+      entry.count++;
     }
   }
 
@@ -193,7 +193,7 @@ export class RateLimiter {
    * @param ip - Client IP address to reset
    */
   reset(ip: string): void {
-    this.attempts.delete(ip)
+    this.attempts.delete(ip);
   }
 
   /**
@@ -203,10 +203,10 @@ export class RateLimiter {
    * for testing or to force cleanup.
    */
   cleanup(): void {
-    const now = Date.now()
+    const now = Date.now();
     for (const [ip, entry] of this.attempts.entries()) {
       if (now > entry.resetAt) {
-        this.attempts.delete(ip)
+        this.attempts.delete(ip);
       }
     }
   }
@@ -219,7 +219,7 @@ export class RateLimiter {
   getStats(): { activeIps: number } {
     return {
       activeIps: this.attempts.size,
-    }
+    };
   }
 
   /**
@@ -228,17 +228,17 @@ export class RateLimiter {
   private startCleanup(): void {
     // Clear existing timer if any
     if (this.cleanupTimer) {
-      clearInterval(this.cleanupTimer)
+      clearInterval(this.cleanupTimer);
     }
 
     // Set up new cleanup interval
     this.cleanupTimer = setInterval(() => {
-      this.cleanup()
-    }, this.config.cleanupIntervalMs)
+      this.cleanup();
+    }, this.config.cleanupIntervalMs);
 
     // Ensure timer doesn't prevent Node.js from exiting
     if (this.cleanupTimer.unref) {
-      this.cleanupTimer.unref()
+      this.cleanupTimer.unref();
     }
   }
 
@@ -249,10 +249,10 @@ export class RateLimiter {
    */
   destroy(): void {
     if (this.cleanupTimer) {
-      clearInterval(this.cleanupTimer)
-      this.cleanupTimer = null
+      clearInterval(this.cleanupTimer);
+      this.cleanupTimer = null;
     }
-    this.attempts.clear()
+    this.attempts.clear();
   }
 }
 
@@ -263,4 +263,4 @@ export class RateLimiter {
  * Create a new RateLimiter() instance only if you need
  * custom configuration.
  */
-export const rateLimiter = new RateLimiter()
+export const rateLimiter = new RateLimiter();

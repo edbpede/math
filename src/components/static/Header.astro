@@ -1,47 +1,47 @@
 ---
 /**
  * Header Component
- * 
+ *
  * Main site header with navigation menu, language selector, and mobile hamburger.
  * Static on desktop (scrolls with content), sticky on mobile for easy access.
- * 
+ *
  * Requirements:
  * - 2.1: Language selector accessible from all pages
  * - 9.1: Keyboard navigation and skip links for accessibility
  * - 9.4: Semantic HTML with ARIA landmarks
  */
 
-import { $t, getCurrentLocale } from '@/lib/i18n'
-import LanguageSelector from '@/components/islands/LanguageSelector'
-import MobileNav from '@/components/islands/MobileNav'
+import LanguageSelector from "@/components/islands/LanguageSelector";
+import MobileNav from "@/components/islands/MobileNav";
+import { $t, getCurrentLocale } from "@/lib/i18n";
 
 interface Props {
   /** Current page path for active nav state */
-  currentPath?: string
+  currentPath?: string;
 }
 
-const { currentPath } = Astro.props
-const locale = await getCurrentLocale()
-const translations = await $t.get()
+const { currentPath } = Astro.props;
+const locale = await getCurrentLocale();
+const translations = await $t.get();
 
 // Navigation items from i18n
 const navItems = [
-  { label: translations('navigation.menu.home'), href: '/' },
-  { label: translations('navigation.menu.dashboard'), href: '/dashboard' },
-  { label: translations('navigation.menu.practice'), href: '/practice' },
-  { label: translations('navigation.menu.progress'), href: '/progress' },
-  { label: translations('navigation.menu.settings'), href: '/settings' },
-  { label: translations('navigation.menu.help'), href: '/help' },
-]
+  { label: translations("navigation.menu.home"), href: "/" },
+  { label: translations("navigation.menu.dashboard"), href: "/dashboard" },
+  { label: translations("navigation.menu.practice"), href: "/practice" },
+  { label: translations("navigation.menu.progress"), href: "/progress" },
+  { label: translations("navigation.menu.settings"), href: "/settings" },
+  { label: translations("navigation.menu.help"), href: "/help" },
+];
 
 // Determine active nav item
 const isActive = (href: string) => {
-  const path = currentPath || Astro.url.pathname
-  if (href === '/') {
-    return path === '/'
+  const path = currentPath || Astro.url.pathname;
+  if (href === "/") {
+    return path === "/";
   }
-  return path.startsWith(href)
-}
+  return path.startsWith(href);
+};
 ---
 
 <header

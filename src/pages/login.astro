@@ -11,22 +11,22 @@
  * Task: 15.2
  */
 
-import MainLayout from '@/components/layouts/MainLayout.astro'
-import UUIDLogin from '@/components/islands/UUIDLogin'
-import LanguageSelector from '@/components/islands/LanguageSelector'
-import { $t, initI18n, detectBrowserLocale } from '@/lib/i18n'
+import LanguageSelector from "@/components/islands/LanguageSelector";
+import UUIDLogin from "@/components/islands/UUIDLogin";
+import MainLayout from "@/components/layouts/MainLayout.astro";
+import { $t, detectBrowserLocale, initI18n } from "@/lib/i18n";
 
 // Detect browser language and initialize i18n
-const browserLocale = detectBrowserLocale()
-await initI18n(browserLocale)
+const browserLocale = detectBrowserLocale();
+await initI18n(browserLocale);
 
 // Get translations
-const t = await $t.get()
+const t = await $t.get();
 
 // Check if user is already authenticated
-const user = Astro.locals.user
+const user = Astro.locals.user;
 if (user) {
-  return Astro.redirect('/dashboard')
+  return Astro.redirect("/dashboard");
 }
 ---
 

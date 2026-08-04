@@ -16,33 +16,31 @@
  * ```
  */
 
-// Re-export from store
-export {
-  $preferences,
-  updatePreferences,
-  resetPreferences,
-  initializePreferences,
-  subscribeToPreferences,
-  getPreferences,
-} from './store'
-
-// Re-export from manager
-export {
-  applyPreferencesToDOM,
-  loadPreferencesFromLocalStorage,
-  savePreferencesToLocalStorage,
-  clearPreferencesFromLocalStorage,
-  syncPreferencesWithSupabase,
-  loadPreferencesFromSupabase,
-  listenForSystemThemeChanges,
-} from './manager'
+// Re-export types
+export type { FontSize, Theme, UserPreferences } from "@/lib/types/preferences";
+export { DEFAULT_PREFERENCES, mergeWithDefaults } from "@/lib/types/preferences";
 
 // Re-export from init
 export {
   initializePreferencesSystem,
   inlinePreferencesScript,
-} from './init'
-
-// Re-export types
-export type { UserPreferences, Theme, FontSize } from '@/lib/types/preferences'
-export { DEFAULT_PREFERENCES, mergeWithDefaults } from '@/lib/types/preferences'
+} from "./init";
+// Re-export from manager
+export {
+  applyPreferencesToDOM,
+  clearPreferencesFromLocalStorage,
+  listenForSystemThemeChanges,
+  loadPreferencesFromLocalStorage,
+  loadPreferencesFromSupabase,
+  savePreferencesToLocalStorage,
+  syncPreferencesWithSupabase,
+} from "./manager";
+// Re-export from store
+export {
+  $preferences,
+  getPreferences,
+  initializePreferences,
+  resetPreferences,
+  subscribeToPreferences,
+  updatePreferences,
+} from "./store";

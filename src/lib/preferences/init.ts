@@ -14,25 +14,21 @@
  */
 
 import {
-  $preferences,
-  initializePreferences,
-  subscribeToPreferences,
-} from './store'
-import {
   applyPreferencesToDOM,
-  loadPreferencesFromLocalStorage,
-  savePreferencesToLocalStorage,
-  loadPreferencesFromSupabase,
-  syncPreferencesWithSupabase,
   listenForSystemThemeChanges,
-} from './manager'
+  loadPreferencesFromLocalStorage,
+  loadPreferencesFromSupabase,
+  savePreferencesToLocalStorage,
+  syncPreferencesWithSupabase,
+} from "./manager";
+import { $preferences, initializePreferences, subscribeToPreferences } from "./store";
 
 /**
  * Debounce utility for saving preferences
  * Prevents excessive saves when multiple preferences change quickly
  */
-let saveTimeout: ReturnType<typeof setTimeout> | null = null
-const SAVE_DEBOUNCE_MS = 500
+let saveTimeout: ReturnType<typeof setTimeout> | null = null;
+const SAVE_DEBOUNCE_MS = 500;
 
 /**
  * Initialize the preferences system
@@ -51,28 +47,26 @@ const SAVE_DEBOUNCE_MS = 500
  * }
  * ```
  */
-export async function initializePreferencesSystem(
-  userId?: string
-): Promise<void> {
+export async function initializePreferencesSystem(userId?: string): Promise<void> {
   // Step 1: Load from localStorage immediately (fast, prevents flash)
-  const cachedPreferences = loadPreferencesFromLocalStorage()
-  initializePreferences(cachedPreferences)
-  applyPreferencesToDOM(cachedPreferences)
+  const cachedPreferences = loadPreferencesFromLocalStorage();
+  initializePreferences(cachedPreferences);
+  applyPreferencesToDOM(cachedPreferences);
 
   // Step 2: If authenticated, sync with Supabase in background
   if (userId) {
     try {
-      const serverPreferences = await loadPreferencesFromSupabase(userId)
+      const serverPreferences = await loadPreferencesFromSupabase(userId);
 
       // Update store and DOM if server preferences differ from cache
-      const currentPrefs = $preferences.get()
+      const currentPrefs = $preferences.get();
       if (JSON.stringify(serverPreferences) !== JSON.stringify(currentPrefs)) {
-        initializePreferences(serverPreferences)
-        applyPreferencesToDOM(serverPreferences)
-        savePreferencesToLocalStorage(serverPreferences)
+        initializePreferences(serverPreferences);
+        applyPreferencesToDOM(serverPreferences);
+        savePreferencesToLocalStorage(serverPreferences);
       }
     } catch (error) {
-      console.error('[Preferences] Failed to sync with Supabase on init:', error)
+      console.error("[Preferences] Failed to sync with Supabase on init:", error);
       // Continue with cached preferences
     }
   }
@@ -80,33 +74,33 @@ export async function initializePreferencesSystem(
   // Step 3: Subscribe to preference changes for reactive updates
   subscribeToPreferences((preferences) => {
     // Apply to DOM immediately
-    applyPreferencesToDOM(preferences)
+    applyPreferencesToDOM(preferences);
 
     // Save to localStorage (debounced)
     if (saveTimeout) {
-      clearTimeout(saveTimeout)
+      clearTimeout(saveTimeout);
     }
     saveTimeout = setTimeout(() => {
-      savePreferencesToLocalStorage(preferences)
+      savePreferencesToLocalStorage(preferences);
 
       // Sync with Supabase if authenticated
       if (userId) {
-        syncPreferencesWithSupabase(userId, preferences)
+        syncPreferencesWithSupabase(userId, preferences);
       }
-    }, SAVE_DEBOUNCE_MS)
-  })
+    }, SAVE_DEBOUNCE_MS);
+  });
 
   // Step 4: Listen for system theme changes (when theme is 'system')
   listenForSystemThemeChanges((isDark) => {
-    const currentPrefs = $preferences.get()
-    if (currentPrefs.theme === 'system') {
+    const currentPrefs = $preferences.get();
+    if (currentPrefs.theme === "system") {
       // Re-apply theme to update for system change
-      applyPreferencesToDOM(currentPrefs)
-      console.log('[Preferences] System theme changed to:', isDark ? 'dark' : 'light')
+      applyPreferencesToDOM(currentPrefs);
+      console.log("[Preferences] System theme changed to:", isDark ? "dark" : "light");
     }
-  })
+  });
 
-  console.log('[Preferences] System initialized successfully')
+  console.log("[Preferences] System initialized successfully");
 }
 
 /**
@@ -189,4 +183,4 @@ export const inlinePreferencesScript = `
     // Silently fail - preferences will load normally
   }
 })()
-`.trim()
+`.trim();

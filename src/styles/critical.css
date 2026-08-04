@@ -1,16 +1,18 @@
 /**
  * Critical CSS
- * 
+ *
  * Above-the-fold styles that should be inlined in the HTML <head>
  * for immediate rendering without blocking on external CSS files.
- * 
+ *
  * Includes: CSS reset, focus styles, basic layout, and critical utilities.
- * 
+ *
  * Requirements: 13.4 - Inline critical CSS in HTML
  */
 
 /* === CSS Reset (minimal) === */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -21,7 +23,9 @@ html {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   line-height: 1.5;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family:
+    system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
 }
 
 body {
@@ -49,7 +53,12 @@ main {
 }
 
 /* === Typography === */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 600;
   line-height: 1.2;
 }
@@ -133,4 +142,3 @@ a:hover {
   opacity: 0.6;
   pointer-events: none;
 }
-

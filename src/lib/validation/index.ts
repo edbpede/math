@@ -13,62 +13,55 @@
  * @see docs/SECURITY.md for complete security documentation
  */
 
-// Export all schemas
-export {
-  // UUID validation
-  uuidSchema,
-  type UUID,
-
-  // Preferences validation
-  preferencesSchema,
-  partialPreferencesSchema,
-  type Preferences,
-  type PartialPreferences,
-
-  // Answer validation
-  answerInputSchema,
-  numericAnswerSchema,
-  answerWithUnitSchema,
-  type AnswerInput,
-  type NumericAnswer,
-  type AnswerWithUnit,
-
-  // API payload validation
-  signInPayloadSchema,
-  generateUUIDPayloadSchema,
-  updatePreferencesPayloadSchema,
-  submitAnswerPayloadSchema,
-  type SignInPayload,
-  type GenerateUUIDPayload,
-  type UpdatePreferencesPayload,
-  type SubmitAnswerPayload,
-
-  // Session validation
-  sessionDataSchema,
-  type SessionData,
-
-  // Grade and locale validation
-  gradeRangeSchema,
-  localeSchema,
-  type GradeRange,
-  type Locale,
-
-  // Helper functions
-  validateInput,
-  assertValidInput,
-} from './schemas'
-
 // Export all sanitization functions
 export {
-  escapeHtml,
-  sanitizeAnswer,
-  sanitizeUUID,
-  sanitizeText,
-  stripNonNumeric,
-  sanitizeFilePath,
-  sanitizeJSON,
-  limitLength,
-  sanitizeInput,
   detectMaliciousInput,
+  escapeHtml,
   isSafeInput,
-} from './sanitizer'
+  limitLength,
+  sanitizeAnswer,
+  sanitizeFilePath,
+  sanitizeInput,
+  sanitizeJSON,
+  sanitizeText,
+  sanitizeUUID,
+  stripNonNumeric,
+} from "./sanitizer";
+// Export all schemas
+export {
+  type AnswerInput,
+  type AnswerWithUnit,
+  // Answer validation
+  answerInputSchema,
+  answerWithUnitSchema,
+  assertValidInput,
+  type GenerateUUIDPayload,
+  type GradeRange,
+  generateUUIDPayloadSchema,
+  // Grade and locale validation
+  gradeRangeSchema,
+  type Locale,
+  localeSchema,
+  type NumericAnswer,
+  numericAnswerSchema,
+  type PartialPreferences,
+  type Preferences,
+  partialPreferencesSchema,
+  // Preferences validation
+  preferencesSchema,
+  type SessionData,
+  type SignInPayload,
+  type SubmitAnswerPayload,
+  // Session validation
+  sessionDataSchema,
+  // API payload validation
+  signInPayloadSchema,
+  submitAnswerPayloadSchema,
+  type UpdatePreferencesPayload,
+  type UUID,
+  updatePreferencesPayloadSchema,
+  // UUID validation
+  uuidSchema,
+  // Helper functions
+  validateInput,
+} from "./schemas";

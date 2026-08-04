@@ -26,18 +26,18 @@ interface Props {
   /**
    * Image source (path to image file)
    */
-  src: string
+  src: string;
 
   /**
    * Alternative text for accessibility (required)
    */
-  alt: string
+  alt: string;
 
   /**
    * Image widths for responsive srcset
    * @default [320, 640, 960, 1280]
    */
-  widths?: number[]
+  widths?: number[];
 
   /**
    * Loading strategy
@@ -45,55 +45,55 @@ interface Props {
    * - "eager": Load immediately (for above-fold/LCP)
    * @default "lazy"
    */
-  loading?: 'lazy' | 'eager'
+  loading?: "lazy" | "eager";
 
   /**
    * Priority hint for LCP images
    * Set to true for Largest Contentful Paint candidate
    * @default false
    */
-  priority?: boolean
+  priority?: boolean;
 
   /**
    * CSS class names
    */
-  class?: string
+  class?: string;
 
   /**
    * Image formats to generate
    * @default ['avif', 'webp']
    */
-  formats?: ('avif' | 'webp' | 'jpeg' | 'png')[]
+  formats?: ("avif" | "webp" | "jpeg" | "png")[];
 
   /**
    * Aspect ratio (optional, prevents layout shift)
    * Format: "width/height" e.g., "16/9", "4/3"
    */
-  aspectRatio?: string
+  aspectRatio?: string;
 }
 
 const {
   src,
   alt,
   widths = [320, 640, 960, 1280],
-  loading = 'lazy',
+  loading = "lazy",
   priority = false,
-  class: className = '',
-  formats = ['avif', 'webp'],
+  class: className = "",
+  formats = ["avif", "webp"],
   aspectRatio,
-} = Astro.props
+} = Astro.props;
 
 // Determine if this is a priority/LCP image
-const fetchPriority = priority ? 'high' : 'auto'
-const decoding = priority ? 'sync' : 'async'
+const fetchPriority = priority ? "high" : "auto";
+const decoding = priority ? "sync" : "async";
 
 // Calculate aspect ratio padding for layout stability
 const aspectRatioPadding = aspectRatio
   ? (() => {
-      const [width, height] = aspectRatio.split('/').map(Number)
-      return (height / width) * 100
+      const [width, height] = aspectRatio.split("/").map(Number);
+      return (height / width) * 100;
     })()
-  : null
+  : null;
 ---
 
 <picture class={`lazy-picture ${className}`}>

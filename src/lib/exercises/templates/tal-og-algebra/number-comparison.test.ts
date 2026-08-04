@@ -4,14 +4,10 @@
  * Comprehensive tests for number comparison exercise templates
  */
 
-import { describe, it, expect, beforeEach } from "vitest";
-import {
-  numberComparisonA,
-  numberComparisonB,
-  numberComparisonC,
-} from "./number-comparison";
-import { TemplateRegistry } from "../../template-registry";
+import { beforeEach, describe, expect, it } from "vitest";
 import { ParameterGenerator } from "../../parameter-generator";
+import { TemplateRegistry } from "../../template-registry";
+import { numberComparisonA, numberComparisonB, numberComparisonC } from "./number-comparison";
 
 describe("Number Comparison Templates", () => {
   let registry: TemplateRegistry;
@@ -23,9 +19,7 @@ describe("Number Comparison Templates", () => {
   describe("numberComparisonA (Difficulty A)", () => {
     it("should have correct metadata", () => {
       expect(numberComparisonA.id).toBe("tal-algebra-comparison-0-3-A");
-      expect(numberComparisonA.metadata.competencyAreaId).toBe(
-        "tal-og-algebra",
-      );
+      expect(numberComparisonA.metadata.competencyAreaId).toBe("tal-og-algebra");
       expect(numberComparisonA.metadata.skillsAreaId).toBe("tal");
       expect(numberComparisonA.metadata.gradeRange).toBe("0-3");
       expect(numberComparisonA.metadata.difficulty).toBe("A");
@@ -70,46 +64,27 @@ describe("Number Comparison Templates", () => {
       const params = { a: 15, b: 8 };
       const result = numberComparisonA.generate(params, "da-DK");
 
-      expect(
-        numberComparisonA.validate(">", result.correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        numberComparisonA.validate("<", result.correctAnswer).correct,
-      ).toBe(false);
-      expect(
-        numberComparisonA.validate("=", result.correctAnswer).correct,
-      ).toBe(false);
+      expect(numberComparisonA.validate(">", result.correctAnswer).correct).toBe(true);
+      expect(numberComparisonA.validate("<", result.correctAnswer).correct).toBe(false);
+      expect(numberComparisonA.validate("=", result.correctAnswer).correct).toBe(false);
     });
 
     it("should validate correct answers with Danish words", () => {
       const params = { a: 15, b: 8 };
       const result = numberComparisonA.generate(params, "da-DK");
 
-      expect(
-        numberComparisonA.validate("større end", result.correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        numberComparisonA.validate("større", result.correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        numberComparisonA.validate("mindre end", result.correctAnswer).correct,
-      ).toBe(false);
+      expect(numberComparisonA.validate("større end", result.correctAnswer).correct).toBe(true);
+      expect(numberComparisonA.validate("større", result.correctAnswer).correct).toBe(true);
+      expect(numberComparisonA.validate("mindre end", result.correctAnswer).correct).toBe(false);
     });
 
     it("should validate correct answers with English words", () => {
       const params = { a: 15, b: 8 };
       const result = numberComparisonA.generate(params, "en-US");
 
-      expect(
-        numberComparisonA.validate("greater than", result.correctAnswer)
-          .correct,
-      ).toBe(true);
-      expect(
-        numberComparisonA.validate("greater", result.correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        numberComparisonA.validate("less than", result.correctAnswer).correct,
-      ).toBe(false);
+      expect(numberComparisonA.validate("greater than", result.correctAnswer).correct).toBe(true);
+      expect(numberComparisonA.validate("greater", result.correctAnswer).correct).toBe(true);
+      expect(numberComparisonA.validate("less than", result.correctAnswer).correct).toBe(false);
     });
 
     it("should provide 4 hint levels", () => {
@@ -145,12 +120,8 @@ describe("Number Comparison Templates", () => {
       const result = numberComparisonA.generate(params, "da-DK");
 
       expect(result.correctAnswer.value).toBe("=");
-      expect(
-        numberComparisonA.validate("=", result.correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        numberComparisonA.validate("lig med", result.correctAnswer).correct,
-      ).toBe(true);
+      expect(numberComparisonA.validate("=", result.correctAnswer).correct).toBe(true);
+      expect(numberComparisonA.validate("lig med", result.correctAnswer).correct).toBe(true);
     });
   });
 
@@ -207,12 +178,8 @@ describe("Number Comparison Templates", () => {
       const params = { a: 85, b: 47 };
       const result = numberComparisonB.generate(params, "da-DK");
 
-      expect(
-        numberComparisonB.validate(">", result.correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        numberComparisonB.validate("<", result.correctAnswer).correct,
-      ).toBe(false);
+      expect(numberComparisonB.validate(">", result.correctAnswer).correct).toBe(true);
+      expect(numberComparisonB.validate("<", result.correctAnswer).correct).toBe(false);
     });
 
     it("should provide 4 hint levels", () => {
@@ -273,12 +240,8 @@ describe("Number Comparison Templates", () => {
       const params = { a: 785, b: 342 };
       const result = numberComparisonC.generate(params, "da-DK");
 
-      expect(
-        numberComparisonC.validate(">", result.correctAnswer).correct,
-      ).toBe(true);
-      expect(
-        numberComparisonC.validate("<", result.correctAnswer).correct,
-      ).toBe(false);
+      expect(numberComparisonC.validate(">", result.correctAnswer).correct).toBe(true);
+      expect(numberComparisonC.validate("<", result.correctAnswer).correct).toBe(false);
     });
 
     it("should provide 4 hint levels", () => {
@@ -306,21 +269,13 @@ describe("Number Comparison Templates", () => {
 
   describe("Cross-template compatibility", () => {
     it("should not have duplicate template IDs", () => {
-      const ids = [
-        numberComparisonA.id,
-        numberComparisonB.id,
-        numberComparisonC.id,
-      ];
+      const ids = [numberComparisonA.id, numberComparisonB.id, numberComparisonC.id];
       const uniqueIds = new Set(ids);
       expect(uniqueIds.size).toBe(ids.length);
     });
 
     it("should all have the same competency and skills area", () => {
-      const templates = [
-        numberComparisonA,
-        numberComparisonB,
-        numberComparisonC,
-      ];
+      const templates = [numberComparisonA, numberComparisonB, numberComparisonC];
       templates.forEach((template) => {
         expect(template.metadata.competencyAreaId).toBe("tal-og-algebra");
         expect(template.metadata.skillsAreaId).toBe("tal");
@@ -329,11 +284,7 @@ describe("Number Comparison Templates", () => {
     });
 
     it("should all be binding content", () => {
-      const templates = [
-        numberComparisonA,
-        numberComparisonB,
-        numberComparisonC,
-      ];
+      const templates = [numberComparisonA, numberComparisonB, numberComparisonC];
       templates.forEach((template) => {
         expect(template.metadata.isBinding).toBe(true);
       });

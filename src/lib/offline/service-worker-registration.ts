@@ -5,8 +5,8 @@
  * Provides reactive state through Nanostores for UI integration.
  */
 
-import { atom } from 'nanostores'
-import type { ServiceWorkerStatus } from './types'
+import { atom } from "nanostores";
+import type { ServiceWorkerStatus } from "./types";
 
 /**
  * Service worker registration status store
@@ -18,14 +18,14 @@ export const $swStatus = atom<ServiceWorkerStatus>({
   installing: false,
   waiting: false,
   active: false,
-})
+});
 
 /**
  * Service worker registration instance
  *
  * Set after successful registration, used for lifecycle management.
  */
-let registration: ServiceWorkerRegistration | null = null
+let registration: ServiceWorkerRegistration | null = null;
 
 /**
  * Register the service worker
@@ -37,76 +37,79 @@ let registration: ServiceWorkerRegistration | null = null
  */
 export async function registerServiceWorker(): Promise<ServiceWorkerRegistration | null> {
   // Check if service workers are supported
-  if (!('serviceWorker' in navigator)) {
-    console.log('[SW Registration] Service workers not supported')
+  if (!("serviceWorker" in navigator)) {
+    console.log("[SW Registration] Service workers not supported");
     $swStatus.set({
       registered: false,
       installing: false,
       waiting: false,
       active: false,
-      error: 'Service workers not supported in this browser',
-    })
-    return null
+      error: "Service workers not supported in this browser",
+    });
+    return null;
   }
 
   // Skip registration in development mode
   if (import.meta.env.DEV) {
-    console.log('[SW Registration] Skipped in development mode')
-    return null
+    console.log("[SW Registration] Skipped in development mode");
+    return null;
   }
 
   try {
     // Wait for page load to avoid competing with other resources
-    if (document.readyState === 'loading') {
+    if (document.readyState === "loading") {
       await new Promise<void>((resolve) => {
-        window.addEventListener('load', () => resolve(), { once: true })
-      })
+        window.addEventListener("load", () => resolve(), { once: true });
+      });
     }
 
     // Register service worker
-    console.log('[SW Registration] Registering service worker...')
-    registration = await navigator.serviceWorker.register('/sw.js', {
-      scope: '/',
-    })
+    console.log("[SW Registration] Registering service worker...");
+    registration = await navigator.serviceWorker.register("/sw.js", {
+      scope: "/",
+    });
 
-    console.log('[SW Registration] Service worker registered successfully')
+    console.log("[SW Registration] Service worker registered successfully");
 
     // Update status
-    updateStatus(registration)
+    updateStatus(registration);
 
     // Listen for updates
-    registration.addEventListener('updatefound', () => {
-      console.log('[SW Registration] Update found, installing new version...')
-      handleUpdateFound(registration!)
-    })
+    registration.addEventListener("updatefound", () => {
+      console.log("[SW Registration] Update found, installing new version...");
+      handleUpdateFound(registration!);
+    });
 
     // Listen for controller changes (new SW activated)
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      console.log('[SW Registration] Controller changed, reloading page...')
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      console.log("[SW Registration] Controller changed, reloading page...");
       // New service worker activated, reload to get fresh content
-      window.location.reload()
-    })
+      window.location.reload();
+    });
 
     // Check for updates periodically (every hour)
-    setInterval(() => {
-      if (registration) {
-        registration.update().catch((error) => {
-          console.error('[SW Registration] Update check failed:', error)
-        })
-      }
-    }, 60 * 60 * 1000) // 1 hour
+    setInterval(
+      () => {
+        if (registration) {
+          registration.update().catch((error) => {
+            console.error("[SW Registration] Update check failed:", error);
+          });
+        }
+      },
+      60 * 60 * 1000,
+    ); // 1 hour
 
-    return registration
+    return registration;
   } catch (error) {
-    console.error('[SW Registration] Registration failed:', error)
+    console.error("[SW Registration] Registration failed:", error);
     $swStatus.set({
       registered: false,
       installing: false,
       waiting: false,
       active: false,
-      error: error instanceof Error ? error.message : 'Registration failed',
-    })
-    return null
+      error: error instanceof Error ? error.message : "Registration failed",
+    });
+    return null;
   }
 }
 
@@ -116,19 +119,19 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
  * Useful for development/debugging. Removes service worker and clears all caches.
  */
 export async function unregisterServiceWorker(): Promise<void> {
-  if (!('serviceWorker' in navigator)) {
-    return
+  if (!("serviceWorker" in navigator)) {
+    return;
   }
 
   try {
-    const registrations = await navigator.serviceWorker.getRegistrations()
-    await Promise.all(registrations.map((reg) => reg.unregister()))
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(registrations.map((reg) => reg.unregister()));
 
     // Clear all caches
-    const cacheNames = await caches.keys()
-    await Promise.all(cacheNames.map((name) => caches.delete(name)))
+    const cacheNames = await caches.keys();
+    await Promise.all(cacheNames.map((name) => caches.delete(name)));
 
-    console.log('[SW Registration] Service worker unregistered and caches cleared')
+    console.log("[SW Registration] Service worker unregistered and caches cleared");
 
     // Reset status
     $swStatus.set({
@@ -136,9 +139,9 @@ export async function unregisterServiceWorker(): Promise<void> {
       installing: false,
       waiting: false,
       active: false,
-    })
+    });
   } catch (error) {
-    console.error('[SW Registration] Unregistration failed:', error)
+    console.error("[SW Registration] Unregistration failed:", error);
   }
 }
 
@@ -151,35 +154,35 @@ function updateStatus(reg: ServiceWorkerRegistration): void {
     installing: !!reg.installing,
     waiting: !!reg.waiting,
     active: !!reg.active,
-  })
+  });
 }
 
 /**
  * Handle service worker update found
  */
 function handleUpdateFound(reg: ServiceWorkerRegistration): void {
-  const newWorker = reg.installing
-  if (!newWorker) return
+  const newWorker = reg.installing;
+  if (!newWorker) return;
 
-  updateStatus(reg)
+  updateStatus(reg);
 
-  newWorker.addEventListener('statechange', () => {
-    console.log('[SW Registration] State changed:', newWorker.state)
+  newWorker.addEventListener("statechange", () => {
+    console.log("[SW Registration] State changed:", newWorker.state);
 
-    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+    if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
       // New version installed and waiting to activate
-      console.log('[SW Registration] New version available, waiting to activate')
-      updateStatus(reg)
+      console.log("[SW Registration] New version available, waiting to activate");
+      updateStatus(reg);
 
       // Notify user that an update is available
-      notifyUpdateAvailable()
+      notifyUpdateAvailable();
     }
 
-    if (newWorker.state === 'activated') {
-      console.log('[SW Registration] New version activated')
-      updateStatus(reg)
+    if (newWorker.state === "activated") {
+      console.log("[SW Registration] New version activated");
+      updateStatus(reg);
     }
-  })
+  });
 }
 
 /**
@@ -189,14 +192,14 @@ function handleUpdateFound(reg: ServiceWorkerRegistration): void {
  * For now, we just log it.
  */
 function notifyUpdateAvailable(): void {
-  console.log('[SW Registration] New version ready - refresh to update')
+  console.log("[SW Registration] New version ready - refresh to update");
 
   // Dispatch custom event that UI components can listen to
   window.dispatchEvent(
-    new CustomEvent('sw-update-available', {
-      detail: { message: 'A new version is available. Refresh to update.' },
-    })
-  )
+    new CustomEvent("sw-update-available", {
+      detail: { message: "A new version is available. Refresh to update." },
+    }),
+  );
 }
 
 /**
@@ -206,7 +209,7 @@ function notifyUpdateAvailable(): void {
  */
 export function skipWaitingAndUpdate(): void {
   if (registration?.waiting) {
-    registration.waiting.postMessage({ type: 'SKIP_WAITING' })
+    registration.waiting.postMessage({ type: "SKIP_WAITING" });
   }
 }
 
@@ -214,13 +217,12 @@ export function skipWaitingAndUpdate(): void {
  * Check if service worker is supported
  */
 export function isServiceWorkerSupported(): boolean {
-  return 'serviceWorker' in navigator
+  return "serviceWorker" in navigator;
 }
 
 /**
  * Get current service worker registration
  */
 export function getRegistration(): ServiceWorkerRegistration | null {
-  return registration
+  return registration;
 }
-

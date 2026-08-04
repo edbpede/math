@@ -15,7 +15,7 @@
  * - dark: Dark color scheme
  * - system: Use system preference (automatic)
  */
-export type Theme = 'light' | 'dark' | 'system'
+export type Theme = "light" | "dark" | "system";
 
 /**
  * Font size preference for the application
@@ -23,7 +23,7 @@ export type Theme = 'light' | 'dark' | 'system'
  * - medium: Default text size
  * - large: Larger text size for better readability
  */
-export type FontSize = 'small' | 'medium' | 'large'
+export type FontSize = "small" | "medium" | "large";
 
 /**
  * User preferences stored in the preferences JSONB field
@@ -34,36 +34,36 @@ export interface UserPreferences {
    * Color theme preference
    * @default 'light'
    */
-  theme?: Theme
+  theme?: Theme;
 
   /**
    * Font size preference
    * @default 'medium'
    */
-  fontSize?: FontSize
+  fontSize?: FontSize;
 
   /**
    * Enable OpenDyslexic font for better readability for users with dyslexia
    * @default false
    */
-  dyslexiaFont?: boolean
+  dyslexiaFont?: boolean;
 
   /**
    * Enable high contrast mode for better visibility
    * @default false
    */
-  highContrast?: boolean
+  highContrast?: boolean;
 }
 
 /**
  * Default user preferences
  */
 export const DEFAULT_PREFERENCES: Required<UserPreferences> = {
-  theme: 'light',
-  fontSize: 'medium',
+  theme: "light",
+  fontSize: "medium",
   dyslexiaFont: false,
   highContrast: false,
-}
+};
 
 /**
  * Merges partial preferences with defaults
@@ -71,7 +71,7 @@ export const DEFAULT_PREFERENCES: Required<UserPreferences> = {
  * @returns Complete preferences object with defaults applied
  */
 export function mergeWithDefaults(
-  preferences: UserPreferences | Record<string, unknown> = {}
+  preferences: UserPreferences | Record<string, unknown> = {},
 ): Required<UserPreferences> {
   return {
     theme: (preferences.theme as Theme) || DEFAULT_PREFERENCES.theme,
@@ -84,7 +84,7 @@ export function mergeWithDefaults(
       preferences.highContrast !== undefined
         ? Boolean(preferences.highContrast)
         : DEFAULT_PREFERENCES.highContrast,
-  }
+  };
 }
 
 /**
@@ -93,7 +93,7 @@ export function mergeWithDefaults(
  * @returns True if valid theme
  */
 export function isValidTheme(value: unknown): value is Theme {
-  return value === 'light' || value === 'dark' || value === 'system'
+  return value === "light" || value === "dark" || value === "system";
 }
 
 /**
@@ -102,7 +102,7 @@ export function isValidTheme(value: unknown): value is Theme {
  * @returns True if valid font size
  */
 export function isValidFontSize(value: unknown): value is FontSize {
-  return value === 'small' || value === 'medium' || value === 'large'
+  return value === "small" || value === "medium" || value === "large";
 }
 
 /**
@@ -110,30 +110,18 @@ export function isValidFontSize(value: unknown): value is FontSize {
  * @param preferences - Preferences to validate
  * @returns True if all preferences are valid
  */
-export function validatePreferences(
-  preferences: Partial<UserPreferences>
-): boolean {
+export function validatePreferences(preferences: Partial<UserPreferences>): boolean {
   if (preferences.theme !== undefined && !isValidTheme(preferences.theme)) {
-    return false
+    return false;
   }
-  if (
-    preferences.fontSize !== undefined &&
-    !isValidFontSize(preferences.fontSize)
-  ) {
-    return false
+  if (preferences.fontSize !== undefined && !isValidFontSize(preferences.fontSize)) {
+    return false;
   }
-  if (
-    preferences.dyslexiaFont !== undefined &&
-    typeof preferences.dyslexiaFont !== 'boolean'
-  ) {
-    return false
+  if (preferences.dyslexiaFont !== undefined && typeof preferences.dyslexiaFont !== "boolean") {
+    return false;
   }
-  if (
-    preferences.highContrast !== undefined &&
-    typeof preferences.highContrast !== 'boolean'
-  ) {
-    return false
+  if (preferences.highContrast !== undefined && typeof preferences.highContrast !== "boolean") {
+    return false;
   }
-  return true
+  return true;
 }
-

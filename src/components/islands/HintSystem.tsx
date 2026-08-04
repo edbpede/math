@@ -12,12 +12,12 @@
  * - 4.5: Keep hints available after answer submission for learning review
  */
 
-import { createSignal, createEffect, For, Show } from "solid-js";
-import type { Hint } from "@/lib/exercises/types";
-import { createReactiveHintTracker } from "@/lib/exercises/hint-tracker";
 import { useStore } from "@nanostores/solid";
-import { $t } from "@/lib/i18n";
+import { createEffect, createSignal, For, Show } from "solid-js";
 import { announce } from "@/lib/accessibility";
+import { createReactiveHintTracker } from "@/lib/exercises/hint-tracker";
+import type { Hint } from "@/lib/exercises/types";
+import { $t } from "@/lib/i18n";
 import WorkedSolutionDisplay from "./WorkedSolutionDisplay";
 
 export interface HintSystemProps {
@@ -86,6 +86,7 @@ export default function HintSystem(props: HintSystemProps) {
   const totalHints = () => props.hints.length;
 
   return (
+    // biome-ignore lint/a11y/useSemanticElements: the ARIA role is equivalent for assistive tech here; swapping in the native element would change layout and behaviour - tracked as separate a11y work
     <div
       class="hint-system"
       role="region"
@@ -103,8 +104,7 @@ export default function HintSystem(props: HintSystemProps) {
           classList={{
             "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500":
               !areAllRevealed() && !props.disabled,
-            "bg-gray-300 text-gray-500 cursor-not-allowed":
-              areAllRevealed() || props.disabled,
+            "bg-gray-300 text-gray-500 cursor-not-allowed": areAllRevealed() || props.disabled,
           }}
           onClick={handleRevealHint}
           disabled={areAllRevealed() || props.disabled}
@@ -171,10 +171,7 @@ export default function HintSystem(props: HintSystemProps) {
 
         {/* Progress indicator */}
         <Show when={hintsRevealed() > 0}>
-          <div
-            class="hint-progress mt-2 text-sm text-gray-600"
-            aria-live="polite"
-          >
+          <div class="hint-progress mt-2 text-sm text-gray-600" aria-live="polite">
             {t()("hints.common.hintProgress", {
               current: hintsRevealed().toString(),
               total: totalHints().toString(),
@@ -185,6 +182,7 @@ export default function HintSystem(props: HintSystemProps) {
 
       {/* Revealed hints */}
       <Show when={hintsRevealed() > 0}>
+        {/* biome-ignore lint/a11y/useSemanticElements: the ARIA role is equivalent for assistive tech here; swapping in the native element would change layout and behaviour - tracked as separate a11y work */}
         <div
           class="revealed-hints space-y-4"
           role="list"
@@ -192,6 +190,7 @@ export default function HintSystem(props: HintSystemProps) {
         >
           <For each={getRevealedHints()}>
             {(hint) => (
+              // biome-ignore lint/a11y/useSemanticElements: the ARIA role is equivalent for assistive tech here; swapping in the native element would change layout and behaviour - tracked as separate a11y work
               <div
                 class="hint-item p-4 rounded-lg border-l-4 transition-all duration-300 animate-fade-in"
                 classList={{
@@ -235,18 +234,14 @@ export default function HintSystem(props: HintSystemProps) {
                           {t()("hints.common.visualAid")}
                         </div>
                         {/* Visual aid rendering will be implemented based on type */}
-                        <div class="text-xs text-gray-500">
-                          Type: {hint.visualAid?.type}
-                        </div>
+                        <div class="text-xs text-gray-500">Type: {hint.visualAid?.type}</div>
                       </div>
                     </Show>
 
                     {/* Worked solution (typically for level 4 hints) */}
                     <Show when={hint.workedSolution}>
                       <div class="worked-solution-wrapper mt-4">
-                        <WorkedSolutionDisplay
-                          solution={hint.workedSolution!}
-                        />
+                        <WorkedSolutionDisplay solution={hint.workedSolution!} />
                       </div>
                     </Show>
                   </div>

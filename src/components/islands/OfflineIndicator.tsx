@@ -8,30 +8,36 @@
  * - 6.3: Display clear offline status indication
  */
 
-import { Show, onMount } from 'solid-js'
-import { useStore } from '@nanostores/solid'
-import { $networkStatus, initializeStatusStores } from '../../lib/stores/network-status'
-import { $t } from '../../lib/i18n'
+import { useStore } from "@nanostores/solid";
+import { onMount, Show } from "solid-js";
+import { $t } from "../../lib/i18n";
+import { $networkStatus, initializeStatusStores } from "../../lib/stores/network-status";
 
 export default function OfflineIndicator() {
-  const t = useStore($t)
-  const networkStatus = useStore($networkStatus)
+  const t = useStore($t);
+  const networkStatus = useStore($networkStatus);
 
   // Initialize status stores on mount
   onMount(async () => {
     try {
-      await initializeStatusStores()
+      await initializeStatusStores();
     } catch (err) {
-      console.error('[OfflineIndicator] Failed to initialize:', err)
+      console.error("[OfflineIndicator] Failed to initialize:", err);
     }
-  })
+  });
 
   return (
     <Show when={!networkStatus().online}>
       <div class="bg-yellow-500 text-white px-4 py-2 text-center text-sm font-medium shadow-md">
         <div class="flex items-center justify-center gap-2">
           {/* Offline icon */}
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            aria-hidden="true"
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -41,9 +47,9 @@ export default function OfflineIndicator() {
           </svg>
 
           {/* Message */}
-          <span>{t()('sync.messages.connectionLost')}</span>
+          <span>{t()("sync.messages.connectionLost")}</span>
         </div>
       </div>
     </Show>
-  )
+  );
 }

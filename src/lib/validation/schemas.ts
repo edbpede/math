@@ -7,7 +7,7 @@
  * @see docs/SECURITY.md for validation patterns and security considerations
  */
 
-import * as z from 'zod'
+import * as z from "zod";
 
 // ============================================================================
 // UUID VALIDATION
@@ -21,13 +21,13 @@ import * as z from 'zod'
  */
 export const uuidSchema = z
   .string()
-  .min(1, 'UUID is required')
+  .min(1, "UUID is required")
   .trim()
   .regex(
     /^[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}$/i,
-    'UUID must be in format xxxx-xxxx-xxxx-xxxx'
+    "UUID must be in format xxxx-xxxx-xxxx-xxxx",
   )
-  .transform((val) => val.toLowerCase())
+  .transform((val) => val.toLowerCase());
 
 /**
  * Validates and normalizes UUID input
@@ -38,7 +38,7 @@ export const uuidSchema = z
  *   console.log(result.data) // '7b3f-4c2a-8d1e-9f6b'
  * }
  */
-export type UUID = z.infer<typeof uuidSchema>
+export type UUID = z.infer<typeof uuidSchema>;
 
 // ============================================================================
 // PREFERENCES VALIDATION
@@ -51,20 +51,20 @@ export type UUID = z.infer<typeof uuidSchema>
  * Aligned with existing UserPreferences interface in src/lib/types/preferences.ts
  */
 export const preferencesSchema = z.object({
-  theme: z.enum(['light', 'dark', 'system']).optional(),
-  fontSize: z.enum(['small', 'medium', 'large']).optional(),
+  theme: z.enum(["light", "dark", "system"]).optional(),
+  fontSize: z.enum(["small", "medium", "large"]).optional(),
   dyslexiaFont: z.boolean().optional(),
   highContrast: z.boolean().optional(),
-})
+});
 
 /**
  * Partial preferences for updates (all fields optional by nature)
  * Since preferencesSchema already has all fields optional, this is the same
  */
-export const partialPreferencesSchema = preferencesSchema
+export const partialPreferencesSchema = preferencesSchema;
 
-export type Preferences = z.infer<typeof preferencesSchema>
-export type PartialPreferences = z.infer<typeof partialPreferencesSchema>
+export type Preferences = z.infer<typeof preferencesSchema>;
+export type PartialPreferences = z.infer<typeof partialPreferencesSchema>;
 
 // ============================================================================
 // ANSWER VALIDATION
@@ -79,37 +79,38 @@ export type PartialPreferences = z.infer<typeof partialPreferencesSchema>
  */
 export const answerInputSchema = z
   .string()
-  .min(1, 'Answer is required')
+  .min(1, "Answer is required")
   .trim()
-  .max(200, 'Answer must be less than 200 characters')
-  .regex(
-    /^[0-9.,\-+\/%\s()]+$/,
-    'Answer can only contain numbers and basic math symbols'
-  )
+  .max(200, "Answer must be less than 200 characters")
+  .regex(/^[0-9.,\-+/%\s()]+$/, "Answer can only contain numbers and basic math symbols")
   .refine(
     (val) => !/<script|<iframe|javascript:|on\w+=/i.test(val),
-    'Invalid characters detected in answer'
-  )
+    "Invalid characters detected in answer",
+  );
 
 /**
  * Validates numeric answer (for number line, multiple choice, etc.)
  */
 export const numericAnswerSchema = z
   .number()
-  .finite('Answer must be a valid number')
-  .safe('Answer is too large or too small')
+  .finite("Answer must be a valid number")
+  .safe("Answer is too large or too small");
 
 /**
  * Answer with unit validation (e.g., "5 kg", "3.5 m")
  */
 export const answerWithUnitSchema = z.object({
   value: numericAnswerSchema,
-  unit: z.string().max(20).regex(/^[a-zA-ZæøåÆØÅ\s]*$/).nullable(),
-})
+  unit: z
+    .string()
+    .max(20)
+    .regex(/^[a-zA-ZæøåÆØÅ\s]*$/)
+    .nullable(),
+});
 
-export type AnswerInput = z.infer<typeof answerInputSchema>
-export type NumericAnswer = z.infer<typeof numericAnswerSchema>
-export type AnswerWithUnit = z.infer<typeof answerWithUnitSchema>
+export type AnswerInput = z.infer<typeof answerInputSchema>;
+export type NumericAnswer = z.infer<typeof numericAnswerSchema>;
+export type AnswerWithUnit = z.infer<typeof answerWithUnitSchema>;
 
 // ============================================================================
 // API PAYLOAD VALIDATION
@@ -120,35 +121,35 @@ export type AnswerWithUnit = z.infer<typeof answerWithUnitSchema>
  */
 export const signInPayloadSchema = z.object({
   uuid: uuidSchema,
-})
+});
 
 export const generateUUIDPayloadSchema = z.object({
-  gradeRange: z.enum(['0-3', '4-6', '7-9']),
-  locale: z.enum(['da-DK', 'en-US']).default('da-DK'),
-})
+  gradeRange: z.enum(["0-3", "4-6", "7-9"]),
+  locale: z.enum(["da-DK", "en-US"]).default("da-DK"),
+});
 
 /**
  * Preferences update payload
  */
 export const updatePreferencesPayloadSchema = z.object({
   preferences: partialPreferencesSchema,
-})
+});
 
 /**
  * Exercise submission payload
  */
 export const submitAnswerPayloadSchema = z.object({
-  sessionId: z.string().uuid('Invalid session ID'),
+  sessionId: z.string().uuid("Invalid session ID"),
   exerciseId: z.string().min(1).max(100),
   answer: answerInputSchema,
   responseTimeSeconds: z.number().int().min(0).max(3600),
   hintsUsed: z.number().int().min(0).max(4),
-})
+});
 
-export type SignInPayload = z.infer<typeof signInPayloadSchema>
-export type GenerateUUIDPayload = z.infer<typeof generateUUIDPayloadSchema>
-export type UpdatePreferencesPayload = z.infer<typeof updatePreferencesPayloadSchema>
-export type SubmitAnswerPayload = z.infer<typeof submitAnswerPayloadSchema>
+export type SignInPayload = z.infer<typeof signInPayloadSchema>;
+export type GenerateUUIDPayload = z.infer<typeof generateUUIDPayloadSchema>;
+export type UpdatePreferencesPayload = z.infer<typeof updatePreferencesPayloadSchema>;
+export type SubmitAnswerPayload = z.infer<typeof submitAnswerPayloadSchema>;
 
 // ============================================================================
 // SESSION VALIDATION
@@ -164,9 +165,9 @@ export const sessionDataSchema = z.object({
   uuid: uuidSchema,
   issuedAt: z.number().int().positive(),
   expiresAt: z.number().int().positive(),
-})
+});
 
-export type SessionData = z.infer<typeof sessionDataSchema>
+export type SessionData = z.infer<typeof sessionDataSchema>;
 
 // ============================================================================
 // GRADE RANGE VALIDATION
@@ -175,9 +176,9 @@ export type SessionData = z.infer<typeof sessionDataSchema>
 /**
  * Danish grade range validation
  */
-export const gradeRangeSchema = z.enum(['0-3', '4-6', '7-9'])
+export const gradeRangeSchema = z.enum(["0-3", "4-6", "7-9"]);
 
-export type GradeRange = z.infer<typeof gradeRangeSchema>
+export type GradeRange = z.infer<typeof gradeRangeSchema>;
 
 // ============================================================================
 // LOCALE VALIDATION
@@ -186,9 +187,9 @@ export type GradeRange = z.infer<typeof gradeRangeSchema>
 /**
  * Supported locale validation
  */
-export const localeSchema = z.enum(['da-DK', 'en-US'])
+export const localeSchema = z.enum(["da-DK", "en-US"]);
 
-export type Locale = z.infer<typeof localeSchema>
+export type Locale = z.infer<typeof localeSchema>;
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -211,29 +212,29 @@ export type Locale = z.infer<typeof localeSchema>
  */
 export function validateInput<T>(
   schema: z.ZodSchema<T>,
-  data: unknown
+  data: unknown,
 ): { success: true; data: T } | { success: false; error: string } {
-  const result = schema.safeParse(data)
+  const result = schema.safeParse(data);
 
   if (result.success) {
-    return { success: true, data: result.data }
+    return { success: true, data: result.data };
   }
 
   // Format Zod errors into readable message
   // Note: Bun's Zod uses .issues instead of .errors
-  const issues = result.error.issues || (result.error as any).errors || []
+  const issues = result.error.issues || (result.error as any).errors || [];
 
   if (issues.length > 0) {
     const errorMessage = issues
       .map((err: any) => {
-        const path = err.path && err.path.length > 0 ? `${err.path.join('.')}: ` : ''
-        return `${path}${err.message}`
+        const path = err.path && err.path.length > 0 ? `${err.path.join(".")}: ` : "";
+        return `${path}${err.message}`;
       })
-      .join(', ')
-    return { success: false, error: errorMessage }
+      .join(", ");
+    return { success: false, error: errorMessage };
   }
 
-  return { success: false, error: 'Validation failed' }
+  return { success: false, error: "Validation failed" };
 }
 
 /**
@@ -244,10 +245,12 @@ export function validateInput<T>(
  * assertValidInput(result) // Throws if invalid
  * const validUUID = result.data // TypeScript knows this is valid
  */
-export function assertValidInput<T>(
-  result: { success: boolean; data?: T; error?: string }
-): asserts result is { success: true; data: T } {
+export function assertValidInput<T>(result: {
+  success: boolean;
+  data?: T;
+  error?: string;
+}): asserts result is { success: true; data: T } {
   if (!result.success) {
-    throw new Error(`Validation failed: ${result.error}`)
+    throw new Error(`Validation failed: ${result.error}`);
   }
 }

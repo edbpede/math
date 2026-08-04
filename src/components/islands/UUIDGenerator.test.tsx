@@ -5,10 +5,10 @@
  * save functionality (copy, download, QR code), and accessibility.
  */
 
-import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@solidjs/testing-library";
-import UUIDGenerator from "./UUIDGenerator";
+import { fireEvent, render, screen, waitFor } from "@solidjs/testing-library";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { changeLocale } from "@/lib/i18n";
+import UUIDGenerator from "./UUIDGenerator";
 
 // Mock i18n module with complete mock (avoid loading translation files)
 vi.mock("@/lib/i18n", () => {
@@ -20,8 +20,7 @@ vi.mock("@/lib/i18n", () => {
       "auth.uuid.important": "Important: Save this number!",
       "auth.uuid.description": "You will need this number to log in.",
       "auth.uuid.save.title": "Save your practice number",
-      "auth.uuid.save.instructions":
-        "Choose one or more ways to save your practice number:",
+      "auth.uuid.save.instructions": "Choose one or more ways to save your practice number:",
       "auth.uuid.save.copy": "Copy to clipboard",
       "auth.uuid.save.download": "Download as file",
       "auth.uuid.save.qrCode": "Show QR code",
@@ -60,8 +59,7 @@ vi.mock("@nanostores/solid", () => ({
         "auth.uuid.important": "Important: Save this number!",
         "auth.uuid.description": "You will need this number to log in.",
         "auth.uuid.save.title": "Save your practice number",
-        "auth.uuid.save.instructions":
-          "Choose one or more ways to save your practice number:",
+        "auth.uuid.save.instructions": "Choose one or more ways to save your practice number:",
         "auth.uuid.save.copy": "Copy to clipboard",
         "auth.uuid.save.download": "Download as file",
         "auth.uuid.save.qrCode": "Show QR code",
@@ -110,9 +108,7 @@ describe("UUIDGenerator", () => {
 
   describe("initial render", () => {
     it("should render generate button when autoGenerate is false", () => {
-      render(() => (
-        <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={false} />
-      ));
+      render(() => <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={false} />);
 
       const button = screen.getByRole("button", {
         name: /generate practice number/i,
@@ -121,9 +117,7 @@ describe("UUIDGenerator", () => {
     });
 
     it("should have proper ARIA labels", () => {
-      render(() => (
-        <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={false} />
-      ));
+      render(() => <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={false} />);
 
       const region = screen.getByRole("region", {
         name: /your practice number/i,
@@ -149,9 +143,7 @@ describe("UUIDGenerator", () => {
         json: async () => mockResponse,
       });
 
-      render(() => (
-        <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={true} />
-      ));
+      render(() => <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={true} />);
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
@@ -186,9 +178,7 @@ describe("UUIDGenerator", () => {
           ),
       );
 
-      render(() => (
-        <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={false} />
-      ));
+      render(() => <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={false} />);
 
       const button = screen.getByRole("button");
       fireEvent.click(button);
@@ -209,9 +199,7 @@ describe("UUIDGenerator", () => {
         }),
       });
 
-      render(() => (
-        <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={false} />
-      ));
+      render(() => <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={false} />);
 
       const button = screen.getByRole("button");
       fireEvent.click(button);
@@ -221,9 +209,7 @@ describe("UUIDGenerator", () => {
           // Check that the generated container is displayed
           expect(screen.getByText("Important: Save this number!")).toBeTruthy();
           // Check that the UUID label is displayed
-          expect(
-            screen.getAllByText("Your practice number").length,
-          ).toBeGreaterThan(0);
+          expect(screen.getAllByText("Your practice number").length).toBeGreaterThan(0);
         },
         { timeout: 2000 },
       );
@@ -268,9 +254,7 @@ describe("UUIDGenerator", () => {
         }),
       });
 
-      render(() => (
-        <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={false} />
-      ));
+      render(() => <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={false} />);
 
       const button = screen.getByRole("button");
       fireEvent.click(button);
@@ -278,9 +262,7 @@ describe("UUIDGenerator", () => {
       await waitFor(
         () => {
           // Check for the "Try Again" button which appears in error state
-          expect(
-            screen.getByRole("button", { name: /try again/i }),
-          ).toBeTruthy();
+          expect(screen.getByRole("button", { name: /try again/i })).toBeTruthy();
         },
         { timeout: 2000 },
       );
@@ -295,9 +277,7 @@ describe("UUIDGenerator", () => {
         }),
       });
 
-      render(() => (
-        <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={false} />
-      ));
+      render(() => <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={false} />);
 
       const generateButton = screen.getByRole("button");
       fireEvent.click(generateButton);
@@ -323,9 +303,7 @@ describe("UUIDGenerator", () => {
     });
 
     it("should copy UUID to clipboard on button click", async () => {
-      render(() => (
-        <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={true} />
-      ));
+      render(() => <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={true} />);
 
       await waitFor(
         () => {
@@ -340,16 +318,12 @@ describe("UUIDGenerator", () => {
       fireEvent.click(copyButton);
 
       await waitFor(() => {
-        expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-          "1234-5678-90ab-cdef",
-        );
+        expect(navigator.clipboard.writeText).toHaveBeenCalledWith("1234-5678-90ab-cdef");
       });
     });
 
     it("should display success feedback after copying", async () => {
-      render(() => (
-        <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={true} />
-      ));
+      render(() => <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={true} />);
 
       await waitFor(
         () => {
@@ -373,9 +347,7 @@ describe("UUIDGenerator", () => {
       document.execCommand = vi.fn().mockReturnValue(true);
       delete (navigator as any).clipboard;
 
-      render(() => (
-        <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={true} />
-      ));
+      render(() => <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={true} />);
 
       await waitFor(
         () => {
@@ -419,9 +391,7 @@ describe("UUIDGenerator", () => {
     });
 
     it("should download UUID as text file on button click", async () => {
-      render(() => (
-        <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={true} />
-      ));
+      render(() => <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={true} />);
 
       await waitFor(
         () => {
@@ -451,9 +421,7 @@ describe("UUIDGenerator", () => {
         }
       };
 
-      render(() => (
-        <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={true} />
-      ));
+      render(() => <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={true} />);
 
       await waitFor(() => {
         expect(screen.getByText("Important: Save this number!")).toBeTruthy();
@@ -490,9 +458,7 @@ describe("UUIDGenerator", () => {
     });
 
     it("should toggle QR code display on button click", async () => {
-      render(() => (
-        <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={true} />
-      ));
+      render(() => <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={true} />);
 
       await waitFor(
         () => {
@@ -510,9 +476,7 @@ describe("UUIDGenerator", () => {
       fireEvent.click(qrButton);
 
       await waitFor(() => {
-        expect(
-          screen.getByAltText(/qr code for practice number/i),
-        ).toBeTruthy();
+        expect(screen.getByAltText(/qr code for practice number/i)).toBeTruthy();
       });
 
       // Click close button to hide QR code
@@ -522,16 +486,12 @@ describe("UUIDGenerator", () => {
       fireEvent.click(closeButton);
 
       await waitFor(() => {
-        expect(
-          screen.queryByAltText(/qr code for practice number/i),
-        ).toBeFalsy();
+        expect(screen.queryByAltText(/qr code for practice number/i)).toBeFalsy();
       });
     });
 
     it("should display QR code image with correct data URL", async () => {
-      render(() => (
-        <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={true} />
-      ));
+      render(() => <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={true} />);
 
       await waitFor(
         () => {
@@ -566,9 +526,7 @@ describe("UUIDGenerator", () => {
         }),
       });
 
-      render(() => (
-        <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={true} />
-      ));
+      render(() => <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={true} />);
 
       await waitFor(
         () => {
@@ -602,9 +560,7 @@ describe("UUIDGenerator", () => {
           ),
       );
 
-      render(() => (
-        <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={false} />
-      ));
+      render(() => <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={false} />);
 
       const button = screen.getByRole("button");
       fireEvent.click(button);
@@ -626,9 +582,7 @@ describe("UUIDGenerator", () => {
         }),
       });
 
-      render(() => (
-        <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={true} />
-      ));
+      render(() => <UUIDGenerator gradeRange="0-3" locale="en-US" autoGenerate={true} />);
 
       await waitFor(() => {
         const alert = screen.getByRole("alert");
@@ -652,9 +606,7 @@ describe("UUIDGenerator", () => {
         }),
       });
 
-      render(() => (
-        <UUIDGenerator gradeRange="0-3" locale="da-DK" autoGenerate={true} />
-      ));
+      render(() => <UUIDGenerator gradeRange="0-3" locale="da-DK" autoGenerate={true} />);
 
       await waitFor(() => {
         // Check for Danish text (this will depend on actual translations)

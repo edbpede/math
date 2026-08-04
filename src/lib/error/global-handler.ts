@@ -28,12 +28,7 @@
  */
 
 import { toast } from "@/components/islands/ToastNotification";
-import {
-  logError,
-  ErrorCategory,
-  ErrorSeverity,
-  wasErrorLoggedRecently,
-} from "./logger";
+import { ErrorCategory, ErrorSeverity, logError, wasErrorLoggedRecently } from "./logger";
 
 /**
  * Options for global error handler
@@ -126,11 +121,7 @@ function determineErrorSeverity(error: Error): ErrorSeverity {
   const message = error.message.toLowerCase();
 
   // Critical errors
-  if (
-    message.includes("critical") ||
-    message.includes("fatal") ||
-    message.includes("crash")
-  ) {
+  if (message.includes("critical") || message.includes("fatal") || message.includes("crash")) {
     return ErrorSeverity.CRITICAL;
   }
 
@@ -144,11 +135,7 @@ function determineErrorSeverity(error: Error): ErrorSeverity {
   }
 
   // Low severity errors
-  if (
-    message.includes("warning") ||
-    message.includes("minor") ||
-    message.includes("cosmetic")
-  ) {
+  if (message.includes("warning") || message.includes("minor") || message.includes("cosmetic")) {
     return ErrorSeverity.LOW;
   }
 
@@ -191,10 +178,7 @@ function shouldIgnoreError(error: Error): boolean {
  * @param event - Error event
  * @param options - Handler options
  */
-function handleWindowError(
-  event: ErrorEvent,
-  options: GlobalErrorHandlerOptions,
-): void {
+function handleWindowError(event: ErrorEvent, options: GlobalErrorHandlerOptions): void {
   const error = event.error || new Error(event.message);
 
   // Check if we should ignore this error
@@ -256,10 +240,7 @@ function handleUnhandledRejection(
   options: GlobalErrorHandlerOptions,
 ): void {
   // Convert rejection reason to Error
-  const error =
-    event.reason instanceof Error
-      ? event.reason
-      : new Error(String(event.reason));
+  const error = event.reason instanceof Error ? event.reason : new Error(String(event.reason));
 
   // Check if we should ignore this error
   if (shouldIgnoreError(error)) {
@@ -267,10 +248,7 @@ function handleUnhandledRejection(
   }
 
   // Check custom filter
-  if (
-    options.shouldHandleError &&
-    !options.shouldHandleError(error)
-  ) {
+  if (options.shouldHandleError && !options.shouldHandleError(error)) {
     return;
   }
 
@@ -341,9 +319,7 @@ function handleUnhandledRejection(
  * })
  * ```
  */
-export function initializeGlobalErrorHandler(
-  options: GlobalErrorHandlerOptions = {},
-): () => void {
+export function initializeGlobalErrorHandler(options: GlobalErrorHandlerOptions = {}): () => void {
   // Prevent double initialization
   if (isInitialized) {
     console.warn(
@@ -361,8 +337,7 @@ export function initializeGlobalErrorHandler(
   const mergedOptions = { ...defaultOptions, ...options };
 
   // Create error handler with merged options
-  const errorHandler = (event: ErrorEvent) =>
-    handleWindowError(event, mergedOptions);
+  const errorHandler = (event: ErrorEvent) => handleWindowError(event, mergedOptions);
 
   // Create rejection handler with merged options
   const rejectionHandler = (event: PromiseRejectionEvent) =>
@@ -390,10 +365,7 @@ export function initializeGlobalErrorHandler(
 
   // Log initialization in development
   if (import.meta.env.DEV) {
-    console.log(
-      "[GlobalErrorHandler] Initialized with options:",
-      mergedOptions,
-    );
+    console.log("[GlobalErrorHandler] Initialized with options:", mergedOptions);
   }
 
   return cleanup;
@@ -406,7 +378,9 @@ export function initializeGlobalErrorHandler(
  * or when unmounting the app.
  */
 export function cleanupGlobalErrorHandler(): void {
-  cleanupFunctions.forEach((cleanup) => cleanup());
+  cleanupFunctions.forEach((cleanup) => {
+    cleanup();
+  });
   cleanupFunctions = [];
 }
 

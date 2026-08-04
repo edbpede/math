@@ -9,17 +9,17 @@
  * - Privacy compliance
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  logError,
-  getErrorLog,
   clearErrorLog,
+  ErrorCategory,
+  ErrorSeverity,
+  getErrorLog,
   getErrorLogSummary,
   getErrorsByCategory,
   getErrorsBySeverity,
+  logError,
   wasErrorLoggedRecently,
-  ErrorCategory,
-  ErrorSeverity,
 } from "./logger";
 
 describe("Error Logger", () => {
@@ -190,12 +190,8 @@ describe("Error Logger", () => {
 
       expect(summary.total).toBe(0);
       expect(summary.recent).toEqual([]);
-      expect(Object.values(summary.byCategory).every((c) => c === 0)).toBe(
-        true,
-      );
-      expect(Object.values(summary.bySeverity).every((s) => s === 0)).toBe(
-        true,
-      );
+      expect(Object.values(summary.byCategory).every((c) => c === 0)).toBe(true);
+      expect(Object.values(summary.bySeverity).every((s) => s === 0)).toBe(true);
     });
 
     it("should count errors by category", () => {

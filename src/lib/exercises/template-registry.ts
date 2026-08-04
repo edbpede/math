@@ -9,16 +9,8 @@
  * - 11.3: Filter and weighted random selection based on SRS, binding status, and recency
  */
 
-import type {
-  ExerciseTemplate,
-  TemplateRegistryEntry,
-  TemplateMetadata,
-} from "./types";
-import type {
-  CompetencyAreaId,
-  Difficulty,
-  GradeRange,
-} from "../curriculum/types";
+import type { CompetencyAreaId, Difficulty, GradeRange } from "../curriculum/types";
+import type { ExerciseTemplate, TemplateMetadata, TemplateRegistryEntry } from "./types";
 
 // Selection criteria for filtering templates
 export interface TemplateSelectionCriteria {
@@ -95,11 +87,7 @@ export class TemplateRegistry {
 
     // Check for duplicate registration
     if (this.templates.has(template.id)) {
-      throw new TemplateValidationError(
-        "Template ID already registered",
-        template.id,
-        "id",
-      );
+      throw new TemplateValidationError("Template ID already registered", template.id, "id");
     }
 
     // Create registry entry with initial metadata
@@ -189,31 +177,19 @@ export class TemplateRegistry {
     }
 
     if (criteria.skillsAreaId !== undefined) {
-      candidateIds = this.intersect(
-        candidateIds,
-        this.skillsIndex.get(criteria.skillsAreaId),
-      );
+      candidateIds = this.intersect(candidateIds, this.skillsIndex.get(criteria.skillsAreaId));
     }
 
     if (criteria.gradeRange !== undefined) {
-      candidateIds = this.intersect(
-        candidateIds,
-        this.gradeIndex.get(criteria.gradeRange),
-      );
+      candidateIds = this.intersect(candidateIds, this.gradeIndex.get(criteria.gradeRange));
     }
 
     if (criteria.difficulty !== undefined) {
-      candidateIds = this.intersect(
-        candidateIds,
-        this.difficultyIndex.get(criteria.difficulty),
-      );
+      candidateIds = this.intersect(candidateIds, this.difficultyIndex.get(criteria.difficulty));
     }
 
     if (criteria.isBinding !== undefined) {
-      candidateIds = this.intersect(
-        candidateIds,
-        this.bindingIndex.get(criteria.isBinding),
-      );
+      candidateIds = this.intersect(candidateIds, this.bindingIndex.get(criteria.isBinding));
     }
 
     // Filter by tags (template must have ALL specified tags)
@@ -222,16 +198,16 @@ export class TemplateRegistry {
         Array.from(candidateIds).filter((id) => {
           const entry = this.templates.get(id);
           if (!entry) return false;
-          return criteria.tags!.every((tag) =>
-            entry.template.metadata.tags.includes(tag),
-          );
+          return criteria.tags!.every((tag) => entry.template.metadata.tags.includes(tag));
         }),
       );
     }
 
     // Exclude specified templates
     if (criteria.excludeTemplateIds && criteria.excludeTemplateIds.length > 0) {
-      criteria.excludeTemplateIds.forEach((id) => candidateIds.delete(id));
+      criteria.excludeTemplateIds.forEach((id) => {
+        candidateIds.delete(id);
+      });
     }
 
     return Array.from(candidateIds);
@@ -324,9 +300,7 @@ export class TemplateRegistry {
    * @param templateId - The template ID to query
    * @returns Usage stats, or undefined if template not found
    */
-  getUsageStats(
-    templateId: string,
-  ): { usageCount: number; lastUsed?: Date } | undefined {
+  getUsageStats(templateId: string): { usageCount: number; lastUsed?: Date } | undefined {
     const entry = this.templates.get(templateId);
     if (!entry) {
       return undefined;
@@ -345,11 +319,7 @@ export class TemplateRegistry {
    */
   private validateTemplate(template: ExerciseTemplate): void {
     // Validate required fields
-    if (
-      !template.id ||
-      typeof template.id !== "string" ||
-      template.id.trim() === ""
-    ) {
+    if (!template.id || typeof template.id !== "string" || template.id.trim() === "") {
       throw new TemplateValidationError(
         "Template ID is required and must be a non-empty string",
         template.id || "unknown",
@@ -357,11 +327,7 @@ export class TemplateRegistry {
       );
     }
 
-    if (
-      !template.name ||
-      typeof template.name !== "string" ||
-      template.name.trim() === ""
-    ) {
+    if (!template.name || typeof template.name !== "string" || template.name.trim() === "") {
       throw new TemplateValidationError(
         "Template name is required and must be a non-empty string",
         template.id,
@@ -371,11 +337,7 @@ export class TemplateRegistry {
 
     // Validate metadata
     if (!template.metadata) {
-      throw new TemplateValidationError(
-        "Template metadata is required",
-        template.id,
-        "metadata",
-      );
+      throw new TemplateValidationError("Template metadata is required", template.id, "metadata");
     }
 
     this.validateMetadata(template.id, template.metadata);
@@ -407,11 +369,7 @@ export class TemplateRegistry {
     }
 
     if (!Array.isArray(template.hints)) {
-      throw new TemplateValidationError(
-        "Template hints must be an array",
-        template.id,
-        "hints",
-      );
+      throw new TemplateValidationError("Template hints must be an array", template.id, "hints");
     }
 
     if (template.hints.length < 4) {
@@ -440,10 +398,7 @@ export class TemplateRegistry {
    * @param metadata - The metadata to validate
    * @throws {TemplateValidationError} If validation fails
    */
-  private validateMetadata(
-    templateId: string,
-    metadata: TemplateMetadata,
-  ): void {
+  private validateMetadata(templateId: string, metadata: TemplateMetadata): void {
     // Validate competency area ID
     const validCompetencyAreas: CompetencyAreaId[] = [
       "matematiske-kompetencer",
@@ -500,11 +455,7 @@ export class TemplateRegistry {
 
     // Validate tags
     if (!Array.isArray(metadata.tags)) {
-      throw new TemplateValidationError(
-        "Tags must be an array",
-        templateId,
-        "metadata.tags",
-      );
+      throw new TemplateValidationError("Tags must be an array", templateId, "metadata.tags");
     }
 
     metadata.tags.forEach((tag, index) => {
@@ -526,11 +477,7 @@ export class TemplateRegistry {
    */
   private indexTemplate(templateId: string, metadata: TemplateMetadata): void {
     // Index by competency area
-    this.addToIndex(
-      this.competencyIndex,
-      metadata.competencyAreaId,
-      templateId,
-    );
+    this.addToIndex(this.competencyIndex, metadata.competencyAreaId, templateId);
 
     // Index by skills area
     this.addToIndex(this.skillsIndex, metadata.skillsAreaId, templateId);
@@ -556,16 +503,9 @@ export class TemplateRegistry {
    * @param templateId - The template ID to deindex
    * @param metadata - The template metadata containing indexing values
    */
-  private deindexTemplate(
-    templateId: string,
-    metadata: TemplateMetadata,
-  ): void {
+  private deindexTemplate(templateId: string, metadata: TemplateMetadata): void {
     // Remove from competency area index
-    this.removeFromIndex(
-      this.competencyIndex,
-      metadata.competencyAreaId,
-      templateId,
-    );
+    this.removeFromIndex(this.competencyIndex, metadata.competencyAreaId, templateId);
 
     // Remove from skills area index
     this.removeFromIndex(this.skillsIndex, metadata.skillsAreaId, templateId);
@@ -592,11 +532,7 @@ export class TemplateRegistry {
    * @param key - The index key
    * @param templateId - The template ID to add
    */
-  private addToIndex<K>(
-    index: Map<K, Set<string>>,
-    key: K,
-    templateId: string,
-  ): void {
+  private addToIndex<K>(index: Map<K, Set<string>>, key: K, templateId: string): void {
     let set = index.get(key);
     if (!set) {
       set = new Set();
@@ -612,11 +548,7 @@ export class TemplateRegistry {
    * @param key - The index key
    * @param templateId - The template ID to remove
    */
-  private removeFromIndex<K>(
-    index: Map<K, Set<string>>,
-    key: K,
-    templateId: string,
-  ): void {
+  private removeFromIndex<K>(index: Map<K, Set<string>>, key: K, templateId: string): void {
     const set = index.get(key);
     if (set) {
       set.delete(templateId);
@@ -634,10 +566,7 @@ export class TemplateRegistry {
    * @param set2 - Second set (may be undefined)
    * @returns Intersection of the two sets
    */
-  private intersect(
-    set1: Set<string>,
-    set2: Set<string> | undefined,
-  ): Set<string> {
+  private intersect(set1: Set<string>, set2: Set<string> | undefined): Set<string> {
     if (!set2) {
       return new Set();
     }
@@ -674,8 +603,7 @@ export class TemplateRegistry {
     const recentIndex = this.recentlyUsed.indexOf(templateId);
     if (recentIndex !== -1) {
       // More recent usage = higher penalty
-      const recencyFactor =
-        (this.recentlyUsed.length - recentIndex) / this.recentlyUsed.length;
+      const recencyFactor = (this.recentlyUsed.length - recentIndex) / this.recentlyUsed.length;
       weight -= weights.recencyPenalty * recencyFactor;
     }
 
@@ -683,8 +611,7 @@ export class TemplateRegistry {
     // Lower mastery = prefer easier difficulty
     // Higher mastery = prefer harder difficulty
     const difficultyValues: Record<Difficulty, number> = { A: 1, B: 2, C: 3 };
-    const templateDifficulty =
-      difficultyValues[entry.template.metadata.difficulty];
+    const templateDifficulty = difficultyValues[entry.template.metadata.difficulty];
     const optimalDifficulty = 1 + masteryLevel / 50; // Maps 0->1, 50->2, 100->3
     const difficultyDistance = Math.abs(templateDifficulty - optimalDifficulty);
     weight -= weights.masteryAdjustment * difficultyDistance;
@@ -738,15 +665,11 @@ export const unregisterTemplate = (templateId: string): boolean => {
   return templateRegistry.unregister(templateId);
 };
 
-export const getTemplate = (
-  templateId: string,
-): ExerciseTemplate | undefined => {
+export const getTemplate = (templateId: string): ExerciseTemplate | undefined => {
   return templateRegistry.get(templateId);
 };
 
-export const findTemplates = (
-  criteria: TemplateSelectionCriteria,
-): string[] => {
+export const findTemplates = (criteria: TemplateSelectionCriteria): string[] => {
   return templateRegistry.find(criteria);
 };
 

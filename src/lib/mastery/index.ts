@@ -6,31 +6,29 @@
  * @module mastery
  */
 
-// Type exports
-export type {
-  SRSParameters,
-  SkillProgress,
-  CompetencyProgress,
-  UserProgress,
-  ExerciseAttempt,
-  PracticeSession,
-  MasteryCalculationInput,
-  SRSUpdateInput,
-  SRSUpdateResult,
-  MasteryLevel,
-  MasteryLevelBand,
-} from './types';
-
-export { MASTERY_LEVELS } from './types';
-
 // Calculator exports
 export {
+  calculateConsistencyScore,
+  calculateHintUsageFactor,
   calculateMasteryLevel,
   calculateRecentPerformance,
   calculateResponseSpeedFactor,
-  calculateHintUsageFactor,
-  calculateConsistencyScore,
   calculateTimeDecayFactor,
   getMasteryLevelBand,
   type MasteryCalculationResult,
-} from './calculator';
+} from "./calculator";
+// Type exports
+export type {
+  CompetencyProgress,
+  ExerciseAttempt,
+  MasteryCalculationInput,
+  MasteryLevel,
+  MasteryLevelBand,
+  PracticeSession,
+  SkillProgress,
+  SRSParameters,
+  SRSUpdateInput,
+  SRSUpdateResult,
+  UserProgress,
+} from "./types";
+export { MASTERY_LEVELS } from "./types";

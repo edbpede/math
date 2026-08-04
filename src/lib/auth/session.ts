@@ -99,10 +99,7 @@ export function createSessionToken(userId: string, uuid: string): string {
   // Create token: random_id.base64url(payload)
   const randomId = generateSecureToken(16);
   const payloadJson = JSON.stringify(payload);
-  const payloadB64 = btoa(payloadJson)
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=/g, "");
+  const payloadB64 = btoa(payloadJson).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
 
   return `${randomId}.${payloadB64}`;
 }
@@ -137,12 +134,7 @@ export function validateSessionToken(token: string): Session | null {
     const payload = JSON.parse(payloadJson) as SessionPayload;
 
     // Validate payload structure
-    if (
-      !payload.userId ||
-      !payload.uuid ||
-      !payload.createdAt ||
-      !payload.expiresAt
-    ) {
+    if (!payload.userId || !payload.uuid || !payload.createdAt || !payload.expiresAt) {
       return null;
     }
 
@@ -179,10 +171,7 @@ export function validateSessionToken(token: string): Session | null {
  * @param isDevelopment - Whether running in development mode
  * @returns Set-Cookie header value
  */
-export function createSessionCookie(
-  token: string,
-  isDevelopment: boolean = false,
-): string {
+export function createSessionCookie(token: string, isDevelopment: boolean = false): string {
   const parts = [
     `${SESSION_CONFIG.cookieName}=${token}`,
     `Max-Age=${SESSION_CONFIG.cookie.maxAge}`,
@@ -219,17 +208,13 @@ export function clearSessionCookie(): string {
  * @param cookieHeader - Cookie header value
  * @returns Session token or null if not found
  */
-export function getSessionFromCookie(
-  cookieHeader: string | null,
-): string | null {
+export function getSessionFromCookie(cookieHeader: string | null): string | null {
   if (!cookieHeader) {
     return null;
   }
 
   const cookies = cookieHeader.split(";").map((c) => c.trim());
-  const sessionCookie = cookies.find((c) =>
-    c.startsWith(`${SESSION_CONFIG.cookieName}=`),
-  );
+  const sessionCookie = cookies.find((c) => c.startsWith(`${SESSION_CONFIG.cookieName}=`));
 
   if (!sessionCookie) {
     return null;

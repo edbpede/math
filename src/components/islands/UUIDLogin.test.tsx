@@ -6,49 +6,43 @@
  * rate limiting, and accessibility.
  */
 
-import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@solidjs/testing-library";
-import UUIDLogin from "./UUIDLogin";
+import { fireEvent, render, screen, waitFor } from "@solidjs/testing-library";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { changeLocale } from "@/lib/i18n";
+import UUIDLogin from "./UUIDLogin";
 
 // Mock i18n module with complete mock (avoid loading translation files)
 vi.mock("@/lib/i18n", () => {
-  const createTranslationFunction =
-    () => (key: string, params?: Record<string, any>) => {
-      const templates: Record<string, string> = {
-        "auth.login.title": "Log in with practice number",
-        "auth.login.subtitle": "Enter your practice number to continue",
-        "auth.login.placeholder": "xxxx-xxxx-xxxx-xxxx",
-        "auth.login.invalidFormat":
-          "Invalid format. Use format XXXX-XXXX-XXXX-XXXX",
-        "auth.login.notFound":
-          "This practice number does not exist. Please check if you entered it correctly.",
-        "auth.login.rememberDevice": "Remember this device",
-        "auth.login.attemptsRemaining": "{{count}} attempts remaining",
-        "auth.login.rateLimitExceeded":
-          "Too many attempts. Please wait {{seconds}} seconds.",
-        "auth.login.submit": "Log in",
-        "auth.login.newUser": "New user? {{link}}",
-        "auth.login.newUserLink": "Create practice number",
-        "auth.uuid.title": "Your practice number",
-        "common.errors.unexpected": "An unexpected error occurred",
-        "common.status.loading": "Loading...",
-      };
-
-      let text = templates[key] || key;
-
-      // Interpolate parameters
-      if (params) {
-        Object.keys(params).forEach((param) => {
-          text = text.replace(
-            new RegExp(`\\{\\{${param}\\}\\}`, "g"),
-            String(params[param]),
-          );
-        });
-      }
-
-      return text;
+  const createTranslationFunction = () => (key: string, params?: Record<string, any>) => {
+    const templates: Record<string, string> = {
+      "auth.login.title": "Log in with practice number",
+      "auth.login.subtitle": "Enter your practice number to continue",
+      "auth.login.placeholder": "xxxx-xxxx-xxxx-xxxx",
+      "auth.login.invalidFormat": "Invalid format. Use format XXXX-XXXX-XXXX-XXXX",
+      "auth.login.notFound":
+        "This practice number does not exist. Please check if you entered it correctly.",
+      "auth.login.rememberDevice": "Remember this device",
+      "auth.login.attemptsRemaining": "{{count}} attempts remaining",
+      "auth.login.rateLimitExceeded": "Too many attempts. Please wait {{seconds}} seconds.",
+      "auth.login.submit": "Log in",
+      "auth.login.newUser": "New user? {{link}}",
+      "auth.login.newUserLink": "Create practice number",
+      "auth.uuid.title": "Your practice number",
+      "common.errors.unexpected": "An unexpected error occurred",
+      "common.status.loading": "Loading...",
     };
+
+    let text = templates[key] || key;
+
+    // Interpolate parameters
+    if (params) {
+      Object.keys(params).forEach((param) => {
+        text = text.replace(new RegExp(`\\{\\{${param}\\}\\}`, "g"), String(params[param]));
+      });
+    }
+
+    return text;
+  };
 
   const tFunc = createTranslationFunction();
 
@@ -73,14 +67,12 @@ vi.mock("@nanostores/solid", () => ({
         "auth.login.title": "Log in with practice number",
         "auth.login.subtitle": "Enter your practice number to continue",
         "auth.login.placeholder": "xxxx-xxxx-xxxx-xxxx",
-        "auth.login.invalidFormat":
-          "Invalid format. Use format XXXX-XXXX-XXXX-XXXX",
+        "auth.login.invalidFormat": "Invalid format. Use format XXXX-XXXX-XXXX-XXXX",
         "auth.login.notFound":
           "This practice number does not exist. Please check if you entered it correctly.",
         "auth.login.rememberDevice": "Remember this device",
         "auth.login.attemptsRemaining": "{{count}} attempts remaining",
-        "auth.login.rateLimitExceeded":
-          "Too many attempts. Please wait {{seconds}} seconds.",
+        "auth.login.rateLimitExceeded": "Too many attempts. Please wait {{seconds}} seconds.",
         "auth.login.submit": "Log in",
         "auth.login.newUser": "New user? {{link}}",
         "auth.login.newUserLink": "Create practice number",
@@ -94,10 +86,7 @@ vi.mock("@nanostores/solid", () => ({
       // Interpolate parameters
       if (params) {
         Object.keys(params).forEach((param) => {
-          text = text.replace(
-            new RegExp(`\\{\\{${param}\\}\\}`, "g"),
-            String(params[param]),
-          );
+          text = text.replace(new RegExp(`\\{\\{${param}\\}\\}`, "g"), String(params[param]));
         });
       }
 
@@ -152,9 +141,7 @@ describe("UUIDLogin", () => {
 
       // Check for title and subtitle
       expect(screen.getByText(/log in with practice number/i)).toBeTruthy();
-      expect(
-        screen.getByText(/enter your practice number to continue/i),
-      ).toBeTruthy();
+      expect(screen.getByText(/enter your practice number to continue/i)).toBeTruthy();
 
       // Check for UUID input field
       const input = screen.getByLabelText(/your practice number/i);
@@ -190,14 +177,10 @@ describe("UUIDLogin", () => {
 
       render(() => <UUIDLogin />);
 
-      const input = screen.getByLabelText(
-        /your practice number/i,
-      ) as HTMLInputElement;
+      const input = screen.getByLabelText(/your practice number/i) as HTMLInputElement;
       expect(input.value).toBe(rememberedUUID);
 
-      const checkbox = screen.getByLabelText(
-        /remember this device/i,
-      ) as HTMLInputElement;
+      const checkbox = screen.getByLabelText(/remember this device/i) as HTMLInputElement;
       expect(checkbox.checked).toBe(true);
     });
 
@@ -206,9 +189,7 @@ describe("UUIDLogin", () => {
 
       render(() => <UUIDLogin />);
 
-      const input = screen.getByLabelText(
-        /your practice number/i,
-      ) as HTMLInputElement;
+      const input = screen.getByLabelText(/your practice number/i) as HTMLInputElement;
       expect(input.value).toBe("");
     });
 
@@ -226,9 +207,7 @@ describe("UUIDLogin", () => {
     it("should format UUID as user types", () => {
       render(() => <UUIDLogin />);
 
-      const input = screen.getByLabelText(
-        /your practice number/i,
-      ) as HTMLInputElement;
+      const input = screen.getByLabelText(/your practice number/i) as HTMLInputElement;
 
       // Type characters one by one
       fireEvent.input(input, { target: { value: "1" } });
@@ -259,9 +238,7 @@ describe("UUIDLogin", () => {
     it("should remove non-alphanumeric characters", () => {
       render(() => <UUIDLogin />);
 
-      const input = screen.getByLabelText(
-        /your practice number/i,
-      ) as HTMLInputElement;
+      const input = screen.getByLabelText(/your practice number/i) as HTMLInputElement;
 
       fireEvent.input(input, { target: { value: "12!@#34$%^56" } });
       expect(input.value).toBe("1234-56");
@@ -270,9 +247,7 @@ describe("UUIDLogin", () => {
     it("should limit input to 16 characters (excluding dashes)", () => {
       render(() => <UUIDLogin />);
 
-      const input = screen.getByLabelText(
-        /your practice number/i,
-      ) as HTMLInputElement;
+      const input = screen.getByLabelText(/your practice number/i) as HTMLInputElement;
 
       fireEvent.input(input, { target: { value: "1234567890abcdefEXTRA" } });
       expect(input.value).toBe("1234-5678-90ab-cdef");
@@ -302,10 +277,7 @@ describe("UUIDLogin", () => {
       const pasteEvent = new ClipboardEvent("paste", {
         clipboardData: new DataTransfer(),
       });
-      pasteEvent.clipboardData?.setData(
-        "text",
-        "12345678-90ab-cdef-1234-567890abcdef",
-      );
+      pasteEvent.clipboardData?.setData("text", "12345678-90ab-cdef-1234-567890abcdef");
 
       fireEvent(input, pasteEvent);
 
@@ -316,9 +288,7 @@ describe("UUIDLogin", () => {
     it("should clear validation error when user starts typing", () => {
       render(() => <UUIDLogin />);
 
-      const input = screen.getByLabelText(
-        /your practice number/i,
-      ) as HTMLInputElement;
+      const input = screen.getByLabelText(/your practice number/i) as HTMLInputElement;
 
       // Enter invalid UUID and blur to trigger validation
       fireEvent.input(input, { target: { value: "invalid" } });
@@ -403,10 +373,7 @@ describe("UUIDLogin", () => {
       fireEvent.submit(form);
 
       await waitFor(() => {
-        expect(localStorage.setItem).toHaveBeenCalledWith(
-          "math-remember-uuid",
-          mockUUID,
-        );
+        expect(localStorage.setItem).toHaveBeenCalledWith("math-remember-uuid", mockUUID);
       });
     });
 
@@ -448,9 +415,7 @@ describe("UUIDLogin", () => {
       render(() => <UUIDLogin />);
 
       // Uncheck the checkbox
-      const checkbox = screen.getByLabelText(
-        /remember this device/i,
-      ) as HTMLInputElement;
+      const checkbox = screen.getByLabelText(/remember this device/i) as HTMLInputElement;
       fireEvent.click(checkbox);
 
       // Change UUID and submit
@@ -461,9 +426,7 @@ describe("UUIDLogin", () => {
       fireEvent.submit(form);
 
       await waitFor(() => {
-        expect(localStorage.removeItem).toHaveBeenCalledWith(
-          "math-remember-uuid",
-        );
+        expect(localStorage.removeItem).toHaveBeenCalledWith("math-remember-uuid");
       });
     });
   });

@@ -17,32 +17,32 @@
    =================================================================== */
 
 @font-face {
-  font-family: 'OpenDyslexic';
-  src: url('/fonts/opendyslexic/OpenDyslexic-Regular.woff') format('woff');
+  font-family: "OpenDyslexic";
+  src: url("/fonts/opendyslexic/OpenDyslexic-Regular.woff") format("woff");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'OpenDyslexic';
-  src: url('/fonts/opendyslexic/OpenDyslexic-Bold.woff') format('woff');
+  font-family: "OpenDyslexic";
+  src: url("/fonts/opendyslexic/OpenDyslexic-Bold.woff") format("woff");
   font-weight: bold;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'OpenDyslexic';
-  src: url('/fonts/opendyslexic/OpenDyslexic-Italic.woff') format('woff');
+  font-family: "OpenDyslexic";
+  src: url("/fonts/opendyslexic/OpenDyslexic-Italic.woff") format("woff");
   font-weight: normal;
   font-style: italic;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'OpenDyslexic';
-  src: url('/fonts/opendyslexic/OpenDyslexic-BoldItalic.woff') format('woff');
+  font-family: "OpenDyslexic";
+  src: url("/fonts/opendyslexic/OpenDyslexic-BoldItalic.woff") format("woff");
   font-weight: bold;
   font-style: italic;
   font-display: swap;
@@ -277,7 +277,7 @@ html[class*="font-"] h6 {
 
 html.dyslexia-font,
 html.dyslexia-font * {
-  font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
+  font-family: "OpenDyslexic", "Comic Sans MS", sans-serif !important;
   letter-spacing: 0.05em; /* Slightly increased letter spacing for readability */
   word-spacing: 0.16em; /* Increased word spacing */
   line-height: 1.6; /* More generous line height */
@@ -289,7 +289,7 @@ html.dyslexia-font pre,
 html.dyslexia-font kbd,
 html.dyslexia-font samp,
 html.dyslexia-font .font-mono {
-  font-family: 'OpenDyslexic', 'Courier New', monospace !important;
+  font-family: "OpenDyslexic", "Courier New", monospace !important;
 }
 
 /* ===================================================================
@@ -350,7 +350,9 @@ html.dark-theme a:focus-visible {
 
 html,
 body {
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 /* Reduce motion for users who prefer it */

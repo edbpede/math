@@ -19,20 +19,17 @@
  */
 
 import type {
+  EquationExpression,
+  FractionExpression,
   MathExpression,
   NumberExpression,
-  FractionExpression,
   OperationExpression,
-  EquationExpression,
 } from "./math-parser";
 
 /**
  * Translation function type
  */
-type TranslationFunction = (
-  key: string,
-  params?: Record<string, string>,
-) => string;
+type TranslationFunction = (key: string, params?: Record<string, string>) => string;
 
 /**
  * Convert a number to speech
@@ -46,10 +43,7 @@ function numberToSpeech(expr: NumberExpression): string {
 /**
  * Convert a fraction to speech
  */
-function fractionToSpeech(
-  expr: FractionExpression,
-  t: TranslationFunction,
-): string {
+function fractionToSpeech(expr: FractionExpression, t: TranslationFunction): string {
   const { numerator, denominator } = expr;
 
   // Check for common fractions with special names
@@ -99,10 +93,7 @@ function operatorToSpeech(operator: string, t: TranslationFunction): string {
 /**
  * Convert an operation to speech
  */
-function operationToSpeech(
-  expr: OperationExpression,
-  t: TranslationFunction,
-): string {
+function operationToSpeech(expr: OperationExpression, t: TranslationFunction): string {
   const left = mathToSpeech(expr.left, t);
   const operator = operatorToSpeech(expr.operator, t);
   const right = mathToSpeech(expr.right, t);
@@ -113,10 +104,7 @@ function operationToSpeech(
 /**
  * Convert an equation to speech
  */
-function equationToSpeech(
-  expr: EquationExpression,
-  t: TranslationFunction,
-): string {
+function equationToSpeech(expr: EquationExpression, t: TranslationFunction): string {
   const left = mathToSpeech(expr.left, t);
   const equals = t("accessibility.math.operations.equals");
   const right = mathToSpeech(expr.right, t);
@@ -131,10 +119,7 @@ function equationToSpeech(
  * @param t - Translation function
  * @returns Spoken representation of the expression
  */
-export function mathToSpeech(
-  expr: MathExpression,
-  t: TranslationFunction,
-): string {
+export function mathToSpeech(expr: MathExpression, t: TranslationFunction): string {
   switch (expr.type) {
     case "number":
       return numberToSpeech(expr);

@@ -9,10 +9,10 @@
  * - 2.4: Store language preference in Supabase user record and synchronize across devices
  */
 
-import { createSignal, Show } from "solid-js";
 import { useStore } from "@nanostores/solid";
-import { $t, $locale, changeLocale, type Locale } from "@/lib/i18n";
+import { createSignal, Show } from "solid-js";
 import { getCurrentUser, updateUser } from "@/lib/auth";
+import { $locale, $t, changeLocale, type Locale } from "@/lib/i18n";
 import { ErrorBoundaryWrapper } from "./ErrorBoundary";
 
 export interface LanguageSelectorProps {
@@ -69,10 +69,7 @@ const LanguageSelectorComponent = (props: LanguageSelectorProps) => {
         if (user) {
           const result = await updateUser(user.id, { locale: newLocale });
           if (!result.success) {
-            console.warn(
-              "Failed to persist language preference to Supabase:",
-              result.error,
-            );
+            console.warn("Failed to persist language preference to Supabase:", result.error);
             // Don't show error to user - locale change still succeeded in UI
           }
         }
@@ -112,17 +109,13 @@ const LanguageSelectorComponent = (props: LanguageSelectorProps) => {
 
   const containerClass = () => {
     const base = "language-selector";
-    const layoutClass =
-      layout() === "horizontal" ? "flex flex-row gap-2" : "flex flex-col gap-2";
+    const layoutClass = layout() === "horizontal" ? "flex flex-row gap-2" : "flex flex-col gap-2";
     return `${base} ${layoutClass} ${props.class || ""}`;
   };
 
   return (
-    <div
-      class={containerClass()}
-      role="group"
-      aria-label={t()("common.language.selector.title")}
-    >
+    // biome-ignore lint/a11y/useSemanticElements: the ARIA role is equivalent for assistive tech here; swapping in the native element would change layout and behaviour - tracked as separate a11y work
+    <div class={containerClass()} role="group" aria-label={t()("common.language.selector.title")}>
       {/* Danish Button */}
       <button
         type="button"
@@ -149,9 +142,7 @@ const LanguageSelectorComponent = (props: LanguageSelectorProps) => {
         </svg>
 
         <Show when={variant() === "full"}>
-          <span class="font-medium">
-            {t()("common.language.selector.danish")}
-          </span>
+          <span class="font-medium">{t()("common.language.selector.danish")}</span>
         </Show>
 
         {/* Active indicator for compact mode */}
@@ -194,9 +185,7 @@ const LanguageSelectorComponent = (props: LanguageSelectorProps) => {
         </svg>
 
         <Show when={variant() === "full"}>
-          <span class="font-medium">
-            {t()("common.language.selector.english")}
-          </span>
+          <span class="font-medium">{t()("common.language.selector.english")}</span>
         </Show>
 
         {/* Active indicator for compact mode */}
@@ -210,17 +199,8 @@ const LanguageSelectorComponent = (props: LanguageSelectorProps) => {
 
       {/* Loading indicator */}
       <Show when={isChanging()}>
-        <div
-          class="flex items-center text-sm text-gray-600"
-          role="status"
-          aria-live="polite"
-        >
-          <svg
-            class="w-4 h-4 mr-2 animate-spin"
-            fill="none"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
+        <div class="flex items-center text-sm text-gray-600" role="status" aria-live="polite">
+          <svg class="w-4 h-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
             <circle
               class="opacity-25"
               cx="12"
@@ -241,11 +221,7 @@ const LanguageSelectorComponent = (props: LanguageSelectorProps) => {
 
       {/* Error message */}
       <Show when={error()}>
-        <div
-          class="text-sm text-red-600 px-2"
-          role="alert"
-          aria-live="assertive"
-        >
+        <div class="text-sm text-red-600 px-2" role="alert" aria-live="assertive">
           {error()}
         </div>
       </Show>

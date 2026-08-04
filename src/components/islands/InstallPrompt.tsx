@@ -18,182 +18,179 @@
  * - 14.1: Clear, welcoming install experience
  */
 
-import { Show, createSignal, createEffect, onMount, onCleanup } from 'solid-js'
-import { useStore } from '@nanostores/solid'
-import { $t } from '../../lib/i18n'
-import { createFocusTrap } from '@/lib/accessibility'
+import { useStore } from "@nanostores/solid";
+import { createEffect, createSignal, onCleanup, onMount, Show } from "solid-js";
+import { createFocusTrap } from "@/lib/accessibility";
+import { $t } from "../../lib/i18n";
 
 // Types
 interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
 // LocalStorage key for dismissal
-const INSTALL_DISMISSED_KEY = 'math-install-prompt-dismissed'
-const DISMISS_DURATION_DAYS = 30
+const INSTALL_DISMISSED_KEY = "math-install-prompt-dismissed";
+const DISMISS_DURATION_DAYS = 30;
 
 export default function InstallPrompt() {
-  const t = useStore($t)
+  const t = useStore($t);
 
   // State
-  const [deferredPrompt, setDeferredPrompt] = createSignal<BeforeInstallPromptEvent | null>(null)
-  const [showPrompt, setShowPrompt] = createSignal(false)
-  const [isInstalled, setIsInstalled] = createSignal(false)
-  const [isInstalling, setIsInstalling] = createSignal(false)
+  const [deferredPrompt, setDeferredPrompt] = createSignal<BeforeInstallPromptEvent | null>(null);
+  const [showPrompt, setShowPrompt] = createSignal(false);
+  const [isInstalled, setIsInstalled] = createSignal(false);
+  const [isInstalling, setIsInstalling] = createSignal(false);
 
   // Prompt container ref and focus trap
-  let promptRef: HTMLDivElement | undefined
-  const focusTrap = createFocusTrap(
-    () => promptRef,
-    {
-      preventScroll: true,
-      allowEscape: true,
-      onDeactivate: () => handleDismiss(),
-    }
-  )
+  let promptRef: HTMLDivElement | undefined;
+  const focusTrap = createFocusTrap(() => promptRef, {
+    preventScroll: true,
+    allowEscape: true,
+    onDeactivate: () => handleDismiss(),
+  });
 
   // Activate/deactivate focus trap based on prompt visibility
   createEffect(() => {
     if (showPrompt() && !isInstalled()) {
-      focusTrap.activate()
+      focusTrap.activate();
     } else {
-      focusTrap.deactivate()
+      focusTrap.deactivate();
     }
-  })
+  });
 
   // Check if user previously dismissed the prompt
   const isDismissed = (): boolean => {
-    if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
-      return false
+    if (typeof window === "undefined" || typeof localStorage === "undefined") {
+      return false;
     }
-    
+
     try {
-      const dismissed = localStorage.getItem(INSTALL_DISMISSED_KEY)
-      if (!dismissed) return false
-      
-      const dismissedTime = parseInt(dismissed, 10)
-      const now = Date.now()
-      const daysSinceDismissal = (now - dismissedTime) / (1000 * 60 * 60 * 24)
-      
+      const dismissed = localStorage.getItem(INSTALL_DISMISSED_KEY);
+      if (!dismissed) return false;
+
+      const dismissedTime = parseInt(dismissed, 10);
+      const now = Date.now();
+      const daysSinceDismissal = (now - dismissedTime) / (1000 * 60 * 60 * 24);
+
       // Show again after DISMISS_DURATION_DAYS
-      return daysSinceDismissal < DISMISS_DURATION_DAYS
+      return daysSinceDismissal < DISMISS_DURATION_DAYS;
     } catch {
-      return false
+      return false;
     }
-  }
+  };
 
   // Check if app is already installed
   const checkInstallStatus = () => {
-    if (typeof window === 'undefined') {
-      return
+    if (typeof window === "undefined") {
+      return;
     }
-    
-    // Check if running in standalone mode (installed)
-    const isStandalone = 
-      window.matchMedia('(display-mode: standalone)').matches ||
-      (window.navigator as any).standalone === true
 
-    setIsInstalled(isStandalone)
-  }
+    // Check if running in standalone mode (installed)
+    const isStandalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as any).standalone === true;
+
+    setIsInstalled(isStandalone);
+  };
 
   // Handle beforeinstallprompt event
   const handleBeforeInstallPrompt = (e: Event) => {
     // Prevent the mini-infobar from appearing on mobile
-    e.preventDefault()
-    
-    const promptEvent = e as BeforeInstallPromptEvent
-    
+    e.preventDefault();
+
+    const promptEvent = e as BeforeInstallPromptEvent;
+
     // Store the event so it can be triggered later
-    setDeferredPrompt(promptEvent)
-    
+    setDeferredPrompt(promptEvent);
+
     // Check if user previously dismissed
     if (!isDismissed()) {
-      setShowPrompt(true)
+      setShowPrompt(true);
     }
-    
-    console.log('[InstallPrompt] Install prompt available')
-  }
+
+    console.log("[InstallPrompt] Install prompt available");
+  };
 
   // Handle app installed event
   const handleAppInstalled = () => {
-    console.log('[InstallPrompt] App installed successfully')
-    setIsInstalled(true)
-    setShowPrompt(false)
-    setDeferredPrompt(null)
-  }
+    console.log("[InstallPrompt] App installed successfully");
+    setIsInstalled(true);
+    setShowPrompt(false);
+    setDeferredPrompt(null);
+  };
 
   // Handle install button click
   const handleInstall = async () => {
-    const prompt = deferredPrompt()
-    if (!prompt) return
+    const prompt = deferredPrompt();
+    if (!prompt) return;
 
-    setIsInstalling(true)
+    setIsInstalling(true);
 
     try {
       // Show the install prompt
-      await prompt.prompt()
-      
+      await prompt.prompt();
+
       // Wait for the user to respond to the prompt
-      const { outcome } = await prompt.userChoice
-      
-      console.log(`[InstallPrompt] User response: ${outcome}`)
-      
-      if (outcome === 'accepted') {
-        console.log('[InstallPrompt] User accepted the install prompt')
+      const { outcome } = await prompt.userChoice;
+
+      console.log(`[InstallPrompt] User response: ${outcome}`);
+
+      if (outcome === "accepted") {
+        console.log("[InstallPrompt] User accepted the install prompt");
       } else {
-        console.log('[InstallPrompt] User dismissed the install prompt')
+        console.log("[InstallPrompt] User dismissed the install prompt");
       }
-      
+
       // Clear the deferred prompt
-      setDeferredPrompt(null)
-      setShowPrompt(false)
+      setDeferredPrompt(null);
+      setShowPrompt(false);
     } catch (error) {
-      console.error('[InstallPrompt] Install failed:', error)
+      console.error("[InstallPrompt] Install failed:", error);
     } finally {
-      setIsInstalling(false)
+      setIsInstalling(false);
     }
-  }
+  };
 
   // Handle dismiss button click
   const handleDismiss = () => {
-    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+    if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
       try {
         // Store dismissal time in localStorage
-        localStorage.setItem(INSTALL_DISMISSED_KEY, Date.now().toString())
+        localStorage.setItem(INSTALL_DISMISSED_KEY, Date.now().toString());
       } catch (error) {
-        console.error('[InstallPrompt] Failed to save dismissal:', error)
+        console.error("[InstallPrompt] Failed to save dismissal:", error);
       }
     }
-    
-    setShowPrompt(false)
-    console.log('[InstallPrompt] User dismissed install prompt')
-  }
+
+    setShowPrompt(false);
+    console.log("[InstallPrompt] User dismissed install prompt");
+  };
 
   // Setup event listeners
   onMount(() => {
-    if (typeof window === 'undefined') {
-      return
+    if (typeof window === "undefined") {
+      return;
     }
-    
-    checkInstallStatus()
-    
+
+    checkInstallStatus();
+
     // Listen for beforeinstallprompt event
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
-    
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
     // Listen for appinstalled event
-    window.addEventListener('appinstalled', handleAppInstalled)
-    
-    console.log('[InstallPrompt] Component mounted')
-  })
+    window.addEventListener("appinstalled", handleAppInstalled);
+
+    console.log("[InstallPrompt] Component mounted");
+  });
 
   // Cleanup
   onCleanup(() => {
-    if (typeof window !== 'undefined') {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
-      window.removeEventListener('appinstalled', handleAppInstalled)
+    if (typeof window !== "undefined") {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", handleAppInstalled);
     }
-  })
+  });
 
   return (
     <Show when={showPrompt() && !isInstalled()}>
@@ -210,6 +207,7 @@ export default function InstallPrompt() {
             {/* App icon */}
             <div class="flex-shrink-0 w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
               <svg
+                aria-hidden="true"
                 class="w-8 h-8 text-white"
                 fill="none"
                 stroke="currentColor"
@@ -226,17 +224,11 @@ export default function InstallPrompt() {
 
             {/* Text content */}
             <div class="flex-1 min-w-0">
-              <h3
-                id="install-prompt-title"
-                class="text-lg font-semibold text-gray-900 mb-1"
-              >
-                {t()('pwa.install.title')}
+              <h3 id="install-prompt-title" class="text-lg font-semibold text-gray-900 mb-1">
+                {t()("pwa.install.title")}
               </h3>
-              <p
-                id="install-prompt-description"
-                class="text-sm text-gray-600"
-              >
-                {t()('pwa.install.description')}
+              <p id="install-prompt-description" class="text-sm text-gray-600">
+                {t()("pwa.install.description")}
               </p>
             </div>
 
@@ -245,9 +237,15 @@ export default function InstallPrompt() {
               type="button"
               onClick={handleDismiss}
               class="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 touch-target"
-              aria-label={t()('common.actions.close')}
+              aria-label={t()("common.actions.close")}
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                aria-hidden="true"
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -261,34 +259,49 @@ export default function InstallPrompt() {
           {/* Features list */}
           <ul class="space-y-2 mb-4 text-sm text-gray-600">
             <li class="flex items-center gap-2">
-              <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <svg
+                aria-hidden="true"
+                class="w-4 h-4 text-green-500 flex-shrink-0"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
                 <path
                   fill-rule="evenodd"
                   d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                   clip-rule="evenodd"
                 />
               </svg>
-              <span>{t()('pwa.install.feature.offline')}</span>
+              <span>{t()("pwa.install.feature.offline")}</span>
             </li>
             <li class="flex items-center gap-2">
-              <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <svg
+                aria-hidden="true"
+                class="w-4 h-4 text-green-500 flex-shrink-0"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
                 <path
                   fill-rule="evenodd"
                   d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                   clip-rule="evenodd"
                 />
               </svg>
-              <span>{t()('pwa.install.feature.faster')}</span>
+              <span>{t()("pwa.install.feature.faster")}</span>
             </li>
             <li class="flex items-center gap-2">
-              <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <svg
+                aria-hidden="true"
+                class="w-4 h-4 text-green-500 flex-shrink-0"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
                 <path
                   fill-rule="evenodd"
                   d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                   clip-rule="evenodd"
                 />
               </svg>
-              <span>{t()('pwa.install.feature.homescreen')}</span>
+              <span>{t()("pwa.install.feature.homescreen")}</span>
             </li>
           </ul>
 
@@ -304,7 +317,12 @@ export default function InstallPrompt() {
                 when={!isInstalling()}
                 fallback={
                   <span class="flex items-center justify-center gap-2">
-                    <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <svg
+                      aria-hidden="true"
+                      class="animate-spin h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
                       <circle
                         class="opacity-25"
                         cx="12"
@@ -319,20 +337,20 @@ export default function InstallPrompt() {
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       />
                     </svg>
-                    <span>{t()('common.status.loading')}</span>
+                    <span>{t()("common.status.loading")}</span>
                   </span>
                 }
               >
-                {t()('pwa.install.button')}
+                {t()("pwa.install.button")}
               </Show>
             </button>
-            
+
             <button
               type="button"
               onClick={handleDismiss}
               class="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 touch-target"
             >
-              {t()('pwa.install.dismiss')}
+              {t()("pwa.install.dismiss")}
             </button>
           </div>
         </div>
@@ -345,6 +363,5 @@ export default function InstallPrompt() {
         aria-hidden="true"
       />
     </Show>
-  )
+  );
 }
-

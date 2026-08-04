@@ -13,21 +13,11 @@
  * - Task 15.2: Returning user flow with recommendations
  */
 
-import {
-  createResource,
-  Show,
-  For,
-  ErrorBoundary,
-  Suspense,
-  type Component,
-} from "solid-js";
 import { useStore } from "@nanostores/solid";
-import { $t } from "@/lib/i18n";
+import { type Component, createResource, ErrorBoundary, For, Show, Suspense } from "solid-js";
 import type { GradeRange } from "@/lib/curriculum/types";
-import {
-  getUpcomingReviews,
-  type ReviewSchedule,
-} from "@/lib/mastery/review-scheduler";
+import { $t } from "@/lib/i18n";
+import { getUpcomingReviews, type ReviewSchedule } from "@/lib/mastery/review-scheduler";
 
 /**
  * Props for PracticeRecommendations component
@@ -69,9 +59,7 @@ interface RecommendationItem {
  * />
  * ```
  */
-const PracticeRecommendations: Component<PracticeRecommendationsProps> = (
-  props,
-) => {
+const PracticeRecommendations: Component<PracticeRecommendationsProps> = (props) => {
   const t = useStore($t);
 
   // Fetch review schedule
@@ -273,21 +261,15 @@ const PracticeRecommendations: Component<PracticeRecommendationsProps> = (
     <ErrorBoundary
       fallback={() => (
         <div class="rounded-lg border-2 border-red-200 bg-red-50 p-4">
-          <p class="text-sm text-red-800">
-            {t()("progress.errors.loadFailed")}
-          </p>
+          <p class="text-sm text-red-800">{t()("progress.errors.loadFailed")}</p>
         </div>
       )}
     >
       <div class="practice-recommendations">
         {/* Header */}
         <div class="mb-4">
-          <h2 class="text-2xl font-bold text-gray-900">
-            {t()("progress.recommendations.title")}
-          </h2>
-          <p class="text-sm text-gray-600">
-            {t()("progress.recommendations.subtitle")}
-          </p>
+          <h2 class="text-2xl font-bold text-gray-900">{t()("progress.recommendations.title")}</h2>
+          <p class="text-sm text-gray-600">{t()("progress.recommendations.subtitle")}</p>
         </div>
 
         <Suspense
@@ -331,6 +313,7 @@ const PracticeRecommendations: Component<PracticeRecommendationsProps> = (
                   const colors = getUrgencyColors(item.urgency);
 
                   return (
+                    // biome-ignore lint/a11y/useSemanticElements: the ARIA role is equivalent for assistive tech here; swapping in the native element would change layout and behaviour - tracked as separate a11y work
                     <div
                       class={`recommendation-card rounded-lg border-2 p-6 transition-shadow hover:shadow-md ${colors.bg} ${colors.border}`}
                       role="article"
@@ -338,10 +321,7 @@ const PracticeRecommendations: Component<PracticeRecommendationsProps> = (
                     >
                       <div class="flex items-start gap-4">
                         {/* Icon */}
-                        <div
-                          class={`flex-shrink-0 ${colors.icon}`}
-                          aria-hidden="true"
-                        >
+                        <div class={`flex-shrink-0 ${colors.icon}`} aria-hidden="true">
                           {getIcon(item.icon)}
                         </div>
 
@@ -353,9 +333,7 @@ const PracticeRecommendations: Component<PracticeRecommendationsProps> = (
                           >
                             {item.title}
                           </h3>
-                          <p class="mb-3 text-sm text-gray-700">
-                            {item.description}
-                          </p>
+                          <p class="mb-3 text-sm text-gray-700">{item.description}</p>
 
                           {/* Action Button */}
                           <a

@@ -63,7 +63,11 @@
 
 /* Bounce (for success feedback - Requirement 8.2) */
 @keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
     transform: translateY(0);
   }
   40% {
@@ -76,13 +80,21 @@
 
 /* Gentle shake (for incorrect answers - Requirement 8.3) */
 @keyframes shake {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(0);
   }
-  10%, 30%, 50%, 70%, 90% {
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
     transform: translateX(-4px);
   }
-  20%, 40%, 60%, 80% {
+  20%,
+  40%,
+  60%,
+  80% {
     transform: translateX(4px);
   }
 }
@@ -96,7 +108,8 @@
 
 /* Pulse (for indicators, loading states) */
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -211,7 +224,7 @@
 }
 
 .custom-checkbox input[type="checkbox"]:checked + .checkbox-visual::after {
-  content: '';
+  content: "";
   display: block;
   width: 5px;
   height: 10px;
@@ -277,7 +290,7 @@
 }
 
 .custom-radio input[type="radio"]:checked + .radio-visual::after {
-  content: '';
+  content: "";
   display: block;
   width: 12px;
   height: 12px;
@@ -343,7 +356,9 @@
 
 /* Success feedback animation (Requirement 8.2 - Positive Feedback) */
 .feedback-success {
-  animation: scale-in 0.3s ease-out, bounce 0.6s ease-out 0.3s;
+  animation:
+    scale-in 0.3s ease-out,
+    bounce 0.6s ease-out 0.3s;
 }
 
 /* Gentle correction animation (Requirement 8.3 - Gentle Correction) */
@@ -404,7 +419,8 @@
    ============================================================================= */
 
 @keyframes skeleton-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -451,7 +467,7 @@
 }
 
 .tooltip .tooltip-content::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 100%;
   left: 50%;
@@ -472,7 +488,10 @@
 
 /* Smooth transitions for theme switching */
 .transition-theme {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
 }
 
 /* Smooth scale on hover/active */

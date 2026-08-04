@@ -9,8 +9,8 @@
  * - Primary action styling
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@solidjs/testing-library";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom";
 import ErrorRecovery, { type RecoveryAction } from "./ErrorRecovery";
 
@@ -36,12 +36,8 @@ describe("ErrorRecovery", () => {
 
       render(() => <ErrorRecovery actions={actions} />);
 
-      expect(
-        screen.getByRole("button", { name: /errors\.recovery\.retry/i })
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: /errors\.recovery\.goHome/i })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /errors\.recovery\.retry/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /errors\.recovery\.goHome/i })).toBeInTheDocument();
     });
 
     it("renders custom labels", () => {
@@ -51,9 +47,7 @@ describe("ErrorRecovery", () => {
 
       render(() => <ErrorRecovery actions={actions} />);
 
-      expect(
-        screen.getByRole("button", { name: "Custom Retry" })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Custom Retry" })).toBeInTheDocument();
     });
 
     it("applies primary styling to primary actions", () => {
@@ -76,9 +70,7 @@ describe("ErrorRecovery", () => {
     });
 
     it("renders disabled actions", () => {
-      const actions: RecoveryAction[] = [
-        { type: "retry", handler: vi.fn(), disabled: true },
-      ];
+      const actions: RecoveryAction[] = [{ type: "retry", handler: vi.fn(), disabled: true }];
 
       render(() => <ErrorRecovery actions={actions} />);
 
@@ -124,9 +116,7 @@ describe("ErrorRecovery", () => {
 
     it("does not call handler when action is disabled", () => {
       const handler = vi.fn();
-      const actions: RecoveryAction[] = [
-        { type: "retry", handler, disabled: true },
-      ];
+      const actions: RecoveryAction[] = [{ type: "retry", handler, disabled: true }];
 
       render(() => <ErrorRecovery actions={actions} />);
 
@@ -139,9 +129,7 @@ describe("ErrorRecovery", () => {
     });
 
     it("handles action errors gracefully", async () => {
-      const consoleErrorSpy = vi
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
+      const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
       const handler = vi.fn().mockRejectedValue(new Error("Action failed"));
       const actions: RecoveryAction[] = [{ type: "retry", handler }];
 
@@ -153,10 +141,7 @@ describe("ErrorRecovery", () => {
       button.click();
 
       await waitFor(() => {
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          "Recovery action failed:",
-          expect.any(Error)
-        );
+        expect(consoleErrorSpy).toHaveBeenCalledWith("Recovery action failed:", expect.any(Error));
       });
 
       consoleErrorSpy.mockRestore();
@@ -176,9 +161,7 @@ describe("ErrorRecovery", () => {
     });
 
     it("sets aria-busy during loading", async () => {
-      const handler = vi.fn(
-        () => new Promise<void>((resolve) => setTimeout(resolve, 100))
-      );
+      const handler = vi.fn(() => new Promise<void>((resolve) => setTimeout(resolve, 100)));
       const actions: RecoveryAction[] = [{ type: "retry", handler }];
 
       render(() => <ErrorRecovery actions={actions} />);
@@ -197,4 +180,3 @@ describe("ErrorRecovery", () => {
     });
   });
 });
-

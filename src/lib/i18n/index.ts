@@ -15,58 +15,53 @@
  * - 2.5: Load translations from structured JSON files
  */
 
-// Re-export types
-export type {
-  Locale,
-  TranslationKey,
-  TranslationCategory,
-  Translations,
-  ContextPool,
-  NumberFormatOptions,
-  DateFormatOptions,
-  LocaleConfig,
-  TranslationFunction,
-  I18nContext,
-} from './types';
-
-export { SUPPORTED_LOCALES } from './types';
-
+// Re-export context selector
+export { ContextSelector, createContextSelector } from "./context-selector";
 // Re-export loader functions
 export {
-  loadTranslations,
+  clearTranslationCache,
+  detectBrowserLocale,
   getNestedValue,
   interpolate,
-  clearTranslationCache,
+  loadTranslations,
   preloadTranslations,
-  detectBrowserLocale,
-} from './loader';
-
+} from "./loader";
 // Re-export store and state management
 export {
-  $locale,
-  $translations,
   $isLoadingTranslations,
+  $locale,
   $t,
-  initI18n,
+  $translations,
   changeLocale,
   getCurrentLocale,
+  initI18n,
   isTranslationsLoaded,
-} from './store';
-
+} from "./store";
+// Re-export types
+export type {
+  ContextPool,
+  DateFormatOptions,
+  I18nContext,
+  Locale,
+  LocaleConfig,
+  NumberFormatOptions,
+  TranslationCategory,
+  TranslationFunction,
+  TranslationKey,
+  Translations,
+} from "./types";
+export { SUPPORTED_LOCALES } from "./types";
 // Re-export utilities
 export {
-  formatNumber,
-  formatDate,
-  getContextPool,
-  getRandomContext,
-  getRandomContexts,
-  parseNumber,
-  normalizeAnswer,
   compareAnswers,
   detectNumberFormat,
-  parseNumberAuto,
+  formatDate,
+  formatNumber,
+  getContextPool,
   getLocaleConfig,
-} from './utils';
-
-// Re-export context selector
-export { ContextSelector, createContextSelector } from './context-selector';
+  getRandomContext,
+  getRandomContexts,
+  normalizeAnswer,
+  parseNumber,
+  parseNumberAuto,
+} from "./utils";

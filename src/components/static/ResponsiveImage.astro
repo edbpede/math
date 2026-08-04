@@ -1,14 +1,14 @@
 ---
 /**
  * ResponsiveImage Component
- * 
+ *
  * A reusable component for rendering responsive images with srcset,
  * multiple format support (WebP with fallbacks), and proper attributes
  * for performance and accessibility.
- * 
+ *
  * Requirements:
  * - 13.4: Lazy loading images, using WebP format, responsive images
- * 
+ *
  * Usage:
  * <ResponsiveImage
  *   src="/images/hero.png"
@@ -20,65 +20,65 @@
 
 interface Props {
   /** Source image path */
-  src: string
+  src: string;
   /** Alt text for accessibility */
-  alt: string
+  alt: string;
   /** Image widths for srcset (default: [320, 640, 960, 1280]) */
-  widths?: number[]
+  widths?: number[];
   /** Sizes attribute for responsive images */
-  sizes?: string
+  sizes?: string;
   /** Loading strategy: lazy (default) or eager */
-  loading?: 'lazy' | 'eager'
+  loading?: "lazy" | "eager";
   /** Priority loading (disables lazy loading) */
-  priority?: boolean
+  priority?: boolean;
   /** CSS class names */
-  class?: string
+  class?: string;
   /** Image width (for aspect ratio) */
-  width?: number
+  width?: number;
   /** Image height (for aspect ratio) */
-  height?: number
+  height?: number;
   /** Object fit style */
-  objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down'
+  objectFit?: "cover" | "contain" | "fill" | "none" | "scale-down";
 }
 
 const {
   src,
   alt,
   widths = [320, 640, 960, 1280],
-  sizes = '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw',
-  loading = 'lazy',
+  sizes = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw",
+  loading = "lazy",
   priority = false,
-  class: className = '',
+  class: className = "",
   width,
   height,
-  objectFit = 'cover',
-} = Astro.props
+  objectFit = "cover",
+} = Astro.props;
 
 // Extract file path and extension
-const lastDotIndex = src.lastIndexOf('.')
-const basePath = src.substring(0, lastDotIndex)
-const extension = src.substring(lastDotIndex + 1)
+const lastDotIndex = src.lastIndexOf(".");
+const basePath = src.substring(0, lastDotIndex);
+const extension = src.substring(lastDotIndex + 1);
 
 // Generate srcset for WebP and original format
 const generateSrcSet = (format: string) => {
   return widths
-    .map(w => {
+    .map((w) => {
       // For actual implementation, we'd use an image optimization service
       // For now, we'll use the original image (in production, use Astro's image optimization)
-      const path = format === 'webp' ? `${basePath}.webp` : src
-      return `${path} ${w}w`
+      const path = format === "webp" ? `${basePath}.webp` : src;
+      return `${path} ${w}w`;
     })
-    .join(', ')
-}
+    .join(", ");
+};
 
 // Determine loading attribute
-const loadingAttr = priority ? 'eager' : loading
+const loadingAttr = priority ? "eager" : loading;
 
 // Determine fetchpriority for priority images
-const fetchPriority = priority ? 'high' : undefined
+const fetchPriority = priority ? "high" : undefined;
 
 // Determine decoding
-const decoding = priority ? 'sync' : 'async'
+const decoding = priority ? "sync" : "async";
 ---
 
 <picture>

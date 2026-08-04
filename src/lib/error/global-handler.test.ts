@@ -10,14 +10,14 @@
  * - Initialization and cleanup
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import * as toastModule from "@/components/islands/ToastNotification";
 import {
-  initializeGlobalErrorHandler,
   cleanupGlobalErrorHandler,
+  initializeGlobalErrorHandler,
   isGlobalErrorHandlerInitialized,
 } from "./global-handler";
 import * as logger from "./logger";
-import * as toastModule from "@/components/islands/ToastNotification";
 
 // Mock the logger
 vi.mock("./logger", () => ({
@@ -84,9 +84,7 @@ describe("Global Error Handler", () => {
       initializeGlobalErrorHandler();
       initializeGlobalErrorHandler();
 
-      expect(consoleWarn).toHaveBeenCalledWith(
-        expect.stringContaining("Already initialized"),
-      );
+      expect(consoleWarn).toHaveBeenCalledWith(expect.stringContaining("Already initialized"));
 
       consoleWarn.mockRestore();
     });
@@ -133,10 +131,7 @@ describe("Global Error Handler", () => {
 
       window.dispatchEvent(event);
 
-      expect(toastModule.toast.error).toHaveBeenCalledWith(
-        expect.any(String),
-        7000,
-      );
+      expect(toastModule.toast.error).toHaveBeenCalledWith(expect.any(String), 7000);
     });
 
     it("should not show toast when showToasts is false", () => {
@@ -160,10 +155,7 @@ describe("Global Error Handler", () => {
 
       window.dispatchEvent(event);
 
-      expect(toastModule.toast.error).toHaveBeenCalledWith(
-        "Custom: Test error",
-        7000,
-      );
+      expect(toastModule.toast.error).toHaveBeenCalledWith("Custom: Test error", 7000);
     });
   });
 
@@ -221,10 +213,7 @@ describe("Global Error Handler", () => {
 
       window.dispatchEvent(event);
 
-      expect(toastModule.toast.error).toHaveBeenCalledWith(
-        expect.any(String),
-        7000,
-      );
+      expect(toastModule.toast.error).toHaveBeenCalledWith(expect.any(String), 7000);
     });
   });
 
