@@ -32,7 +32,7 @@ import { cleanup } from "@solidjs/testing-library";
 import { afterEach, beforeEach, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 import "fake-indexeddb/auto";
-import { changeLocale, initI18n } from "@/lib/i18n";
+import { $locale, $translations, changeLocale, initI18n } from "@/lib/i18n";
 
 // ============================================================================
 // Environment Variables
@@ -49,6 +49,34 @@ vi.stubEnv("PUBLIC_SUPABASE_ANON_KEY", "test-anon-key");
 // This ensures translations are loaded before any tests run
 await initI18n();
 await changeLocale("en-US"); // Default to English for consistent test assertions
+
+// Snapshot the loaded state so every test can start from it. This is not
+// belt-and-braces: vitest.config.ts sets `isolate: false`, so all test files
+// share one module registry and one copy of these stores. Six test files
+// vi.mock("@/lib/i18n") — two of them stubbing initI18n into a no-op — which can
+// leave the real $translations atom back at its initial null. changeLocale()
+// cannot repair that, because it early-returns when the locale already matches
+// ($locale is a persistent atom, so it usually does). Any later file that uses
+// the real store then renders raw keys like "errors.general.unexpected" instead
+// of translated text.
+//
+// That failure is file-order dependent, which is why it showed up only on CI:
+// on Linux the ordering left the store empty before ErrorBoundary.test.tsx ran,
+// while the local ordering happened not to. Restoring explicitly makes the
+// starting state defined rather than inherited.
+const baselineLocale = $locale.get();
+const baselineTranslations = $translations.get();
+
+if (!baselineTranslations) {
+  throw new Error(
+    "i18n setup failed: translations are null after initI18n(). Tests asserting on translated text would silently receive raw keys.",
+  );
+}
+
+beforeEach(() => {
+  $locale.set(baselineLocale);
+  $translations.set(baselineTranslations);
+});
 
 // ============================================================================
 // SolidJS Testing Library Setup
