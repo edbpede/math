@@ -33,7 +33,7 @@ jobs:
     steps:
       - name: Checkout repository
         # Matches the pin already used by this repo's other workflows.
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
