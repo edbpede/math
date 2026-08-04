@@ -41,7 +41,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout pull request branch
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           # Check out the branch itself (not the detached merge commit) so the
           # migration commit can be pushed back to the Renovate branch.
@@ -98,7 +98,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           # On a Renovate PR this picks up the migration commit pushed above.
           ref: ${{ github.head_ref || github.ref }}
