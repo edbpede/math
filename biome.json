@@ -20,7 +20,7 @@
     "indentWidth": 2,
     "lineWidth": 100
   },
-  "assist": { "enabled": true, "actions": { "source": { "recommended": true } } },
+  "assist": { "enabled": true, "actions": { "source": { "preset": "none" } } },
   "linter": {
     "enabled": true,
     "rules": {
