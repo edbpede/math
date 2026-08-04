@@ -50,6 +50,10 @@ describe("ErrorBoundaryWrapper", () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    // Guarantee DEV is unstubbed even if a test throws before reaching its
+    // own vi.unstubAllEnvs() call (isolate: false means this file's worker
+    // is shared, so a leaked stub would otherwise bleed into later tests).
+    vi.unstubAllEnvs();
   });
 
   describe("Normal Operation", () => {
@@ -275,11 +279,7 @@ describe("ErrorBoundaryWrapper", () => {
   describe("Development Mode", () => {
     it("should display component name in dev mode", () => {
       // Set to dev mode
-      const originalEnv = import.meta.env.DEV;
-      Object.defineProperty(import.meta.env, "DEV", {
-        value: true,
-        writable: true,
-      });
+      vi.stubEnv("DEV", true);
 
       render(() => (
         <ErrorBoundaryWrapper componentName="MyTestComponent">
@@ -290,10 +290,7 @@ describe("ErrorBoundaryWrapper", () => {
       expect(screen.getByText(/Component: MyTestComponent/i)).toBeInTheDocument();
 
       // Restore
-      Object.defineProperty(import.meta.env, "DEV", {
-        value: originalEnv,
-        writable: true,
-      });
+      vi.unstubAllEnvs();
     });
   });
 

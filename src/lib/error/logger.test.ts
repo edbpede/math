@@ -33,6 +33,10 @@ describe("Error Logger", () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    // Guarantee DEV is unstubbed even if a test throws before reaching its
+    // own vi.unstubAllEnvs() call (isolate: false means this file's worker
+    // is shared, so a leaked stub would otherwise bleed into later tests).
+    vi.unstubAllEnvs();
   });
 
   describe("logError", () => {
@@ -92,11 +96,7 @@ describe("Error Logger", () => {
     });
 
     it("should log to console in development mode", () => {
-      const originalEnv = import.meta.env.DEV;
-      Object.defineProperty(import.meta.env, "DEV", {
-        value: true,
-        writable: true,
-      });
+      vi.stubEnv("DEV", true);
 
       const error = new Error("Dev mode error");
       logError({ error });
@@ -104,10 +104,7 @@ describe("Error Logger", () => {
       expect(console.group).toHaveBeenCalled();
       expect(console.error).toHaveBeenCalled();
 
-      Object.defineProperty(import.meta.env, "DEV", {
-        value: originalEnv,
-        writable: true,
-      });
+      vi.unstubAllEnvs();
     });
 
     it("should handle errors with stack traces", () => {

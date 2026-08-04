@@ -154,7 +154,7 @@ describe("ToastNotification", () => {
 
       showToast({ type: "success", message: "Success message" });
 
-      const toastElement = screen.getByText("Success message").closest("div");
+      const toastElement = screen.getByText("Success message").closest('[role="status"]');
       expect(toastElement).toHaveClass("bg-green-50");
     });
 
@@ -163,7 +163,7 @@ describe("ToastNotification", () => {
 
       showToast({ type: "error", message: "Error message" });
 
-      const toastElement = screen.getByText("Error message").closest("div");
+      const toastElement = screen.getByText("Error message").closest('[role="status"]');
       expect(toastElement).toHaveClass("bg-red-50");
     });
 
@@ -172,7 +172,7 @@ describe("ToastNotification", () => {
 
       showToast({ type: "warning", message: "Warning message" });
 
-      const toastElement = screen.getByText("Warning message").closest("div");
+      const toastElement = screen.getByText("Warning message").closest('[role="status"]');
       expect(toastElement).toHaveClass("bg-yellow-50");
     });
 
@@ -181,7 +181,7 @@ describe("ToastNotification", () => {
 
       showToast({ type: "info", message: "Info message" });
 
-      const toastElement = screen.getByText("Info message").closest("div");
+      const toastElement = screen.getByText("Info message").closest('[role="status"]');
       expect(toastElement).toHaveClass("bg-blue-50");
     });
   });
@@ -261,7 +261,7 @@ describe("ToastNotification", () => {
       toast.success("Success!");
 
       expect(screen.getByText("Success!")).toBeInTheDocument();
-      const toastElement = screen.getByText("Success!").closest("div");
+      const toastElement = screen.getByText("Success!").closest('[role="status"]');
       expect(toastElement).toHaveClass("bg-green-50");
     });
 
@@ -271,7 +271,7 @@ describe("ToastNotification", () => {
       toast.error("Error!");
 
       expect(screen.getByText("Error!")).toBeInTheDocument();
-      const toastElement = screen.getByText("Error!").closest("div");
+      const toastElement = screen.getByText("Error!").closest('[role="status"]');
       expect(toastElement).toHaveClass("bg-red-50");
     });
 
@@ -281,7 +281,7 @@ describe("ToastNotification", () => {
       toast.info("Info!");
 
       expect(screen.getByText("Info!")).toBeInTheDocument();
-      const toastElement = screen.getByText("Info!").closest("div");
+      const toastElement = screen.getByText("Info!").closest('[role="status"]');
       expect(toastElement).toHaveClass("bg-blue-50");
     });
 
@@ -291,7 +291,7 @@ describe("ToastNotification", () => {
       toast.warning("Warning!");
 
       expect(screen.getByText("Warning!")).toBeInTheDocument();
-      const toastElement = screen.getByText("Warning!").closest("div");
+      const toastElement = screen.getByText("Warning!").closest('[role="status"]');
       expect(toastElement).toHaveClass("bg-yellow-50");
     });
 
@@ -394,7 +394,7 @@ describe("ToastNotification", () => {
 
       showToast({ message: "Animated toast" });
 
-      const toastElement = screen.getByText("Animated toast").closest("div");
+      const toastElement = screen.getByText("Animated toast").closest('[role="status"]');
       expect(toastElement).toHaveClass("animate-slide-in-top");
     });
   });

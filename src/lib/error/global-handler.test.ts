@@ -48,9 +48,25 @@ vi.mock("@/components/islands/ToastNotification", () => ({
   },
 }));
 
+/**
+ * Build a PromiseRejectionEvent whose promise already has a handler attached.
+ *
+ * The rejected promise is only a payload for the event; without a catch it
+ * surfaces as a real unhandled rejection and fails the run.
+ */
+function createRejectionEvent(reason: unknown): PromiseRejectionEvent {
+  const promise = Promise.reject(reason);
+  promise.catch(() => {});
+
+  return new PromiseRejectionEvent("unhandledrejection", { promise, reason });
+}
+
 describe("Global Error Handler", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // clearAllMocks keeps implementations, so restore the default here: tests
+    // that opt into duplicate suppression must not leak it to later tests
+    vi.mocked(logger.wasErrorLoggedRecently).mockReturnValue(false);
     cleanupGlobalErrorHandler();
   });
 
@@ -164,10 +180,7 @@ describe("Global Error Handler", () => {
       initializeGlobalErrorHandler();
 
       const error = new Error("Test rejection");
-      const event = new PromiseRejectionEvent("unhandledrejection", {
-        promise: Promise.reject(error),
-        reason: error,
-      });
+      const event = createRejectionEvent(error);
 
       window.dispatchEvent(event);
 
@@ -186,10 +199,7 @@ describe("Global Error Handler", () => {
       initializeGlobalErrorHandler();
 
       const reason = "String rejection reason";
-      const event = new PromiseRejectionEvent("unhandledrejection", {
-        promise: Promise.reject(reason),
-        reason,
-      });
+      const event = createRejectionEvent(reason);
 
       window.dispatchEvent(event);
 
@@ -206,10 +216,7 @@ describe("Global Error Handler", () => {
       initializeGlobalErrorHandler({ showToasts: true });
 
       const error = new Error("Test rejection");
-      const event = new PromiseRejectionEvent("unhandledrejection", {
-        promise: Promise.reject(error),
-        reason: error,
-      });
+      const event = createRejectionEvent(error);
 
       window.dispatchEvent(event);
 
@@ -434,7 +441,13 @@ describe("Global Error Handler", () => {
       const error = new Error("After cleanup");
       const event = new ErrorEvent("error", { error, message: error.message });
 
+      // With every handler removed, Vitest treats this deliberately unhandled
+      // error event as an uncaught exception. A throwaway listener keeps the
+      // event owned by the test without observing anything.
+      const absorb = () => {};
+      window.addEventListener("error", absorb);
       window.dispatchEvent(event);
+      window.removeEventListener("error", absorb);
 
       // Should not be logged after cleanup
       expect(logger.logError).not.toHaveBeenCalled();
