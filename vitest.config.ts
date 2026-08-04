@@ -23,8 +23,24 @@ export default defineConfig({
     setupFiles: ["./src/test/setup.ts"],
     // Increase timeout for async operations
     testTimeout: 10000,
-    // Prevent test isolation to avoid multiple Solid instances
-    isolate: false,
+    // Isolate each test file. This was previously `false` to avoid loading
+    // multiple Solid instances, but that job is done by `server.deps.inline`
+    // below, which dedupes solid-js and @solidjs — verified by running the full
+    // suite both ways.
+    //
+    // Sharing one module registry across all 57 files made results depend on
+    // file order, because a vi.mock() in one file stays in the shared registry
+    // for later files. ErrorRecovery.test.tsx replaces the whole i18n module
+    // with `$t: atom((key) => key)`, so any file rendering translated text
+    // afterwards got raw keys back — which is what broke six ErrorBoundary
+    // tests on CI while passing locally, purely because Linux ordered the files
+    // differently. Mock implementations and env stubs leaked the same way.
+    //
+    // Measured effect on order-dependence (shuffled runs, same seeds):
+    //   seed 12345: 19 failures -> 1     seed 999999: 10 failures -> 1
+    //   seed 20260804: 4 failures -> 0   seed 777: 0 -> 0
+    // Cost is roughly 3 seconds of wall clock for the whole suite.
+    isolate: true,
 
     // Inline solid-js packages to prevent double-loading (Vitest 1.x+ syntax)
     server: {
