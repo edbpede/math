@@ -1,0 +1,100 @@
+# Tier-1 smoke test: build the site, serve it, and prove real routes load.
+#
+# Deliberately NOT a browser test. It verifies that the app builds, boots and
+# serves real content. It will NOT catch client-side breakage: a prerendered
+# Astro page returns 200 with a valid <title> even when a solid-js or unocss
+# bump has broken island hydration. Upgrading to a real browser test is a
+# separate decision, not something to bolt on here.
+#
+# Scope note: this repo's other workflows own tests, `tsc --noEmit` and the
+# deploy-side build. This workflow adds only the build-boot-serve signal.
+name: Smoke Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Read-only throughout. Unlike code-quality.yml there is no write-capable job
+# here, and no biome-migrate job — that belongs solely to the quality gate.
+permissions:
+  contents: read
+
+concurrency:
+  group: smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: Build · serve · load
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        # Matches the pin already used by this repo's other workflows.
+        uses: actions/checkout@v5
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          # Derived from the committed `packageManager` field, not `latest`.
+          bun-version-file: package.json
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # `build:skip-validation`, not `build`, on purpose. `bun run build` first
+      # runs scripts/validate-env.ts, which hard-requires a `.env` FILE to be
+      # present on disk (checkEnvFile) — environment variables alone do not
+      # satisfy it, so that script can never pass on a clean CI checkout. The
+      # skip-validation script runs the identical pipeline minus that check:
+      # generate-pwa-icons -> astro build -> generate-cache-manifest.
+      #
+      # Astro still reads the two PUBLIC_SUPABASE_* variables while prerendering
+      # (the dashboard island resolves them at build time), so they must be set.
+      # These are format-valid throwaway placeholders, not secrets: this
+      # workflow deliberately does not depend on repository secrets, so it also
+      # works on forked pull requests. Nothing here contacts Supabase — the
+      # client is only constructed in the browser.
+      - name: Build
+        run: bun run build:skip-validation
+        env:
+          PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co
+          PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ci-build-only-placeholder-not-a-real-key.ci-signature-placeholder
+
+      - name: Serve and smoke-test routes
+        run: |
+          set -euo pipefail
+
+          # `--host 127.0.0.1` is explicit on purpose: Astro otherwise binds the
+          # name `localhost`, which can resolve to ::1 first, while the probes
+          # below dial IPv4 literally.
+          bun run preview -- --host 127.0.0.1 --port 4321 &
+          server=$!
+          trap 'kill "${server}" 2>/dev/null || true' EXIT
+
+          # Readiness loop, deliberately NOT `curl --retry`: this distinguishes
+          # "not up yet" from "up but broken", so a real 500 fails fast instead
+          # of being retried into a timeout.
+          timeout 90 bash -c 'until curl -fsS -o /dev/null http://127.0.0.1:4321/; do sleep 1; done'
+
+          # Assert on CONTENT, not just status — a 200 error page would sail
+          # through a status-only check.
+          #
+          # The body goes to a file rather than into `curl ... | grep -q`:
+          # grep -q exits at the first match, curl then dies of SIGPIPE with
+          # exit 23, and `pipefail` turns that into a failure. Whether it trips
+          # depends on response size and timing, so the piped form is
+          # intermittently red rather than reliably broken.
+          #
+          # Only real content pages are listed. /dashboard and /settings build
+          # to auth-redirect stubs, so asserting them would prove nothing beyond
+          # "a redirect shell was emitted". The /api/** routes are deliberately
+          # excluded: they need auth and a live Supabase.
+          for path in / /login /onboarding /demo-login /demo-uuid; do
+            echo "==> ${path}"
+            curl -fsS -m 10 -o "${RUNNER_TEMP}/page.html" "http://127.0.0.1:4321${path}"
+            grep -q '<title>' "${RUNNER_TEMP}/page.html" \
+              || { echo "SMOKE FAILED: ${path} served no <title>"; exit 1; }
+          done
