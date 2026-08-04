@@ -129,9 +129,25 @@ function validateEnvVar(envVar: EnvVariable): { valid: boolean; message?: string
 function validateEnvironment(): boolean {
   console.log(`${colors.blue}🔍 Validating environment variables...${colors.reset}\n`);
 
-  // Check if .env file exists
-  if (!checkEnvFile()) {
+  // A .env file is one way to supply configuration, not the only one: CI and
+  // container deployments inject the variables into the environment directly and
+  // never write a file. Only insist on the file when the required variables are
+  // actually absent, so the message points at real missing configuration instead
+  // of a missing file that was never needed.
+  const requiredFromEnvironment = ENV_VARIABLES.filter(
+    (envVar) => envVar.required && process.env[envVar.name],
+  );
+  const allRequiredPresent =
+    requiredFromEnvironment.length === ENV_VARIABLES.filter((envVar) => envVar.required).length;
+
+  if (!allRequiredPresent && !checkEnvFile()) {
     return false;
+  }
+
+  if (allRequiredPresent) {
+    console.log(
+      `${colors.cyan}Reading configuration from the environment (no .env file required).${colors.reset}\n`,
+    );
   }
 
   let allValid = true;
