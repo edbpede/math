@@ -235,8 +235,10 @@ describe("Progress Persistence Layer", () => {
       const { syncManager } = await import("../offline/sync-manager");
       expect(syncManager.addToQueue).toHaveBeenCalledWith(
         expect.objectContaining({
-          type: "exercise-attempt",
+          // Must match SyncQueueItemType, otherwise syncQueueItem() throws on replay
+          type: "exercise_complete",
           data: testExerciseAttempt,
+          retries: 0,
         }),
       );
     });
@@ -409,10 +411,14 @@ describe("Progress Persistence Layer", () => {
       const { syncManager } = await import("../offline/sync-manager");
       expect(syncManager.addToQueue).toHaveBeenCalledWith(
         expect.objectContaining({
-          type: "skill-progress-batch",
+          // Must match SyncQueueItemType / ProgressUpdateSyncItem, otherwise
+          // syncQueueItem() throws on replay and the item is dropped after retries
+          type: "progress_update",
           data: expect.objectContaining({
             userId: testUserId,
-            progressList: expect.any(Array),
+            skillsProgress: expect.arrayContaining([
+              expect.objectContaining({ skillId: testSkillProgress.skillId }),
+            ]),
           }),
         }),
       );
@@ -494,16 +500,27 @@ describe("Progress Persistence Layer", () => {
     });
 
     it("should flush pending updates on destroy", async () => {
-      queueCompetencyProgressUpdate(testCompetencyProgress);
+      const { batchUpdateCompetencyProgress } = await import("../supabase/progress");
 
-      // Spy on flush function
-      const module = await import("./progress-persistence");
-      const flushSpy = vi.spyOn(module, "flushProgressUpdates");
+      queueCompetencyProgressUpdate(testCompetencyProgress);
 
       destroyProgressPersistence();
 
-      // Should have attempted to flush
-      expect(flushSpy).toHaveBeenCalled();
+      // Destroy must write pending updates through rather than dropping them.
+      // Asserted via the batch write itself: destroy calls the module-local
+      // flushProgressUpdates binding, which a spy on the export cannot observe.
+      expect(batchUpdateCompetencyProgress).toHaveBeenCalledWith(
+        testUserId,
+        expect.arrayContaining([
+          expect.objectContaining({
+            competencyAreaId: testCompetencyProgress.competencyAreaId,
+            gradeRange: testCompetencyProgress.gradeRange,
+          }),
+        ]),
+      );
+
+      // Let the in-flight write settle before the test ends
+      await vi.runAllTimersAsync();
     });
   });
 

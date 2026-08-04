@@ -464,6 +464,11 @@ function scheduleDebouncedFlush(): void {
 
 /**
  * Perform batch write of all pending updates
+ *
+ * A write that fails is handed to the offline sync queue so the data is not
+ * lost, but the failure is still reported to the caller and reflected in
+ * `$progressQueueState`. Reporting success here would tell the UI that
+ * progress reached the server when it only reached the local retry queue.
  */
 async function performBatchWrite(): Promise<ProgressUpdateResult> {
   if (!currentUserId) {
@@ -490,6 +495,9 @@ async function performBatchWrite(): Promise<ProgressUpdateResult> {
     ...$progressQueueState.get(),
     status: "syncing",
   });
+
+  // Writes that failed and were diverted to the offline sync queue
+  const failures: Error[] = [];
 
   try {
     // Batch write competency progress
@@ -519,6 +527,8 @@ async function performBatchWrite(): Promise<ProgressUpdateResult> {
 
         // Clear pending updates since they're queued
         pendingCompetencyUpdates.clear();
+
+        failures.push(error instanceof Error ? error : new Error(String(error)));
       }
     }
 
@@ -549,7 +559,30 @@ async function performBatchWrite(): Promise<ProgressUpdateResult> {
 
         // Clear pending updates since they're queued
         pendingSkillUpdates.clear();
+
+        failures.push(error instanceof Error ? error : new Error(String(error)));
       }
+    }
+
+    // Something never reached the server: report the failure instead of a false
+    // success, and leave lastSyncTime untouched so the UI cannot claim a sync
+    if (failures.length > 0) {
+      const errorMsg = failures.map((failure) => failure.message).join("; ");
+      console.error("[ProgressPersistence] Batch write failed, queued for offline sync:", errorMsg);
+
+      $progressQueueState.set({
+        ...$progressQueueState.get(),
+        status: "error",
+        pendingCount: getTotalQueueSize(),
+        error: errorMsg,
+        nextSyncTime: null,
+      });
+
+      return {
+        status: "error",
+        message: `Batch write failed, queued for offline sync: ${errorMsg}`,
+        error: failures[0],
+      };
     }
 
     // Update state to idle
